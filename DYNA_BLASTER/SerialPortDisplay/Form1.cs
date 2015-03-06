@@ -14,32 +14,9 @@ using System.Threading;
 namespace SerialPortExample
 {
 
-    public class C_ADDresses
-    {
-
-        Byte[] byStart = { 0xFF, 0xFF };
-        // cmds
-        public const int CMD_PING       = 1;
-        public const int CMD_READ       = 2;
-        public const int CMD_WRITE      = 3;
-        public const int CMD_REG_WRITE  = 4;
-        public const int CMD_ACTION     = 5;
-        public const int CMD_RESET      = 6;
-        public const int CMD_SYNC_WRITE = 131;
-
-        public const Byte BROAD_CAST    = 254;
-        // ____________________________________________________Moving speed
-        public const Byte MOV_SPEED_L   = 32;
-        public const Byte MOV_SPEED_H   = 33;
-        public const Byte[] MOV_SPEED   = { MOV_SPEED_L, MOV_SPEED_H };
-        // ____________________________________________________Present speed
-        public const Byte CUR_SPEED_L   = 38;
-        public const Byte CUR_SPEED_H   = 39;
-
-    }
-    //public const Byte 
 
     public partial class Form1 : Form
+        //, C_DynamixelAddresses
     {
         //SerialPortInterface SPI = new SerialPortInterface();
         
@@ -68,6 +45,9 @@ namespace SerialPortExample
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // local arguments
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        C_DynamixelAddresses dynAdd = new C_DynamixelAddresses();
+
         string log;
         string logSent;
         string logRec;
@@ -111,6 +91,12 @@ namespace SerialPortExample
             , port_closed
         };
 
+        enum e_bounds
+        {
+              in_bounds = 0
+            , bigger = 1
+            , smaller = 2
+        };
         enum e_cmd
         {
              sent = 1
@@ -435,7 +421,7 @@ namespace SerialPortExample
         Byte[] cmdEx16 = { 0xFF, 0xFF, 0x01, 0x05, 0x03, 0x18, 0x01, 0x01, 0xDD }; //  Turns on the LED and enables Torque. 
         Byte[] cmdEx17 = { 0xFF, 0xFF, 0x01, 0x07, 0x03, 0x1E, 0x00, 0x02, 0x00, 0x02, 0xD2 }; // Locates at the Position 180° with the speed of 57RPM. 
 
-        // without checksum and first 3 bytes
+        // without first 3 bytes and checksum byte
         Byte[] cmdinPING = { 0x02, 0x01 };
         Byte[] cmdinEx16 = { 0x05, 0x03, 0x18, 0x01, 0x01}; //  Turns on the LED and enables Torque. 
         Byte[] cmdinEx17 = { 0x07, 0x03, 0x1E, 0x00, 0x02, 0x00, 0x02 }; // Locates at the Position 180° with the speed of 57RPM. 
@@ -504,21 +490,72 @@ namespace SerialPortExample
         // COMMANDS - MEDIUM LEVEL
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        // class motor 
-        //- last know angle, last known rozsah, id, etc..
 
-        private Byte[] CONV_ang_deg2by(int deg)
+        private e_bounds NOTIN_bounds(int num, int min, int max)
+        {
+            if (num > max)
+                return e_bounds.bigger;
+            else if (num < min)
+                return e_bounds.smaller;
+            else
+                return e_bounds.in_bounds;
+        }
+        private int GET_bounded(int num, int min, int max)
+        {
+            if (num > max)
+                return max;
+            else if (num < min)
+                return min;
+            else
+                return num;
+        }
+
+        private Byte[] CONV_ang_deg2by(Byte id, int deg)
         {
             // by = 0 to 1023 (0x3FF)
             // ang = 0 to 300
+            //(Byte) 1023*
+            int min = 0;
+                int max = 300; 
+            e_bounds e = NOTIN_bounds(deg, min, max);
+            switch(e)
+            {
+                case(e_bounds.bigger):
+                    LOG_msgAppendLine(String.Format(
+                        "Tried to calculate angle bigger then boundary {0} > [max{1}] deg. Used the maximum value.",
+                        deg, max));
+                        break;
+                case(e_bounds.in_bounds):
+                    LOG_msgAppendLine(String.Format(
+                        "Tried to calculate angle lower then boundary {0} < [min{1}] deg. Used the minimum value.",
+                        deg, min));
+                        break;
+            }
 
+            
+
+            UInt16 degconv = Convert.ToUInt16( 1023 * GET_bounded(deg,min,max) / 300 );
+
+            Byte H = (byte) (degconv >> 8);
+            Byte L = (byte) (degconv & 0xff);
+
+            return new Byte[] { L, H };
         }
 
-        private void MOVE_absPos(Byte id, int abs_deg)
+        private void MOVE_absPosLastSpeed(Byte id, int abs_deg)
         {
             // Goal Position - Address 30, 31 (0X1E, 0x1F) 
             // CW Angle Limit ≤ Goal Potion ≤ CCW Angle Limit; 
-            
+
+            // ptat se na boundary CW angle limit a CCW angle limit
+            Byte[] byAng = CONV_ang_deg2by(id, abs_deg);
+
+            Byte[] cmdInner = new Byte[4];
+            //cmdInner[0] = INS_
+            dynAdd
+            //{ 0x07, 0x03, 0x1E, 0x00, 0x02, 0x00, 0x02 };
+            SEND_cmd(CREATE_cmdFromInner(cmdInner, ID_fromNUDid()));
+
         }
 
         private void MOVE_relPos(Byte id, int rel_deg)
@@ -849,15 +886,47 @@ namespace SerialPortExample
         //    txId.Text = ;
         }
 
-
-
-
-
-
-
+        int act_ang = 0;
+        private void timSim_Tick(object sender, EventArgs e)
+        {
+            MOVE_absPosLastSpeed(1, act_ang);
+            act_ang = act_ang+1;
+        }
 
        
     }
+    // class motor 
+    //- last know angle, last known rozsah, id, etc..
+    // init
+    // Status Return Level    Address 16 (0X10)
+    
+
+    public class C_DynamixelAddresses
+    {
+
+        Byte[] byStart = { 0xFF, 0xFF };
+        // cmds
+        public const int INS_PING = 1;
+        public const int INS_READ = 2;
+        public const int INS_WRITE = 3;
+        public const int INS_REG_WRITE = 4;
+        public const int INS_ACTION = 5;
+        public const int INS_RESET = 6;
+        public const int INS_SYNC_WRITE = 131;
+
+        public const Byte BROAD_CAST = 254;
+        // ____________________________________________________Moving speed
+        public const Byte MOV_SPEED_L = 32;
+        public const Byte MOV_SPEED_H = 33;
+        //public const Byte[] MOV_SPEED = { MOV_SPEED_L, MOV_SPEED_H };
+        // ____________________________________________________Present speed
+        public const Byte CUR_SPEED_L = 38;
+        public const Byte CUR_SPEED_H = 39;
+
+    }
+    //public const Byte 
+
+
 }
 
 

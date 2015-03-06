@@ -67,6 +67,7 @@
             this.btnIdMinus = new System.Windows.Forms.Button();
             this.txReadBuff = new System.Windows.Forms.TextBox();
             this.txCurCmd = new System.Windows.Forms.TextBox();
+            this.timSim = new System.Windows.Forms.Timer(this.components);
             this.gpCmds.SuspendLayout();
             this.gbSET.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudID)).BeginInit();
@@ -486,6 +487,11 @@
             this.txCurCmd.Size = new System.Drawing.Size(351, 42);
             this.txCurCmd.TabIndex = 71;
             // 
+            // timSim
+            // 
+            this.timSim.Enabled = true;
+            this.timSim.Tick += new System.EventHandler(this.timSim_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -570,6 +576,7 @@
         private System.Windows.Forms.Button btnTorqueLed;
         private System.Windows.Forms.Button btnSetID1;
         private System.Windows.Forms.Button btnPos185;
+        private System.Windows.Forms.Timer timSim;
 
 
     }
