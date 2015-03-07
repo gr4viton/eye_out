@@ -11,25 +11,34 @@ using System.IO.Ports;
 using System.Threading;
 
 
+
 namespace SerialPortExample
 {
+    
+    //This delegate can be used to point to methods
+    //which return void and take a string.
+    public delegate void h_LOG_String(string msg);
+    public delegate void h_SEND_Bytes(Byte[] cmd);
+
 
 
     public partial class Form1 : Form
-        //, C_DynamixelAddresses
+    //, C_DynamixelAddresses
     {
         //SerialPortInterface SPI = new SerialPortInterface();
         
+        // constructor
         public Form1()
         {
+            
             InitializeComponent();
             //spsControl.WorkingObject = SPI;
             //SPI.DataReceived += new dataReceived(SPI_DataReceived);
 
             SPI.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
 
-            int[] bdrts = {57600, 10000000};
-            foreach( int i in bdrts)
+            int[] bdrts = { 57600, 10000000 };
+            foreach (int i in bdrts)
             {
                 lsBaud.Items.Add(i);
             }
@@ -39,22 +48,49 @@ namespace SerialPortExample
             readBuff = new Byte[1024];
             i_readBuff = 0;
             curCmd = new Byte[1];
+
+            mot1 = new C_DynMot(1);
+
+            //I am creating a delegate (pointer) to HandleSomethingHappened
+            //and adding it to SomethingHappened's list of "Event Handlers".
+            mot1.WANNA_LOG_msgAppendLine += new h_LOG_String(h_LOG_msgAppendLine);
+            mot1.WANNA_SEND_cmd += new h_SEND_Bytes(h_SEND_cmd);
         }
 
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        // EVENTinionation
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+        //Here is some code I want to be executed
+        //when WANNA_LOG_msgAppendLine fires.
+        public void h_LOG_msgAppendLine(string msg)
+        {
+            LOG_msgAppendLine(msg);
+        }
+
+        public void h_SEND_cmd(Byte[] cmd)
+        {
+            WRITE_cmd(cmd);
+        }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // local arguments
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        C_DynamixelAddresses dynAdd = new C_DynamixelAddresses();
+
+        //C_DynAddresses dynAdd = new C_DynAddresses();
+
+        C_DynMot mot1;
 
         string log;
         string logSent;
         string logRec;
-        public static bool      logChanged = false;
-        public static Byte[]    readBuff;
-        public static int       i_readBuff = 0;
-        public static Byte      this_byte;
+        public static bool logChanged = false;
+        public static Byte[] readBuff;
+        public static int i_readBuff = 0;
+        public static Byte this_byte;
 
         public Byte[] curCmd;
         public int i_curCmd;
@@ -68,6 +104,8 @@ namespace SerialPortExample
         //public static Byte[] read_buff;
         bool PROG_QUITTING = false;
 
+        
+        // make it into HASHTABLE
         string[] errStr = {     "Input Voltage Error"
                                   , "Angle Limit Error"
                                   , "Overheating Error"
@@ -84,28 +122,26 @@ namespace SerialPortExample
         // enums
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // conection_status 
-        enum e_con 
+        enum e_con
         {
-             port_opened=1
-            , cannot_open_port
-            , port_closed
+            port_opened = 1
+           ,
+            cannot_open_port
+                , port_closed
         };
 
-        enum e_bounds
-        {
-              in_bounds = 0
-            , bigger = 1
-            , smaller = 2
-        };
         enum e_cmd
         {
-             sent = 1
-            , received 
-            , receivedCheckNot
-            , receivedWithError
+            sent = 1
+           ,
+            received
+                ,
+            receivedCheckNot
+                , receivedWithError
 
-            
+
         };
+
 
         /*
         // colors
@@ -115,6 +151,7 @@ namespace SerialPortExample
             , disconnected = Color.OrangeRed
         }
          */
+
 
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -141,16 +178,16 @@ namespace SerialPortExample
             btnOpen.Enabled = true;
             btnClose.Enabled = false;
         }
-        
+
         private void EV_connection(e_con status)
         {
             act_con_status = status;
-            switch(status)
+            switch (status)
             {
-                case(e_con.port_opened):
+                case (e_con.port_opened):
                     //MessageBox.Show("Port Opened Successfuly");
                     LOG_msgAppendLine(
-                        String.Format( "Port {0} opened successfuly with {1} bps",
+                        String.Format("Port {0} opened successfuly with {1} bps",
                         //SPI.PortName, SPI.BaudRate.ToString() )
                         SPI.PortName, SPI.BaudRate.ToString())
                         );
@@ -187,20 +224,38 @@ namespace SerialPortExample
 
             return SPI.IsOpen;
         }
-        private void btnOpen_Click(object sender, EventArgs e)
+
+        private void WRITE_cmd(Byte[] cmd)
+        {
+            //SPI.Send(cmd);
+            SPI.Write(cmd, 0x00, cmd.Length);
+            lastCmd = cmd;
+            LOG_cmdSent(cmd);
+        }
+
+        public void WANNA_SPI_OpenConnection()
         {
             if (SPI_openConnection())
                 EV_connection(e_con.port_opened);
             else
                 EV_connection(e_con.cannot_open_port);
         }
-        //Close button
-        private void btnClose_Click(object sender, EventArgs e)
+        private void WANNA_SPI_CloseConnection()
         {
             SPI.Close();
             EV_connection(e_con.port_closed);
         }
 
+
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            WANNA_SPI_OpenConnection();
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            WANNA_SPI_CloseConnection();
+        }
         //void SPI_DataReceived(object sender, SerialPortEventArgs arg)
         /*void SPI_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -213,9 +268,9 @@ namespace SerialPortExample
                             object sender,
                             SerialDataReceivedEventArgs e)
         {
-        //}
-        //private void srpOdo_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
-        //{
+            //}
+            //private void srpOdo_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+            //{
             //fLog.log.notProcessed = true;
             if (PROG_QUITTING)
                 System.Threading.Thread.CurrentThread.Abort();
@@ -231,7 +286,7 @@ namespace SerialPortExample
                 //read_buff = new Byte[b2r];
                 //read_buff = new Byte()
 
-                while(0 != sp.BytesToRead)
+                while (0 != sp.BytesToRead)
                 //for (int i = 0; i < b2r; i++)
                 {
                     this_byte = (Byte)sp.ReadByte();
@@ -240,10 +295,10 @@ namespace SerialPortExample
                     {
                         switch (i_curCmd)
                         {
-                            case(0):
+                            case (0):
                                 curCmd_id = this_byte;
                                 break;
-                            case(1):
+                            case (1):
                                 curCmd_len = this_byte;
                                 // len = Nparam+2   = Nparam + Error + Length
                                 // len + 1          = Nparam + Error + Length + ID 
@@ -251,7 +306,7 @@ namespace SerialPortExample
                                 curCmd = new Byte[curCmd_len + 1];
                                 curCmd[0] = curCmd_id;
                                 curCmd[1] = curCmd_len;
-                                
+
                                 break;
                             default: // 2 and more
                                 // ERROR, PARAM1 .. PARAMN, CHECKSUM
@@ -268,7 +323,7 @@ namespace SerialPortExample
                                         // curCmd is without [0xFF 0xFF] and without checksum = [-3]
                                         int qmax = curCmd.Length;
                                         bool the_same = true;
-                                        for (int q=0; q < qmax; q++)
+                                        for (int q = 0; q < qmax; q++)
                                         {
                                             if (curCmd[q] != lastCmd[q + 2])
                                             {
@@ -292,8 +347,8 @@ namespace SerialPortExample
                                     }
 
 
-                                    
-                                }    
+
+                                }
                                 else
                                 {
                                     // ERROR, PARAM1 .. PARAMN
@@ -369,201 +424,10 @@ namespace SerialPortExample
 
             }
         }
-        
-
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        // COMMANDS - LOW LEVEL
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        // act_con_status change -> bind the EV_connection function
-
-        private void CREATE_cmd()
-        {
-
-            Byte[] byStart = { 0xFF, 0xFF };
-            Byte[] byID = { 0x01 };
-            Byte[] byLen = { 0x01 }; // = num of param(N) + 2
-            /* 
-             * 0x01 = ping [0params]
-             * 0x02 = read [2]
-             * 0x03 = write [2+] 
-             * 0x04 = reg write - starts after action command [2+]
-             * 0x05 = action command [0]
-             * 0x06 = reset to factory settings [0]
-             * 0x83 = sync write - simulateneous to more servos [4+]
-             */
-
-            Byte[] byPing = { 0x01 };
-            Byte[] byRead = { 0x02 };
-            Byte[] byWrite = { 0x03 };
-
-            // 
-
-            Byte[] byREAD_ID = { 0x03, 0x01 };
-            Byte[] byPING_id1 = { 0x01, 0x01 };
-
-            Byte[] cmdPING_id1 = { 0xFF, 0xFF, 0x01, 0x02, 0x01, 0xFB };
-
-            // byStart = new byte[2];
-            //byStart[0] = 0xFF;
-            Byte[] cmd = cmdPING_id1;
-
-            SEND_cmd(cmd);
-        }
-
-        // Instruction Packet = from pc to servo
-        //  OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 …PARAMETER N CHECK SUM 
-        // Status packet = 
-        // OXFF  0XFF  ID  LENGTH  ERROR  PARAMETER1  PARAMETER2…PARAMETER  N CHECK SUM 
-        Byte[] cmdPING_id1 = { 0xFF, 0xFF, 0x01, 0x02, 0x01, 0xFB };
-        Byte[] cmdEx1 = { 0xFF, 0xFF, 0x01, 0x04, 0x02, 0x2b, 0x01, 0xCC }; // Read internatl temeperature
-        Byte[] cmdEx2 = { 0XFF, 0XFF, 0XFE, 0X04, 0X03, 0X03, 0X01, 0XF6 }; // Sets the ID of RX-64 as “1’”.  = BROADCAST !!!
-        Byte[] cmdEx16 = { 0xFF, 0xFF, 0x01, 0x05, 0x03, 0x18, 0x01, 0x01, 0xDD }; //  Turns on the LED and enables Torque. 
-        Byte[] cmdEx17 = { 0xFF, 0xFF, 0x01, 0x07, 0x03, 0x1E, 0x00, 0x02, 0x00, 0x02, 0xD2 }; // Locates at the Position 180° with the speed of 57RPM. 
-
-        // without first 3 bytes and checksum byte
-        Byte[] cmdinPING = { 0x02, 0x01 };
-        Byte[] cmdinEx16 = { 0x05, 0x03, 0x18, 0x01, 0x01}; //  Turns on the LED and enables Torque. 
-        Byte[] cmdinEx17 = { 0x07, 0x03, 0x1E, 0x00, 0x02, 0x00, 0x02 }; // Locates at the Position 180° with the speed of 57RPM. 
-        Byte[] cmdinEx17_2 = { 0x07, 0x03, 0x1E, 0x00, 0x03, 0x00, 0x02 }; // Locates at the Position 185° with the speed of 57RPM. 
 
 
-        private Byte[] CREATE_cmdFromInner(Byte[] inner, Byte id)
-        {
-            // inner contains bytes of the cmd between (not including) ID and CheckSum
-            // this function adds first two startBytes [0xFF,0xFF], its id Byte and checksum Byte
-            Byte[] cmd = new Byte[4 + inner.Length];
-            //{ 0xFF, 0xFF, id, inner, 0x00 };
-            
-            cmd[2] = id;
-            int q=3;
-            foreach (Byte by in inner)
-            {
-                cmd[q] = by;
-                q++;
-            }
-            cmd[q] = GET_checkSum(cmd);
-            cmd[0] = cmd[1] = 0xFF;
-            return cmd;
-        }
-        private Byte[] CREATE_cmdFromStr(string str)
-        {
-            //string hex = BitConverter.ToString(read_buff).Replace("-", " ");
-            str.Replace(" ", ", 0x");
-            string[] words = str.Split(' ');
-            //int len = words.Length;
-            //Byte[] cmd = new Byte[len];
-            //for(;len>=0; len--)
-              //  cmd[len] = (Byte) BitConverter.(words[len]);
-            //foreach (string word in words)
-
-            byte[] bytes = new byte[words.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-
-            return bytes;
-        }
-
-        private Byte ID_fromNUDid()
-        {
-            return Convert.ToByte(nudID.Text);
-        }
-
-        private void SEND_cmdID(Byte[] cmd, Byte id)
-        {
-            // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            //id = 254;
-            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            cmd[2] = id;
-            SEND_cmd(cmd);
-        }
-
-        private void SEND_cmd(Byte[] cmd)
-        {
-            //SPI.Send(cmd);
-            SPI.Write(cmd, 0x00, cmd.Length);
-            lastCmd = cmd;
-            LOG_cmdSent(cmd);
-        }
-
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        // COMMANDS - MEDIUM LEVEL
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-        private e_bounds NOTIN_bounds(int num, int min, int max)
-        {
-            if (num > max)
-                return e_bounds.bigger;
-            else if (num < min)
-                return e_bounds.smaller;
-            else
-                return e_bounds.in_bounds;
-        }
-        private int GET_bounded(int num, int min, int max)
-        {
-            if (num > max)
-                return max;
-            else if (num < min)
-                return min;
-            else
-                return num;
-        }
-
-        private Byte[] CONV_ang_deg2by(Byte id, int deg)
-        {
-            // by = 0 to 1023 (0x3FF)
-            // ang = 0 to 300
-            //(Byte) 1023*
-            int min = 0;
-                int max = 300; 
-            e_bounds e = NOTIN_bounds(deg, min, max);
-            switch(e)
-            {
-                case(e_bounds.bigger):
-                    LOG_msgAppendLine(String.Format(
-                        "Tried to calculate angle bigger then boundary {0} > [max{1}] deg. Used the maximum value.",
-                        deg, max));
-                        break;
-                case(e_bounds.in_bounds):
-                    LOG_msgAppendLine(String.Format(
-                        "Tried to calculate angle lower then boundary {0} < [min{1}] deg. Used the minimum value.",
-                        deg, min));
-                        break;
-            }
-
-            
-
-            UInt16 degconv = Convert.ToUInt16( 1023 * GET_bounded(deg,min,max) / 300 );
-
-            Byte H = (byte) (degconv >> 8);
-            Byte L = (byte) (degconv & 0xff);
-
-            return new Byte[] { L, H };
-        }
-
-        private void MOVE_absPosLastSpeed(Byte id, int abs_deg)
-        {
-            // Goal Position - Address 30, 31 (0X1E, 0x1F) 
-            // CW Angle Limit ≤ Goal Potion ≤ CCW Angle Limit; 
-
-            // ptat se na boundary CW angle limit a CCW angle limit
-            Byte[] byAng = CONV_ang_deg2by(id, abs_deg);
-
-            Byte[] cmdInner = new Byte[4];
-            //cmdInner[0] = INS_
-            dynAdd
-            //{ 0x07, 0x03, 0x1E, 0x00, 0x02, 0x00, 0x02 };
-            SEND_cmd(CREATE_cmdFromInner(cmdInner, ID_fromNUDid()));
-
-        }
-
-        private void MOVE_relPos(Byte id, int rel_deg)
-        {
-            // Goal Position - Address 30, 31 (0X1E, 0x1F) 
-            // CW Angle Limit ≤ Goal Potion ≤ CCW Angle Limit; 
-
-        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // BTNS
@@ -573,43 +437,47 @@ namespace SerialPortExample
             DialogResult result = MessageBox.Show(
                 "Do you really want to broadcast write of ID = 1 to all connected servos?\n In case of multiple servos with the same id there may be malfunctious consequencies",
                 "You have been warned!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-            if(result == DialogResult.Yes)
+            if (result == DialogResult.Yes)
             {
-                SEND_cmdID(cmdEx2, ID_fromNUDid());
+                mot1.SEND_example(2);
             }
-                /*
-            else if(result == DialogResult.No)
-            {
-              //code for No
-            }
-            else if (result == DialogResult.Cancel)
-            {
-                //code for Cancel
-            }*/
+            /*
+        else if(result == DialogResult.No)
+        {
+          //code for No
+        }
+        else if (result == DialogResult.Cancel)
+        {
+            //code for Cancel
+        }*/
 
 
         }
+
         private void btnCurTemp_Click(object sender, EventArgs e)
         {
-            SEND_cmdID(cmdEx1, ID_fromNUDid());
+            mot1.SEND_example(1);
         }
         private void btnGetInfo_Click(object sender, EventArgs e)
         {
-            SEND_cmd(CREATE_cmdFromInner( cmdinPING, ID_fromNUDid()));
+            mot1.SEND_example(0);
+
         }
 
         private void btnSetPos_Click(object sender, EventArgs e)
         {
-            SEND_cmd( CREATE_cmdFromInner(cmdinEx17,ID_fromNUDid()) );
+            mot1.SEND_example(17);
+
         }
 
         private void btnPos185_Click(object sender, EventArgs e)
         {
-            SEND_cmd(CREATE_cmdFromInner(cmdinEx17_2, ID_fromNUDid()));
+            mot1.SEND_example(172);
+
         }
         private void btnTorqueLed_Click(object sender, EventArgs e)
         {
-            SEND_cmd(CREATE_cmdFromInner(cmdinEx16, ID_fromNUDid()));
+            mot1.SEND_example(16);
         }
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -624,29 +492,12 @@ namespace SerialPortExample
         {
             LOG_cmd(cmd, e_cmd.received);
         }
-        private Byte GET_checkSum(Byte[] cmd)
-        {
-            Byte calc_check = 0x00;
-            unchecked // Let overflow occur without exceptions
-            {
-                foreach (Byte ch in cmd)
-                {
-                    calc_check += ch;
-                }
-            }
 
-            calc_check = (Byte)~calc_check;
-            return calc_check;
-        }
-        private bool CHECK_checkSum(Byte check1,Byte check2)
-        {
-            return (Byte)check1 == (Byte)(check2);
-        }
         private void LOG_cmdRec_check(Byte[] cmd, Byte rec_checkSum)
         {
             // check for [checksum error] and cmd [error byte] sub-bites disambiguation
-            Byte calc_checkSum = GET_checkSum(cmd);
-            if (CHECK_checkSum(calc_checkSum, rec_checkSum))
+            Byte calc_checkSum = C_CheckSum.GET_checkSum(cmd);
+            if (C_CheckSum.CHECK_checkSum(calc_checkSum, rec_checkSum))
             //if( calc_check == 0 )
             {
                 //MessageBox.Show(string.Format("cmd[{0}] = {1}", i_cmdError, cmd[i_cmdError]));
@@ -674,14 +525,14 @@ namespace SerialPortExample
 
         private void LOG_cmdError(Byte byId, Byte byError)
         {
-                                  
+
             for (int b = 0; b < 7; b++)
                 if (GET_bit(byError, b) == true)
                 {
-                    LOG_msgAppendLine( 
+                    LOG_msgAppendLine(
                         string.Format("ID[{0}] error: {1}", byId, errStr[b])
                         );
-                        logChanged = true;
+                    logChanged = true;
                 }
 
 
@@ -695,7 +546,7 @@ namespace SerialPortExample
 
             switch (type)
             {
-                case(e_cmd.received):
+                case (e_cmd.received):
                     prefix = "Got : ";
                     logRec += line;
                     break;
@@ -711,7 +562,7 @@ namespace SerialPortExample
                     prefix = "Sent: ";
                     logSent += line;
                     break;
-                    
+
             }
 
             log += prefix + line;
@@ -738,7 +589,7 @@ namespace SerialPortExample
         }
 
 
-        
+
 
         private void LOG_UPDATE_tx()
         {
@@ -784,7 +635,7 @@ namespace SerialPortExample
 
         private void timLOG_Tick(object sender, EventArgs e)
         {
-            if(logChanged)
+            if (logChanged)
             {
                 LOG_UPDATE_tx();
             }
@@ -841,7 +692,7 @@ namespace SerialPortExample
                 foreach (string port in allPorts)
                 {
                     //if(port[port.Length] != 'o')
-                        cbPorts.Items.Add(port);
+                    cbPorts.Items.Add(port);
                 }
 
                 cbPorts.SelectedIndex = 1;
@@ -865,8 +716,8 @@ namespace SerialPortExample
 
         private void btnSendStrCmd_Click(object sender, EventArgs e)
         {
-            Byte[] cmd = CREATE_cmdFromStr(txStrCmd.Text);
-            SEND_cmd(cmd);
+            //Byte[] cmd = CREATE_cmdFromStr(txStrCmd.Text);
+            //SEND_cmd(cmd);
         }
 
         private void lsBaud_SelectedIndexChanged(object sender, EventArgs e)
@@ -882,52 +733,53 @@ namespace SerialPortExample
 
         private void btnIdMinus_Click(object sender, EventArgs e)
         {
-          //  newid
-        //    txId.Text = ;
+            //  newid
+            //    txId.Text = ;
         }
 
-        int act_ang = 0;
+        int act_ang = 180;
         private void timSim_Tick(object sender, EventArgs e)
         {
-            MOVE_absPosLastSpeed(1, act_ang);
-            act_ang = act_ang+1;
+            mot1.MOVE_absPosLastSpeed(act_ang);
+            tbAng.Value = act_ang;
+            txAng.Text = act_ang.ToString();
+            act_ang = act_ang + 1;
         }
 
-       
-    }
-    // class motor 
-    //- last know angle, last known rozsah, id, etc..
-    // init
-    // Status Return Level    Address 16 (0X10)
-    
+        private void btnTimSim_Click(object sender, EventArgs e)
+        {
+            switch (timSim.Enabled)
+            {
+                case(true):
+                    btnTimSim.BackColor = Color.OrangeRed;
+                    btnTimSim.Text = "START";
+                    timSim.Enabled = false;
+                    break;
 
-    public class C_DynamixelAddresses
-    {
+                case (false):
+                    btnTimSim.BackColor = Color.LimeGreen;
+                    btnTimSim.Text = "STOP";
+                    timSim.Enabled = true;
+                    break;
+            }
+        }
 
-        Byte[] byStart = { 0xFF, 0xFF };
-        // cmds
-        public const int INS_PING = 1;
-        public const int INS_READ = 2;
-        public const int INS_WRITE = 3;
-        public const int INS_REG_WRITE = 4;
-        public const int INS_ACTION = 5;
-        public const int INS_RESET = 6;
-        public const int INS_SYNC_WRITE = 131;
+        private void tbAng_ValueChanged(object sender, EventArgs e)
+        {
+            act_ang = tbAng.Value;
+            mot1.MOVE_absPosLastSpeed(act_ang);
+            txAng.Text = act_ang.ToString();
+        }
 
-        public const Byte BROAD_CAST = 254;
-        // ____________________________________________________Moving speed
-        public const Byte MOV_SPEED_L = 32;
-        public const Byte MOV_SPEED_H = 33;
-        //public const Byte[] MOV_SPEED = { MOV_SPEED_L, MOV_SPEED_H };
-        // ____________________________________________________Present speed
-        public const Byte CUR_SPEED_L = 38;
-        public const Byte CUR_SPEED_H = 39;
+
+
 
     }
     //public const Byte 
 
 
 }
+
 
 
 

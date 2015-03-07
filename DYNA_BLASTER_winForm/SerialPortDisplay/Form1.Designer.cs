@@ -30,10 +30,11 @@
         {
             this.components = new System.ComponentModel.Container();
             this.gpCmds = new System.Windows.Forms.GroupBox();
-            this.btnSendStrCmd = new System.Windows.Forms.Button();
-            this.txStrCmd = new System.Windows.Forms.TextBox();
-            this.gbSET = new System.Windows.Forms.GroupBox();
+            this.gbOther = new System.Windows.Forms.GroupBox();
+            this.txAng = new System.Windows.Forms.TextBox();
+            this.btnTimSim = new System.Windows.Forms.Button();
             this.nudID = new System.Windows.Forms.NumericUpDown();
+            this.gbSET = new System.Windows.Forms.GroupBox();
             this.btnTorqueLed = new System.Windows.Forms.Button();
             this.btnSetID1 = new System.Windows.Forms.Button();
             this.btnPos185 = new System.Windows.Forms.Button();
@@ -53,91 +54,99 @@
             this.txLog = new System.Windows.Forms.TextBox();
             this.SPI = new System.IO.Ports.SerialPort(this.components);
             this.timLOG = new System.Windows.Forms.Timer(this.components);
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.gbPortcontrol = new System.Windows.Forms.GroupBox();
-            this.btnClose = new System.Windows.Forms.Button();
+            this.gbPortControl = new System.Windows.Forms.GroupBox();
             this.btnOpen = new System.Windows.Forms.Button();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.gbPortSettings = new System.Windows.Forms.GroupBox();
+            this.lsBaud = new System.Windows.Forms.ListBox();
+            this.txBaud = new System.Windows.Forms.TextBox();
+            this.lbBR = new System.Windows.Forms.Label();
             this.btnRescanPorts = new System.Windows.Forms.Button();
             this.cbPorts = new System.Windows.Forms.ComboBox();
             this.lbSelectPort = new System.Windows.Forms.Label();
-            this.txBaud = new System.Windows.Forms.TextBox();
-            this.lsBaud = new System.Windows.Forms.ListBox();
-            this.txId = new System.Windows.Forms.TextBox();
-            this.btnIdPlus = new System.Windows.Forms.Button();
-            this.btnIdMinus = new System.Windows.Forms.Button();
             this.txReadBuff = new System.Windows.Forms.TextBox();
             this.txCurCmd = new System.Windows.Forms.TextBox();
             this.timSim = new System.Windows.Forms.Timer(this.components);
+            this.tbAng = new System.Windows.Forms.TrackBar();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnSendStrCmd = new System.Windows.Forms.Button();
+            this.txStrCmd = new System.Windows.Forms.TextBox();
             this.gpCmds.SuspendLayout();
-            this.gbSET.SuspendLayout();
+            this.gbOther.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudID)).BeginInit();
+            this.gbSET.SuspendLayout();
             this.gbGET.SuspendLayout();
             this.gpSent.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.gbRec.SuspendLayout();
             this.gbLog.SuspendLayout();
+            this.gbPortControl.SuspendLayout();
+            this.gbPortSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbAng)).BeginInit();
             this.groupBox1.SuspendLayout();
-            this.gbPortcontrol.SuspendLayout();
             this.SuspendLayout();
             // 
             // gpCmds
             // 
-            this.gpCmds.Controls.Add(this.btnSendStrCmd);
-            this.gpCmds.Controls.Add(this.txStrCmd);
+            this.gpCmds.Controls.Add(this.gbOther);
             this.gpCmds.Controls.Add(this.gbSET);
             this.gpCmds.Controls.Add(this.gbGET);
-            this.gpCmds.Location = new System.Drawing.Point(6, 188);
+            this.gpCmds.Location = new System.Drawing.Point(6, 221);
             this.gpCmds.Name = "gpCmds";
-            this.gpCmds.Size = new System.Drawing.Size(280, 186);
+            this.gpCmds.Size = new System.Drawing.Size(350, 153);
             this.gpCmds.TabIndex = 6;
             this.gpCmds.TabStop = false;
             this.gpCmds.Text = "Basic commands";
             // 
-            // btnSendStrCmd
+            // gbOther
             // 
-            this.btnSendStrCmd.Location = new System.Drawing.Point(237, 114);
-            this.btnSendStrCmd.Name = "btnSendStrCmd";
-            this.btnSendStrCmd.Size = new System.Drawing.Size(37, 38);
-            this.btnSendStrCmd.TabIndex = 7;
-            this.btnSendStrCmd.Text = "Send";
-            this.btnSendStrCmd.UseVisualStyleBackColor = true;
-            this.btnSendStrCmd.Click += new System.EventHandler(this.btnSendStrCmd_Click);
+            this.gbOther.Controls.Add(this.txAng);
+            this.gbOther.Controls.Add(this.btnTimSim);
+            this.gbOther.Controls.Add(this.nudID);
+            this.gbOther.Dock = System.Windows.Forms.DockStyle.Left;
+            this.gbOther.Location = new System.Drawing.Point(180, 16);
+            this.gbOther.Name = "gbOther";
+            this.gbOther.Size = new System.Drawing.Size(74, 134);
+            this.gbOther.TabIndex = 3;
+            this.gbOther.TabStop = false;
+            this.gbOther.Text = "other";
             // 
-            // txStrCmd
+            // txAng
             // 
-            this.txStrCmd.Location = new System.Drawing.Point(6, 158);
-            this.txStrCmd.Name = "txStrCmd";
-            this.txStrCmd.Size = new System.Drawing.Size(268, 20);
-            this.txStrCmd.TabIndex = 6;
+            this.txAng.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txAng.Location = new System.Drawing.Point(3, 75);
+            this.txAng.Name = "txAng";
+            this.txAng.Size = new System.Drawing.Size(68, 20);
+            this.txAng.TabIndex = 81;
+            this.txAng.Text = "0";
             // 
-            // gbSET
+            // btnTimSim
             // 
-            this.gbSET.Controls.Add(this.nudID);
-            this.gbSET.Controls.Add(this.btnTorqueLed);
-            this.gbSET.Controls.Add(this.btnSetID1);
-            this.gbSET.Controls.Add(this.btnPos185);
-            this.gbSET.Controls.Add(this.btnSetPos180);
-            this.gbSET.Location = new System.Drawing.Point(123, 19);
-            this.gbSET.Name = "gbSET";
-            this.gbSET.Size = new System.Drawing.Size(111, 133);
-            this.gbSET.TabIndex = 3;
-            this.gbSET.TabStop = false;
-            this.gbSET.Text = "SET";
+            this.btnTimSim.BackColor = System.Drawing.Color.LimeGreen;
+            this.btnTimSim.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnTimSim.FlatAppearance.BorderSize = 2;
+            this.btnTimSim.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnTimSim.Location = new System.Drawing.Point(3, 36);
+            this.btnTimSim.Name = "btnTimSim";
+            this.btnTimSim.Size = new System.Drawing.Size(68, 39);
+            this.btnTimSim.TabIndex = 80;
+            this.btnTimSim.Text = "START";
+            this.btnTimSim.UseVisualStyleBackColor = false;
             // 
             // nudID
             // 
             this.nudID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.nudID.Dock = System.Windows.Forms.DockStyle.Top;
             this.nudID.Hexadecimal = true;
-            this.nudID.Location = new System.Drawing.Point(3, 96);
+            this.nudID.Location = new System.Drawing.Point(3, 16);
             this.nudID.Maximum = new decimal(new int[] {
             253,
             0,
             0,
             0});
             this.nudID.Name = "nudID";
-            this.nudID.Size = new System.Drawing.Size(105, 20);
-            this.nudID.TabIndex = 77;
+            this.nudID.Size = new System.Drawing.Size(68, 20);
+            this.nudID.TabIndex = 79;
             this.nudID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudID.Value = new decimal(new int[] {
             1,
@@ -145,12 +154,26 @@
             0,
             0});
             // 
+            // gbSET
+            // 
+            this.gbSET.Controls.Add(this.btnTorqueLed);
+            this.gbSET.Controls.Add(this.btnSetID1);
+            this.gbSET.Controls.Add(this.btnPos185);
+            this.gbSET.Controls.Add(this.btnSetPos180);
+            this.gbSET.Dock = System.Windows.Forms.DockStyle.Left;
+            this.gbSET.Location = new System.Drawing.Point(91, 16);
+            this.gbSET.Name = "gbSET";
+            this.gbSET.Size = new System.Drawing.Size(89, 134);
+            this.gbSET.TabIndex = 3;
+            this.gbSET.TabStop = false;
+            this.gbSET.Text = "SET";
+            // 
             // btnTorqueLed
             // 
             this.btnTorqueLed.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnTorqueLed.Location = new System.Drawing.Point(3, 76);
             this.btnTorqueLed.Name = "btnTorqueLed";
-            this.btnTorqueLed.Size = new System.Drawing.Size(105, 20);
+            this.btnTorqueLed.Size = new System.Drawing.Size(83, 20);
             this.btnTorqueLed.TabIndex = 76;
             this.btnTorqueLed.Text = "Torque, led";
             this.btnTorqueLed.UseVisualStyleBackColor = true;
@@ -161,7 +184,7 @@
             this.btnSetID1.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnSetID1.Location = new System.Drawing.Point(3, 56);
             this.btnSetID1.Name = "btnSetID1";
-            this.btnSetID1.Size = new System.Drawing.Size(105, 20);
+            this.btnSetID1.Size = new System.Drawing.Size(83, 20);
             this.btnSetID1.TabIndex = 75;
             this.btnSetID1.Text = "All ID=1";
             this.btnSetID1.UseVisualStyleBackColor = true;
@@ -172,7 +195,7 @@
             this.btnPos185.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnPos185.Location = new System.Drawing.Point(3, 36);
             this.btnPos185.Name = "btnPos185";
-            this.btnPos185.Size = new System.Drawing.Size(105, 20);
+            this.btnPos185.Size = new System.Drawing.Size(83, 20);
             this.btnPos185.TabIndex = 74;
             this.btnPos185.Text = "position 185°";
             this.btnPos185.UseVisualStyleBackColor = true;
@@ -183,7 +206,7 @@
             this.btnSetPos180.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnSetPos180.Location = new System.Drawing.Point(3, 16);
             this.btnSetPos180.Name = "btnSetPos180";
-            this.btnSetPos180.Size = new System.Drawing.Size(105, 20);
+            this.btnSetPos180.Size = new System.Drawing.Size(83, 20);
             this.btnSetPos180.TabIndex = 2;
             this.btnSetPos180.Text = "position 180°";
             this.btnSetPos180.UseVisualStyleBackColor = true;
@@ -193,9 +216,10 @@
             // 
             this.gbGET.Controls.Add(this.btnCurTemp);
             this.gbGET.Controls.Add(this.btnGetInfo);
-            this.gbGET.Location = new System.Drawing.Point(6, 19);
+            this.gbGET.Dock = System.Windows.Forms.DockStyle.Left;
+            this.gbGET.Location = new System.Drawing.Point(3, 16);
             this.gbGET.Name = "gbGET";
-            this.gbGET.Size = new System.Drawing.Size(111, 133);
+            this.gbGET.Size = new System.Drawing.Size(88, 134);
             this.gbGET.TabIndex = 2;
             this.gbGET.TabStop = false;
             this.gbGET.Text = "GET";
@@ -205,7 +229,7 @@
             this.btnCurTemp.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnCurTemp.Location = new System.Drawing.Point(3, 36);
             this.btnCurTemp.Name = "btnCurTemp";
-            this.btnCurTemp.Size = new System.Drawing.Size(105, 20);
+            this.btnCurTemp.Size = new System.Drawing.Size(82, 20);
             this.btnCurTemp.TabIndex = 2;
             this.btnCurTemp.Text = "cur Temp";
             this.btnCurTemp.UseVisualStyleBackColor = true;
@@ -216,7 +240,7 @@
             this.btnGetInfo.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnGetInfo.Location = new System.Drawing.Point(3, 16);
             this.btnGetInfo.Name = "btnGetInfo";
-            this.btnGetInfo.Size = new System.Drawing.Size(105, 20);
+            this.btnGetInfo.Size = new System.Drawing.Size(82, 20);
             this.btnGetInfo.TabIndex = 1;
             this.btnGetInfo.Text = "info";
             this.btnGetInfo.UseVisualStyleBackColor = true;
@@ -225,9 +249,9 @@
             // gpSent
             // 
             this.gpSent.Controls.Add(this.txSent);
-            this.gpSent.Location = new System.Drawing.Point(292, 3);
+            this.gpSent.Location = new System.Drawing.Point(359, 3);
             this.gpSent.Name = "gpSent";
-            this.gpSent.Size = new System.Drawing.Size(310, 179);
+            this.gpSent.Size = new System.Drawing.Size(243, 179);
             this.gpSent.TabIndex = 7;
             this.gpSent.TabStop = false;
             this.gpSent.Text = "Sent";
@@ -243,7 +267,7 @@
             this.txSent.Name = "txSent";
             this.txSent.ReadOnly = true;
             this.txSent.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txSent.Size = new System.Drawing.Size(304, 160);
+            this.txSent.Size = new System.Drawing.Size(237, 160);
             this.txSent.TabIndex = 9;
             // 
             // statusStrip1
@@ -267,9 +291,9 @@
             // gbRec
             // 
             this.gbRec.Controls.Add(this.txReceived);
-            this.gbRec.Location = new System.Drawing.Point(292, 188);
+            this.gbRec.Location = new System.Drawing.Point(359, 188);
             this.gbRec.Name = "gbRec";
-            this.gbRec.Size = new System.Drawing.Size(310, 186);
+            this.gbRec.Size = new System.Drawing.Size(243, 186);
             this.gbRec.TabIndex = 10;
             this.gbRec.TabStop = false;
             this.gbRec.Text = "Received";
@@ -284,7 +308,7 @@
             this.txReceived.Name = "txReceived";
             this.txReceived.ReadOnly = true;
             this.txReceived.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txReceived.Size = new System.Drawing.Size(304, 167);
+            this.txReceived.Size = new System.Drawing.Size(237, 167);
             this.txReceived.TabIndex = 9;
             // 
             // gbLog
@@ -301,7 +325,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(301, 0);
+            this.button1.Location = new System.Drawing.Point(335, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(22, 20);
             this.button1.TabIndex = 15;
@@ -311,7 +335,7 @@
             // btnLogClear
             // 
             this.btnLogClear.Font = new System.Drawing.Font("Liberation Sans Narrow", 5.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnLogClear.Location = new System.Drawing.Point(140, 0);
+            this.btnLogClear.Location = new System.Drawing.Point(307, 0);
             this.btnLogClear.Name = "btnLogClear";
             this.btnLogClear.Size = new System.Drawing.Size(22, 20);
             this.btnLogClear.TabIndex = 14;
@@ -325,13 +349,13 @@
             this.txLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txLog.Location = new System.Drawing.Point(3, 16);
+            this.txLog.MaxLength = 9999999;
             this.txLog.Multiline = true;
             this.txLog.Name = "txLog";
             this.txLog.ReadOnly = true;
             this.txLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txLog.Size = new System.Drawing.Size(351, 241);
             this.txLog.TabIndex = 9;
-            this.txLog.WordWrap = false;
             // 
             // SPI
             // 
@@ -342,55 +366,87 @@
             this.timLOG.Enabled = true;
             this.timLOG.Tick += new System.EventHandler(this.timLOG_Tick);
             // 
-            // groupBox1
+            // gbPortControl
             // 
-            this.groupBox1.Controls.Add(this.gbPortcontrol);
-            this.groupBox1.Location = new System.Drawing.Point(0, 3);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(133, 179);
-            this.groupBox1.TabIndex = 12;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
-            // 
-            // gbPortcontrol
-            // 
-            this.gbPortcontrol.AutoSize = true;
-            this.gbPortcontrol.Controls.Add(this.btnClose);
-            this.gbPortcontrol.Controls.Add(this.btnOpen);
-            this.gbPortcontrol.Controls.Add(this.btnRescanPorts);
-            this.gbPortcontrol.Controls.Add(this.cbPorts);
-            this.gbPortcontrol.Controls.Add(this.lbSelectPort);
-            this.gbPortcontrol.Dock = System.Windows.Forms.DockStyle.Top;
-            this.gbPortcontrol.Location = new System.Drawing.Point(3, 16);
-            this.gbPortcontrol.Name = "gbPortcontrol";
-            this.gbPortcontrol.Size = new System.Drawing.Size(127, 122);
-            this.gbPortcontrol.TabIndex = 66;
-            this.gbPortcontrol.TabStop = false;
-            this.gbPortcontrol.Text = "Port Control";
-            // 
-            // btnClose
-            // 
-            this.btnClose.AutoSize = true;
-            this.btnClose.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnClose.Location = new System.Drawing.Point(3, 96);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(121, 23);
-            this.btnClose.TabIndex = 59;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.gbPortControl.Controls.Add(this.btnOpen);
+            this.gbPortControl.Controls.Add(this.btnClose);
+            this.gbPortControl.Controls.Add(this.gbPortSettings);
+            this.gbPortControl.Location = new System.Drawing.Point(0, 3);
+            this.gbPortControl.Name = "gbPortControl";
+            this.gbPortControl.Size = new System.Drawing.Size(133, 212);
+            this.gbPortControl.TabIndex = 12;
+            this.gbPortControl.TabStop = false;
+            this.gbPortControl.Text = "groupBox1";
             // 
             // btnOpen
             // 
             this.btnOpen.AutoSize = true;
             this.btnOpen.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnOpen.Location = new System.Drawing.Point(3, 73);
+            this.btnOpen.Location = new System.Drawing.Point(3, 189);
             this.btnOpen.Name = "btnOpen";
-            this.btnOpen.Size = new System.Drawing.Size(121, 23);
-            this.btnOpen.TabIndex = 58;
+            this.btnOpen.Size = new System.Drawing.Size(127, 23);
+            this.btnOpen.TabIndex = 69;
             this.btnOpen.Text = "Open";
             this.btnOpen.UseVisualStyleBackColor = true;
             this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
+            // 
+            // btnClose
+            // 
+            this.btnClose.AutoSize = true;
+            this.btnClose.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnClose.Location = new System.Drawing.Point(3, 166);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(127, 23);
+            this.btnClose.TabIndex = 68;
+            this.btnClose.Text = "Close";
+            this.btnClose.UseVisualStyleBackColor = true;
+            // 
+            // gbPortSettings
+            // 
+            this.gbPortSettings.AutoSize = true;
+            this.gbPortSettings.Controls.Add(this.lsBaud);
+            this.gbPortSettings.Controls.Add(this.txBaud);
+            this.gbPortSettings.Controls.Add(this.lbBR);
+            this.gbPortSettings.Controls.Add(this.btnRescanPorts);
+            this.gbPortSettings.Controls.Add(this.cbPorts);
+            this.gbPortSettings.Controls.Add(this.lbSelectPort);
+            this.gbPortSettings.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gbPortSettings.Location = new System.Drawing.Point(3, 16);
+            this.gbPortSettings.Name = "gbPortSettings";
+            this.gbPortSettings.Size = new System.Drawing.Size(127, 150);
+            this.gbPortSettings.TabIndex = 66;
+            this.gbPortSettings.TabStop = false;
+            this.gbPortSettings.Text = "Port Control";
+            // 
+            // lsBaud
+            // 
+            this.lsBaud.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lsBaud.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lsBaud.FormattingEnabled = true;
+            this.lsBaud.Location = new System.Drawing.Point(3, 106);
+            this.lsBaud.Name = "lsBaud";
+            this.lsBaud.Size = new System.Drawing.Size(121, 41);
+            this.lsBaud.TabIndex = 62;
+            // 
+            // txBaud
+            // 
+            this.txBaud.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txBaud.Location = new System.Drawing.Point(3, 86);
+            this.txBaud.Name = "txBaud";
+            this.txBaud.Size = new System.Drawing.Size(121, 20);
+            this.txBaud.TabIndex = 61;
+            this.txBaud.Text = "57600";
+            // 
+            // lbBR
+            // 
+            this.lbBR.AutoSize = true;
+            this.lbBR.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lbBR.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.lbBR.Location = new System.Drawing.Point(3, 73);
+            this.lbBR.Name = "lbBR";
+            this.lbBR.Size = new System.Drawing.Size(60, 13);
+            this.lbBR.TabIndex = 60;
+            this.lbBR.Text = "Select bps:";
             // 
             // btnRescanPorts
             // 
@@ -425,52 +481,6 @@
             this.lbSelectPort.TabIndex = 37;
             this.lbSelectPort.Text = "Select port:";
             // 
-            // txBaud
-            // 
-            this.txBaud.Location = new System.Drawing.Point(139, 49);
-            this.txBaud.Name = "txBaud";
-            this.txBaud.Size = new System.Drawing.Size(100, 20);
-            this.txBaud.TabIndex = 13;
-            this.txBaud.Text = "57600";
-            // 
-            // lsBaud
-            // 
-            this.lsBaud.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lsBaud.FormattingEnabled = true;
-            this.lsBaud.Location = new System.Drawing.Point(139, 76);
-            this.lsBaud.Name = "lsBaud";
-            this.lsBaud.Size = new System.Drawing.Size(141, 41);
-            this.lsBaud.TabIndex = 14;
-            this.lsBaud.SelectedIndexChanged += new System.EventHandler(this.lsBaud_SelectedIndexChanged);
-            // 
-            // txId
-            // 
-            this.txId.Location = new System.Drawing.Point(156, 4);
-            this.txId.Name = "txId";
-            this.txId.Size = new System.Drawing.Size(40, 20);
-            this.txId.TabIndex = 67;
-            this.txId.Text = "1";
-            // 
-            // btnIdPlus
-            // 
-            this.btnIdPlus.Location = new System.Drawing.Point(202, 4);
-            this.btnIdPlus.Name = "btnIdPlus";
-            this.btnIdPlus.Size = new System.Drawing.Size(37, 19);
-            this.btnIdPlus.TabIndex = 68;
-            this.btnIdPlus.Text = "+";
-            this.btnIdPlus.UseVisualStyleBackColor = true;
-            this.btnIdPlus.Click += new System.EventHandler(this.btnIdPlus_Click);
-            // 
-            // btnIdMinus
-            // 
-            this.btnIdMinus.Location = new System.Drawing.Point(239, 3);
-            this.btnIdMinus.Name = "btnIdMinus";
-            this.btnIdMinus.Size = new System.Drawing.Size(37, 19);
-            this.btnIdMinus.TabIndex = 69;
-            this.btnIdMinus.Text = "-";
-            this.btnIdMinus.UseVisualStyleBackColor = true;
-            this.btnIdMinus.Click += new System.EventHandler(this.btnIdMinus_Click);
-            // 
             // txReadBuff
             // 
             this.txReadBuff.Location = new System.Drawing.Point(611, 280);
@@ -489,22 +499,57 @@
             // 
             // timSim
             // 
-            this.timSim.Enabled = true;
             this.timSim.Tick += new System.EventHandler(this.timSim_Tick);
+            // 
+            // tbAng
+            // 
+            this.tbAng.Location = new System.Drawing.Point(139, 173);
+            this.tbAng.Maximum = 360;
+            this.tbAng.Name = "tbAng";
+            this.tbAng.Size = new System.Drawing.Size(213, 42);
+            this.tbAng.TabIndex = 72;
+            this.tbAng.TickFrequency = 10;
+            this.tbAng.ValueChanged += new System.EventHandler(this.tbAng_ValueChanged);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.btnSendStrCmd);
+            this.groupBox1.Controls.Add(this.txStrCmd);
+            this.groupBox1.Location = new System.Drawing.Point(139, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(339, 46);
+            this.groupBox1.TabIndex = 73;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "GET";
+            // 
+            // btnSendStrCmd
+            // 
+            this.btnSendStrCmd.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnSendStrCmd.Location = new System.Drawing.Point(271, 16);
+            this.btnSendStrCmd.Name = "btnSendStrCmd";
+            this.btnSendStrCmd.Size = new System.Drawing.Size(64, 27);
+            this.btnSendStrCmd.TabIndex = 8;
+            this.btnSendStrCmd.Text = "Send";
+            this.btnSendStrCmd.UseVisualStyleBackColor = true;
+            // 
+            // txStrCmd
+            // 
+            this.txStrCmd.Dock = System.Windows.Forms.DockStyle.Left;
+            this.txStrCmd.Location = new System.Drawing.Point(3, 16);
+            this.txStrCmd.Name = "txStrCmd";
+            this.txStrCmd.Size = new System.Drawing.Size(268, 20);
+            this.txStrCmd.TabIndex = 7;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(977, 412);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.tbAng);
             this.Controls.Add(this.txCurCmd);
             this.Controls.Add(this.txReadBuff);
-            this.Controls.Add(this.lsBaud);
-            this.Controls.Add(this.btnIdMinus);
-            this.Controls.Add(this.txBaud);
-            this.Controls.Add(this.btnIdPlus);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.txId);
+            this.Controls.Add(this.gbPortControl);
             this.Controls.Add(this.gbLog);
             this.Controls.Add(this.gpSent);
             this.Controls.Add(this.gbRec);
@@ -515,9 +560,10 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.gpCmds.ResumeLayout(false);
-            this.gpCmds.PerformLayout();
-            this.gbSET.ResumeLayout(false);
+            this.gbOther.ResumeLayout(false);
+            this.gbOther.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudID)).EndInit();
+            this.gbSET.ResumeLayout(false);
             this.gbGET.ResumeLayout(false);
             this.gpSent.ResumeLayout(false);
             this.gpSent.PerformLayout();
@@ -527,10 +573,13 @@
             this.gbRec.PerformLayout();
             this.gbLog.ResumeLayout(false);
             this.gbLog.PerformLayout();
+            this.gbPortControl.ResumeLayout(false);
+            this.gbPortControl.PerformLayout();
+            this.gbPortSettings.ResumeLayout(false);
+            this.gbPortSettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbAng)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.gbPortcontrol.ResumeLayout(false);
-            this.gbPortcontrol.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -543,40 +592,43 @@
         private System.Windows.Forms.TextBox txSent;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tslConnected;
-        private System.Windows.Forms.GroupBox gbSET;
-        private System.Windows.Forms.Button btnSetPos180;
-        private System.Windows.Forms.GroupBox gbGET;
-        private System.Windows.Forms.Button btnGetInfo;
         private System.Windows.Forms.GroupBox gbRec;
         private System.Windows.Forms.TextBox txReceived;
         private System.Windows.Forms.GroupBox gbLog;
         private System.Windows.Forms.TextBox txLog;
         private System.IO.Ports.SerialPort SPI;
         private System.Windows.Forms.Timer timLOG;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox gbPortcontrol;
+        private System.Windows.Forms.GroupBox gbPortControl;
+        private System.Windows.Forms.GroupBox gbPortSettings;
         private System.Windows.Forms.Button btnRescanPorts;
         private System.Windows.Forms.ComboBox cbPorts;
         private System.Windows.Forms.Label lbSelectPort;
-        private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.Button btnOpen;
-        private System.Windows.Forms.TextBox txBaud;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnLogClear;
-        private System.Windows.Forms.Button btnSendStrCmd;
-        private System.Windows.Forms.TextBox txStrCmd;
-        private System.Windows.Forms.ListBox lsBaud;
-        private System.Windows.Forms.Button btnIdMinus;
-        private System.Windows.Forms.Button btnIdPlus;
-        private System.Windows.Forms.TextBox txId;
         private System.Windows.Forms.TextBox txReadBuff;
         private System.Windows.Forms.TextBox txCurCmd;
-        private System.Windows.Forms.Button btnCurTemp;
+        private System.Windows.Forms.Timer timSim;
+        private System.Windows.Forms.TrackBar tbAng;
+        private System.Windows.Forms.GroupBox gbOther;
+        private System.Windows.Forms.TextBox txAng;
+        private System.Windows.Forms.Button btnTimSim;
         private System.Windows.Forms.NumericUpDown nudID;
+        private System.Windows.Forms.GroupBox gbSET;
         private System.Windows.Forms.Button btnTorqueLed;
         private System.Windows.Forms.Button btnSetID1;
         private System.Windows.Forms.Button btnPos185;
-        private System.Windows.Forms.Timer timSim;
+        private System.Windows.Forms.Button btnSetPos180;
+        private System.Windows.Forms.GroupBox gbGET;
+        private System.Windows.Forms.Button btnCurTemp;
+        private System.Windows.Forms.Button btnGetInfo;
+        private System.Windows.Forms.Button btnOpen;
+        private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.ListBox lsBaud;
+        private System.Windows.Forms.TextBox txBaud;
+        private System.Windows.Forms.Label lbBR;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button btnSendStrCmd;
+        private System.Windows.Forms.TextBox txStrCmd;
 
 
     }
