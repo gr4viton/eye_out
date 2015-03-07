@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.IO.Ports;
+using System.Threading;
 
 namespace EyeOut
 {
     public class C_controlMot
     {
         public static string baudRate_str;
-        private int baudRate_val;
-
+        //private int baudRate_val;
 
         //raises exception
         public string _BaudRate
@@ -34,5 +35,6 @@ namespace EyeOut
                 }*/
             }
         }
+
     }
 }

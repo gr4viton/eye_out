@@ -2,9 +2,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="600" Width="800"
-        xmlns:C_controlMot="clr-namespace:EyeOut" 
+        xmlns:C_controlMot="clr-namespace:EyeOut" Closing="Window_Closing" 
+        
         >
-
+    <!--Closed="Window_Closed"-->
+    
+    
+    
+    
     <!--instances of binding classes, styles definitions-->
     <Window.Resources>
         <!--new instance of C_controlMot named controlMot-->
@@ -14,7 +19,7 @@
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
-                <TextBlock Name="lblCursorPosition" />
+                <Label x:Name="tslConnected" Content="Connected" BorderThickness="1" BorderBrush="Black"/>
             </StatusBarItem>
         </StatusBar>
 
@@ -35,7 +40,7 @@
                                     <StackPanel>
                                         <Label Content="COM Port:"/>
                                         <ComboBox Name="cbPort"/>
-
+                                        <Button Name="btnRescanPort" Content="Rescan Ports" Click="btnRescanPort_Click" />
                                         <Label Content="Selected [bps]:"/>
                                         <TextBox Name="txBaudRate" Background="#FF66FF4E">
                                             <TextBox.Text>
@@ -48,7 +53,7 @@
                                             </TextBox.Text>
                                         </TextBox>
                                         <Label Content="BaudRate list:"/>
-                                        <ListBox Name="lsBaudRate" MinHeight="20" SelectionMode="Single" SelectedIndex="0">
+                                        <ListBox x:Name="lsBaudRate" MinHeight="20" SelectionMode="Single" SelectedIndex="0">
                                             <ListBox.SelectedValue>
                                                 <Binding Source="{StaticResource controlMot}" Path="_BaudRate">
                                                     <Binding.ValidationRules>
@@ -64,24 +69,24 @@
                             </StackPanel>
                         </GroupBox>
                         <GroupBox DockPanel.Dock="Top" Header="Motor settings" >
-                            <DockPanel >
-                                <GroupBox Header="Select" DockPanel.Dock="Top">
+                            <StackPanel>
+                                <Button Content="Search for connected" />
+                                <GroupBox Header="Select">
                                     <ListBox Name="lsMot" MinHeight="40"/>
-
                                 </GroupBox>
-                                <GroupBox Header="Selected motor info" DockPanel.Dock="Top" VerticalAlignment="Top">
-                                    <DockPanel>
-                                        <ListBox Name="lsInfo" DockPanel.Dock="Top" MinHeight="40" SelectionMode="Multiple"/>
-                                        <TextBlock DockPanel.Dock="Top">
+                                <GroupBox Header="Selected motor info" VerticalAlignment="Top">
+                                    <StackPanel>
+                                        <ListBox Name="lsInfo" MinHeight="40" SelectionMode="Multiple"/>
+                                        <TextBox>
                                             Selected information
-                                        </TextBlock>
-                                    </DockPanel>
+                                        </TextBox>
+                                    </StackPanel>
                                 </GroupBox>
 
-                            </DockPanel>
+                            </StackPanel>
                         </GroupBox>
-
-                        <Button DockPanel.Dock="Top" MaxHeight="20" Content="Search for connected" VerticalAlignment="Top" />
+                        
+                        <Button DockPanel.Dock="Top" MaxHeight="20" Content="START motors" VerticalAlignment="Top" Click="btnStartMotors_Click" />
                     </DockPanel>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
@@ -103,7 +108,7 @@
                                 <TextBox Grid.Column="0">Interactive image</TextBox>
                                 <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
-                                <GroupBox Header="Example commands" Grid.Column="2">
+                                <GroupBox x:Name="gpCmds" Header="Example commands" Grid.Column="2">
                                     <Grid>
                                         <DockPanel>
                                             <ListBox Name="lsExamples" DockPanel.Dock="Top" MinHeight="40" />
@@ -169,6 +174,12 @@
                 </Grid>
             </TabItem>
 
+            <TabItem Header="EyeOut Telepresence" Foreground="Wheat" Background="Black">
+                <!--<Grid Background="#FFE5E5E5">-->
+                <Grid Background="Black" >
+                    
+                </Grid>
+            </TabItem>
         </TabControl>
     </DockPanel>
 </Window>

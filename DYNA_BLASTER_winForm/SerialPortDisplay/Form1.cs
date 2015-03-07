@@ -57,6 +57,7 @@ namespace SerialPortExample
             mot1.WANNA_SEND_cmd += new h_SEND_Bytes(h_SEND_cmd);
         }
 
+       
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // EVENTinionation
@@ -646,7 +647,11 @@ namespace SerialPortExample
         {
 
         }
-
+        
+        private void btnRescanPorts_Click(object sender, EventArgs e)
+        {
+            GUI_rescanPorts();
+        }
         private void CLOSE_PORT()
         {
             //srpOdo.DiscardInBuffer();
@@ -670,10 +675,6 @@ namespace SerialPortExample
             }
         }
 
-        private void btnRescanPorts_Click(object sender, EventArgs e)
-        {
-            GUI_rescanPorts();
-        }
 
         private void GUI_rescanPorts()
         {
@@ -708,10 +709,14 @@ namespace SerialPortExample
 
         }
 
-        private void btnLogClear_Click(object sender, EventArgs e)
-        {
+        private void LOG_clear()
+        {          
             log = "";
             logChanged = true;
+        }
+        private void btnLogClear_Click(object sender, EventArgs e)
+        {
+            LOG_clear();
         }
 
         private void btnSendStrCmd_Click(object sender, EventArgs e)
@@ -724,17 +729,6 @@ namespace SerialPortExample
         {
             txBaud.Text = Convert.ToString(lsBaud.SelectedItem);
 
-        }
-
-        private void btnIdPlus_Click(object sender, EventArgs e)
-        {
-            //txId.Text = Convert.ToByte(txId.Text) + 1;
-        }
-
-        private void btnIdMinus_Click(object sender, EventArgs e)
-        {
-            //  newid
-            //    txId.Text = ;
         }
 
         int act_ang = 180;
