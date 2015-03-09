@@ -25,8 +25,8 @@ namespace EyeOut
     //which return void and take a string.
     public delegate void d_SEND_bytes2serial(Byte[] cmd);
 
-    public delegate void d_LOG_msg2logger(e_logger logger, e_how how, string msg);
-    public delegate void d_LOG_logger2gui(e_logger logger, e_how how, string msg);
+    public delegate void d_LOG_msg_2logger(e_logger logger, e_how how, string msg);
+    public delegate void d_LOG_logger_2gui(e_logger logger, e_how how, string msg);
 
 
     public enum e_logger
@@ -38,21 +38,86 @@ namespace EyeOut
         renew = 0, appendLine, append
     }
 
+    public delegate void d_del1(string str);
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+    public class C_cl1
+    {
+        string prefix;
+
+        public event d_del1 event_ev1;
+
+        public void h_handle1(string str)
+        {
+            MessageBox.Show(string.Format("{0}{1}",prefix,str));
+        }
+        public C_cl1(string _pre)
+        {
+            prefix = _pre;
+            event_ev1 += new d_del1(h_handle1);
+        }
+    }
+
     public partial class MainWindow : Window
     {
+        public event d_del1 event_ev1;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            cLog = new C_controlLog();
+            //this.event_LOG_msg_2logger += new d_LOG_msg_2logger(cLog.h_LOG_msg_2logger);
+
+            C_cl1 cl1_ins = new C_cl1("Taktedy:");
+            this.event_ev1 += new d_del1(cl1_ins.h_handle1);
+            
+            try
+            {
+                event_ev1("Hello zmrde");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("{0}\r\n{1}\r\n{2}\r\n{3}", ex.Data, ex.StackTrace, ex.TargetSite , ex.Message));
+            }
 
 
-        public event d_LOG_msg2logger event_LOG_msg2logger;
-        public event d_LOG_logger2gui event_LOG_logger2gui;
+            // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            // real one
+            this.event_LOG_logger_2gui += new d_LOG_logger_2gui(h_LOG_logger_2gui);
+
+            string msg = "aosd";
+            try
+            {
+                event_LOG_msg_2logger(e_logger.logMot, e_how.appendLine, msg);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("{0}\r\n{1}\r\n{2}\r\n{3}", ex.Data, ex.StackTrace, ex.TargetSite , ex.Message));
+            }
+
+            INIT_LOG();
+            
+            INIT_GUI();
+            INIT_SPI();
+            INIT_controlMot();
+
+            EV_connection(e_con.port_closed);
+
+        }
+
+
+        public event d_LOG_msg_2logger event_LOG_msg_2logger;
+        public event d_LOG_logger_2gui event_LOG_logger_2gui;
 
 
         C_DynMot actMot;
         C_controlLog cLog;
         public static Byte nudId = 1;
-        
+
 
         bool PROG_QUITTING = false;
 
@@ -65,33 +130,6 @@ namespace EyeOut
                                   , "Overload Error"
                                   , "Instruction Error"
                               };
-
-
-
-
-        public MainWindow()
-        {
-            InitializeComponent();
-
-            cLog = new C_controlLog();
-            //cLog.event_LOG_msg2logger += new d_LOG_msg2logger(cLog.h_LOG_msg2logger);
-            this.event_LOG_msg2logger += new d_LOG_msg2logger(cLog.h_LOG_msg2logger);
-
-
-            this.event_LOG_logger2gui += new d_LOG_logger2gui(h_LOG_logger2gui);
-
-            string msg = "aosd";
-            event_LOG_msg2logger(e_logger.logMot, e_how.appendLine, msg);
-
-            INIT_LOG();
-            
-            INIT_GUI();
-            INIT_SPI();
-            INIT_controlMot();
-
-            EV_connection(e_con.port_closed);
-
-        }
 
 
         public void INIT_controlMot()
@@ -114,7 +152,7 @@ namespace EyeOut
             dispatcherTimer.Start();
         }
 
-        public void h_LOG_logger2gui(e_logger logger, e_how how, string str)
+        public void h_LOG_logger_2gui(e_logger logger, e_how how, string str)
         {
             object obj = GET_guiObject(logger);
             TextBox tx = (TextBox)obj;

@@ -186,16 +186,16 @@ namespace EyeOut
         //e_how how = e_how.appendLine;
         public void SPI_LOG_mot(string msg)
         {
-            event_LOG_msg2logger(e_logger.logMot, e_how.appendLine, msg);
+            event_LOG_msg_2logger(e_logger.logMot, e_how.appendLine, msg);
         }
 
         public void SPI_LOG_motGot(string msg)
         {
-            event_LOG_msg2logger(e_logger.logMotGot, e_how.appendLine, msg);
+            event_LOG_msg_2logger(e_logger.logMotGot, e_how.appendLine, msg);
         }
         public void SPI_LOG_motSent(string msg)
         {
-            event_LOG_msg2logger(e_logger.logMotSent, e_how.appendLine, msg);
+            event_LOG_msg_2logger(e_logger.logMotSent, e_how.appendLine, msg);
         }
 
         private void WRITE_cmd(Byte[] cmd)

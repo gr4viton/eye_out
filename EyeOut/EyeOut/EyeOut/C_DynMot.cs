@@ -20,7 +20,7 @@ namespace EyeOut
 
     public class C_DynMot
     {
-        public event d_LOG_msg2logger event_LOG_msg2logger;
+        public event d_LOG_msg_2logger event_LOG_msg_2logger;
         public event d_SEND_bytes2serial event_SPI_bytes2serial_send;
 
         Byte id = 0;
@@ -229,7 +229,7 @@ namespace EyeOut
 
         public void MOT_LOG(string msg)
         {
-            event_LOG_msg2logger(e_logger.logMot, e_how.appendLine, msg);
+            event_LOG_msg_2logger(e_logger.logMot, e_how.appendLine, msg);
         }
         private Byte[] CONV_ang_deg2by(int deg)
         {

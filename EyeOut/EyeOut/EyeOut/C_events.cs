@@ -25,12 +25,12 @@ namespace EyeOut
         }
 
         
+        /*
+        public event d_LOG_msg_2logger event_LOG_msg_2logger;
 
-        public event d_LOG_msg2logger event_LOG_msg2logger;
-
-        public event d_LOG_logger2gui event_LOG_logger2gui;
+        public event d_LOG_logger_2gui event_LOG_logger_2gui;
 
         public event d_SEND_bytes2serial event_SPI_bytes2serial_send;
-
+        */
     }
 }

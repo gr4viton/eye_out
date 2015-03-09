@@ -11,16 +11,19 @@ namespace EyeOut
     {
         C_logger logMot;
 
-        public event d_LOG_logger2gui event_LOG_msg2logger;
+        //public event d_LOG_logger_2gui event_LOG_logger_2gui;
+        public event d_LOG_msg_2logger event_LOG_msg_2logger;
 
 
         public C_controlLog()
         {
             logMot = new C_logger(e_logger.logMot);
+
+            this.event_LOG_msg_2logger += new d_LOG_msg_2logger(h_LOG_msg_2logger);
             
         }
 
-        public void h_LOG_msg2logger(e_logger logger, e_how how, string msg)
+        public void h_LOG_msg_2logger(e_logger logger, e_how how, string msg)
         {
             switch (logger)
             {
@@ -41,7 +44,7 @@ namespace EyeOut
         public static bool logChanged = false;
 
 
-        public event d_LOG_logger2gui event_LOG_logger2gui;
+        public event d_LOG_logger_2gui event_LOG_logger_2gui;
 
         public C_logger(e_logger _logger)
         {
@@ -64,10 +67,15 @@ namespace EyeOut
                     text += msg;
                     break;
             }
-            event_LOG_logger2gui(logger, how, msg);
+
+            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            //event_LOG_logger_2gui(logger, how, msg);
         }
 
-        private void LOG_msg2logger(e_how how, string msg)
+        private void LOG_msg_2logger(e_how how, string msg)
         {
             UPDATE_text(how, msg);
         }
