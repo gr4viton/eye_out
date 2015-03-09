@@ -12,14 +12,14 @@ namespace EyeOut
         C_logger logMot;
 
         //public event d_LOG_logger_2gui event_LOG_logger_2gui;
-        public event d_LOG_msg_2logger event_LOG_msg_2logger;
+        //public event d_LOG_msg_2logger event_LOG_msg_2logger;
 
 
-        public C_controlLog()
+        public C_controlLog(d_LOG_logger_2gui _h_LOG_logger_2gui)
         {
-            logMot = new C_logger(e_logger.logMot);
-
-            this.event_LOG_msg_2logger += new d_LOG_msg_2logger(h_LOG_msg_2logger);
+            logMot = new C_logger(e_logger.logMot, _h_LOG_logger_2gui);
+            //event_LOG_logger_2gui 
+            //this.event_LOG_msg_2logger += new d_LOG_msg_2logger(h_LOG_msg_2logger);
             
         }
 
@@ -46,11 +46,13 @@ namespace EyeOut
 
         public event d_LOG_logger_2gui event_LOG_logger_2gui;
 
-        public C_logger(e_logger _logger)
+        public C_logger(e_logger _logger, d_LOG_logger_2gui _h_LOG_logger_2gui)
         {
             text = "";
             logger = _logger;
+            event_LOG_logger_2gui += new d_LOG_logger_2gui(_h_LOG_logger_2gui);
         }
+
 
         // use onlythis function to change text 
         public void UPDATE_text(e_how how, string msg)
@@ -67,12 +69,7 @@ namespace EyeOut
                     text += msg;
                     break;
             }
-
-            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            //event_LOG_logger_2gui(logger, how, msg);
+            event_LOG_logger_2gui(logger, how, msg);
         }
 
         private void LOG_msg_2logger(e_how how, string msg)
@@ -91,12 +88,12 @@ namespace EyeOut
 
 
     }
-
+    /*
     public class C_loggerGot : C_logger
     {
         public C_loggerGot()
             : base(e_logger.logMotGot)
         {
         }
-    }
+    }*/
 }

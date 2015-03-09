@@ -48,7 +48,7 @@ namespace EyeOut
     {
         string prefix;
 
-        public event d_del1 event_ev1;
+        //public event d_del1 event_ev1;
 
         public void h_handle1(string str)
         {
@@ -57,7 +57,7 @@ namespace EyeOut
         public C_cl1(string _pre)
         {
             prefix = _pre;
-            event_ev1 += new d_del1(h_handle1);
+            //event_ev1 += new d_del1(h_handle1);
         }
     }
 
@@ -69,8 +69,6 @@ namespace EyeOut
         {
             InitializeComponent();
 
-            cLog = new C_controlLog();
-            //this.event_LOG_msg_2logger += new d_LOG_msg_2logger(cLog.h_LOG_msg_2logger);
 
             C_cl1 cl1_ins = new C_cl1("Taktedy:");
             this.event_ev1 += new d_del1(cl1_ins.h_handle1);
@@ -87,7 +85,8 @@ namespace EyeOut
 
             // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             // real one
-            this.event_LOG_logger_2gui += new d_LOG_logger_2gui(h_LOG_logger_2gui);
+            cLog = new C_controlLog(h_LOG_logger_2gui);
+            this.event_LOG_msg_2logger += new d_LOG_msg_2logger(cLog.h_LOG_msg_2logger);
 
             string msg = "aosd";
             try
@@ -99,6 +98,8 @@ namespace EyeOut
                 MessageBox.Show(string.Format("{0}\r\n{1}\r\n{2}\r\n{3}", ex.Data, ex.StackTrace, ex.TargetSite , ex.Message));
             }
 
+            //this.event_LOG_logger_2gui += new d_LOG_logger_2gui(this.h_LOG_logger_2gui);
+
             INIT_LOG();
             
             INIT_GUI();
@@ -109,9 +110,10 @@ namespace EyeOut
 
         }
 
+        
 
         public event d_LOG_msg_2logger event_LOG_msg_2logger;
-        public event d_LOG_logger_2gui event_LOG_logger_2gui;
+        //public event d_LOG_logger_2gui event_LOG_logger_2gui;
 
 
         C_DynMot actMot;
