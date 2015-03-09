@@ -39,6 +39,11 @@ namespace EyeOut
         public Byte curCmd_id;
         public Byte curCmd_len;
 
+        C_events.e_logger logger = C_events.e_logger.logMot;
+        C_events.e_how how = C_events.e_how.appendLine;
+        public bool START_NEW_MSG = false;
+
+
         // SPI hang - thread: http://www.codeproject.com/Questions/179614/Serial-Port-in-WPF-Application
         private void INIT_GUI_lsBaudRate()
         {
@@ -49,7 +54,6 @@ namespace EyeOut
             }
             lsBaudRate.SelectedIndex = 1;
         }
-
 
         public void INIT_SPI()
         {
@@ -153,7 +157,7 @@ namespace EyeOut
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-        public void h_SEND_cmd(Byte[] cmd)
+        public void h_SPI_bytes2serial_send(Byte[] cmd)
         {
             WRITE_cmd(cmd);
         }
@@ -172,7 +176,7 @@ namespace EyeOut
             catch (Exception ex)
             {
                 //ODOM_ProcessMsg("exception = " + ex.Message);
-                LOG_msgAppendLine("Catched exception = " + ex.Message);
+                SPI_LOG_mot("Catched exception = " + ex.Message);
                 //SET_state(E_GUI_MainState.error);
 
             }
@@ -180,12 +184,26 @@ namespace EyeOut
         }
 
 
+        public void SPI_LOG_mot(string msg)
+        {
+            event_LOG_msg2logger(C_events.e_logger.logMot, how, msg);
+        }
+
+        public void SPI_LOG_motGot(string msg)
+        {
+            event_LOG_msg2logger(C_events.e_logger.logMotGot, how, msg);
+        }
+        public void SPI_LOG_motSent(string msg)
+        {
+            event_LOG_msg2logger(C_events.e_logger.logMotSent, how, msg);
+        }
+
         private void WRITE_cmd(Byte[] cmd)
         {
             //SPI.Send(cmd);
             SPI.Write(cmd, 0x00, cmd.Length);
             lastCmd = cmd;
-            LOG_cmdSent(cmd);
+            SPI_LOG_cmd(cmd,e_cmd.sent);
         }
         
         public void WANNA_SPI_OpenConnection()
@@ -203,9 +221,8 @@ namespace EyeOut
             EV_connection(e_con.port_closed);
         }
 
-        
 
-        public bool START_NEW_MSG = false;
+
         private void SPI_DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             //}
@@ -275,7 +292,7 @@ namespace EyeOut
                                         {
                                             // the recieved curCmd command is the same as the last sent lastCmd
                                             // so print only Echo confirmation
-                                            LOG_msgAppendLine("Echo confirmation");
+                                            SPI_LOG_mot("Echo confirmation");
                                             // and reset last Cmd in the case the next Status Msg is the same as the command
                                             lastCmd = new Byte[0];
                                         }
@@ -283,7 +300,7 @@ namespace EyeOut
                                     else
                                     {
                                         // it's not the echo command of the last send
-                                        LOG_cmdRec_check(curCmd, this_byte);
+                                        SPI_CHECK_receivedCmd(curCmd, this_byte);
                                     }
                                 }
                                 else
@@ -334,16 +351,87 @@ namespace EyeOut
             catch (Exception ex)
             {
                 //ODOM_ProcessMsg("exception = " + ex.Message);
-                LOG_msgAppendLine("Catched exception = " + ex.Message);
+                SPI_LOG_mot("Catched exception = " + ex.Message);
                 //SET_state(E_GUI_MainState.error);
 
             }
         }
 
-        public bool GET_bit(Byte by, int bitNumber)
+
+        private void SPI_CHECK_receivedCmd(Byte[] cmd, Byte rec_checkSum)
         {
-            return (by & (1 << bitNumber)) != 0;
+            // check for [checksum error] and cmd [error byte] sub-bites disambiguation
+            Byte calc_checkSum = C_CheckSum.GET_checkSum(cmd);
+            if (C_CheckSum.CHECK_checkSum(calc_checkSum, rec_checkSum))
+            //if( calc_check == 0 )
+            {
+                //MessageBox.Show(string.Format("cmd[{0}] = {1}", i_cmdError, cmd[i_cmdError]));
+                if (cmd[i_cmdError] == 0)
+                    // no error
+                    SPI_LOG_cmd(cmd, e_cmd.received);
+                else
+                {
+                    SPI_LOG_cmd(cmd, e_cmd.receivedWithError);
+                    SPI_LOG_cmdError(cmd[i_cmdId], cmd[i_cmdError]);
+                }
+            }
+            else
+            {
+                SPI_LOG_cmd(cmd, e_cmd.receivedCheckNot);
+                SPI_LOG_mot(String.Format("CheckSumGot != CheckSumCounted :: {0} != {1}", (Byte)rec_checkSum, (Byte)calc_checkSum));
+                //LOG_msgAppendLine(String.Format("CheckSumGot = {0} ", (Byte)calc_check));
+            }
         }
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        // LOG
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+        private void SPI_LOG_cmdError(Byte byId, Byte byError)
+        {
+            for (int b = 0; b < 7; b++)
+                if (C_CONV.GET_bit(byError, b) == true)
+                {
+                    SPI_LOG_mot(
+                        string.Format("ID[{0}] error: {1}", byId, errStr[b])
+                        );
+                }
+        }
+
+        private void SPI_LOG_cmd(Byte[] cmd, e_cmd type)
+        {
+            string prefix = "";
+            string hex = BitConverter.ToString(cmd).Replace("-", " ");
+            string line = hex + "\r\n";
+
+            switch (type)
+            {
+                case (e_cmd.received):
+                    prefix = "Got : ";
+                    SPI_LOG_motGot(line);
+                    break;
+                case (e_cmd.receivedCheckNot):
+                    prefix = "! Got with wrong Checksum: ";
+                    SPI_LOG_motGot(line);
+                    break;
+                case (e_cmd.receivedWithError):
+                    prefix = "! Got with an Error: ";
+                    SPI_LOG_motGot(line);
+                    break;
+                case (e_cmd.sent):
+                    prefix = "Sent: ";
+                    SPI_LOG_motSent(line);
+                    break;
+            }
+
+
+
+            SPI_LOG_mot(prefix + line);
+        }
+
 
         private void CLOSE_PORT()
         {

@@ -71,10 +71,12 @@
     </Compile>
     <Compile Include="C_CheckSum.cs" />
     <Compile Include="C_controlMot.cs" />
+    <Compile Include="C_CONV.cs" />
     <Compile Include="C_DynAdd.cs" />
     <Compile Include="C_DynMot.cs" />
     <Compile Include="C_events.cs" />
     <Compile Include="C_INIT.cs" />
+    <Compile Include="C_logger.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

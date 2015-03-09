@@ -1,0 +1,6 @@
+01|Ping
+022B01|Ex1: Read internal temeperature
+03180101|Ex16: Turns on the LED and enables Torque
+031E00020002|Ex17: Locates at the Position 180° with the speed of 57RPM
+031E00030002|Ex17.2: Locates at the Position 185° with the speed of 57RPM
+

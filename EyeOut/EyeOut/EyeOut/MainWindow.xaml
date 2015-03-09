@@ -111,8 +111,8 @@
                                 <GroupBox x:Name="gpCmds" Header="Example commands" Grid.Column="2">
                                     <Grid>
                                         <DockPanel>
-                                            <ListBox Name="lsExamples" DockPanel.Dock="Top" MinHeight="40" />
-                                            <CheckBox Name="cbExampleDoubleClick" Content="Send by DoubleClick" DockPanel.Dock="Top"/>
+                                            <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" MouseDoubleClick="lsCmdEx_wannaSend" KeyDown="lsCmdEx_wannaSend" />
+                                            <CheckBox x:Name="cbExampleDoubleClick" Content="Send by DoubleClick and Enter" DockPanel.Dock="Top" IsChecked="True"/>
                                             <Button Name="btnSendExample" Content="Send selected [Example command]" VerticalAlignment="Top" DockPanel.Dock="Top" MaxHeight="20">
                                             </Button>
                                         </DockPanel>

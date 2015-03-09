@@ -10,16 +10,27 @@ using System.Threading;
 namespace EyeOut
 {
 
-    //This delegate can be used to point to methods
-    //which return void and take a string.
-    public delegate void h_LOG_String(string msg);
-    public delegate void h_SEND_Bytes(Byte[] cmd);
-
 
     public class C_events
     {
 
+        
+        public enum e_logger
+        {
+            logAll = 0, logMot, logMotGot, logMotSent,logCam, logOculus
+        }
+        public enum e_how
+        {
+            renew = 0, appendLine, append
+        }
 
+        
+
+        public event d_LOG_msg2logger event_LOG_msg2logger;
+
+        public event d_LOG_logger2gui event_LOG_logger2gui;
+
+        public event d_SEND_bytes2serial event_SPI_bytes2serial_send;
 
     }
 }

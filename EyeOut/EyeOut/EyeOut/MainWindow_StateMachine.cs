@@ -17,6 +17,8 @@ using System.Windows.Shapes;
 using System.IO.Ports;
 using System.Threading;
 
+
+
 namespace EyeOut
 {
     /// <summary>
@@ -49,29 +51,40 @@ namespace EyeOut
 
             btnConnect.Content = "Connect Serial";
         }
+        void LOG_motGot(string msg)
+        {
+            try
+            {
+                event_LOG_msg2logger(C_events.e_logger.logMot, C_events.e_how.appendLine, msg);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
         private void EV_connection(e_con status)
         {
             act_con_status = status; 
+            
             switch (status)
             {
                 case (e_con.port_opened):
                     //MessageBox.Show("Port Opened Successfuly");
-                    LOG_msgAppendLine(
-                        String.Format("Port {0} opened successfuly with {1} bps",
-                        //SPI.PortName, SPI.BaudRate.ToString() )
+                    LOG_motGot(String.Format("Port {0} opened successfuly with {1} bps",
                         SPI.PortName, SPI.BaudRate.ToString())
                         );
                     status_connected();
                     break;
                 case (e_con.cannot_open_port):
                     //MessageBox.Show("Port Opened Successfuly");
-                    LOG_msgAppendLine("Port could not be opened");
+                    LOG_motGot("Port could not be opened");
                     status_disconnected();
                     break;
                 case (e_con.port_closed):
                     //MessageBox.Show("Port Opened Successfuly");
-                    LOG_msgAppendLine(String.Format("Port {0} closed", SPI.PortName));
+                    LOG_motGot(String.Format("Port {0} closed", SPI.PortName));
                     status_disconnected();
                     break;
             }

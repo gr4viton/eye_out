@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO.Ports;
 using System.Threading;
 
+using System.Collections;
+
 namespace EyeOut
 {
 
@@ -18,18 +20,16 @@ namespace EyeOut
 
     public class C_DynMot
     {
+        public event d_LOG_msg2logger event_LOG_msg2logger;
+        public event d_SEND_bytes2serial event_SPI_bytes2serial_send;
+
         Byte id = 0;
         public C_DynMot(Byte a_id)
         {
             id = a_id;
+            //I am creating a delegate (pointer) to HandleSomethingHappened
+            //and adding it to SomethingHappened's list of "Event Handlers".
         }
-
-
-        //This event can cause any method which conforms
-        //to MyEventHandler to be called.
-        public event h_LOG_String WANNA_LOG_msgAppendLine;
-        public event h_SEND_Bytes WANNA_SEND_cmd;
-
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,11 +73,11 @@ namespace EyeOut
 
 
 
-        private void SEND_cmdInner(Byte[] inner)
+        private void SEND_cmdInner(Byte[] inner, Byte id)
         {
-            SEND_cmd(CREATE_cmdFromInner(inner, id));
+            SEND_cmd( C_DynMot.CREATE_cmdFromInner(inner, id) );
         }
-        private Byte[] CREATE_cmdFromInner(Byte[] inner, Byte id)
+        public static Byte[] CREATE_cmdFromInner(Byte[] byCmdin, Byte id)
         {
             // Instruction Packet = from pc to servo
             // OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 …PARAMETER N CHECK SUM 
@@ -87,7 +87,7 @@ namespace EyeOut
             // this function adds first two startBytes [0xFF,0xFF], its id Byte, length Byte and Checksum Byte
 
             // make it into ArrayList
-            Byte[] cmd = new Byte[5 + inner.Length];
+            Byte[] cmd = new Byte[5 + byCmdin.Length];
             //ArrayList a_cmd = new ArrayList();
             //a_cmd.Add({0xFF, 0xFF})
 
@@ -95,17 +95,17 @@ namespace EyeOut
             //{ 0   , 1   , 2 , 3  , 4...., last };
             cmd[2] = id;
             int q = 4;
-            foreach (Byte by in inner)
+            foreach (Byte by in byCmdin)
             {
                 cmd[q] = by;
                 q++;
             }
-            cmd[3] = (Byte)(inner.Length + 1); // = paramN+Instruction + 1 = paramN + 2 = len
+            cmd[3] = (Byte)(byCmdin.Length + 1); // = paramN+Instruction + 1 = paramN + 2 = len
             cmd[q] = C_CheckSum.GET_checkSum(cmd);
             cmd[0] = cmd[1] = 0xFF;
             return cmd;
         }
-        private Byte[] CREATE_cmdFromStr(string str)
+        private static Byte[] CREATE_cmdFromStr(string str)
         {
             //string hex = BitConverter.ToString(read_buff).Replace("-", " ");
             str.Replace(" ", ", 0x");
@@ -122,21 +122,8 @@ namespace EyeOut
             return bytes;
         }
 
-        public static Byte nudId = 1;
-        private Byte ID_fromNUDid()
-        {
-            //return Convert.ToByte(nudID.Text);
-            return nudId;
-        }
 
-        private void SEND_cmdID(Byte[] cmd, Byte id)
-        {
-            // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            //id = 254;
-            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            cmd[2] = id;
-            SEND_cmd(cmd);
-        }
+
 
         // Instruction Packet = from pc to servo
         //  OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 …PARAMETER N CHECK SUM 
@@ -155,8 +142,14 @@ namespace EyeOut
         Byte[] cmdinEx17 = { 0x03, 0x1E, 0x00, 0x02, 0x00, 0x02 }; // Locates at the Position 180° with the speed of 57RPM. 
         Byte[] cmdinEx17_2 = { 0x03, 0x1E, 0x00, 0x03, 0x00, 0x02 }; // Locates at the Position 185° with the speed of 57RPM. 
 
-        public void SEND_example(int ex)
+        public static List<C_cmdin> cmdinEx;
+
+        
+        public void SEND_example(int num)
         {
+            //SEND_cmdInner(((C_cmdin)(cmdinEx[num])).byCmdin);
+            SEND_cmdInner(cmdinEx[num].byCmdin, id);
+            /*
             switch (ex)
             {
                 case (0): SEND_cmdInner(cmdinEx0); break;
@@ -165,26 +158,23 @@ namespace EyeOut
                 case (16): SEND_cmdInner(cmdinEx16); break;
                 case (17): SEND_cmdInner(cmdinEx17); break;
                 case (172): SEND_cmdInner(cmdinEx17_2); break;
-            }
+            }*/
         }
-
+        
 
         private void SEND_cmd(Byte[] cmd)
         {
-            WANNA_SEND_cmd(cmd);
+            event_SPI_bytes2serial_send(cmd);
         }
 
+        
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // COMMANDS - MEDIUM LEVEL
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public void MOVE_absPosLastSpeed(int abs_deg)
-        {
-            id_MOVE_absPosLastSpeed(id, abs_deg);
-        }
 
-        public void id_MOVE_absPosLastSpeed(Byte id, int abs_deg)
+        public void MOVE_absPosLastSpeed(int abs_deg)
         {
             // Goal Position - Address 30, 31 (0X1E, 0x1F) 
             // CW Angle Limit ? Goal Potion ? CCW Angle Limit; 
@@ -200,7 +190,7 @@ namespace EyeOut
             cmdInner[3] = byAng[1];
             //{ 0x07, 0x03, 0x1E, 0x00, 0x02, 0x00, 0x02 };
             //  len , writ, addr
-            SEND_cmd(CREATE_cmdFromInner(cmdInner, ID_fromNUDid()));
+            SEND_cmd(CREATE_cmdFromInner(cmdInner, id));
 
         }
 
@@ -217,7 +207,6 @@ namespace EyeOut
             // CW Angle Limit ? Goal Potion ? CCW Angle Limit; 
 
         }
-
 
         private e_bounds NOTIN_bounds(int num, int min, int max)
         {
@@ -238,8 +227,13 @@ namespace EyeOut
                 return num;
         }
 
+        public void MOT_LOG(string msg)
+        {
+            event_LOG_msg2logger(C_events.e_logger.logMot, C_events.e_how.appendLine, msg);
+        }
         private Byte[] CONV_ang_deg2by(int deg)
         {
+            C_events.e_logger logger = C_events.e_logger.logMot;
             // by = 0 to 1023 (0x3FF)
             // ang = 0 to 300
             //(Byte) 1023*
@@ -249,18 +243,16 @@ namespace EyeOut
             switch (e)
             {
                 case (e_bounds.bigger):
-                    WANNA_LOG_msgAppendLine(String.Format(
+                    MOT_LOG(String.Format(
                         "Tried to calculate angle bigger then boundary {0} > [max{1}] deg. Used the maximum value.",
                         deg, max));
                     break;
                 case (e_bounds.smaller):
-                    WANNA_LOG_msgAppendLine(String.Format(
+                    MOT_LOG(String.Format(
                         "Tried to calculate angle lower then boundary {0} < [min{1}] deg. Used the minimum value.",
                         deg, min));
                     break;
             }
-
-
 
             UInt16 degconv = Convert.ToUInt16(1023 * GET_bounded(deg, min, max) / 300);
 
@@ -270,4 +262,48 @@ namespace EyeOut
             return new Byte[] { L, H };
         }
     }
+
+    public class C_cmdin
+    {
+        //public int lsIndex;
+        //public double num;
+        public Byte[] byCmdin;
+        public string cmdStr;
+        public C_cmdin(Byte[] _byHex, string _cmdStr)
+        {
+            //num = _num;
+            byCmdin = _byHex;
+            cmdStr = _cmdStr;
+        }
+        public C_cmdin(string _strHex_concatenated, string _cmdStr)
+        {
+            //num = _num;
+            byCmdin = C_CONV.strHex2byteArray(_strHex_concatenated);
+            cmdStr = _cmdStr;
+        }
+        public C_cmdin(string _strHex, string _del, string _cmdStr)
+        {
+            //num = _num;
+            byCmdin = C_CONV.strHex2byteArray(_strHex, _del);
+            cmdStr = _cmdStr;
+        }
+
+    }
+
+    /*
+    class C_cmd : C_cmdin
+    {
+        Byte id;
+        Byte[] byCmd;
+        public C_cmd(int numByte _id, C_cmdin _cmdin, ): base(_num, C_DynMot.CREATE_cmdFromInner(_cmdin.byCmdin, _id), h_LOG_String)
+        {
+        }
+        public C_cmd(Byte _id, Byte[] _byCmdin, string _cmdStr)
+        {
+
+            byCmd = C_DynMot.CREATE_cmdFromInner(_byCmdin, _id);
+            cmdStr = _cmdStr;
+        }
+
+    }*/
 }
