@@ -39,8 +39,6 @@ namespace EyeOut
         public Byte curCmd_id;
         public Byte curCmd_len;
 
-        C_events.e_logger logger = C_events.e_logger.logMot;
-        C_events.e_how how = C_events.e_how.appendLine;
         public bool START_NEW_MSG = false;
 
 
@@ -184,18 +182,20 @@ namespace EyeOut
         }
 
 
+        e_logger logger = e_logger.logMot;
+        //e_how how = e_how.appendLine;
         public void SPI_LOG_mot(string msg)
         {
-            event_LOG_msg2logger(C_events.e_logger.logMot, how, msg);
+            event_LOG_msg2logger(e_logger.logMot, e_how.appendLine, msg);
         }
 
         public void SPI_LOG_motGot(string msg)
         {
-            event_LOG_msg2logger(C_events.e_logger.logMotGot, how, msg);
+            event_LOG_msg2logger(e_logger.logMotGot, e_how.appendLine, msg);
         }
         public void SPI_LOG_motSent(string msg)
         {
-            event_LOG_msg2logger(C_events.e_logger.logMotSent, how, msg);
+            event_LOG_msg2logger(e_logger.logMotSent, e_how.appendLine, msg);
         }
 
         private void WRITE_cmd(Byte[] cmd)

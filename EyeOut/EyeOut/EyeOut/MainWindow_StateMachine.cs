@@ -55,7 +55,7 @@ namespace EyeOut
         {
             try
             {
-                event_LOG_msg2logger(C_events.e_logger.logMot, C_events.e_how.appendLine, msg);
+                event_LOG_msg2logger(e_logger.logMot, e_how.appendLine, msg);
 
             }
             catch (Exception ex)

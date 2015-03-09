@@ -229,11 +229,10 @@ namespace EyeOut
 
         public void MOT_LOG(string msg)
         {
-            event_LOG_msg2logger(C_events.e_logger.logMot, C_events.e_how.appendLine, msg);
+            event_LOG_msg2logger(e_logger.logMot, e_how.appendLine, msg);
         }
         private Byte[] CONV_ang_deg2by(int deg)
         {
-            C_events.e_logger logger = C_events.e_logger.logMot;
             // by = 0 to 1023 (0x3FF)
             // ang = 0 to 300
             //(Byte) 1023*

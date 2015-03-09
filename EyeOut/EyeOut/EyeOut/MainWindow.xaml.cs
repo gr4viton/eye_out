@@ -25,8 +25,18 @@ namespace EyeOut
     //which return void and take a string.
     public delegate void d_SEND_bytes2serial(Byte[] cmd);
 
-    public delegate void d_LOG_msg2logger(C_events.e_logger logger, C_events.e_how how, string msg);
-    public delegate void d_LOG_logger2gui(C_events.e_logger logger, C_events.e_how how, string msg);
+    public delegate void d_LOG_msg2logger(e_logger logger, e_how how, string msg);
+    public delegate void d_LOG_logger2gui(e_logger logger, e_how how, string msg);
+
+
+    public enum e_logger
+    {
+        logAll = 0, logMot, logMotGot, logMotSent, logCam, logOculus
+    }
+    public enum e_how
+    {
+        renew = 0, appendLine, append
+    }
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -59,11 +69,20 @@ namespace EyeOut
 
 
 
-
-
         public MainWindow()
         {
             InitializeComponent();
+
+            cLog = new C_controlLog();
+            //cLog.event_LOG_msg2logger += new d_LOG_msg2logger(cLog.h_LOG_msg2logger);
+            this.event_LOG_msg2logger += new d_LOG_msg2logger(cLog.h_LOG_msg2logger);
+
+
+            this.event_LOG_logger2gui += new d_LOG_logger2gui(h_LOG_logger2gui);
+
+            string msg = "aosd";
+            event_LOG_msg2logger(e_logger.logMot, e_how.appendLine, msg);
+
             INIT_LOG();
             
             INIT_GUI();
@@ -88,10 +107,6 @@ namespace EyeOut
         }
         public void INIT_LOG()
         {
-            cLog = new C_controlLog();
-            cLog.event_LOG_msg2logger += new d_LOG_logger2gui(cLog.h_LOG_msg2logger);
-
-            this.event_LOG_logger2gui += new d_LOG_logger2gui(h_LOG_logger2gui);
 
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
@@ -99,34 +114,34 @@ namespace EyeOut
             dispatcherTimer.Start();
         }
 
-        public void h_LOG_logger2gui(C_events.e_logger logger, C_events.e_how how, string str)
+        public void h_LOG_logger2gui(e_logger logger, e_how how, string str)
         {
             object obj = GET_guiObject(logger);
             TextBox tx = (TextBox)obj;
             switch (how)
             {
-                case (C_events.e_how.renew):
+                case (e_how.renew):
                     tx.Text = str;
                     break;
-                case (C_events.e_how.appendLine):
+                case (e_how.appendLine):
                     tx.AppendText(str + "\r\n");
                     break;
-                case (C_events.e_how.append):
+                case (e_how.append):
                     tx.AppendText(str);
                     break;
             }
         }
 
-        public object GET_guiObject(C_events.e_logger logger)
+        public object GET_guiObject(e_logger logger)
         {
             switch(logger)
             {
-                case (C_events.e_logger.logAll): return txMotLog;
-                case (C_events.e_logger.logCam): return txMotLog;
-                case (C_events.e_logger.logMot): return txMotLog;
-                case (C_events.e_logger.logMotGot): return txMotLog;
-                case (C_events.e_logger.logMotSent): return txMotLog;
-                case (C_events.e_logger.logOculus): return txMotLog;
+                case (e_logger.logAll): return txMotLog;
+                case (e_logger.logCam): return txMotLog;
+                case (e_logger.logMot): return txMotLog;
+                case (e_logger.logMotGot): return txMotLog;
+                case (e_logger.logMotSent): return txMotLog;
+                case (e_logger.logOculus): return txMotLog;
                 default: return txMotLog;
             }
             //txReceived.Select(txReceived.Text.Length, 0);
