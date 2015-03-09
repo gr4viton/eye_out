@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.ComponentModel;
+using System.Threading;
+using System.Windows;
+
 namespace EyeOut
 {
 
@@ -60,6 +64,17 @@ namespace EyeOut
             switch (how)
             {
                 case (e_how.renew):
+                    /*
+                    if (this.tx.InvokeRequired)
+                    {
+                        SetTextCallback d = new SetTextCallback(SetText);
+                        this.Invoke(d, new object[] { text });
+                    }
+                    else
+                    {
+                        this.tx.Text = text;
+                    }
+                    */
                     text = msg;
                     break;
                 case (e_how.appendLine):
@@ -69,7 +84,16 @@ namespace EyeOut
                     text += msg;
                     break;
             }
-            event_LOG_logger_2gui(logger, how, msg);
+            //event_LOG_logger_2gui(logger, how, msg);
+            onEvent_LOG_logger_2gui(logger, how, msg);
+        }
+        private void onEvent_LOG_logger_2gui(e_logger logger, e_how how, string msg)
+        {
+            d_LOG_logger_2gui handler = event_LOG_logger_2gui;
+            if (handler != null)
+            {
+                handler(logger,how,msg);
+            }
         }
 
         private void LOG_msg_2logger(e_how how, string msg)
