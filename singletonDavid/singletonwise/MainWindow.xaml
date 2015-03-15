@@ -17,7 +17,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Time"  IsReadOnly="True" Binding="{Binding Path=time}" Width="50" ></DataGridTextColumn>
                 <DataGridTextColumn Header="Source" IsReadOnly="True"  Binding="{Binding Path=src}" Width="50"></DataGridTextColumn>
-                <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" ></DataGridTextColumn>
+                <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" MinWidth="50" ></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
 

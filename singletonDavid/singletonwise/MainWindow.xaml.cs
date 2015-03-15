@@ -18,8 +18,8 @@ using System.Windows.Shapes;
 using System.Data; // datagrid
 
 using System.Collections.ObjectModel; // ObservableCollection
-using System.ComponentModel; // INotifyPropertyChanged
-using System.Collections.Specialized; // NotifyCollectionChangedEventHandler
+//using System.ComponentModel; // INotifyPropertyChanged
+//using System.Collections.Specialized; // NotifyCollectionChangedEventHandler
 
 
 namespace singletonwise
@@ -29,7 +29,6 @@ namespace singletonwise
     /// </summary>
     public partial class MainWindow : Window
     {
-        ObservableCollection<LogMessageRow> itemList = new ObservableCollection<LogMessageRow>();
         //List<SomeInfo> arrSomeInfo = new List<SomeInfo>();
 
 
@@ -40,36 +39,26 @@ namespace singletonwise
             C_Motor mot1 = new C_Motor(1);
             InitializeComponent();
 
-            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            //create business data
-            //var itemList = new List<StockItem>();
 
-            itemList.Add(new LogMessageRow { time = "now", src = "log", msg = "Logging system initialized" });
-            //...
-            
-            // link business data to CollectionViewSource
-            CollectionViewSource itemCollectionViewSource;
-            itemCollectionViewSource = (CollectionViewSource)(FindResource("ItemCollectionViewSource"));
-            itemCollectionViewSource.Source = itemList;
+            INIT_logger();
 
         }
 
+        private void INIT_logger()
+        {
+            // link business data to CollectionViewSource
+            CollectionViewSource itemCollectionViewSource;
+            itemCollectionViewSource = (CollectionViewSource)(FindResource("ItemCollectionViewSource"));
+            itemCollectionViewSource.Source = C_Logger.Instance.Data;
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            itemList.Add(new LogMessageRow { time = "hek", src = "log", msg = "new item" });
+            C_Logger.Instance.LOG_msg("SOMETHING HAPPENED");
             //var data = new LogMessageRow { time = "Test1", device = "Test2", msg = "something happened" };
         }
 
         
 
-    }
-
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    public class LogMessageRow
-    {
-        public string time { get; set; }
-        public string src { get; set; }
-        public string msg { get; set; }
     }
 }
