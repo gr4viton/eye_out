@@ -22,8 +22,12 @@ namespace EyeOut
     /// <summary>
     /// Serial port communication
     /// </summary>
-    public partial class MainWindow : Window
+    //public partial class MainWindow : Window
+    public partial class C_SPI
     {
+
+        //private static object locker = new object();
+
         public SerialPort SPI;
 
         public static Byte[] readBuff;

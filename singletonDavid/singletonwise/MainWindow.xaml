@@ -1,0 +1,32 @@
+﻿<Window x:Class="singletonwise.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="467" Width="525">
+    <Window.Resources>
+        <CollectionViewSource x:Key="ItemCollectionViewSource"  CollectionViewType="ListCollectionView"/>
+    </Window.Resources>
+    <StackPanel>
+        <!--<DataGrid x:Name="dgLog" MinHeight="100"/>
+
+        <TextBox x:Name="txLog" MinHeight="50"/>
+        <Button Content="LOG"/>
+        <TextBox x:Name="txLogMot" MinHeight="50"/>
+        <Button Content="LOGMOT"/>-->
+        <Button Content="add dg" Click="Button_Click"/>
+        <DataGrid
+              DataContext="{StaticResource ItemCollectionViewSource}"
+              ItemsSource="{Binding}"
+              AutoGenerateColumns="False"
+              CanUserAddRows="False"
+            />
+            
+            <Button Content="Add new row" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
+        <DataGrid AutoGenerateColumns="False" Name="dgLogMot" CanUserAddRows="True" ItemsSource="{Binding TestBinding}" Margin="0,50,0,0" >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Time"  IsReadOnly="True" Binding="{Binding Path=time}" Width="50" ></DataGridTextColumn>
+                <DataGridTextColumn Header="Device" IsReadOnly="True"  Binding="{Binding Path=device}" Width="50"></DataGridTextColumn>
+                <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" ></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </StackPanel>
+</Window>
