@@ -12,11 +12,21 @@
         <Button Content="LOG"/>
         <TextBox x:Name="txLogMot" MinHeight="50"/>
         <Button Content="LOGMOT"/>-->
+        <Button Content="add dg" Click="Button_Click_2"/>
+        <DataGrid Name="grdMailbag" AutoGenerateColumns = "False" ItemsSource="{Binding}">
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="cID" Binding="{Binding ID}" Header="ID" />
+                <DataGridTextColumn x:Name="cName" Binding="{Binding Name}" Header="Name" />
+                <DataGridTextColumn x:Name="cDescription" Binding="{Binding Description}" Header="Description" />
+            </DataGrid.Columns>
+        </DataGrid>
+        
         <Button Content="add dg" Click="Button_Click"/>
         <DataGrid
               DataContext="{StaticResource ItemCollectionViewSource}"
               ItemsSource="{Binding}"
-              AutoGenerateColumns="False"
+              
+                AutoGenerateColumns = "True" 
               CanUserAddRows="False"
             />
             
@@ -28,5 +38,6 @@
                 <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" ></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
+        
     </StackPanel>
 </Window>
