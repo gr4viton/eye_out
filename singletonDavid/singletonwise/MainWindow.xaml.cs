@@ -13,8 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using System.Windows;
-using System.Data;
+
+//using System.Windows;
+using System.Data; // datagrid
+
+using System.Collections.ObjectModel; // ObservableCollection
+using System.ComponentModel; // INotifyPropertyChanged
+using System.Collections.Specialized; // NotifyCollectionChangedEventHandler
+
 
 namespace singletonwise
 {
@@ -23,11 +29,12 @@ namespace singletonwise
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<LogMessageRow> itemList = new List<LogMessageRow>();
+        ObservableCollection<LogMessageRow> itemList = new ObservableCollection<LogMessageRow>();
         //List<SomeInfo> arrSomeInfo = new List<SomeInfo>();
 
 
         // dataGrid binding = http://www.codeproject.com/Articles/683429/Guide-to-WPF-DataGrid-formatting-using-bindings
+        // trullyObservableCollection = http://stackoverflow.com/questions/17211462/wpf-bound-datagrid-does-not-update-items-properties
         public MainWindow()
         {
             C_Motor mot1 = new C_Motor(1);
@@ -36,24 +43,25 @@ namespace singletonwise
             //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             //create business data
             //var itemList = new List<StockItem>();
-            itemList.Add(new LogMessageRow { time = "Many items", dev = 100, msg = false });
-            itemList.Add(new LogMessageRow { time = "Enough items", dev = 10, msg = false });
+
+            itemList.Add(new LogMessageRow { time = "now", src = "log", msg = "Logging system initialized" });
             //...
             
-            //link business data to CollectionViewSource
+            // link business data to CollectionViewSource
             CollectionViewSource itemCollectionViewSource;
             itemCollectionViewSource = (CollectionViewSource)(FindResource("ItemCollectionViewSource"));
             itemCollectionViewSource.Source = itemList;
-
 
         }
 
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            itemList.Add(new LogMessageRow { time = "hek", dev = 1, msg = true });
+            itemList.Add(new LogMessageRow { time = "hek", src = "log", msg = "new item" });
             //var data = new LogMessageRow { time = "Test1", device = "Test2", msg = "something happened" };
         }
+
+        
 
     }
 
@@ -61,7 +69,7 @@ namespace singletonwise
     public class LogMessageRow
     {
         public string time { get; set; }
-        public int dev { get; set; }
-        public bool msg { get; set; }
+        public string src { get; set; }
+        public string msg { get; set; }
     }
 }
