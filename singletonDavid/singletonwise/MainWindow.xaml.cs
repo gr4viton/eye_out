@@ -33,17 +33,12 @@ namespace singletonwise
     {
         //List<SomeInfo> arrSomeInfo = new List<SomeInfo>();
 
-        //dataGrid
-        private object daraGrid_lock = new object(); // lock for datagrid
         C_Motor mot1;
 
-        // dataGrid binding = http://www.codeproject.com/Articles/683429/Guide-to-WPF-DataGrid-formatting-using-bindings
-        // trullyObservableCollection = http://stackoverflow.com/questions/17211462/wpf-bound-datagrid-does-not-update-items-properties
         public MainWindow()
         {
             mot1 = new C_Motor(1);
             InitializeComponent();
-
 
             INIT_logger();
             INIT_spi();
@@ -53,20 +48,11 @@ namespace singletonwise
         {
             C_SPI.INIT();
         }
-        private void INIT_logger()
-        {
-            // link business data to CollectionViewSource
-            CollectionViewSource itemCollectionViewSource;
-            itemCollectionViewSource = (CollectionViewSource)(FindResource("ItemCollectionViewSource"));
-            itemCollectionViewSource.Source = C_Logger.Instance.Data;
-            BindingOperations.EnableCollectionSynchronization(C_Logger.Instance.Data, daraGrid_lock); // for multi-thread updating
-
-            //BindingOperations.EnableCollectionSynchronization(itemCollectionViewSource, 
-        }
-
+        
+        
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            C_Logger.Instance.LOG_gui("SOMETHING HAPPENED");
+            LOG_gui("SOMETHING HAPPENED");
             //var data = new LogMessageRow { time = "Test1", device = "Test2", msg = "something happened" };
         }
 
@@ -79,26 +65,9 @@ namespace singletonwise
             mot1.SEND_cmd(b);
         }
 
-        private void CompleteFilter_Changed(object sender, RoutedEventArgs e)
+        public void LOG_gui(string _msg)
         {
-            // Refresh the view to apply filters.
-            CollectionViewSource.GetDefaultView(dgLog.ItemsSource).Refresh();
+            C_Logger.Instance.LOG(e_LogMsgSource.gui, _msg);
         }
-
-        private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
-        {
-            
-            C_LogMsg t = e.Item as C_LogMsg;
-            if (t != null)
-            // If filter is turned on, filter completed items.
-            {
-                if (this.cbCompleteFilter.IsChecked == true && t.src == e_LogMsgSource.spi)// && t.== true)
-                    e.Accepted = false;
-                else
-                    e.Accepted = true;
-            }
-             
-        }
-
     }
 }

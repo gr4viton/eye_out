@@ -8,14 +8,29 @@
         Title="MainWindow" Height="467" Width="525"
         >
     <Window.Resources>
-        <local:C_LoggingTable x:Key="tasks" />
         <CollectionViewSource x:Key="ItemCollectionViewSource"  
                               CollectionViewType="ListCollectionView"
-                              Filter="CollectionViewSource_Filter"/>
+                              Filter="CollectionViewSource_Filter">
+            <CollectionViewSource.SortDescriptions>
+                <!-- Requires 'xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"' declaration. -->
+                <scm:SortDescription PropertyName="time" Direction="Descending"/>
+                <!--<scm:SortDescription PropertyName="Complete" />
+                <scm:SortDescription PropertyName="DueDate" />-->
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
     </Window.Resources>
     <StackPanel>
-        <CheckBox x:Name="cbCompleteFilter" Content="Filter" VerticalAlignment="Center"
-                      Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
+        <StackPanel >
+            <StackPanel x:Name="spLogFilterCheckboxes">
+            <CheckBox x:Name="cbLogShowSpi" Content="SPI" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
+            <CheckBox x:Name="cbLogShowMot" Content="Motor" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
+            <CheckBox x:Name="cbLogShowGui" Content="GUI" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
+            
+            </StackPanel>
+            <Label Content="See"/>
+            <Button Content="All" Click="LogFilterCheckAll"/>
+            <Button Content="None" Click="LogFilterUncheckAll"/>
+        </StackPanel>
         <Button Content="mot send" Click="Button_Click_1"/>
         <Button Content="add dg" Click="Button_Click"/>
         <DataGrid

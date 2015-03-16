@@ -26,17 +26,8 @@ namespace singletonwise
     {
         spi = 0, gui, log, mot
     }
+
     // singleton
-
-
-
-    // Requires using System.Collections.ObjectModel; 
-    public class C_LoggingTable : ObservableCollection<C_LogMsg>
-    {
-        // Creating the Tasks collection in this way enables data binding from XAML.
-        
-    }
-
     internal class C_Logger
     {
         //private DataTable dataTable;
@@ -48,7 +39,6 @@ namespace singletonwise
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // one datagrid for all tabs -> filtering by checkboxes and column [src]
-        // sorting filtering.. https://msdn.microsoft.com/en-us/library/ff407126(v=vs.110).aspx
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -90,17 +80,10 @@ namespace singletonwise
             get { return itemList; }
         }
 
-
-
-
-        //public void LOG_motX(byte id, string _msg) { LOG(string.Format("mot{0}", id), _msg); }
-        //public void LOG_motX_e(byte id, string _msg) { LOG_type(string.Format("mot{0}", id), _msg,"error"); }
-
-
-        public void LOG_spi(string _msg) { LOG(e_LogMsgSource.spi, _msg); }
-        public void LOG_gui(string _msg) { LOG(e_LogMsgSource.gui, _msg); }
-        public void LOG_log(string _msg) { LOG(e_LogMsgSource.log, _msg); }
-        public void LOG_mot(string _msg) { LOG(e_LogMsgSource.mot, _msg); }
+        public void LOG(C_LogMsg _msg)
+        {
+            itemList.Add(_msg);
+        }
 
         public void LOG(e_LogMsgSource _src, string _msg)
         {

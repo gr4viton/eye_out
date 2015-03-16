@@ -41,13 +41,18 @@ namespace singletonwise
         {
             BackgroundWorker worker = new BackgroundWorker();
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            //worker.DoWork += (obj,e) => worker_DoWork(cmd);
+            //SEND_cmd_eventArgs args = new SEND_cmd_eventArgs(id, cmd);
+            //DoWorkEventArgs args = new SEND_cmd_eventArgs(id, cmd);
+            //worker.RunWorkerAsync(new SEND_cmd_eventArgs(id, cmd));
+
             worker.DoWork += worker_DoWork;
 
-            //SEND_cmd_eventArgs args = new SEND_cmd_eventArgs(id, cmd);
-            DoWorkEventArgs args = new SEND_cmd_eventArgs(id, cmd);
-            worker.RunWorkerAsync(args);
+            //object args = cmd;
+            worker.RunWorkerAsync((object)cmd);
         }
 
+        //private void worker_DoWork(byte[] cmd)
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             //e.Result = ExecuteActions(input);
@@ -56,8 +61,14 @@ namespace singletonwise
             //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             // cast problem
             //e.Result = C_SPI.WriteData(((SEND_cmd_eventArgs)e).cmd);
-            byte[] b = new byte[0];
-            e.Result = C_SPI.WriteData(b);
+            /*
+            byte[] b = new byte[3];
+            b[0] = 21;
+            b[1] = 32;
+            b[2] = 42;
+            b = ((SEND_cmd_eventArgs)e).cmd;
+            */
+            e.Result = C_SPI.WriteData(e.Argument as byte[]);
             //C_Logger.Instance.LOG_mot("result");
         }
 
@@ -66,12 +77,12 @@ namespace singletonwise
             // catch if response was A-OK
             if (e.Error != null)
             {
-                C_Logger.Instance.LOG_mot(String.Format("Motor id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, id));
+                LOG(String.Format("Motor id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, id));
                 //ie Helpers.HandleCOMException(e.Error);
             }
             else
             {
-                C_Logger.Instance.LOG_mot("DATA SENT");
+                LOG("DATA SENT");
                 //var results = e.Result as List<object>;
             }
         }
@@ -238,6 +249,11 @@ namespace singletonwise
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion CONV
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        public static void LOG(string _msg) 
+        { 
+            C_Logger.Instance.LOG(e_LogMsgSource.mot, _msg); 
+        }
     }
 
 
@@ -266,5 +282,9 @@ namespace singletonwise
             cmdStr = _cmdStr;
         }
 
+
     }
+    
 }
+
+
