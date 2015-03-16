@@ -42,7 +42,8 @@ namespace singletonwise
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
             worker.DoWork += worker_DoWork;
 
-            SEND_cmd_eventArgs args = new SEND_cmd_eventArgs(id, cmd);
+            //SEND_cmd_eventArgs args = new SEND_cmd_eventArgs(id, cmd);
+            DoWorkEventArgs args = new SEND_cmd_eventArgs(id, cmd);
             worker.RunWorkerAsync(args);
         }
 
@@ -50,7 +51,13 @@ namespace singletonwise
         {
             //e.Result = ExecuteActions(input);
             //SEND_cmd_eventArgs ev = (SEND_cmd_eventArgs) e;
-            e.Result = C_SPI.WriteData(((SEND_cmd_eventArgs)e).cmd);
+            //C_Logger.Instance.LOG_mot("before");
+            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            // cast problem
+            //e.Result = C_SPI.WriteData(((SEND_cmd_eventArgs)e).cmd);
+            byte[] b = new byte[0];
+            e.Result = C_SPI.WriteData(b);
+            //C_Logger.Instance.LOG_mot("result");
         }
 
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -58,10 +65,12 @@ namespace singletonwise
             // catch if response was A-OK
             if (e.Error != null)
             {
+                C_Logger.Instance.LOG_motX_e(id,String.Format("{0}:\n{1}",e.Error.Source ,e.Error.Message));
                 //ie Helpers.HandleCOMException(e.Error);
             }
             else
             {
+                C_Logger.Instance.LOG_mot("result");
                 //var results = e.Result as List<object>;
             }
         }

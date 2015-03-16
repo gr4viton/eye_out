@@ -6,7 +6,8 @@
         <CollectionViewSource x:Key="ItemCollectionViewSource"  CollectionViewType="ListCollectionView"/>
     </Window.Resources>
     <StackPanel>
-        
+
+        <Button Content="mot send" Click="Button_Click_1"/>
         <Button Content="add dg" Click="Button_Click"/>
         <DataGrid
               DataContext="{StaticResource ItemCollectionViewSource}"
@@ -15,7 +16,9 @@
               CanUserAddRows="False"
             >
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Time"  IsReadOnly="True" Binding="{Binding Path=time}" Width="50" ></DataGridTextColumn>
+                <DataGridTextColumn Header="Time"  IsReadOnly="True" Binding="{Binding Path=time, StringFormat=HH:mm:ss.fff}" Width="76" 
+                                    ></DataGridTextColumn>
+                <DataGridTextColumn Header="Type" IsReadOnly="True"  Binding="{Binding Path=type}" Width="50"></DataGridTextColumn>
                 <DataGridTextColumn Header="Source" IsReadOnly="True"  Binding="{Binding Path=src}" Width="50"></DataGridTextColumn>
                 <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" MinWidth="50" ></DataGridTextColumn>
             </DataGrid.Columns>
