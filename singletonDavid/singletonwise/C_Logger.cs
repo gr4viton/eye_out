@@ -27,10 +27,23 @@ namespace singletonwise
         spi = 0, gui, log, mot
     }
     // singleton
+
+
+
+    // Requires using System.Collections.ObjectModel; 
+    public class C_LoggingTable : ObservableCollection<C_LogMsg>
+    {
+        // Creating the Tasks collection in this way enables data binding from XAML.
+        
+    }
+
     internal class C_Logger
     {
         //private DataTable dataTable;
         private ObservableCollection<C_LogMsg> itemList { get; set; }
+
+        //C_LoggingTable _tasks = (C_LoggingTable)this.Resources["tasks"];
+
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -102,6 +115,8 @@ namespace singletonwise
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     }
+
+
 
     public class C_LogMsg
     {

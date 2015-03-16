@@ -87,17 +87,17 @@ namespace singletonwise
 
         private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
         {
-            /*
-            Task t = e.Item as Task;
+            
+            C_LogMsg t = e.Item as C_LogMsg;
             if (t != null)
             // If filter is turned on, filter completed items.
             {
-                if (this.cbCompleteFilter.IsChecked == true && t.Completed== true)
+                if (this.cbCompleteFilter.IsChecked == true && t.src == e_LogMsgSource.spi)// && t.== true)
                     e.Accepted = false;
                 else
                     e.Accepted = true;
             }
-             */ 
+             
         }
 
     }
