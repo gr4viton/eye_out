@@ -3,13 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="467" Width="525">
     <Window.Resources>
-        <CollectionViewSource x:Key="ItemCollectionViewSource"  CollectionViewType="ListCollectionView"/>
+        <CollectionViewSource x:Key="ItemCollectionViewSource"  
+                              CollectionViewType="ListCollectionView"
+                              Filter="CollectionViewSource_Filter"/>
     </Window.Resources>
     <StackPanel>
-
+        <CheckBox x:Name="cbCompleteFilter" Content="Filter" VerticalAlignment="Center"
+                      Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
         <Button Content="mot send" Click="Button_Click_1"/>
         <Button Content="add dg" Click="Button_Click"/>
         <DataGrid
+            x:Name="dgLog"
               DataContext="{StaticResource ItemCollectionViewSource}"
               ItemsSource="{Binding}"
               AutoGenerateColumns = "False" 

@@ -21,6 +21,8 @@ using System.Collections.ObjectModel; // ObservableCollection
 //using System.ComponentModel; // INotifyPropertyChanged
 //using System.Collections.Specialized; // NotifyCollectionChangedEventHandler
 
+//using System.Threading.Tasks;
+
 
 namespace singletonwise
 {
@@ -31,6 +33,8 @@ namespace singletonwise
     {
         //List<SomeInfo> arrSomeInfo = new List<SomeInfo>();
 
+        //dataGrid
+        private object daraGrid_lock = new object(); // lock for datagrid
         C_Motor mot1;
 
         // dataGrid binding = http://www.codeproject.com/Articles/683429/Guide-to-WPF-DataGrid-formatting-using-bindings
@@ -47,12 +51,7 @@ namespace singletonwise
 
         public void INIT_spi()
         {
-            /*
-            BaudRate = 57600;
-            PortName = "COM4";
-            */
-            // later binding to gui
-            C_SPI.INIT("COM4", 57600, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+            C_SPI.INIT();
         }
         private void INIT_logger()
         {
@@ -60,6 +59,9 @@ namespace singletonwise
             CollectionViewSource itemCollectionViewSource;
             itemCollectionViewSource = (CollectionViewSource)(FindResource("ItemCollectionViewSource"));
             itemCollectionViewSource.Source = C_Logger.Instance.Data;
+            BindingOperations.EnableCollectionSynchronization(C_Logger.Instance.Data, daraGrid_lock); // for multi-thread updating
+
+            //BindingOperations.EnableCollectionSynchronization(itemCollectionViewSource, 
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -77,7 +79,26 @@ namespace singletonwise
             mot1.SEND_cmd(b);
         }
 
-        
+        private void CompleteFilter_Changed(object sender, RoutedEventArgs e)
+        {
+            // Refresh the view to apply filters.
+            CollectionViewSource.GetDefaultView(dgLog.ItemsSource).Refresh();
+        }
+
+        private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
+        {
+            /*
+            Task t = e.Item as Task;
+            if (t != null)
+            // If filter is turned on, filter completed items.
+            {
+                if (this.cbCompleteFilter.IsChecked == true && t.Completed== true)
+                    e.Accepted = false;
+                else
+                    e.Accepted = true;
+            }
+             */ 
+        }
 
     }
 }

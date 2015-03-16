@@ -144,7 +144,6 @@ namespace EyeOut
         Byte[] cmdinEx17_2 = { 0x03, 0x1E, 0x00, 0x03, 0x00, 0x02 }; // Locates at the Position 185° with the speed of 57RPM. 
 
         public static List<C_cmdin> cmdinEx;
-
         
         public void SEND_example(int num)
         {

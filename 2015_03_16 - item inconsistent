@@ -1,0 +1,155 @@
+Tak jsem to nìjak vytvoøil.. ale mám problém..
+používám 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    internal class C_Logger // singletonovì napsaná
+    {
+        //private DataTable dataTable;
+        private ObservableCollection<LogMessageRow> itemList;
+
+        public void LOG(string _src, string _msg)
+        {
+            itemList.Add(new LogMessageRow { src = _src, msg = _msg });
+        }
+
+        // property
+        public ObservableCollection<LogMessageRow> Data
+        {
+            get { return itemList; }
+        }
+
+    }
+
+    public class LogMessageRow
+    {
+        public string src { get; set; }
+        public string msg { get; set; }
+    }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+.. a potom v main.xaml
+
+        <DataGrid
+              DataContext="{StaticResource ItemCollectionViewSource}"
+              ItemsSource="{Binding}"
+              AutoGenerateColumns = "False" 
+              CanUserAddRows="False"
+            >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Source" IsReadOnly="True"  Binding="{Binding Path=src}" Width="50"></DataGridTextColumn>
+                <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" MinWidth="50" ></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+a v main.cs binding 
+
+    public MainWindow()
+    {
+        InitializeComponent();
+
+            // link business data to CollectionViewSource
+            CollectionViewSource itemCollectionViewSource;
+            itemCollectionViewSource = (CollectionViewSource)(FindResource("ItemCollectionViewSource")); // jenom abych nemusel davat nazev (odnìkud zkopèeno)
+            itemCollectionViewSource.Source = C_Logger.Instance.Data;
+
+    }
+
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        C_Logger.Instance.LOG_gui("GUI","SOMETHING HAPPENED"); // funguje normálnì pøidá
+    }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+SPI (napsany jenom tak..)
+
+    internal class C_SPI
+    {
+
+        private static object locker = new object();
+        private static SerialPort spi;
+
+        public static bool WriteData(byte[] data)
+        {
+            lock (locker)
+            {
+                int q = 10; // try q-times
+                while (q>0)
+                {
+                    if (spi.IsOpen)
+                    {
+                        WriteSerialPort(data);
+                        return true;
+                        //responseBuffer = ReadSerialPort(8);
+                    }
+                    else
+                    {
+                        OPEN_connection();
+                    }
+                    q--;
+                }
+            }
+            return false; // should never run as far as to this line
+        }
+
+
+        private static void WriteSerialPort(byte[] data)
+        {
+            //spi.Write(data, 0, data.Length);
+            C_Logger.Instance.LOG_spi("SPI HAPPENED"); // tohle je to co se mu nelíbí
+        }
+    }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+motor
+    internal class C_Motor
+    {
+
+        public void SEND_cmd(byte[] cmd)
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            worker.DoWork += worker_DoWork;
+
+            //SEND_cmd_eventArgs args = new SEND_cmd_eventArgs(id, cmd);
+            DoWorkEventArgs args = new SEND_cmd_eventArgs(id, cmd);
+            worker.RunWorkerAsync(args);
+        }
+
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            byte[] b = new byte[0];
+            e.Result = C_SPI.WriteData(b);
+        }
+
+        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // catch if response was A-OK
+            if (e.Error != null)
+            {
+                C_Logger.Instance.LOG_motX_e(id,String.Format("{0}:\n{1}",e.Error.Data ,e.Error.Message));
+            }
+            else
+            {
+                C_Logger.Instance.LOG_mot("DATA SENT"); 
+                //var results = e.Result as List<object>;
+            }
+        }
+    }
+
+
+// no ale nejde mi dyž zavolám tu fci LOG když jsem v SPI writing funkci (respektive že ju volám v tom Background workeru)
+no a ona se nepøidá do datagridu..
+a když pak zkusim pøidat item zase tlaèítkem, tak mi zahlásí že ten binding není stejnej na obou stranách - jakokdyby se nevyvolala zmìna dyž jsem v jiném threadu 
+
+An item control is inconsistent with its source
+
+øešení:
+1) to musím ošetøit volání pro zmìnu v tom ObservableCollectionu zavolat event sám?
+2) nevolat v tom novém threadu vùbec LOG, ale pouze napø vyèíst zpìtnou hodnotu background workera a do logu zapsat potom co se z nìj vrátím?
+3) je to v tom že binduju ObservableCollection<LogMessageRow> itemList; na DataGrid ? a nemam tam ten DataTable jak jsi øíkal pùvodnì?
+
+
+esi to z toho nejde pochopit, tak udìlám nìjaký minimum example a pošlu :)

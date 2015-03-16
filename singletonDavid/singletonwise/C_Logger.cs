@@ -22,11 +22,15 @@ using System.Collections.ObjectModel; // ObservableCollection
 
 namespace singletonwise
 {
+    public enum e_LogMsgSource
+    {
+        spi = 0, gui, log, mot
+    }
     // singleton
     internal class C_Logger
     {
         //private DataTable dataTable;
-        private ObservableCollection<LogMessageRow> itemList;
+        private ObservableCollection<C_LogMsg> itemList { get; set; }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -55,57 +59,60 @@ namespace singletonwise
 
         private C_Logger()
         {
-            itemList = new ObservableCollection<LogMessageRow>();
+            itemList = new ObservableCollection<C_LogMsg>();
             //dataTable = new DataTable();
 
             //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             //create business data
             //var itemList = new List<StockItem>();
 
-            itemList.Add(new LogMessageRow { time = DateTime.UtcNow, src = "log", msg = "Logging system initialized" });
+            itemList.Add(new C_LogMsg { time = DateTime.UtcNow, src = e_LogMsgSource.log, msg = "Logging system initialized" });
             //...
 
         }
 
         // property
-        public ObservableCollection<LogMessageRow> Data
+        public ObservableCollection<C_LogMsg> Data
         {
             get { return itemList; }
         }
 
-        
-        
-        public void LOG_spi(string _msg) { LOG("spi", _msg); }
-        public void LOG_gui(string _msg) { LOG("gui", _msg); }
-        public void LOG_log(string _msg) { LOG("log", _msg); }
-        public void LOG_mot(string _msg) { LOG("mot", _msg); }
 
-        public void LOG_motX(byte id, string _msg) { LOG(string.Format("mot{0}", id), _msg); }
 
-        public void LOG_motX_e(byte id, string _msg) { LOG_type(string.Format("mot{0}", id), _msg,"error"); }
 
-        public void LOG(string _src, string _msg)
+        //public void LOG_motX(byte id, string _msg) { LOG(string.Format("mot{0}", id), _msg); }
+        //public void LOG_motX_e(byte id, string _msg) { LOG_type(string.Format("mot{0}", id), _msg,"error"); }
+
+
+        public void LOG_spi(string _msg) { LOG(e_LogMsgSource.spi, _msg); }
+        public void LOG_gui(string _msg) { LOG(e_LogMsgSource.gui, _msg); }
+        public void LOG_log(string _msg) { LOG(e_LogMsgSource.log, _msg); }
+        public void LOG_mot(string _msg) { LOG(e_LogMsgSource.mot, _msg); }
+
+        public void LOG(e_LogMsgSource _src, string _msg)
         {
-            itemList.Add(new LogMessageRow { src = _src, msg = _msg });
+            itemList.Add(new C_LogMsg { src = _src, msg = _msg });
+//            ObservableCollection<LogMessageRow>.CollectionChanged +=;
         }
 
-        public void LOG_type(string _src, string _msg, string _type)
+        public void LOG_type(e_LogMsgSource _src, string _msg, string _type)
         {
-            itemList.Add(new LogMessageRow { src = _src, msg = _msg, type = _type });
+            itemList.Add(new C_LogMsg { src = _src, msg = _msg, type = _type });
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public class LogMessageRow
+    }
+
+    public class C_LogMsg
+    {
+        public DateTime time { get; set; }
+        public e_LogMsgSource src { get; set; }
+        public string type { get; set; }
+        public string msg { get; set; }
+        public C_LogMsg()
         {
-            public DateTime time { get; set; }
-            public string src { get; set; }
-            public string type { get; set; }
-            public string msg { get; set; }
-            public LogMessageRow()
-            {
-                time = DateTime.UtcNow;
-                type = "info";
-            }
+            time = DateTime.UtcNow;
+            type = "info";
         }
     }
 }
