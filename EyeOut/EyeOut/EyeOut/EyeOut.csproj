@@ -69,23 +69,22 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="C_CheckSum.cs" />
-    <Compile Include="C_controlMot.cs" />
-    <Compile Include="C_CONV.cs" />
-    <Compile Include="C_DynAdd.cs" />
-    <Compile Include="C_DynMot.cs" />
-    <Compile Include="C_events.cs" />
-    <Compile Include="C_INIT.cs" />
-    <Compile Include="C_logger.cs" />
+    <Compile Include="Main\C_State.cs" />
+    <Compile Include="Main\Main_SPI.cs" />
+    <Compile Include="Main\C_Logger.cs" />
+    <Compile Include="mot\Main_Motor.cs" />
+    <Compile Include="mot\C_Motor.cs" />
+    <Compile Include="mot\C_SPI.cs" />
+    <Compile Include="Main\Main_Logger.cs" />
+    <Compile Include="mot\C_CheckSum.cs" />
+    <Compile Include="mot\C_CONV.cs" />
+    <Compile Include="mot\C_DynAdd.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainWindow_LOG.cs" />
-    <Compile Include="MainWindow_SPI.cs" />
-    <Compile Include="MainWindow_StateMachine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
