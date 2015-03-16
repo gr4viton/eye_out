@@ -31,45 +31,92 @@ namespace singletonwise
     {
         public byte id;
         public static List<C_cmdin> cmdinEx;
+        private static bool cmdinEx_initialized = false;
 
         public C_Motor(byte _id)
         {
             id = _id;
+            if (cmdinEx_initialized == false)
+            {
+                INIT_cmdinEx();
+            }
         }
+
+
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region INIT
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        public void INIT_cmdinEx()
+        {
+            string fname_cmdEx = @"B:\__DIP\dev\_main_dev\EyeOut\cmdInEx\cmdInEx.txt";
+            //string fname_cmdEx = @"..\..\..\..\cmdInEx\cmdInEx.txt";
+
+            char del = '|';
+            LOAD_examples(fname_cmdEx, del);
+        }
+
+        public void LOAD_examples(string fname, char del)
+        {
+            C_Motor.cmdinEx = new List<C_cmdin>();
+
+            string strHex_concantenated;
+            string name;
+            string[] strArr;
+
+            string[] lines;
+            if (!System.IO.File.Exists(fname))
+            {
+                LOG_err(string.Format("{0}\n{1}",
+                    "File with command examples not found!Searched in:",
+                    fname.ToString()
+                    ));
+            }
+            else
+            {
+                LOG("File with command examples found, starting to load cmdInners");
+
+                lines = System.IO.File.ReadAllLines(fname, Encoding.ASCII);
+                //lines = System.IO.File.ReadAllLines(fname);
+                //string[] lines = System.IO.File.ReadAllLines(fname);
+
+                // Display the file contents by using a foreach loop.
+                // System.Console.WriteLine("Contents of WriteLines2.txt = ");
+
+                foreach (string line in lines)
+                {
+                    if (string.IsNullOrEmpty(line)) continue;
+                    strArr = line.Split(del);
+                    strHex_concantenated = strArr[0];
+                    name = strArr[1];
+
+                    //lsCmdEx.Items.Add(string.Format("{0} - {1}", Convert.ToString(c.byCmdin), c.cmdStr));
+                    //cmdinEx.Items.Add(name);
+                    C_Motor.cmdinEx.Add(new C_cmdin(strHex_concantenated, name));
+                    // Use a tab to indent each line of the file.
+                    //Console.WriteLine("\t" + line);
+                }
+                LOG("Command examples loaded succesfully!");
+                cmdinEx_initialized = true;
+            }
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion INIT
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region Sending
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         public void SEND_cmd(byte[] cmd)
         {
             BackgroundWorker worker = new BackgroundWorker();
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-            //worker.DoWork += (obj,e) => worker_DoWork(cmd);
-            //SEND_cmd_eventArgs args = new SEND_cmd_eventArgs(id, cmd);
-            //DoWorkEventArgs args = new SEND_cmd_eventArgs(id, cmd);
-            //worker.RunWorkerAsync(new SEND_cmd_eventArgs(id, cmd));
-
             worker.DoWork += worker_DoWork;
-
-            //object args = cmd;
             worker.RunWorkerAsync((object)cmd);
         }
 
-        //private void worker_DoWork(byte[] cmd)
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            //e.Result = ExecuteActions(input);
-            //SEND_cmd_eventArgs ev = (SEND_cmd_eventArgs) e;
-            //C_Logger.Instance.LOG_mot("before");
-            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            // cast problem
-            //e.Result = C_SPI.WriteData(((SEND_cmd_eventArgs)e).cmd);
-            /*
-            byte[] b = new byte[3];
-            b[0] = 21;
-            b[1] = 32;
-            b[2] = 42;
-            b = ((SEND_cmd_eventArgs)e).cmd;
-            */
             e.Result = C_SPI.WriteData(e.Argument as byte[]);
-            //C_Logger.Instance.LOG_mot("result");
         }
 
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -87,52 +134,6 @@ namespace singletonwise
             }
         }
 
-
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #region INIT
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public void INIT_cmdinEx()
-        {
-            //string fname_cmdEx = @"B:\__DIP\dev\_main_dev\EyeOut\cmdInEx\cmdInEx.txt";
-            string fname_cmdEx = @"..\..\..\..\cmdInEx\cmdInEx.txt";
-
-            char del = '|';
-            LOAD_examples(fname_cmdEx, del);
-        }
-
-        public void LOAD_examples(string fname, char del)
-        {
-            C_Motor.cmdinEx = new List<C_cmdin>();
-
-            string strHex_concantenated;
-            string name;
-            string[] strArr;
-
-            string[] lines;
-            if (!System.IO.File.Exists(fname)) return;
-            lines = System.IO.File.ReadAllLines(fname, Encoding.ASCII);
-            //lines = System.IO.File.ReadAllLines(fname);
-            //string[] lines = System.IO.File.ReadAllLines(fname);
-
-            // Display the file contents by using a foreach loop.
-            // System.Console.WriteLine("Contents of WriteLines2.txt = ");
-
-            foreach (string line in lines)
-            {
-                if (string.IsNullOrEmpty(line)) continue;
-                strArr = line.Split(del);
-                strHex_concantenated = strArr[0];
-                name = strArr[1];
-
-                //lsCmdEx.Items.Add(string.Format("{0} - {1}", Convert.ToString(c.byCmdin), c.cmdStr));
-                //cmdinEx.Items.Add(name);
-                C_Motor.cmdinEx.Add(new C_cmdin(strHex_concantenated, name));
-                // Use a tab to indent each line of the file.
-                //Console.WriteLine("\t" + line);
-            }
-        }
-        #endregion INIT
-
         public void SEND_example(int num)
         {
             SEND_cmdInner(cmdinEx[num].byCmdin, id);
@@ -144,6 +145,8 @@ namespace singletonwise
             SEND_cmd(C_Motor.CREATE_cmdFromInner(inner, id));
         }
 
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion Sending
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region static functions
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -254,6 +257,14 @@ namespace singletonwise
         { 
             C_Logger.Instance.LOG(e_LogMsgSource.mot, _msg); 
         }
+        
+        public static void LOG_err(string _msg) 
+        { 
+            // afterwards -> through another type
+            //C_Logger.Instance.LOG(e_LogMsgSource.mot, _msg, type = error); 
+            C_Logger.Instance.LOG_err(e_LogMsgSource.mot, _msg); 
+        }
+        
     }
 
 

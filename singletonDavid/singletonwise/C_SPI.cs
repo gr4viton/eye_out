@@ -25,7 +25,7 @@ namespace singletonwise
         
         public static void INIT()
         {
-            C_SPI.SETUP("COM4", 57600, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+            C_SPI.SETUP("COM6", 57600, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,7 +70,7 @@ namespace singletonwise
 
         private static void WriteSerialPort(byte[] data)
         {
-            //spi.Write(data, 0, data.Length);
+            spi.Write(data, 0, data.Length);
             LOG(
                 String.Format("SENT Bytes:{0}.{1}.{2}", data[0], data[1], data[2])
                 );

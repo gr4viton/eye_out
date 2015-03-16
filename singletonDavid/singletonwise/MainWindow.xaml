@@ -5,7 +5,7 @@
         xmlns:local="clr-namespace:singletonwise"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         
-        Title="MainWindow" Height="467" Width="525"
+        Title="MainWindow" Height="804.13" Width="904"
         >
     <Window.Resources>
         <CollectionViewSource x:Key="ItemCollectionViewSource"  
@@ -22,16 +22,17 @@
     <StackPanel>
         <StackPanel >
             <StackPanel x:Name="spLogFilterCheckboxes">
-            <CheckBox x:Name="cbLogShowSpi" Content="SPI" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
-            <CheckBox x:Name="cbLogShowMot" Content="Motor" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
-            <CheckBox x:Name="cbLogShowGui" Content="GUI" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
-            
+                <CheckBox x:Name="cbLogShowSpi" Content="SPI" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
+                <CheckBox x:Name="cbLogShowMot" Content="Motor" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
+                <CheckBox x:Name="cbLogShowGui" Content="GUI" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
+
             </StackPanel>
             <Label Content="See"/>
             <Button Content="All" Click="LogFilterCheckAll"/>
             <Button Content="None" Click="LogFilterUncheckAll"/>
         </StackPanel>
-        <Button Content="mot send" Click="Button_Click_1"/>
+        <Button Content="mot send 1" Click="ex1"/>
+        <Button Content="mot send 2" Click="ex2"/>
         <Button Content="add dg" Click="Button_Click"/>
         <DataGrid
             x:Name="dgLog"
@@ -49,6 +50,6 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        
+
     </StackPanel>
 </Window>

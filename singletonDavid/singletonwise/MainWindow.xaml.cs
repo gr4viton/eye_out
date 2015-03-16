@@ -56,7 +56,7 @@ namespace singletonwise
             //var data = new LogMessageRow { time = "Test1", device = "Test2", msg = "something happened" };
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void SEND_it()
         {
             byte[] b = new byte[3];
             b[0] = 1;
@@ -68,6 +68,17 @@ namespace singletonwise
         public void LOG_gui(string _msg)
         {
             C_Logger.Instance.LOG(e_LogMsgSource.gui, _msg);
+        }
+
+        private void ex1(object sender, RoutedEventArgs e)
+        {
+            mot1.SEND_example(3);
+
+        }
+        private void ex2(object sender, RoutedEventArgs e)
+        {
+            mot1.SEND_example(4);
+
         }
     }
 }

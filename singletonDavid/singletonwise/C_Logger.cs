@@ -27,6 +27,12 @@ namespace singletonwise
         spi = 0, gui, log, mot
     }
 
+    public enum e_LogMsgType
+    {
+        info = 0, error = 1, godsWill = 42
+    }
+
+
     // singleton
     internal class C_Logger
     {
@@ -69,7 +75,7 @@ namespace singletonwise
             //create business data
             //var itemList = new List<StockItem>();
 
-            itemList.Add(new C_LogMsg { time = DateTime.UtcNow, src = e_LogMsgSource.log, msg = "Logging system initialized" });
+            itemList.Add(new C_LogMsg { time = DateTime.UtcNow, src = e_LogMsgSource.log, msg = "Logging system initialized! Time is [Ascending] == new messages on first row == ^^^^^^" });
             //...
 
         }
@@ -87,13 +93,17 @@ namespace singletonwise
 
         public void LOG(e_LogMsgSource _src, string _msg)
         {
-            itemList.Add(new C_LogMsg { src = _src, msg = _msg });
-//            ObservableCollection<LogMessageRow>.CollectionChanged +=;
+            itemList.Add(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.info });
         }
 
-        public void LOG_type(e_LogMsgSource _src, string _msg, string _type)
+        public void LOG_err(e_LogMsgSource _src, string _msg)
         {
-            itemList.Add(new C_LogMsg { src = _src, msg = _msg, type = _type });
+            itemList.Add(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.error });
+        }
+
+        public void LOG_type(e_LogMsgSource _src, string _msg, e_LogMsgType _type)
+        {
+            itemList.Add(new C_LogMsg { src = _src, msg = _msg, type = _type});
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -105,12 +115,12 @@ namespace singletonwise
     {
         public DateTime time { get; set; }
         public e_LogMsgSource src { get; set; }
-        public string type { get; set; }
+        public e_LogMsgType type { get; set; }
         public string msg { get; set; }
         public C_LogMsg()
         {
             time = DateTime.UtcNow;
-            type = "info";
+            type = e_LogMsgType.info;
         }
     }
 }
