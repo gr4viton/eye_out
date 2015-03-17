@@ -87,6 +87,7 @@ namespace EyeOut
             if (t != null)
             // If filter is turned on, filter completed items.
             {
+
                 if (
                     (this.cbLogShowSpi.IsChecked == false && t.src == e_LogMsgSource.spi) ||
                     (this.cbLogShowGui.IsChecked == false && t.src == e_LogMsgSource.gui) ||
