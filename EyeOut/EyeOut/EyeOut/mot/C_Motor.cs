@@ -31,8 +31,20 @@ namespace EyeOut
     internal class C_Motor
     {
         public byte id;
+        private double angle;
         public static List<C_cmdin> cmdinEx;
+        public static List<string> cmdinEx_str;
+        /*
+        public List<String> CmdinEx_str
+        {
+            get { return new List<String> { "One", "Two", "Three" }; }
+        }*/
         private static bool cmdinEx_initialized = false;
+
+        public C_Motor()
+        {
+            id = 0;
+        }
 
         public C_Motor(byte _id)
         {
@@ -41,10 +53,22 @@ namespace EyeOut
             {
                 INIT_cmdinEx();
             }
+            
         }
 
 
 
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region properties
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        public double Angle
+        {
+            get { return angle; }
+            set { angle = value; }
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region INIT
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,6 +84,7 @@ namespace EyeOut
         public void LOAD_examples(string fname, char del)
         {
             C_Motor.cmdinEx = new List<C_cmdin>();
+            C_Motor.cmdinEx_str = new List<string>();
 
             string strHex_concantenated;
             string name;
@@ -92,6 +117,7 @@ namespace EyeOut
                     name = strArr[1];
 
                     //lsCmdEx.Items.Add(string.Format("{0} - {1}", Convert.ToString(c.byCmdin), c.cmdStr));
+                    cmdinEx_str.Add(string.Format("{0} - {1}", name, strHex_concantenated));
                     //cmdinEx.Items.Add(name);
                     C_Motor.cmdinEx.Add(new C_cmdin(strHex_concantenated, name));
                     // Use a tab to indent each line of the file.
@@ -175,7 +201,7 @@ namespace EyeOut
                 q++;
             }
             cmd[3] = (Byte)(byCmdin.Length + 1); // = paramN+Instruction + 1 = paramN + 2 = len
-            cmd[q] = C_Motor.GET_checkSum(cmd);
+            cmd[q] = C_CheckSum.GET_checkSum(cmd);
             cmd[0] = cmd[1] = 0xFF;
             return cmd;
         }
@@ -195,26 +221,6 @@ namespace EyeOut
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
 
             return bytes;
-        }
-
-        public static Byte GET_checkSum(Byte[] cmd)
-        {
-            Byte calc_check = 0x00;
-            unchecked // Let overflow occur without exceptions
-            {
-                foreach (Byte ch in cmd)
-                {
-                    calc_check += ch;
-                }
-            }
-
-            calc_check = (Byte)~calc_check;
-            return calc_check;
-        }
-
-        public static bool CHECK_checkSum(Byte check1, Byte check2)
-        {
-            return (Byte)check1 == (Byte)(check2);
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion static functions

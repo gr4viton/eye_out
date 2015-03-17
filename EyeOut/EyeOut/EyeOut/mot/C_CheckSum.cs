@@ -20,7 +20,6 @@ namespace EyeOut
                     calc_check += ch;
                 }
             }
-
             calc_check = (Byte)~calc_check;
             return calc_check;
         }

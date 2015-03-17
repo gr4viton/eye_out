@@ -23,12 +23,7 @@ namespace EyeOut
     internal class C_SPI
     {
         private static object locker = new object();
-        //private static SerialPort spi;
         public static SerialPort spi;
-
-        public static e_con act_con_status;
-
-
 
         public static Byte[] readBuff;
         public static int i_readBuff = 0;
@@ -48,7 +43,8 @@ namespace EyeOut
         public static bool START_NEW_MSG = false;
 
         // make it into HASHTABLE
-        static string[] errStr = {     "Input Voltage Error"
+        static string[] errStr = {     
+                                     "Input Voltage Error"
                                   , "Angle Limit Error"
                                   , "Overheating Error"
                                   , "Range Error"
@@ -284,9 +280,15 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        int BaudRate { 
+        int BaudRate 
+        { 
             get { return spi.BaudRate; }
             set { spi.BaudRate = value;}
+        }
+        string PortName
+        { 
+            get { return spi.PortName; }
+            set { spi.PortName = value;}
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properties
@@ -361,8 +363,6 @@ namespace EyeOut
         #endregion LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
         private void SPI_CHECK_receivedCmd(Byte[] cmd, Byte rec_checkSum)
         {
             // check for [checksum error] and cmd [error byte] sub-bites disambiguation
@@ -370,7 +370,6 @@ namespace EyeOut
             if (C_CheckSum.CHECK_checkSum(calc_checkSum, rec_checkSum))
             //if( calc_check == 0 )
             {
-                //MessageBox.Show(string.Format("cmd[{0}] = {1}", i_cmdError, cmd[i_cmdError]));
                 if (cmd[i_cmdError] == 0)
                     // no error
                     LOG_cmd(cmd, e_cmd.received);

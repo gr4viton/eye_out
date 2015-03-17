@@ -8,10 +8,6 @@ namespace EyeOut
 {
     public class C_CONV
     {
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        // :: CONV
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         public static Byte strHex2byte(string strHex)
         {
@@ -47,13 +43,13 @@ namespace EyeOut
             }
             return strHexDoubles2byteArray(strHexDoubles);
         }
-
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static void PRINT_byteArray(Byte[] bys)
         {
             foreach (byte by in bys)
                 Console.WriteLine("dec {0}\t= 0x{0:X}", by);
         }
-
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static bool GET_bit(Byte by, int bitNumber)
         {
             return (by & (1 << bitNumber)) != 0;

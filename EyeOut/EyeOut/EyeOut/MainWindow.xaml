@@ -8,17 +8,20 @@
         
         Closing="Window_Closing" 
         
-        Title="MainWindow" Height="600" Width="800"
+        Title="MainWindow" Height="700" Width="800"
         >
     <!--Closed="Window_Closed"-->
-    
-    
-    
-    
+
+
+
+
     <!--instances of binding classes, styles definitions-->
     <Window.Resources>
         <!--new instance of C_controlMot named controlMot-->
         <local:C_SPI x:Key="spi"/>
+        <!--<local:App x:Key="app"/>-->
+
+        <local:C_Motor x:Name="motYaw" x:Key="motYawDataSource"/>
 
         <!--Filtering and sorting of datagrid dgLog-->
         <CollectionViewSource x:Key="ItemCollectionViewSource"  
@@ -46,7 +49,7 @@
             <RowDefinition Height="100"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-            <TabControl Grid.Row="0">
+        <TabControl Grid.Row="0">
             <TabItem Header="Dynamixel Motors" Background="Orange">
                 <!--<Grid Background="#FFE5E5E5">-->
                 <Grid Background="Orange">
@@ -62,7 +65,11 @@
                                 <GroupBox Header="Protocol" >
                                     <StackPanel>
                                         <Label Content="COM Port:"/>
-                                        <ComboBox Name="cbPort"/>
+                                        <ComboBox Name="cbPort">
+                                            <ComboBox.SelectedValue>
+                                                <Binding Source="{StaticResource spi}" Path="PortName"/>
+                                            </ComboBox.SelectedValue>
+                                        </ComboBox>
                                         <Button Name="btnRescanPort" Content="Rescan Ports" Click="btnRescanPort_Click" />
                                         <Label Content="Selected [bps]:"/>
                                         <TextBox Name="txBaudRate" Background="#FF66FF4E">
@@ -111,7 +118,7 @@
 
                             </StackPanel>
                         </GroupBox>
-                        
+
                         <Button DockPanel.Dock="Top" MaxHeight="20" Content="START motors" VerticalAlignment="Top" Click="btnStartMotors_Click" />
                     </DockPanel>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
@@ -131,10 +138,41 @@
                                     <ColumnDefinition Width="5" />
                                     <ColumnDefinition Width="250" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox Grid.Column="0">Interactive image</TextBox>
-                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
-                                <GroupBox x:Name="gpCmds" Header="Example commands" Grid.Column="2">
+                                <Grid Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="30"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBox Grid.Column="0" Grid.Row="0" 
+                                             DataContext="{Binding Source={StaticResource motYawDataSource}}"
+                                            Text="{Binding angleDeg, Mode=Default}"/>
+
+                                    <Slider x:Name="slYaw" Grid.Column="0" Grid.Row="1" 
+                                            Maximum="360" SmallChange="0.1" TickFrequency="45" TickPlacement="TopLeft" UseLayoutRounding="True"
+                                            ValueChanged="slYaw_ValueChanged"/>
+                                    <!--DataContext="{Binding Source={StaticResource motYawDataSource}}"
+                                            Value="{Binding angleDeg, Mode=Default}"-->
+                                    <Slider x:Name="slPitch"  Grid.Column="1" Grid.Row="0" Orientation="Vertical"
+                                            Maximum="360" SmallChange="0.1" TickFrequency="45" TickPlacement="TopLeft"
+                                            ValueChanged="slPitch_ValueChanged"/>
+
+                                    <StackPanel Grid.Column="1" Grid.Row="1" >
+                                        <TextBox FontSize="7" TextAlignment="Center"
+                                        Text="{Binding ElementName=slPitch, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <TextBox FontSize="7" TextAlignment="Center"
+                                        Text="{Binding ElementName=slYaw, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <GridSplitter Grid.Column="2" HorizontalAlignment="Stretch" />
+
+                                <GroupBox Grid.Column="3" x:Name="gpCmds" Header="Example commands" >
                                     <Grid>
                                         <DockPanel>
                                             <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" MouseDoubleClick="lsCmdEx_wannaSend" KeyDown="lsCmdEx_wannaSend" />
@@ -203,11 +241,11 @@
             <TabItem Header="EyeOut Telepresence" Foreground="Wheat" Background="Black">
                 <!--<Grid Background="#FFE5E5E5">-->
                 <Grid Background="Black" >
-                    
+
                 </Grid>
             </TabItem>
         </TabControl>
-        
+
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
 
         <!--LOG start-->
@@ -218,7 +256,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
                 <ListBox x:Name="lsLogSrcSelction" ItemsSource="{Binding Source={StaticResource enumValues}}" SelectionMode="Multiple" SelectionChanged="CompleteFilter_Changed"/>
-                <ToggleButton Content="See All" Checked="LogFilterCheckAll" Unchecked="LogFilterUncheckAll"/>                
+                <ToggleButton Content="See All" Checked="LogFilterCheckAll" Unchecked="LogFilterUncheckAll"/>
             </StackPanel>
             <DataGrid Grid.Column="1"
             x:Name="dgLog"

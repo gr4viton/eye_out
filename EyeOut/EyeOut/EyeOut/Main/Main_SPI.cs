@@ -51,8 +51,8 @@ namespace EyeOut
                 */
 
                 cbPort.Items.Clear();
-                //allPorts = C_SPI.spi.GetPortNames(); //<--------
-                allPorts = new string [0];
+                allPorts = SerialPort.GetPortNames();
+                
 
                 foreach (string port in allPorts)
                 {

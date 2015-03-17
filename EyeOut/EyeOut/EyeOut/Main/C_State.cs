@@ -15,6 +15,10 @@ namespace EyeOut
     {
         public static e_state prog;
 
+        public C_State()
+        {
+            prog = e_state.running;
+        }
 
         public static void CLOSE_program()
         {

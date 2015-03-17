@@ -23,6 +23,41 @@ namespace EyeOut
     /// </summary>
     public partial class MainWindow : Window
     {
+        private double angYaw;
+        C_Motor actMot;
+        C_Motor mot = null;
+        public static Byte nudId = 1;
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region properies
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        public double AngYaw
+        {
+            get { return angYaw; }
+            set { angYaw = value; }
+        }
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion properies
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region INIT
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        public void INIT_mot()
+        {
+            actMot = new C_Motor(1);
+            mot = this.Resources["motYawDataSource"] as C_Motor;
+            mot.Angle = 20;
+            foreach (string str in C_Motor.cmdinEx_str)
+            {
+                lsCmdEx.Items.Add(str);
+            }
+        }
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion INIT
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         private void btnStartMotors_Click(object sender, RoutedEventArgs e)
         {
             // just trial
@@ -39,6 +74,9 @@ namespace EyeOut
             C_CONV.PRINT_byteArray(bys);
             bys = C_CONV.strHex2byteArray(strCmd);
             C_CONV.PRINT_byteArray(bys);
+
+
+            MessageBox.Show(mot.Angle.ToString());
         }
 
         private Byte ID_fromNUDid()
@@ -66,7 +104,6 @@ namespace EyeOut
 
         public void lsCmdEx_SEND_selected()
         {
-
             if (cbExampleDoubleClick.IsChecked == true)
             {
                 actMot.SEND_example(lsCmdEx.SelectedIndex);
