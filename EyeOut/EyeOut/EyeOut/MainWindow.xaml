@@ -213,21 +213,12 @@
         <!--LOG start-->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="42"/>
+                <ColumnDefinition Width="50"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
-                
-                <StackPanel x:Name="spLogFilterCheckboxes">
-                    <CheckBox x:Name="cbLogShowSpi" Content="SPI" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
-                    <CheckBox x:Name="cbLogShowMot" Content="Motor" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
-                    <CheckBox x:Name="cbLogShowGui" Content="GUI" VerticalAlignment="Center" Checked="CompleteFilter_Changed" Unchecked="CompleteFilter_Changed" />
-
-                </StackPanel>
-                <ListBox ItemsSource="{Binding Source={StaticResource enumValues}}" SelectionMode="Multiple"/>
-                <Label Content="See"/>
-                <Button Content="All" Click="LogFilterCheckAll"/>
-                <Button Content="None" Click="LogFilterUncheckAll"/>
+                <ListBox x:Name="lsLogSrcSelction" ItemsSource="{Binding Source={StaticResource enumValues}}" SelectionMode="Multiple" SelectionChanged="CompleteFilter_Changed"/>
+                <ToggleButton Content="See All" Checked="LogFilterCheckAll" Unchecked="LogFilterUncheckAll"/>                
             </StackPanel>
             <DataGrid Grid.Column="1"
             x:Name="dgLog"

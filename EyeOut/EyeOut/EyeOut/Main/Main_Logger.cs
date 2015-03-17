@@ -15,6 +15,7 @@ namespace EyeOut
 {
 
 
+
     /// <summary>
     /// Logger - GUI
     /// </summary>
@@ -42,7 +43,7 @@ namespace EyeOut
             BindingOperations.EnableCollectionSynchronization(C_Logger.Instance.Data, daraGrid_lock); // for multi-thread updating
 
             // init filter
-            LogFilterSetAll(true);
+            lsLogSrcSelction.SelectAll();    
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,25 +51,15 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region Filtering Checkboxes
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        private void LogFilterSetAll(bool val)
-        {
-            if (spLogFilterCheckboxes.IsInitialized)
-            {
-                foreach (CheckBox cb in spLogFilterCheckboxes.Children)
-                {
-                    cb.IsChecked = val;
-                }
-            }
-        }
 
         private void LogFilterCheckAll(object sender, RoutedEventArgs e)
         {
-            LogFilterSetAll(true);
+            lsLogSrcSelction.SelectAll();    
         }
 
         private void LogFilterUncheckAll(object sender, RoutedEventArgs e)
         {
-            LogFilterSetAll(false);
+            lsLogSrcSelction.UnselectAll();
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Filtering Checkboxes
@@ -87,7 +78,33 @@ namespace EyeOut
             if (t != null)
             // If filter is turned on, filter completed items.
             {
-
+                e.Accepted = false;
+                foreach (e_LogMsgSource src in lsLogSrcSelction.SelectedItems)
+                {
+                    if (src == t.src)
+                    {
+                        e.Accepted = true;
+                    }
+                }
+                /*
+                foreach (int ind in lsLogSrcSelction.SelectedItems.IndexOf)
+                {
+                    if(ind == (int)t.src)
+                        e.Accepted = false;
+                }
+                foreach (ListViewItem item in lsLogSrcSelction.SelectedItems)
+                {
+                    MessageBox.Show("sel item" + item.ToString());
+                    //if (item.ToString() == t.src.ToString())
+                      //  e.Accepted = false;
+                }
+                foreach (e_LogMsgSource src in Enum.GetValues(typeof(e_LogMsgSource)))
+                {
+                    //if(t.src == src && lsLogSrcSelction.
+                    if(lsLogSrcSelction.SelectedItems.Cast<e_LogMsgSource> == src)
+                    e.Accepted = false;
+                }*/
+                /*
                 if (
                     (this.cbLogShowSpi.IsChecked == false && t.src == e_LogMsgSource.spi) ||
                     (this.cbLogShowGui.IsChecked == false && t.src == e_LogMsgSource.gui) ||
@@ -96,6 +113,7 @@ namespace EyeOut
                     e.Accepted = false;
                 else
                     e.Accepted = true;
+                 */
             }
 
         }

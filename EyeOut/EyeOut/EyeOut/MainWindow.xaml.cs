@@ -172,6 +172,11 @@ namespace EyeOut
             btnConnect.Content = "Connect Serial";
         }
 
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
 
 
     }
