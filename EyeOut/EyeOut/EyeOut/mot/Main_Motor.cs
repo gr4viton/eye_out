@@ -21,10 +21,17 @@ namespace EyeOut
     /// <summary>
     /// Motor - gui
     /// </summary>
+    /// 
+    public enum e_rotInd
+    {
+        roll = 0, pitch = 1, yaw = 2
+    }
     public partial class MainWindow : Window
     {
         private double angYaw;
         C_Motor actMot;
+        public List<C_Motor> Ms;
+
         C_Motor mot = null;
         public static Byte nudId = 1;
 
@@ -32,11 +39,13 @@ namespace EyeOut
         #region properies
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+        public double a;
         public double AngYaw
         {
             get { return angYaw; }
             set { angYaw = value; }
         }
+        //public double AngRoll
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properies
@@ -47,11 +56,43 @@ namespace EyeOut
         public void INIT_mot()
         {
             actMot = new C_Motor(1);
+            /*
             mot = this.Resources["motYawDataSource"] as C_Motor;
-            mot.Angle = 20;
+            mot.Angle = 20;*/
             foreach (string str in C_Motor.cmdinEx_str)
             {
                 lsCmdEx.Items.Add(str);
+            }
+
+            SEARCH_motors();
+        }
+
+        public void SEARCH_motors()
+        {
+            Ms = new List<C_Motor>();
+            // send pings and get responses - add items to [Ms] motor list
+            // - use local Search motor for pinging and changing of id..
+            Byte id = C_DynAdd.ID_MIN;
+            C_Motor srchM = new C_Motor(id);
+            for (id = C_DynAdd.ID_MIN; id < C_DynAdd.ID_MAX; id++)
+            {
+                srchM.id = id;
+
+                C_SPI.spi.DiscardInBuffer(); 
+                
+                srchM.ORDER_ping();
+                    /*
+                     * No ak to mas threadsafe, tak pred kazdou read/write dvojicou vycisti buffer pre istotu
+                    Dal by som normalne port read do cyklu kolkto dat ocakavas
+                        Nad to hodis try catch na timeoutexception
+                    Ak mas response, metoda vrati true, ak exceptiom false
+                     */
+                C_SPI.READ_cmd();
+                
+                if(/* magic */)
+                {
+                    MessageBox.Show(id.ToString());
+                }
             }
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,5 +151,16 @@ namespace EyeOut
                 //lsCmdEx_SEND_selected();            
             }
         }
+
+        private void slYaw_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            AngYaw = slYaw.Value;
+        }
+
+        private void slPitch_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            AngYaw = slYaw.Value;
+        }
+
     }
 }

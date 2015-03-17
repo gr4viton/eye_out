@@ -33,6 +33,7 @@ namespace EyeOut
         public MainWindow()
         {
             angYaw = 0;
+            AngYaw = 0;
             InitializeComponent();
             /*
             EV_connection(e_con.port_closed);
@@ -145,15 +146,6 @@ namespace EyeOut
 
         }
 
-        private void slYaw_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-
-        }
-
-        private void slPitch_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-
-        }
 
 
 

@@ -21,7 +21,7 @@
         <local:C_SPI x:Key="spi"/>
         <!--<local:App x:Key="app"/>-->
 
-        <local:C_Motor x:Name="motYaw" x:Key="motYawDataSource"/>
+        <!--<local:C_Motor x:Name="motYaw" x:Key="motYawDataSource"/>-->
 
         <!--Filtering and sorting of datagrid dgLog-->
         <CollectionViewSource x:Key="ItemCollectionViewSource"  
@@ -149,9 +149,9 @@
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="30"/>
                                     </Grid.RowDefinitions>
-                                    <TextBox Grid.Column="0" Grid.Row="0" 
-                                             DataContext="{Binding Source={StaticResource motYawDataSource}}"
-                                            Text="{Binding angleDeg, Mode=Default}"/>
+                                    <TextBox Grid.Column="0" Grid.Row="0" />
+                                             <!--DataContext="{Binding Source={StaticResource motYawDataSource}}"
+                                            Text="{Binding angleDeg, Mode=Default}"/>-->
 
                                     <Slider x:Name="slYaw" Grid.Column="0" Grid.Row="1" 
                                             Maximum="360" SmallChange="0.1" TickFrequency="45" TickPlacement="TopLeft" UseLayoutRounding="True"

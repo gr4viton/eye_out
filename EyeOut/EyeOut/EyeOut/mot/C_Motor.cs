@@ -28,7 +28,7 @@ namespace EyeOut
         }
     }
 
-    internal class C_Motor
+    public class C_Motor
     {
         public byte id;
         private double angle;
@@ -156,6 +156,9 @@ namespace EyeOut
             }
             else
             {
+                //e.Result = "tocovrati writeData";
+                //MyResultObject result = (MyResultObject)e.Result;
+
                 //LOG("DATA SENT");
                 //var results = e.Result as List<object>;
             }
@@ -163,11 +166,17 @@ namespace EyeOut
 
         public void SEND_example(int num)
         {
-            SEND_cmdInner(cmdinEx[num].byCmdin, id);
+            SEND_cmdInner(cmdinEx[num].byCmdin);
         }
 
 
-        private void SEND_cmdInner(Byte[] inner, Byte id)
+        private void SEND_cmdInner(Byte inner)
+        {
+            Byte[] bys_inner = new Byte[1] { inner };
+            SEND_cmd(C_Motor.CREATE_cmdFromInner(bys_inner, id));
+        }
+
+        private void SEND_cmdInner(Byte[] inner)
         {
             SEND_cmd(C_Motor.CREATE_cmdFromInner(inner, id));
         }
@@ -307,7 +316,8 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion CONV
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        #region LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static void LOG(string _msg)
         {
             C_Logger.Instance.LOG(e_LogMsgSource.mot, _msg);
@@ -319,8 +329,22 @@ namespace EyeOut
             //C_Logger.Instance.LOG(e_LogMsgSource.mot, _msg, type = error); 
             C_Logger.Instance.LOG_err(e_LogMsgSource.mot, _msg);
         }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region ORDER
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+        public void ORDER_ping()
+        {
+            SEND_cmdInner(C_DynAdd.INS_PING);
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion ORDER
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region MOVE
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         public void MOVE_absPosLastSpeed(int abs_deg)
         {
             // Goal Position - Address 30, 31 (0X1E, 0x1F) 
@@ -340,6 +364,12 @@ namespace EyeOut
             SEND_cmd(CREATE_cmdFromInner(cmdInner, id));
 
         }
+        public void MOVE_relPos(Byte id, int rel_deg)
+        {
+            // Goal Position - Address 30, 31 (0X1E, 0x1F) 
+            // CW Angle Limit ? Goal Potion ? CCW Angle Limit; 
+
+        }
 
         enum e_bounds
         {
@@ -348,12 +378,6 @@ namespace EyeOut
             bigger = 1
                 , smaller = 2
         };
-        public void MOVE_relPos(Byte id, int rel_deg)
-        {
-            // Goal Position - Address 30, 31 (0X1E, 0x1F) 
-            // CW Angle Limit ? Goal Potion ? CCW Angle Limit; 
-
-        }
 
         private e_bounds NOTIN_bounds(int num, int min, int max)
         {
@@ -373,6 +397,10 @@ namespace EyeOut
             else
                 return num;
         }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion CONV
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
     }
 
