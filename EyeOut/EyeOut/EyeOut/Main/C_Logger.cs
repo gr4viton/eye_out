@@ -87,22 +87,27 @@ namespace EyeOut
 
         public void LOG(C_LogMsg _msg)
         {
-            itemList.Add(_msg);
+            ADD_toList(_msg);
         }
 
         public void LOG(e_LogMsgSource _src, string _msg)
         {
-            itemList.Add(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.info });
+            ADD_toList(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.info });
         }
 
         public void LOG_err(e_LogMsgSource _src, string _msg)
         {
-            itemList.Add(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.error });
+            ADD_toList(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.error });
         }
 
         public void LOG_type(e_LogMsgSource _src, string _msg, e_LogMsgType _type)
         {
-            itemList.Add(new C_LogMsg { src = _src, msg = _msg, type = _type });
+            ADD_toList(new C_LogMsg { src = _src, msg = _msg, type = _type });
+        }
+
+        public void ADD_toList(C_LogMsg _logMsg)
+        {
+            itemList.Add(_logMsg);
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

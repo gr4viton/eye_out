@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.ComponentModel;
 
-using System.Linq;
+//using System.Linq;
 
 namespace EyeOut
 {
-
+    /*
     public class SEND_cmd_eventArgs : DoWorkEventArgs
     {
         public byte[] cmd;
@@ -29,11 +29,15 @@ namespace EyeOut
             return (innerCmd);
         }
     }
-
+    */
     public partial class C_Motor
     {
         public byte id;
         private double angle;
+        private byte[] angleHex;
+        private double speed;
+        private byte[] speedHex;
+
         public static List<C_cmdin> cmdinEx;
         public static List<string> cmdinEx_str;
         /*
@@ -51,6 +55,8 @@ namespace EyeOut
         public C_Motor(byte _id)
         {
             id = _id;
+            angle = 0;
+            angleHex = new byte[2] { 0, 0 };
             if (cmdinEx_initialized == false)
             {
                 INIT_cmdinEx();
@@ -67,7 +73,11 @@ namespace EyeOut
         public double Angle
         {
             get { return angle; }
-            set { angle = value; }
+            set 
+            { 
+                angle = value;
+                angleHex = CONV_ang_deg2by(angle);
+            }
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properties
@@ -233,6 +243,27 @@ namespace EyeOut
 
             return bytes;
         }
+
+        public byte[] CREATE_cmdInner(List<object> L)
+        {
+            // creates byte array out of list of byte / byte arrays - concatenates them
+            List<byte> liby = new List<byte>();
+            foreach (object o in L)
+            {
+                if (o is byte)
+                {
+                    liby.Add((byte)o);
+                }
+                else if (o is byte[])
+                {
+                    if (((byte[])o).Length > 0)
+                    {
+                        liby.AddRange((byte[])o);
+                    }
+                }
+            }
+            return liby.ToArray();
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion static functions
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -259,57 +290,38 @@ namespace EyeOut
         {
             SEND_cmdInner(C_DynAdd.INS_PING);
         }
-        public void ORDER_move()
+        // move with speed stored in motor - not writing to control speed register
+        public void ORDER_moveLastSpeed()
         {
-            byte[] LH = new byte[2];
-            LH = CONV_ang_deg2by(Angle);
-
-            /*
-            List<byte> liby = new List<byte>();
-            liby.Add(  C_DynAdd.INS_WRITE );
-            liby.Add(  C_DynAdd.GOAL_POS_L);
-            liby.AddRange(CONV_ang_deg2by(Angle));
-            SEND_cmdInner(liby.ToArray());
-             */
-            //SEND_cmdInner(new byte[] { C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, LH[0], LH[1] });
-
-            // make it recursive function
-            //IEnumerable<byte> rv = a1.Concat(a2).Concat(a3);
-
-            //byte[] oldArr = new byte[1024];
-            //byte[] newArr = new byte[oldArr.Length * 2];
-            //System.Array.Copy(oldArr, newArr, oldArr.Length);
-
-            //List<object> L = new List<object>{ C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, CONV_ang_deg2by(Angle) };
-            SEND_cmdInner(CREATE_ORDER(new List<object> { C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, CONV_ang_deg2by(Angle) }));
-
-            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(LH), Angle));
+            SEND_cmdInner(CREATE_cmdInner(new List<object> { 
+                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angleHex
+            }));
+            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angleHex), Angle));
         }
 
-        public byte[] CREATE_ORDER(List<object> L)
+        // move with speed 
+        public void ORDER_move() 
         {
-            List<byte> liby = new List<byte>();
-            foreach( object o in L)
-            {
-                if(o is byte)
-                {
-                    liby.Add( (byte)o );
-                }
-                else if(o is byte[])
-                {
-                    liby.AddRange((byte[])o);
-                }
-            }
-            return liby.ToArray();
+            SEND_cmdInner(CREATE_cmdInner(new List<object> { 
+                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angleHex, 
+            }));
+            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angleHex), Angle));
         }
-
+        // move without speed control
+        public void ORDER_moveBrisk()
+        {
+            SEND_cmdInner(CREATE_cmdInner(new List<object> { 
+                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angleHex, C_DynAdd.SET_MOV_SPEED_NOCONTROL
+            }));
+            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angleHex), Angle));
+        }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion ORDER
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region MOVE
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+        /*
         public void MOVE_absPosLastSpeed(int abs_deg)
         {
             // Goal Position - Address 30, 31 (0X1E, 0x1F) 
@@ -329,12 +341,14 @@ namespace EyeOut
             SEND_cmd(CREATE_cmdFromInner(cmdInner, id));
 
         }
+        */
+        /*
         public void MOVE_relPos(Byte id, int rel_deg)
         {
             // Goal Position - Address 30, 31 (0X1E, 0x1F) 
             // CW Angle Limit ? Goal Potion ? CCW Angle Limit; 
 
-        }
+        }*/
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion CONV

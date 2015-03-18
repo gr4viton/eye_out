@@ -1,0 +1,50 @@
+
+System.ArgumentOutOfRangeException was unhandled
+  HResult=-2146233086
+  Message=Insertion index was out of range. Must be non-negative and less than or equal to size.
+Parameter name: index
+  Source=mscorlib
+  ParamName=index
+  StackTrace:
+       at System.Collections.ArrayList.Insert(Int32 index, Object value)
+       at System.Windows.Data.ListCollectionView.AdjustShadowCopy(NotifyCollectionChangedEventArgs e)
+       at System.Windows.Data.ListCollectionView.ProcessCollectionChanged(NotifyCollectionChangedEventArgs args)
+       at System.Windows.Data.CollectionView.ProcessChangeLog(ArrayList changeLog, Boolean processAll)
+       at System.Windows.Data.CollectionView.ProcessInvoke(Object arg)
+       at MS.Internal.Data.DataBindOperation.Invoke()
+       at MS.Internal.Data.DataBindEngine.ProcessCrossThreadRequests()
+       at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+       at MS.Internal.Threading.ExceptionFilterHelper.TryCatchWhen(Object source, Delegate method, Object args, Int32 numArgs, Delegate catchHandler)
+       at System.Windows.Threading.DispatcherOperation.InvokeImpl()
+       at System.Windows.Threading.DispatcherOperation.InvokeInSecurityContext(Object state)
+       at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+       at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+       at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+       at System.Windows.Threading.DispatcherOperation.Invoke()
+       at System.Windows.Threading.Dispatcher.ProcessQueue()
+       at System.Windows.Threading.Dispatcher.WndProcHook(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+       at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+       at MS.Win32.HwndSubclass.DispatcherCallbackOperation(Object o)
+       at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+       at MS.Internal.Threading.ExceptionFilterHelper.TryCatchWhen(Object source, Delegate method, Object args, Int32 numArgs, Delegate catchHandler)
+       at System.Windows.Threading.Dispatcher.LegacyInvokeImpl(DispatcherPriority priority, TimeSpan timeout, Delegate method, Object args, Int32 numArgs)
+       at MS.Win32.HwndSubclass.SubclassWndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam)
+       at MS.Win32.UnsafeNativeMethods.DispatchMessage(MSG& msg)
+       at System.Windows.Threading.Dispatcher.PushFrameImpl(DispatcherFrame frame)
+       at System.Windows.Threading.Dispatcher.PushFrame(DispatcherFrame frame)
+       at System.Windows.Threading.Dispatcher.Run()
+       at System.Windows.Application.RunDispatcher(Object ignore)
+       at System.Windows.Application.RunInternal(Window window)
+       at System.Windows.Application.Run(Window window)
+       at System.Windows.Application.Run()
+       at EyeOut.App.Main() in b:\__DIP\dev\_main_dev\EyeOut\EyeOut\EyeOut\obj\Debug\App.g.cs:line 0
+       at System.AppDomain._nExecuteAssembly(RuntimeAssembly assembly, String[] args)
+       at System.AppDomain.ExecuteAssembly(String assemblyFile, Evidence assemblySecurity, String[] args)
+       at Microsoft.VisualStudio.HostingProcess.HostProc.RunUsersAssembly()
+       at System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+       at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+       at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+       at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+       at System.Threading.ThreadHelper.ThreadStart()
+  InnerException: 
+

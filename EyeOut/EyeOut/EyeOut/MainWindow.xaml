@@ -120,6 +120,7 @@
                         </GroupBox>
 
                         <Button DockPanel.Dock="Top" MaxHeight="20" Content="START motors" VerticalAlignment="Top" Click="btnStartMotors_Click" />
+                        <ToggleButton Content="timSim" Checked="btnTimSim_Toggle" Unchecked="btnTimSim_Toggle"/>
                     </DockPanel>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
@@ -257,7 +258,9 @@
             <StackPanel Grid.Column="0">
                 <ListBox x:Name="lsLogSrcSelction" ItemsSource="{Binding Source={StaticResource enumValues}}" SelectionMode="Multiple" SelectionChanged="CompleteFilter_Changed"/>
                 <ToggleButton Content="See All" Checked="LogFilterCheckAll" Unchecked="LogFilterUncheckAll"/>
+                
             </StackPanel>
+            
             <DataGrid Grid.Column="1"
             x:Name="dgLog"
               DataContext="{StaticResource ItemCollectionViewSource}"

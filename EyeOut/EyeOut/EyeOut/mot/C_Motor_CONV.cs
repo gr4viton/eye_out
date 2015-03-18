@@ -125,7 +125,8 @@ namespace EyeOut
             // ang = 0 to 300
             //(Byte) 1023*
             int min = 0;
-            int max = 300;
+            int max = 360;
+            int maxHex = 1023;
             e_bounds e = NOTIN_bounds(deg, min, max);
             switch (e)
             {
@@ -141,7 +142,7 @@ namespace EyeOut
                     break;
             }
 
-            UInt16 degconv = Convert.ToUInt16(1023 * GET_bounded(deg, min, max) / 300);
+            UInt16 degconv = Convert.ToUInt16(maxHex * GET_bounded(deg, min, max) / max * 4);
 
             Byte H = (byte)(degconv >> 8);
             Byte L = (byte)(degconv & 0xff);

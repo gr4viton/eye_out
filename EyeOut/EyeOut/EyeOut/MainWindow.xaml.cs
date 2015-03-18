@@ -21,6 +21,7 @@ using System.Collections;
 
 using System.Data; // datagrid
 using System.Collections.ObjectModel; // ObservableCollection
+using System.Windows.Threading; // dispatcherTimer
 
 namespace EyeOut
 {
@@ -30,10 +31,9 @@ namespace EyeOut
     /// </summary>
     public partial class MainWindow : Window
     {
+        public DispatcherTimer timSim;
         public MainWindow()
         {
-            angYaw = 0;
-            AngYaw = 0;
             InitializeComponent();
             /*
             EV_connection(e_con.port_closed);
@@ -42,6 +42,7 @@ namespace EyeOut
             INIT_logger();
             INIT_spi();
             INIT_mot();
+            INIT_tim();
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region prog status
@@ -56,11 +57,11 @@ namespace EyeOut
         #region INIT
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public void INIT_tim()
-        {
-            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 100);
-            dispatcherTimer.Start();
+        { 
+            timSim = new DispatcherTimer();
+            timSim.Tick += new EventHandler(timSim_Tick);
+            timSim.Interval = new TimeSpan(0, 0, 0, 100);
+            //timSim.Start();
         }
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -85,34 +86,36 @@ namespace EyeOut
             //LOG_UPDATE_tx();
         }
 
-        /*
-         * 
-        int act_ang = 180;
         private void timSim_Tick(object sender, EventArgs e)
         {
+            /*
             mot1.MOVE_absPosLastSpeed(act_ang);
             tbAng.Value = act_ang;
             txAng.Text = act_ang.ToString();
-            act_ang = act_ang + 1;
+            act_ang = act_ang + 1;*/
+            actMot.Angle += 0.1;
         }
 
-        private void btnTimSim_Click(object sender, EventArgs e)
+        private void btnTimSim_Toggle(object sender, EventArgs e)
         {
-            switch (timSim.Enabled)
+            switch (timSim.IsEnabled)
             {
-                case(true):
-                    btnTimSim.Background = Color.OrangeRed;
-                    btnTimSim.Text = "START";
-                    timSim.Enabled = false;
+                case (true):
+                    /*
+                        btnTimSim.Background = Color.OrangeRed;
+                        btnTimSim.Text = "START";*/
+                    timSim.Stop();
                     break;
 
                 case (false):
-                    btnTimSim.Background = Color.LimeGreen;
-                    btnTimSim.Text = "STOP";
-                    timSim.Enabled = true;
+                    /*
+                        btnTimSim.Background = Color.LimeGreen;
+                        btnTimSim.Text = "STOP";*/
+                    timSim.Start();
                     break;
             }
-        */
+        }
+
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion simulation timer
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
