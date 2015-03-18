@@ -32,7 +32,6 @@ namespace EyeOut
         C_Motor actMot;
         public List<C_Motor> Ms;
 
-        C_Motor mot = null;
         public static Byte nudId = 1;
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,7 +63,6 @@ namespace EyeOut
                 lsCmdEx.Items.Add(str);
             }
 
-            SEARCH_motors();
         }
 
         public void SEARCH_motors()
@@ -74,25 +72,26 @@ namespace EyeOut
             // - use local Search motor for pinging and changing of id..
             Byte id = C_DynAdd.ID_MIN;
             C_Motor srchM = new C_Motor(id);
+
             for (id = C_DynAdd.ID_MIN; id < C_DynAdd.ID_MAX; id++)
             {
                 srchM.id = id;
-
+                
                 C_SPI.spi.DiscardInBuffer(); 
                 
                 srchM.ORDER_ping();
+
+                if (C_SPI.READ_cmd()) 
+                {
+                    MessageBox.Show(id.ToString());
+                }
+                    
                     /*
                      * No ak to mas threadsafe, tak pred kazdou read/write dvojicou vycisti buffer pre istotu
                     Dal by som normalne port read do cyklu kolkto dat ocakavas
                         Nad to hodis try catch na timeoutexception
                     Ak mas response, metoda vrati true, ak exceptiom false
                      */
-                C_SPI.READ_cmd();
-                
-                if(/* magic */)
-                {
-                    MessageBox.Show(id.ToString());
-                }
             }
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -111,13 +110,13 @@ namespace EyeOut
             //C_DynMot.CONV_strHex2byteArray(strCmd2);
             byte[] bys;
 
-            bys = C_CONV.strHex2byteArray(strCmd_delimited, strDelimiter);
-            C_CONV.PRINT_byteArray(bys);
-            bys = C_CONV.strHex2byteArray(strCmd);
-            C_CONV.PRINT_byteArray(bys);
+            bys = C_Motor.strHex2byteArray(strCmd_delimited, strDelimiter);
+            C_Motor.PRINT_byteArray(bys);
+            bys = C_Motor.strHex2byteArray(strCmd);
+            C_Motor.PRINT_byteArray(bys);
 
 
-            MessageBox.Show(mot.Angle.ToString());
+            MessageBox.Show(actMot.Angle.ToString());
         }
 
         private Byte ID_fromNUDid()
@@ -148,19 +147,26 @@ namespace EyeOut
             if (cbExampleDoubleClick.IsChecked == true)
             {
                 actMot.SEND_example(lsCmdEx.SelectedIndex);
-                //lsCmdEx_SEND_selected();            
+                //lsCmdEx_SEND_selected(); 
             }
         }
 
         private void slYaw_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             AngYaw = slYaw.Value;
+            actMot.Angle = AngYaw;
+            actMot.ORDER_move();
         }
 
         private void slPitch_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             AngYaw = slYaw.Value;
         }
+        private void btnSearch4motors_Click(object sender, RoutedEventArgs e)
+        {
+            SEARCH_motors();
+        }
+
 
     }
 }

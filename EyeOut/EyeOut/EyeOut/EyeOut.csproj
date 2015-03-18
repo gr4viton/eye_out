@@ -77,7 +77,7 @@
     <Compile Include="mot\C_SPI.cs" />
     <Compile Include="Main\Main_Logger.cs" />
     <Compile Include="mot\C_CheckSum.cs" />
-    <Compile Include="mot\C_CONV.cs" />
+    <Compile Include="mot\C_Motor_CONV.cs" />
     <Compile Include="mot\C_DynAdd.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

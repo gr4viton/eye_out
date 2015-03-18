@@ -166,7 +166,7 @@ namespace EyeOut
         #region Reading
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public bool READ_cmd()
+        public static bool READ_cmd()
         {
             // this function tries to read echo of the motor after sending [lastSentCmd]
 
@@ -436,7 +436,7 @@ namespace EyeOut
         private static void LOG_cmdError(Byte byId, Byte byError)
         {
             for (int b = 0; b < 7; b++)
-                if (C_CONV.GET_bit(byError, b) == true)
+                if (C_Motor.GET_bit(byError, b) == true)
                 {
                     LOG(
                         string.Format("ID[{0}] error: {1}", byId, errStr[b])
@@ -476,7 +476,7 @@ namespace EyeOut
         #endregion LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        private void SPI_CHECK_receivedCmd(Byte[] cmd, Byte rec_checkSum)
+        private static void SPI_CHECK_receivedCmd(Byte[] cmd, Byte rec_checkSum)
         {
             // check for [checksum error] and cmd [error byte] sub-bites disambiguation
             Byte calc_checkSum = C_CheckSum.GET_checkSum(cmd);

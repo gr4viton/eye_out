@@ -103,7 +103,7 @@
                         </GroupBox>
                         <GroupBox DockPanel.Dock="Top" Header="Motor settings" >
                             <StackPanel>
-                                <Button Content="Search for connected" />
+                                <Button Content="Search for connected" Click="btnSearch4motors_Click"/>
                                 <GroupBox Header="Select">
                                     <ListBox Name="lsMot" MinHeight="40"/>
                                 </GroupBox>

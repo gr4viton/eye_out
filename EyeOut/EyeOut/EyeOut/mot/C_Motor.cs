@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.ComponentModel;
 
+using System.Linq;
+
 namespace EyeOut
 {
 
@@ -28,7 +30,7 @@ namespace EyeOut
         }
     }
 
-    public class C_Motor
+    public partial class C_Motor
     {
         public byte id;
         private double angle;
@@ -234,88 +236,6 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion static functions
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #region CONV
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        public static Byte strHex2byte(string strHex)
-        {
-            byte by = strHex2byteArray(strHex)[0];
-            return by;
-        }
-
-        public static Byte[] strHex2byteArray(string strHex, string delimiter)
-        {
-            string[] strHexDoubles = strHex.Split(' ');
-            return strHexDoubles2byteArray(strHexDoubles);
-        }
-        public static Byte[] strHexDoubles2byteArray(string[] strHexDoubles)
-        {
-            Byte[] by = new Byte[strHexDoubles.Length];
-            int i = 0;
-            foreach (String hex in strHexDoubles)
-            {
-                by[i] = (Byte)Convert.ToInt32(hex, 16);
-                //Console.WriteLine("int value = {0} ", by[i]);
-                i++;
-            }
-            return by;
-        }
-        public static Byte[] strHex2byteArray(string strHex_concatenated)
-        {
-            int numOfDoubles = strHex_concatenated.Length / 2;
-            string[] strHexDoubles = new string[numOfDoubles];
-
-            for (int q = 0; q < numOfDoubles; q++)
-            {
-                strHexDoubles[q] = strHex_concatenated.Substring(q * 2, 2);
-            }
-            return strHexDoubles2byteArray(strHexDoubles);
-        }
-
-        public static void PRINT_byteArray(Byte[] bys)
-        {
-            foreach (byte by in bys)
-                Console.WriteLine("dec {0}\t= 0x{0:X}", by);
-        }
-
-        public static bool GET_bit(Byte by, int bitNumber)
-        {
-            return (by & (1 << bitNumber)) != 0;
-        }
-
-
-        private Byte[] CONV_ang_deg2by(int deg)
-        {
-            // by = 0 to 1023 (0x3FF)
-            // ang = 0 to 300
-            //(Byte) 1023*
-            int min = 0;
-            int max = 300;
-            e_bounds e = NOTIN_bounds(deg, min, max);
-            switch (e)
-            {
-                case (e_bounds.bigger):
-                    LOG(String.Format(
-                        "Tried to calculate angle bigger then boundary {0} > [max{1}] deg. Used the maximum value.",
-                        deg, max));
-                    break;
-                case (e_bounds.smaller):
-                    LOG(String.Format(
-                        "Tried to calculate angle lower then boundary {0} < [min{1}] deg. Used the minimum value.",
-                        deg, min));
-                    break;
-            }
-
-            UInt16 degconv = Convert.ToUInt16(1023 * GET_bounded(deg, min, max) / 300);
-
-            Byte H = (byte)(degconv >> 8);
-            Byte L = (byte)(degconv & 0xff);
-
-            return new Byte[] { L, H };
-        }
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #endregion CONV
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static void LOG(string _msg)
@@ -339,6 +259,51 @@ namespace EyeOut
         {
             SEND_cmdInner(C_DynAdd.INS_PING);
         }
+        public void ORDER_move()
+        {
+            byte[] LH = new byte[2];
+            LH = CONV_ang_deg2by(Angle);
+
+            /*
+            List<byte> liby = new List<byte>();
+            liby.Add(  C_DynAdd.INS_WRITE );
+            liby.Add(  C_DynAdd.GOAL_POS_L);
+            liby.AddRange(CONV_ang_deg2by(Angle));
+            SEND_cmdInner(liby.ToArray());
+             */
+            //SEND_cmdInner(new byte[] { C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, LH[0], LH[1] });
+
+            // make it recursive function
+            //IEnumerable<byte> rv = a1.Concat(a2).Concat(a3);
+
+            //byte[] oldArr = new byte[1024];
+            //byte[] newArr = new byte[oldArr.Length * 2];
+            //System.Array.Copy(oldArr, newArr, oldArr.Length);
+
+            //List<object> L = new List<object>{ C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, CONV_ang_deg2by(Angle) };
+            SEND_cmdInner(CREATE_ORDER(new List<object> { C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, CONV_ang_deg2by(Angle) }));
+
+            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(LH), Angle));
+        }
+
+        public byte[] CREATE_ORDER(List<object> L)
+        {
+            List<byte> liby = new List<byte>();
+            foreach( object o in L)
+            {
+                if(o is byte)
+                {
+                    liby.Add( (byte)o );
+                }
+                else if(o is byte[])
+                {
+                    liby.AddRange((byte[])o);
+                }
+            }
+            return liby.ToArray();
+        }
+
+
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion ORDER
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -371,32 +336,6 @@ namespace EyeOut
 
         }
 
-        enum e_bounds
-        {
-            in_bounds = 0
-            ,
-            bigger = 1
-                , smaller = 2
-        };
-
-        private e_bounds NOTIN_bounds(int num, int min, int max)
-        {
-            if (num > max)
-                return e_bounds.bigger;
-            else if (num < min)
-                return e_bounds.smaller;
-            else
-                return e_bounds.in_bounds;
-        }
-        private int GET_bounded(int num, int min, int max)
-        {
-            if (num > max)
-                return max;
-            else if (num < min)
-                return min;
-            else
-                return num;
-        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion CONV
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
