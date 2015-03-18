@@ -1,0 +1,23 @@
+﻿<Window x:Class="cs_event_MVVM_moje.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         
+        xmlns:C_logger="clr-namespace:cs_event_MVVM_moje"
+        Title="MainWindow" Height="350" Width="525" Background="Gray">
+    <Window.Resources>
+        <!--new instance of C_numbers named orderData
+        IS THIS ONLY FOR XAML or DOES IT EXIST IN THE OTHER CS files too, 
+        as I did not find any other definition of instance of class C_numbers -->       
+        
+        <C_logger:C_logger x:Key="logMot"/>
+    </Window.Resources>    
+    <StackPanel>
+        <TextBox x:Name="tx">
+            <TextBox.Text>
+                <Binding Source="{StaticResource logMot}" Path="text" />
+            </TextBox.Text>
+        </TextBox>
+        <Button x:Name="btnSendCmd" Content="SEND" Click="btnSendCmd_Click"/>
+    </StackPanel>
+</Window>
+

@@ -104,7 +104,7 @@ namespace EyeOut
             System.Threading.Thread.Sleep(500);
             if (SPI.IsOpen == false)
             {
-                txMotLog.Text = "Port closed";
+                txLogMot.Text = "Port closed";
                 PROG_QUITTING = false;
             }
         }

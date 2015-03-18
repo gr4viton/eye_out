@@ -24,11 +24,12 @@ namespace EyeOut
         public event d_SEND_bytes2serial event_SPI_bytes2serial_send;
 
         Byte id = 0;
-        public C_DynMot(Byte a_id)
+        public C_DynMot(Byte a_id, d_SEND_bytes2serial _h_SPI_bytes2serial_send)
         {
             id = a_id;
             //I am creating a delegate (pointer) to HandleSomethingHappened
             //and adding it to SomethingHappened's list of "Event Handlers".
+            this.event_SPI_bytes2serial_send = new d_SEND_bytes2serial(_h_SPI_bytes2serial_send);
         }
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

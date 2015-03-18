@@ -131,7 +131,7 @@
                                         <ColumnDefinition Width="5" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox Name="txMotLog" Grid.Column="0">Log</TextBox>
+                                    <TextBox Name="txLogMot" Grid.Column="0">Log</TextBox>
                                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
                                     <TextBox Grid.Column="2">Info</TextBox>
                                 </Grid>

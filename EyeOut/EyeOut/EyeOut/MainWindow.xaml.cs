@@ -73,6 +73,7 @@ namespace EyeOut
             C_cl1 cl1_ins = new C_cl1("Taktedy:");
             this.event_ev1 += new d_del1(cl1_ins.h_handle1);
             
+            /*
             try
             {
                 event_ev1("Hello zmrde");
@@ -81,7 +82,7 @@ namespace EyeOut
             {
                 MessageBox.Show(string.Format("{0}\r\n{1}\r\n{2}\r\n{3}", ex.Data, ex.StackTrace, ex.TargetSite , ex.Message));
             }
-
+            */
 
             // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             // real one
@@ -136,12 +137,12 @@ namespace EyeOut
 
         public void INIT_controlMot()
         {
-            actMot = new C_DynMot(1);
+            actMot = new C_DynMot(1, h_SPI_bytes2serial_send);
 
             //I am creating a delegate (pointer) to HandleSomethingHappened
             //and adding it to SomethingHappened's list of "Event Handlers".
 
-            actMot.event_SPI_bytes2serial_send += new d_SEND_bytes2serial(h_SPI_bytes2serial_send);
+            //actMot.event_SPI_bytes2serial_send += new d_SEND_bytes2serial(h_SPI_bytes2serial_send);
                 
             
         }
@@ -176,13 +177,13 @@ namespace EyeOut
         {
             switch(logger)
             {
-                case (e_logger.logAll): return txMotLog;
-                case (e_logger.logCam): return txMotLog;
-                case (e_logger.logMot): return txMotLog;
-                case (e_logger.logMotGot): return txMotLog;
-                case (e_logger.logMotSent): return txMotLog;
-                case (e_logger.logOculus): return txMotLog;
-                default: return txMotLog;
+                case (e_logger.logAll): return txLogMot;
+                case (e_logger.logCam): return txLogMot;
+                case (e_logger.logMot): return txLogMot;
+                case (e_logger.logMotGot): return txLogMot;
+                case (e_logger.logMotSent): return txLogMot;
+                case (e_logger.logOculus): return txLogMot;
+                default: return txLogMot;
             }
             //txReceived.Select(txReceived.Text.Length, 0);
         }
