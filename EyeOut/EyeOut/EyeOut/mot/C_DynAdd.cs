@@ -50,6 +50,9 @@ namespace EyeOut
     /// </summary>
     public sealed partial class C_DynAdd
     {
+        // ____________________________________________________Goal position
+        public const Byte SET_GOAL_POS_MIN = 0;
+        public Byte[] SET_GOAL_POS_MAX = { 0x3, 0xff };
         // ____________________________________________________Moving speed
         public const Byte SET_MOV_SPEED_MIN = 1;
         public Byte[] SET_MOV_SPEED_MAX = {0x02, 0x3C}; // 63.7 RPM - maximal capable at 18V

@@ -11,33 +11,18 @@ using System.ComponentModel;
 
 namespace EyeOut
 {
-    /*
-    public class SEND_cmd_eventArgs : DoWorkEventArgs
-    {
-        public byte[] cmd;
-        // nebo tady rovnou řešit to inner etc
-        public SEND_cmd_eventArgs(byte id, byte[] innerCmd)
-            : base(null)
-        {
-            cmd = CREATE_cmdFromInner(id, innerCmd);
-            //base((object)cmd);
-        }
-
-        private byte[] CREATE_cmdFromInner(byte id, byte[] innerCmd)
-        {
-            //..check, length, id etc
-            return (innerCmd);
-        }
-    }
-    */
     public partial class C_Motor
     {
         public byte id;
+        public C_Value angle;
+        public C_Value speed;
+
+        /*
         private double angle;
         private byte[] angleHex;
         private double speed;
         private byte[] speedHex;
-
+        */
         public static List<C_cmdin> cmdinEx;
         public static List<string> cmdinEx_str;
         /*
@@ -55,30 +40,18 @@ namespace EyeOut
         public C_Motor(byte _id)
         {
             id = _id;
-            angle = 0;
-            angleHex = new byte[2] { 0, 0 };
+            angle = new C_Value();
+
+            //angleHex = new byte[2] { 0, 0 };
             if (cmdinEx_initialized == false)
             {
                 INIT_cmdinEx();
             }
-            
         }
-
-
-
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public double Angle
-        {
-            get { return angle; }
-            set 
-            { 
-                angle = value;
-                angleHex = CONV_ang_deg2by(angle);
-            }
-        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -294,26 +267,26 @@ namespace EyeOut
         public void ORDER_moveLastSpeed()
         {
             SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angleHex
+                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex
             }));
-            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angleHex), Angle));
+            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
         }
 
         // move with speed 
         public void ORDER_move() 
         {
             SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angleHex, 
+                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex //, speedHex 
             }));
-            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angleHex), Angle));
+            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
         }
         // move without speed control
         public void ORDER_moveBrisk()
         {
             SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angleHex, C_DynAdd.SET_MOV_SPEED_NOCONTROL
+                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, C_DynAdd.SET_MOV_SPEED_NOCONTROL
             }));
-            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angleHex), Angle));
+            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

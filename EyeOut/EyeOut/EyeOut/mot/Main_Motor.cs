@@ -28,7 +28,6 @@ namespace EyeOut
     }
     public partial class MainWindow : Window
     {
-        private double angYaw;
         C_Motor actMot;
         public List<C_Motor> Ms;
 
@@ -38,13 +37,6 @@ namespace EyeOut
         #region properies
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public double a;
-        public double AngYaw
-        {
-            get { return angYaw; }
-            set { angYaw = value; }
-        }
-        //public double AngRoll
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properies
@@ -116,7 +108,7 @@ namespace EyeOut
             C_Motor.PRINT_byteArray(bys);
 
 
-            MessageBox.Show(actMot.Angle.ToString());
+            MessageBox.Show(actMot.angle.Dec.ToString());
         }
 
         private Byte ID_fromNUDid()
@@ -151,17 +143,42 @@ namespace EyeOut
             }
         }
 
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region Angle sliders
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        private void UPDATE_angles()
+        {
+            actMot.angle.Dec = slYaw.Value;
+            //actMot.speed.Dec = slYawSpeed.Value;
+
+            actMot.ORDER_move();
+        }
+
         private void slYaw_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            AngYaw = slYaw.Value;
-            actMot.Angle = AngYaw;
-            actMot.ORDER_move();
+            slYaw.Value = Math.Round(e.NewValue, 2);
+            UPDATE_angles();
         }
 
         private void slPitch_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            AngYaw = slYaw.Value;
+            slPitch.Value = Math.Round(e.NewValue, 2);
+            UPDATE_angles();
         }
+
+        private void slYaw_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            UPDATE_angles();
+        }
+
+        private void slPitch_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            UPDATE_angles();
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion Angle sliders
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         private void btnSearch4motors_Click(object sender, RoutedEventArgs e)
         {
             SEARCH_motors();

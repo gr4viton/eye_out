@@ -24,11 +24,11 @@ namespace EyeOut
 {
     public enum e_LogMsgSource
     {
-        spi, spi_sent, spi_got, gui, log, mot
+        spi, spi_sent, spi_got, gui, log, mot, valConv
     }
     public enum e_LogMsgType
     {
-        info = 0, error = 1, godsWill = 42
+        info = 0, warning = 1, error = 2, godsWill = 42
     }
 
 
@@ -38,6 +38,10 @@ namespace EyeOut
         //private DataTable dataTable;
         private ObservableCollection<C_LogMsg> itemList { get; set; }
 
+        private static object itemList_locker = new object();
+
+        private static byte errorAntiLoopCounter = 0;
+        private const byte errorAntiLoopCounter_max = 10; 
         //C_LoggingTable _tasks = (C_LoggingTable)this.Resources["tasks"];
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -107,7 +111,29 @@ namespace EyeOut
 
         public void ADD_toList(C_LogMsg _logMsg)
         {
-            itemList.Add(_logMsg);
+            lock (itemList_locker)
+            {
+                try
+                {
+                    itemList.Add(_logMsg);
+                    errorAntiLoopCounter = 0;
+                }
+                catch (Exception e)
+                {
+                    string err_str = string.Format("Cannot add item to dataGrid:\n{0}\n{1}", e.Data, e.Message);
+                    errorAntiLoopCounter++;
+                    if (errorAntiLoopCounter < errorAntiLoopCounter_max)
+                    {
+                        // try to log it again
+                        LOG_err(e_LogMsgSource.log, err_str);
+                    }
+                    else
+                    {
+                        Console.WriteLine(err_str);
+                        errorAntiLoopCounter = 0;
+                    }
+                }
+            }
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

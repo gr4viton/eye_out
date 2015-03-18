@@ -22,7 +22,7 @@ namespace EyeOut
 
     internal class C_SPI
     {
-        private static object locker = new object();
+        private static object spi_locker = new object();
         public static SerialPort spi;
 
         public static Byte[] readBuff;
@@ -131,7 +131,7 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static bool WriteData(byte[] data)
         {
-            lock (locker)
+            lock (spi_locker)
             {
                 int q = 10; // try q-times
                 while (q > 0)
@@ -175,105 +175,108 @@ namespace EyeOut
                 System.Threading.Thread.CurrentThread.Abort();
             }
 
-            try
+            lock (spi_locker)
             {
-                while (0 != C_SPI.spi.BytesToRead)
+                try
                 {
-                    this_byte = (Byte)C_SPI.spi.ReadByte();
-                    readBuff[i_readBuff] = this_byte;
-                    if (START_NEW_MSG == true) 
+                    while (0 != C_SPI.spi.BytesToRead)
                     {
-                        // message bytes after C_DynAdd.MSG_START was detected
-                        switch (i_curCmd) // byte index in current cmd
+                        this_byte = (Byte)C_SPI.spi.ReadByte();
+                        readBuff[i_readBuff] = this_byte;
+                        if (START_NEW_MSG == true)
                         {
-                            case (0): // as the C_DynAdd.MSG_START of each message are cutted away
-                                curCmd_id = this_byte;
-                                break;
-                            case (1):
-                                curCmd_len = this_byte; // lengthe of current cmd
-                                // len = Nparam+2   = Nparam + Error + Length
-                                // len + 1          = Nparam + Error + Length + ID 
-                                curCmd = new Byte[curCmd_len + 1];
-                                curCmd[0] = curCmd_id; // does not need it
-                                curCmd[1] = curCmd_len;
+                            // message bytes after C_DynAdd.MSG_START was detected
+                            switch (i_curCmd) // byte index in current cmd
+                            {
+                                case (0): // as the C_DynAdd.MSG_START of each message are cutted away
+                                    curCmd_id = this_byte;
+                                    break;
+                                case (1):
+                                    curCmd_len = this_byte; // lengthe of current cmd
+                                    // len = Nparam+2   = Nparam + Error + Length
+                                    // len + 1          = Nparam + Error + Length + ID 
+                                    curCmd = new Byte[curCmd_len + 1];
+                                    curCmd[0] = curCmd_id; // does not need it
+                                    curCmd[1] = curCmd_len;
 
-                                break;
-                            default: // [2] and next bytes = [2]ERROR, [3]PARAM1 .. [LEN]PARAMN, [LEN+1]CHECKSUM
-                                if (i_curCmd <= curCmd_len) 
-                                {
-                                    // store bytes
-                                    curCmd[i_curCmd] = this_byte;
-                                }
-                                else
-                                { 
-                                    // Checksum byte
-                                    START_NEW_MSG = false;
-                                    // check if it is the lastCmd echo from the motor
-
-                                    if (curCmd.Length == lastCmd.Length - 3)
+                                    break;
+                                default: // [2] and next bytes = [2]ERROR, [3]PARAM1 .. [LEN]PARAMN, [LEN+1]CHECKSUM
+                                    if (i_curCmd <= curCmd_len)
                                     {
-                                        // the lenght is the same as the last sent lastCmd 
-                                        // curCmd is without [0xFF 0xFF] and without checksum = [-3]
-                                        int qmax = curCmd.Length;
-                                        bool the_same = true;
-                                        for (int q = 0; q < qmax; q++)
-                                        {
-                                            if (curCmd[q] != lastCmd[q + 2])
-                                            {
-                                                the_same = false;
-                                                break;
-                                            }
-                                        }
-                                        if (the_same == true)
-                                        {
-                                            // the recieved curCmd command is the same as the last sent lastCmd
-                                            // so print only Echo confirmation
-                                            LOG("Echo confirmation");
-                                            // and reset last Cmd in the case the next Status Msg is the same as the command
-                                            lastCmd = new Byte[0];
-                                        }
+                                        // store bytes
+                                        curCmd[i_curCmd] = this_byte;
                                     }
                                     else
-                                    { // it's not the echo command of the last send
-                                        SPI_CHECK_receivedCmd(curCmd, this_byte);
+                                    {
+                                        // Checksum byte
+                                        START_NEW_MSG = false;
+                                        // check if it is the lastCmd echo from the motor
+
+                                        if (curCmd.Length == lastCmd.Length - 3)
+                                        {
+                                            // the lenght is the same as the last sent lastCmd 
+                                            // curCmd is without [0xFF 0xFF] and without checksum = [-3]
+                                            int qmax = curCmd.Length;
+                                            bool the_same = true;
+                                            for (int q = 0; q < qmax; q++)
+                                            {
+                                                if (curCmd[q] != lastCmd[q + 2])
+                                                {
+                                                    the_same = false;
+                                                    break;
+                                                }
+                                            }
+                                            if (the_same == true)
+                                            {
+                                                // the recieved curCmd command is the same as the last sent lastCmd
+                                                // so print only Echo confirmation
+                                                LOG("Echo confirmation");
+                                                // and reset last Cmd in the case the next Status Msg is the same as the command
+                                                lastCmd = new Byte[0];
+                                            }
+                                        }
+                                        else
+                                        { // it's not the echo command of the last send
+                                            SPI_CHECK_receivedCmd(curCmd, this_byte);
+                                        }
                                     }
-                                }
-                                break;
+                                    break;
+                            }
+                            i_curCmd++;
                         }
-                        i_curCmd++;
-                    }
-                    // not detected NEW message yet
-                    if (i_readBuff > 0)
-                    {
-                        // C_DynAdd.MSG_START detection
-                        if ((readBuff[i_readBuff] == 0xFF) && (readBuff[i_readBuff - 1] == 0xFF))
+                        // not detected NEW message yet
+                        if (i_readBuff > 0)
                         {
-                            START_NEW_MSG = true;
-                            // reset indexes and counters
-                            i_curCmd = 0;
-                            curCmd_len = 0;
-                            i_readBuff = 0;
+                            // C_DynAdd.MSG_START detection
+                            if ((readBuff[i_readBuff] == 0xFF) && (readBuff[i_readBuff - 1] == 0xFF))
+                            {
+                                START_NEW_MSG = true;
+                                // reset indexes and counters
+                                i_curCmd = 0;
+                                curCmd_len = 0;
+                                i_readBuff = 0;
+                            }
+                            else
+                            {
+                                // if C_DynAdd.MSG_START not detected - read buffer but don't do anything about it
+                                i_readBuff++;
+                            }
                         }
                         else
                         {
-                            // if C_DynAdd.MSG_START not detected - read buffer but don't do anything about it
                             i_readBuff++;
                         }
                     }
-                    else
-                    {
-                        i_readBuff++;
-                    }
+                    return true;
                 }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                LOG_err(ex);
-                return false;
+                catch (Exception ex)
+                {
+                    LOG_err(ex);
+                    return false;
+                }
             }
         }
-        private void SPI_DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
+        private void SPI_DataReceivedHandler__NOT_USED(object sender, SerialDataReceivedEventArgs e)
         {
             //}
             //private void srpOdo_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
