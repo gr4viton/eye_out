@@ -149,47 +149,94 @@
                                 </DockPanel>
 
                                 <GridSplitter Grid.Column="2" HorizontalAlignment="Stretch" />
-                                <Grid Grid.Column="3">
+                                <Grid x:Name="grAllMotors" Grid.Column="3"> 
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <GroupBox Grid.Row="0" Header="Yaw Motor">
+                                    <GroupBox Header="Yaw Motor" Grid.Row="0">
                                         <StackPanel>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
-                                                    <ColumnDefinition Width="42"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Slider x:Name="slYaw"   Grid.Column="0"
-                                                    Maximum="360" SmallChange="0.1" TickPlacement="TopLeft"
-                                                    ValueChanged="slYaw_ValueChanged"
-                                                    MouseUp="slYaw_MouseUp"
-                                                    Ticks ="0,30,60,90,120,150,180,210,240,270,300,330,360,44,45,46,88,89,90,91,92,134,135,136,178,179,180,181,182,224,225,226,268,269,270,271,272,314,315,316,358,359,1,2"/>
-                                                <!--TickFrequency="45" />-->
-                                                <!--DataContext="{Binding Source={StaticResource motYawDataSource}}"
-                                            Value="{Binding angleDeg, Mode=Default}"-->
-                                                <TextBox FontSize="7" TextAlignment="Center" Grid.Column="1"
-                                        Text="{Binding ElementName=slPitch, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
-                                            </Grid>
+                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorYaw"/>
+                                            <GroupBox Header="Position">
+                                                
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
+                                                        x:Name="slAngleYaw"   
+                                                        SmallChange="0.1" TickPlacement="TopLeft"
+                                                        ValueChanged="slider_ValueChanged"
+                                                            Minimum="0"
+                                                        Ticks ="0,30,60,90,120,150,180,210,240,270,300,330,360,44,45,46,88,89,90,91,92,134,135,136,178,179,180,181,182,224,225,226,268,269,270,271,272,314,315,316,358,359,1,2"/>
+                                                    <!--TickFrequency="45" />-->
+                                                    <!--DataContext="{Binding Source={StaticResource motYawDataSource}}"
+                                                Value="{Binding angleDeg, Mode=Default}"-->
+                                                        <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                             Text="{Binding ElementName=slAngleYaw, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </GroupBox>
 
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
-                                                    <ColumnDefinition Width="42"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Slider x:Name="slPitch" Grid.Column="0"
-                                                    Maximum="360" SmallChange="0.1" TickPlacement="TopLeft"
-                                                    ValueChanged="slPitch_ValueChanged" 
-                                                    MouseUp="slPitch_MouseUp"
+                                            <GroupBox Header="Speed [1 to 101], 0 = no speed control">
+                                                <Grid Grid.Row="1">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
+                                                    x:Name="slSpeedYaw" 
+                                                    SmallChange="0.1" TickPlacement="TopLeft"
+                                                    ValueChanged="slider_ValueChanged" 
+                                                    />
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding ElementName=slSpeedYaw, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </GroupBox>
+                                            
+                                        </StackPanel>
+                                        
+                                    </GroupBox>
+
+                                    <GroupBox Header="Pitch Motor" Grid.Row="1">
+                                        <StackPanel>
+                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorPitch"/>
+                                            <GroupBox Header="Position">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
+                                                    x:Name="slAnglePitch" 
+                                                    SmallChange="0.1" TickPlacement="TopLeft"
+                                                    ValueChanged="slider_ValueChanged" 
                                                     Ticks ="0,30,60,90,120,150,180,210,240,270,300,330,360,44,45,46,88,89,90,91,92,134,135,136,178,179,180,181,182,224,225,226,268,269,270,271,272,314,315,316,358,359,1,2"
                                                     />
-                                                <TextBox FontSize="7" TextAlignment="Center" Grid.Column="1"
-                                        Text="{Binding ElementName=slYaw, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
-                                            </Grid>
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding ElementName=slAnglePitch, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </GroupBox>
+
+                                            <GroupBox Header="Speed [1 to 101], 0 = no speed control">
+                                                <Grid Grid.Row="1">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
+                                                    x:Name="slSpeedPitch" 
+                                                    SmallChange="0.1" TickPlacement="TopLeft"
+                                                    ValueChanged="slider_ValueChanged" 
+                                                    />
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding ElementName=slSpeedPitch, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </GroupBox>
                                         </StackPanel>
                                     </GroupBox>
+
                                 </Grid>
                             </Grid>
                         </DockPanel>

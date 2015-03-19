@@ -34,7 +34,24 @@ namespace EyeOut
         public DispatcherTimer timSim;
         public MainWindow()
         {
+            /*
+            Slider sl = new Slider();
+            sl.Maximum = 42;
+            sl.Minimum = 4;
+            */
+
             InitializeComponent();
+
+            /*
+            slAngleYaw = new Slider();
+            slAngleYaw.Maximum = 42;
+            slAngleYaw.Minimum = 4;
+
+            slAnglePitch.Maximum = 42;
+            slAnglePitch.Value = 4;
+            slAnglePitch.Minimum = 4;
+            */
+
             /*
             EV_connection(e_con.port_closed);
             */

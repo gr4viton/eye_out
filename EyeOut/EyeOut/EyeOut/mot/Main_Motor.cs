@@ -29,6 +29,7 @@ namespace EyeOut
     public partial class MainWindow : Window
     {
         C_Motor actMot;
+        C_Motor actMot2;
         public List<C_Motor> Ms;
 
         public static Byte nudId = 1;
@@ -44,9 +45,48 @@ namespace EyeOut
         #region INIT
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+        public void SET_sliderLimits(Slider sl, C_Value val)
+        {
+            sl.Maximum = val.DecMax;
+            sl.Value = val.Dec;
+            sl.Minimum = val.DecMin;
+        }
         public void INIT_mot()
         {
-            actMot = new C_Motor(1);
+
+            C_Value angleFull = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
+            //C_Value speedFull = new C_Value(0, 100, C_DynAdd.SET_MOV_SPEED_MIN, C_DynAdd.SET_MOV_SPEED_MAX, 20);
+            C_Value speedFull = new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5); // no control as 0
+
+            C_Value angleYaw = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
+            C_Value speedYaw = new C_Value(speedFull);
+
+            C_Value anglePitch = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
+            C_Value speedPitch = new C_Value(speedFull);
+
+            Ms = new List<C_Motor>();
+
+            // Motor Yaw
+            Ms.Add ( new C_Motor(
+                1, 
+                new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4, 0), // angle
+                new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5) // speed
+                ));
+            // Motor Pitch
+            Ms.Add(new C_Motor(
+                1,
+                new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4, 0), // angle
+                new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5) // speed
+                ));
+            // Motor 
+            Ms.Add(new C_Motor(
+                1,
+                new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4, 0), // angle
+                new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5) // speed
+                ));
+
+            actMot = new C_Motor(1, angleYaw, speedYaw);
+            actMot2 = new C_Motor(2, anglePitch, speedPitch);
             /*
             mot = this.Resources["motYawDataSource"] as C_Motor;
             mot.Angle = 20;*/
@@ -54,6 +94,11 @@ namespace EyeOut
             {
                 lsCmdEx.Items.Add(str);
             }
+
+            SET_sliderLimits(slAngleYaw, angleYaw);
+            SET_sliderLimits(slSpeedYaw, speedYaw);
+            SET_sliderLimits(slAnglePitch, anglePitch);
+            SET_sliderLimits(slSpeedPitch, speedPitch);
 
         }
 
@@ -148,33 +193,32 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         private void UPDATE_angles()
         {
-            actMot.angle.Dec = slYaw.Value;
-            //actMot.speed.Dec = slYawSpeed.Value;
+            actMot.angle.Dec = slAngleYaw.Value;
+            actMot.speed.Dec = slSpeedYaw.Value;
 
-            actMot.ORDER_move();
+            actMot2.angle.Dec = slAnglePitch.Value;
+            actMot2.speed.Dec = slSpeedPitch.Value;
+
+            if (cbSendValuesToMotorYaw.IsChecked == true)
+            {
+                actMot.ORDER_move();
+            }
+            if (cbSendValuesToMotorPitch.IsChecked == true)
+            {
+                //actMot2.ORDER_move();
+            }
         }
 
-        private void slYaw_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            slYaw.Value = Math.Round(e.NewValue, 2);
-            UPDATE_angles();
+            Slider sl = sender as Slider;
+            if (sl!=null)
+            {
+                sl.Value = Math.Round(e.NewValue, 2);
+                UPDATE_angles();
+            }
         }
 
-        private void slPitch_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            slPitch.Value = Math.Round(e.NewValue, 2);
-            UPDATE_angles();
-        }
-
-        private void slYaw_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            UPDATE_angles();
-        }
-
-        private void slPitch_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            UPDATE_angles();
-        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Angle sliders
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

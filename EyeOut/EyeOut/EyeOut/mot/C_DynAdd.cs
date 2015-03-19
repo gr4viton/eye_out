@@ -52,12 +52,17 @@ namespace EyeOut
     {
         // ____________________________________________________Goal position
         public const Byte SET_GOAL_POS_MIN = 0;
-        public Byte[] SET_GOAL_POS_MAX = { 0x3, 0xff };
+        public const UInt16 SET_GOAL_POS_MAX = 0x3ff ;
+        //public Byte[] SET_GOAL_POS_MAX = { 0x3, 0xff };
         // ____________________________________________________Moving speed
-        public const Byte SET_MOV_SPEED_MIN = 1;
-        public Byte[] SET_MOV_SPEED_MAX = {0x02, 0x3C}; // 63.7 RPM - maximal capable at 18V
         public const Byte SET_MOV_SPEED_NOCONTROL = 0;
-        public Byte[] GET_MOV_SPEED_MAX = {0x03, 0xFF}; // 114 RPM - with outside accelerator (maximal measurable)
+        public const Byte SET_MOV_SPEED_MIN = 1;
+
+        public const UInt16 SET_MOV_SPEED_MAX = 0x023C; // 63.7 RPM - maximal capable at 18V
+        //public Byte[] SET_MOV_SPEED_MAX = {0x02, 0x3C}; 
+
+        public const UInt16 GET_MOV_SPEED_MAX = 0x03FF; // 114 RPM - with outside accelerator (maximal measurable)
+        //public Byte[] GET_MOV_SPEED_MAX = {0x03, 0xFF}; 
 
     }
 }

@@ -143,15 +143,86 @@ namespace EyeOut
         private double decMin;
         private double decMax;
 
+        private double decLimitMin;
+        private double decLimitMax;
+
         private byte[] hex;
         private UInt16 hexMin;
         private UInt16 hexMax;
 
-        public C_Value()
+        
+        public C_Value() // because of search motor
         {
+            decMin = 0;
+            decMax = 1;
+            hexMin = 0;
+            hexMax = 0xffff;
             Dec = 0;
         }
-        
+        public C_Value(C_Value _val, double _decLimitMin, double _decLimitMax)
+        {
+            decLimitMin = _decLimitMin;
+            decLimitMax = _decLimitMax;
+            decMin = _val.decMin;
+            decMax = _val.decMax;
+            hexMin = _val.hexMin;
+            hexMax = _val.hexMax;
+            Dec = _val.Dec;
+        }
+
+        public C_Value(C_Value _val) // because of search motor
+        {
+            decLimitMin = _val.decLimitMin;
+            decLimitMax = _val.decLimitMax;
+            decMin = _val.decMin;
+            decMax = _val.decMax;
+            hexMin = _val.hexMin;
+            hexMax = _val.hexMax;
+            Dec = _val.Dec;
+        }
+
+        public C_Value(double _decMin, double _decMax, UInt16 _hexMin, UInt16 _hexMax)
+        {
+            decMin = _decMin;
+            decMax = _decMax;
+            decLimitMin = decMin;
+            decLimitMax = decMax;
+            hexMin = _hexMin;
+            hexMax = _hexMax;
+            Dec = 0;
+        }
+
+        public C_Value(double _decLimitMin, double _decLimitMax, double _decMin, double _decMax, UInt16 _hexMin, UInt16 _hexMax)
+        {
+            decMin = _decMin;
+            decMax = _decMax;
+            decLimitMin = decMin;
+            decLimitMax = decMax;
+            hexMin = _hexMin;
+            hexMax = _hexMax;
+            Dec = 0;
+        }
+
+        public C_Value(double _decMin, double _decMax, UInt16 _hexMin, UInt16 _hexMax, double _dec)
+        {
+            decMin = _decMin;
+            decMax = _decMax;
+            hexMin = _hexMin;
+            hexMax = _hexMax;
+            Dec = _dec;
+        }
+
+        public C_Value(double _decLimitMin, double _decLimitMax, double _decMin, double _decMax, UInt16 _hexMin, UInt16 _hexMax, double _dec)
+        {
+            decMin = _decMin;
+            decMax = _decMax;
+            decLimitMin = _decLimitMin;
+            decLimitMax = _decLimitMax;
+            hexMin = _hexMin;
+            hexMax = _hexMax;
+            Dec = _dec;
+        }
+
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -166,7 +237,6 @@ namespace EyeOut
                 hex = dec2hex(value);
             }
         }
-
         public byte[] Hex
         {
             get
@@ -179,6 +249,8 @@ namespace EyeOut
                 dec = hex2dec(value);
             }
         }
+        public double DecMin { get { return decMin; } }
+        public double DecMax { get { return decMax; } }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -221,35 +293,76 @@ namespace EyeOut
         }*/
 
         // make generic type!
-        private object CONV_interval2one(object val, double min, double max)
+        private double CONV_interval2one(double val, double min, double max)
         {
-            return (object)( ((double)val - (double)min) / ((double)max - (double)min) );
+            return  (val - min) / (max - min) ;
+        }
+        private byte CONV_interval2one(byte val, byte min, byte max)
+        {
+            return (byte)CONV_interval2one((double)val, (double)min, (double)max);
         }
 
-        private object CONV_one2interval(object val, object min, object max)
+        /*
+        private byte CONV_interval2one(byte val, byte min, byte max)
         {
-            return (object)((double)val * ((double)max - (double)min) + (double)min);
+            return (byte)CONV_interval2one((double)val, (double)min, (double)max);
         }
 
-        private object GET_bounded(object val, object min, object max)
+        private double CONV_interval2one(object val, object min, object max)
         {
-            if ((double)val > (double)max)
+            return CONV_interval2one((double)val, (double)min, (double)max);
+        }*/
+
+        private double CONV_one2interval(double val, double min, double max)
+        {
+            return val * (max - min) + min;
+        }
+        private byte CONV_one2interval(byte val, byte min, byte max)
+        {
+            return (byte)CONV_one2interval((double)val, (double)min, (double)max);
+        }
+
+        private double GET_bounded(double val, double min, double max)
+        {
+            if (val > max)
             {
                 LOG(String.Format(
                     "Value out of bounds: bigger then boundary {0} > [max{1}]",
                     val, max));
-                return (object)max;
+                return max;
             }
-            else if ((double)val < (double)min)
+            else if (val < min)
             {
                 LOG(String.Format(
                     "Value out of bounds: lower then boundary {0} < [min{1}]",
                     val, min));
-                return (object)min;
+                return min;
             }
             else
             {
-                return (object)val;
+                return val;
+            }
+        }
+
+        private byte GET_bounded(byte val, byte min, byte max)
+        {
+            if (val > max)
+            {
+                LOG(String.Format(
+                    "Value out of bounds: bigger then boundary {0} > [max{1}]",
+                    val, max));
+                return max;
+            }
+            else if (val < min)
+            {
+                LOG(String.Format(
+                    "Value out of bounds: lower then boundary {0} < [min{1}]",
+                    val, min));
+                return min;
+            }
+            else
+            {
+                return val;
             }
         }
         /*

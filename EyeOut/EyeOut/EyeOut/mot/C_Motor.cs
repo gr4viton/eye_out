@@ -32,15 +32,18 @@ namespace EyeOut
         }*/
         private static bool cmdinEx_initialized = false;
 
-        public C_Motor()
+        public C_Motor(byte _id) // because of search motor
         {
             id = 0;
+            angle = new C_Value();
+            speed = new C_Value();
         }
 
-        public C_Motor(byte _id)
+        public C_Motor(byte _id, C_Value _angle, C_Value _speed)
         {
             id = _id;
-            angle = new C_Value();
+            angle = _angle;
+            speed = _speed;
 
             //angleHex = new byte[2] { 0, 0 };
             if (cmdinEx_initialized == false)
@@ -276,7 +279,7 @@ namespace EyeOut
         public void ORDER_move() 
         {
             SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex //, speedHex 
+                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
             }));
             LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
         }
