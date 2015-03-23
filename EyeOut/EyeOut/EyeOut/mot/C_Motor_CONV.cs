@@ -170,6 +170,17 @@ namespace EyeOut
             Dec = _val.Dec;
         }
 
+        public C_Value(C_Value _val, double _decLimitMin, double _decLimitMax, double _dec)
+        {
+            decLimitMin = _decLimitMin;
+            decLimitMax = _decLimitMax;
+            decMin = _val.decMin;
+            decMax = _val.decMax;
+            hexMin = _val.hexMin;
+            hexMax = _val.hexMax;
+            Dec = _dec;
+        }
+
         public C_Value(C_Value _val) // because of search motor
         {
             decLimitMin = _val.decLimitMin;

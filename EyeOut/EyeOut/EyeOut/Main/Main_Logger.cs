@@ -40,7 +40,11 @@ namespace EyeOut
             BindingOperations.EnableCollectionSynchronization(C_Logger.Instance.Data, daraGrid_lock); // for multi-thread updating
 
             // init filter
-            lsLogSrcSelction.SelectAll();    
+            lsLogSrcSelction.SelectAll();
+            
+            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.spi);
+            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.spi_got);
+            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.spi_sent);
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

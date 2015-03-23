@@ -155,11 +155,11 @@
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
+                                    <!--YAW MOTOR-->
                                     <GroupBox Header="Yaw Motor" Grid.Row="0">
                                         <StackPanel>
                                             <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorYaw"/>
                                             <GroupBox Header="Position">
-                                                
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition />
@@ -178,7 +178,6 @@
                                                              Text="{Binding ElementName=slAngleYaw, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
                                                 </Grid>
                                             </GroupBox>
-
                                             <GroupBox Header="Speed [1 to 101], 0 = no speed control">
                                                 <Grid Grid.Row="1">
                                                     <Grid.ColumnDefinitions>
@@ -194,11 +193,9 @@
                                                         Text="{Binding ElementName=slSpeedYaw, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
                                                 </Grid>
                                             </GroupBox>
-                                            
                                         </StackPanel>
-                                        
                                     </GroupBox>
-
+                                    <!--PITCH MOTOR-->
                                     <GroupBox Header="Pitch Motor" Grid.Row="1">
                                         <StackPanel>
                                             <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorPitch"/>
@@ -236,7 +233,44 @@
                                             </GroupBox>
                                         </StackPanel>
                                     </GroupBox>
+                                    <!--ROLL MOTOR-->
+                                    <GroupBox Header="Roll Motor" Grid.Row="2">
+                                        <StackPanel>
+                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorRoll"/>
+                                            <GroupBox Header="Position">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
+                                                    x:Name="slAngleRoll" 
+                                                    SmallChange="0.1" TickPlacement="TopLeft"
+                                                    ValueChanged="slider_ValueChanged" 
+                                                    Ticks ="0,30,60,90,120,150,180,210,240,270,300,330,360,44,45,46,88,89,90,91,92,134,135,136,178,179,180,181,182,224,225,226,268,269,270,271,272,314,315,316,358,359,1,2"
+                                                    />
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding ElementName=slAngleRoll, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </GroupBox>
 
+                                            <GroupBox Header="Speed [1 to 101], 0 = no speed control">
+                                                <Grid Grid.Row="1">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
+                                                    x:Name="slSpeedRoll" 
+                                                    SmallChange="0.1" TickPlacement="TopLeft"
+                                                    ValueChanged="slider_ValueChanged" 
+                                                    />
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding ElementName=slSpeedRoll, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </GroupBox>
+                                        </StackPanel>
+                                    </GroupBox>
                                 </Grid>
                             </Grid>
                         </DockPanel>

@@ -34,23 +34,8 @@ namespace EyeOut
         public DispatcherTimer timSim;
         public MainWindow()
         {
-            /*
-            Slider sl = new Slider();
-            sl.Maximum = 42;
-            sl.Minimum = 4;
-            */
-
+            C_State.prog = e_state.initializing;
             InitializeComponent();
-
-            /*
-            slAngleYaw = new Slider();
-            slAngleYaw.Maximum = 42;
-            slAngleYaw.Minimum = 4;
-
-            slAnglePitch.Maximum = 42;
-            slAnglePitch.Value = 4;
-            slAnglePitch.Minimum = 4;
-            */
 
             /*
             EV_connection(e_con.port_closed);
@@ -60,6 +45,7 @@ namespace EyeOut
             INIT_spi();
             INIT_mot();
             INIT_tim();
+            C_State.prog = e_state.initialized;
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region prog status
@@ -110,7 +96,7 @@ namespace EyeOut
             tbAng.Value = act_ang;
             txAng.Text = act_ang.ToString();
             act_ang = act_ang + 1;*/
-            actMot.angle.Dec += 0.1;
+            M(actMrot).angle.Dec += 0.1;
         }
 
         private void btnTimSim_Toggle(object sender, EventArgs e)
@@ -161,9 +147,6 @@ namespace EyeOut
             btnConnect.Content = "Connect Serial";
         }
 
-        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
-        {
-        }
 
 
 

@@ -22,14 +22,16 @@ namespace EyeOut
     /// Motor - gui
     /// </summary>
     /// 
-    public enum e_rotInd
+    public enum e_rot
     {
         roll = 0, pitch = 1, yaw = 2
     }
     public partial class MainWindow : Window
     {
+        /*
         C_Motor actMot;
-        C_Motor actMot2;
+        C_Motor actMot2;*/
+        public e_rot actMrot;
         public List<C_Motor> Ms;
 
         public static Byte nudId = 1;
@@ -54,54 +56,86 @@ namespace EyeOut
         public void INIT_mot()
         {
 
-            C_Value angleFull = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
-            //C_Value speedFull = new C_Value(0, 100, C_DynAdd.SET_MOV_SPEED_MIN, C_DynAdd.SET_MOV_SPEED_MAX, 20);
-            C_Value speedFull = new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5); // no control as 0
+            INIT_individualMotors();
 
-            C_Value angleYaw = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
-            C_Value speedYaw = new C_Value(speedFull);
+            // actual motor selection
+            actMrot = e_rot.yaw;
 
-            C_Value anglePitch = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
-            C_Value speedPitch = new C_Value(speedFull);
-
-            Ms = new List<C_Motor>();
-
-            // Motor Yaw
-            Ms.Add ( new C_Motor(
-                1, 
-                new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4, 0), // angle
-                new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5) // speed
-                ));
-            // Motor Pitch
-            Ms.Add(new C_Motor(
-                1,
-                new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4, 0), // angle
-                new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5) // speed
-                ));
-            // Motor 
-            Ms.Add(new C_Motor(
-                1,
-                new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4, 0), // angle
-                new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5) // speed
-                ));
-
-            actMot = new C_Motor(1, angleYaw, speedYaw);
-            actMot2 = new C_Motor(2, anglePitch, speedPitch);
             /*
             mot = this.Resources["motYawDataSource"] as C_Motor;
-            mot.Angle = 20;*/
+            */
+
+            // set slider limits
+            SET_allSlidersLimits();
+            
+            // Examples
             foreach (string str in C_Motor.cmdinEx_str)
             {
                 lsCmdEx.Items.Add(str);
             }
 
-            SET_sliderLimits(slAngleYaw, angleYaw);
-            SET_sliderLimits(slSpeedYaw, speedYaw);
-            SET_sliderLimits(slAnglePitch, anglePitch);
-            SET_sliderLimits(slSpeedPitch, speedPitch);
+            // update position
+            C_State.mot = e_stateMotors.ready;
+            //UPDATE_motorsFromSliders();
+            UPDATE_slidersFromMotors();
+        }
+        public void SET_allSlidersLimits()
+        {
+            SET_sliderLimits(slAngleYaw, M(e_rot.yaw).angle);
+            SET_sliderLimits(slSpeedYaw, M(e_rot.yaw).speed);
+            SET_sliderLimits(slAnglePitch, M(e_rot.pitch).angle);
+            SET_sliderLimits(slSpeedPitch, M(e_rot.pitch).speed);
+            SET_sliderLimits(slAngleRoll, M(e_rot.roll).angle);
+            SET_sliderLimits(slSpeedRoll, M(e_rot.roll).speed);
+        }
+        public void INIT_individualMotors()
+        {
+
+            C_Value angleFull = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
+            //C_Value speedFull = new C_Value(0, 100, C_DynAdd.SET_MOV_SPEED_MIN, C_DynAdd.SET_MOV_SPEED_MAX, 20);
+            C_Value speedFull = new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5); // no control as 0
+            /*
+            C_Value angleYaw = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
+            C_Value speedYaw = new C_Value(speedFull);
+
+            C_Value anglePitch = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
+            C_Value speedPitch = new C_Value(speedFull);
+            */
+            int numOfMot = Enum.GetValues(typeof(e_rot)).Length;
+            Ms = new List<C_Motor>(numOfMot);
+            for (int imot = 0; imot < numOfMot; imot++)
+            {
+                Ms.Add(new C_Motor((byte)imot));
+            }
+
+            // Motor Yaw
+            Ms[(int)e_rot.yaw] =
+                new C_Motor(e_rot.yaw,
+                    1,
+                    new C_Value(angleFull, 0, 360, 200), // angle
+                    new C_Value(speedFull, 0, 101, 20) // speed
+                );
+            // Motor Pitch
+            Ms[(int)e_rot.pitch] =
+                new C_Motor(e_rot.pitch,
+                    2,
+                    new C_Value(angleFull, 0, 360, 200), // angle
+                    new C_Value(speedFull, 0, 101, 20) // speed
+                );
+            // Motor 
+            Ms[(int)e_rot.roll] =
+                new C_Motor(e_rot.roll,
+                    3,
+                    new C_Value(angleFull, 0, 360, 200), // angle
+                    new C_Value(speedFull, 0, 101, 20) // speed
+                );
 
         }
 
+        public C_Motor M(e_rot rot)
+        {
+            return Ms[(int)rot];
+        }
         public void SEARCH_motors()
         {
             Ms = new List<C_Motor>();
@@ -153,7 +187,7 @@ namespace EyeOut
             C_Motor.PRINT_byteArray(bys);
 
 
-            MessageBox.Show(actMot.angle.Dec.ToString());
+            MessageBox.Show(M(actMrot).angle.Dec.ToString());
         }
 
         private Byte ID_fromNUDid()
@@ -175,7 +209,7 @@ namespace EyeOut
 
         private void btnSendExample_wannaSend(object sender, RoutedEventArgs e)
         {
-            actMot.SEND_example(3);
+            M(actMrot).SEND_example(3);
         }
 
 
@@ -183,29 +217,46 @@ namespace EyeOut
         {
             if (cbExampleDoubleClick.IsChecked == true)
             {
-                actMot.SEND_example(lsCmdEx.SelectedIndex);
+                M(actMrot).SEND_example(lsCmdEx.SelectedIndex);
                 //lsCmdEx_SEND_selected(); 
             }
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #region Angle sliders
+        #region Angle & Speed sliders
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        private void UPDATE_angles()
+
+
+        //private void UPDATE_motorsFromSliders()
+        //{
+        //    //foreach(e_rot
+        //}
+        private void UPDATE_motorFromSlider(e_rot rot)
         {
-            actMot.angle.Dec = slAngleYaw.Value;
-            actMot.speed.Dec = slSpeedYaw.Value;
+            M(rot).angle.Dec = GET_slAngle(rot).Value;
+            M(rot).speed.Dec = GET_slSpeed(rot).Value;
+        }
 
-            actMot2.angle.Dec = slAnglePitch.Value;
-            actMot2.speed.Dec = slSpeedPitch.Value;
-
-            if (cbSendValuesToMotorYaw.IsChecked == true)
+        private void UPDATE_slidersFromMotors()
+        {
+            foreach (e_rot rot in Enum.GetValues(typeof(e_rot)))
             {
-                actMot.ORDER_move();
+                UPDATE_sliderFromMotor(rot);
             }
-            if (cbSendValuesToMotorPitch.IsChecked == true)
+        }
+
+        private void UPDATE_sliderFromMotor(e_rot rot)
+        {
+            GET_slAngle(rot).Value = M(rot).angle.Dec;
+            GET_slSpeed(rot).Value = M(rot).speed.Dec;
+            //LOG_logger(string.Format("{0} = angle[{1}], speed[{2}]", rot, M(rot).angle.Dec, M(rot).speed.Dec));
+        }
+
+        private void ORDER_moveIfChecked(e_rot rot)
+        {
+            if (GET_cbSendValuesToMotor(rot).IsChecked == true)
             {
-                //actMot2.ORDER_move();
+                M(rot).ORDER_move();
             }
         }
 
@@ -215,10 +266,69 @@ namespace EyeOut
             if (sl!=null)
             {
                 sl.Value = Math.Round(e.NewValue, 2);
-                UPDATE_angles();
+                e_rot rot = GET_rot(sl);
+                UPDATE_motorFromSlider(rot);
+                ORDER_moveIfChecked(rot);
             }
         }
 
+        private e_rot GET_rot(Slider sl)
+        {
+            if ((sl == slAngleYaw) || (sl == slSpeedYaw))
+            {
+                return e_rot.yaw;
+            }
+            else if ((sl == slAnglePitch) || (sl == slSpeedPitch))
+            {
+                return e_rot.pitch;
+            }
+            else if ((sl == slAngleRoll) || (sl == slSpeedRoll))
+            {
+                return e_rot.roll;
+            }
+            return e_rot.yaw;
+        }
+
+
+        public Slider GET_slSpeed(e_rot rot)
+        {
+            switch (rot)
+            {
+                case (e_rot.yaw):
+                    return slSpeedYaw;
+                case (e_rot.pitch):
+                    return slSpeedPitch;
+                case (e_rot.roll):
+                    return slSpeedRoll;
+            }
+            return null;
+        }
+        public Slider GET_slAngle(e_rot rot)
+        {
+            switch (rot)
+            {
+                case (e_rot.yaw):
+                    return slAngleYaw;
+                case (e_rot.pitch):
+                    return slAnglePitch;
+                case (e_rot.roll):
+                    return slAngleRoll;
+            }
+            return null;
+        }
+        public CheckBox GET_cbSendValuesToMotor(e_rot rot)
+        {
+            switch (rot)
+            {
+                case (e_rot.yaw):
+                    return cbSendValuesToMotorYaw;
+                case (e_rot.pitch):
+                    return cbSendValuesToMotorPitch;
+                case (e_rot.roll):
+                    return cbSendValuesToMotorRoll;
+            }
+            return null;
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Angle sliders
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

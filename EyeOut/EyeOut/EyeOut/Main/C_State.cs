@@ -7,17 +7,24 @@ using System.Threading;
 
 namespace EyeOut
 {
-    public enum e_state{
-        running = 0, closing
+    public enum e_state
+    {
+        started, initializing, initialized, running, closing, closed
+    }
+    public enum e_stateMotors
+    {
+        initializing, ready
     }
 
     public class C_State
     {
         public static e_state prog;
+        public static e_stateMotors mot;
 
         public C_State()
         {
-            prog = e_state.running;
+            prog = e_state.started;
+            mot = e_stateMotors.initializing;
         }
 
         public static void CLOSE_program()
@@ -32,5 +39,22 @@ namespace EyeOut
                 System.Threading.Thread.Sleep(500);
             }
         }
+
+        public static bool FURTHER(e_stateMotors _comparedState)
+        {
+            return FURTHER((object)_comparedState, (object)mot);
+        }
+
+        public static bool FURTHER(e_state _comparedState)
+        {
+            return FURTHER((object)_comparedState, (object)mot);
+        }
+
+        public static bool FURTHER(object _comparedState, object _actualState)
+        {
+            return (int)_comparedState >= (int)_actualState;
+        }
+        
+
     }
 }

@@ -13,6 +13,8 @@ namespace EyeOut
 {
     public partial class C_Motor
     {
+        public e_rot motorPlacement;
+        private e_LogMsgSource motorLog;
         public byte id;
         public C_Value angle;
         public C_Value speed;
@@ -37,13 +39,30 @@ namespace EyeOut
             id = 0;
             angle = new C_Value();
             speed = new C_Value();
+            motorLog = e_LogMsgSource.mot;
         }
 
-        public C_Motor(byte _id, C_Value _angle, C_Value _speed)
+        public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed)
         {
             id = _id;
             angle = _angle;
             speed = _speed;
+            
+            motorPlacement = _rot;
+            switch(motorPlacement)
+            {
+                case(e_rot.yaw):
+                    motorLog = e_LogMsgSource.mot_yaw;
+                    break;
+                case (e_rot.pitch):
+                    motorLog = e_LogMsgSource.mot_pitch;
+                    break;
+                case (e_rot.roll):
+                    motorLog = e_LogMsgSource.mot_roll;
+                    break;
+            }
+                
+
 
             //angleHex = new byte[2] { 0, 0 };
             if (cmdinEx_initialized == false)
@@ -245,12 +264,12 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public static void LOG(string _msg)
+        public void LOG(string _msg)
         {
-            C_Logger.Instance.LOG(e_LogMsgSource.mot, _msg);
+            C_Logger.Instance.LOG(motorLog, _msg);
         }
 
-        public static void LOG_err(string _msg)
+        public void LOG_err(string _msg)
         {
             // afterwards -> through another type
             //C_Logger.Instance.LOG(e_LogMsgSource.mot, _msg, type = error); 

@@ -24,7 +24,7 @@ namespace EyeOut
 {
     public enum e_LogMsgSource
     {
-        spi, spi_sent, spi_got, gui, log, mot, valConv
+        spi, spi_sent, spi_got, gui, log, mot, mot_yaw, mot_pitch, mot_roll, valConv
     }
     public enum e_LogMsgType
     {
