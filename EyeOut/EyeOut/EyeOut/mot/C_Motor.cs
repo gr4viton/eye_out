@@ -289,27 +289,30 @@ namespace EyeOut
         // move with speed stored in motor - not writing to control speed register
         public void ORDER_moveLastSpeed()
         {
+            if ((angle.Dec != angle.DecLast)) 
+            {
                 SEND_cmdInner(CREATE_cmdInner(new List<object> { 
                     C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex
                 }));
                 LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
-
+                angle.UPDATE_lastSent();
+            }
         }
 
         // move with speed 
         public void ORDER_move() 
         {
-            if ((angle.Dec != lastSend_angle) || (speed.Dec != lastSend_speed)) ;
+            if ((angle.Dec != angle.DecLast) || (speed.Dec != speed.DecLast)) 
             {
                 SEND_cmdInner(CREATE_cmdInner(new List<object> { 
                     C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
                 }));
                 LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
-                lastSend_angle = angle.Dec;
-                lastSend_speed = speed.Dec;
+                angle.UPDATE_lastSent();
+                speed.UPDATE_lastSent();
             }
         }
-        // move without speed control
+        // move without speed control - does not change current speed in motor class instance
         public void ORDER_moveBrisk()
         {
             SEND_cmdInner(CREATE_cmdInner(new List<object> { 

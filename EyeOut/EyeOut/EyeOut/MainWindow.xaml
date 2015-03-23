@@ -59,8 +59,8 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <DockPanel Grid.Column="0" Grid.Row="0">
-                        <GroupBox DockPanel.Dock="Top" Header="Connection control" Visibility="Collapsed">
+                    <StackPanel Grid.Column="0" Grid.Row="0">
+                        <GroupBox  Header="Connection control" Visibility="Collapsed">
                             <StackPanel>
                                 <GroupBox Header="Protocol" >
                                     <StackPanel>
@@ -101,7 +101,7 @@
                                 <ToggleButton Content="Push to Connect" />
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox DockPanel.Dock="Top" Header="Motor settings" Visibility="Collapsed" >
+                        <GroupBox  Header="Motor settings" Visibility="Collapsed" >
                             <StackPanel>
                                 <Button Content="Search for connected" Click="btnSearch4motors_Click"/>
                                 <GroupBox Header="Select">
@@ -119,9 +119,9 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <Button DockPanel.Dock="Top" MaxHeight="20" Content="START motors" VerticalAlignment="Top" Click="btnStartMotors_Click" />
+                        <Button MaxHeight="20" Content="START motors" VerticalAlignment="Top" Click="btnStartMotors_Click" />
                         <ToggleButton Content="timSim" Checked="btnTimSim_Toggle" Unchecked="btnTimSim_Toggle"/>
-                    </DockPanel>
+                    </StackPanel>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
                     <Grid Grid.Column="2" Background="#FFE5E5E5">
@@ -279,14 +279,14 @@
 
                         <DockPanel Grid.Row="2" >
                             <Grid Grid.Column="2" Background="#FFE5E5E5">
-                                <Grid Grid.Column="2" Background="#FFE5E5E5">
+                                <!--<Grid Grid.Column="2" Background="#FFE5E5E5">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="5" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <TextBox Name="txLogMot" Grid.Column="0">Log</TextBox>
-                                    <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                                    <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />-->
                                     <GroupBox Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
                                         <Grid>
                                             <DockPanel>
@@ -297,7 +297,7 @@
                                             </DockPanel>
                                         </Grid>
                                     </GroupBox>
-                                </Grid>
+                                <!--</Grid>-->
                             </Grid>
                         </DockPanel>
                     </Grid>
