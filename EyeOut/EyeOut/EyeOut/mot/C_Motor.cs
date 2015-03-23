@@ -19,6 +19,9 @@ namespace EyeOut
         public C_Value angle;
         public C_Value speed;
 
+        public double lastSend_angle;
+        public double lastSend_speed;
+
         /*
         private double angle;
         private byte[] angleHex;
@@ -62,8 +65,6 @@ namespace EyeOut
                     break;
             }
                 
-
-
             //angleHex = new byte[2] { 0, 0 };
             if (cmdinEx_initialized == false)
             {
@@ -288,19 +289,25 @@ namespace EyeOut
         // move with speed stored in motor - not writing to control speed register
         public void ORDER_moveLastSpeed()
         {
-            SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex
-            }));
-            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
+                SEND_cmdInner(CREATE_cmdInner(new List<object> { 
+                    C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex
+                }));
+                LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
+
         }
 
         // move with speed 
         public void ORDER_move() 
         {
-            SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
-            }));
-            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
+            if ((angle.Dec != lastSend_angle) || (speed.Dec != lastSend_speed)) ;
+            {
+                SEND_cmdInner(CREATE_cmdInner(new List<object> { 
+                    C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
+                }));
+                LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
+                lastSend_angle = angle.Dec;
+                lastSend_speed = speed.Dec;
+            }
         }
         // move without speed control
         public void ORDER_moveBrisk()

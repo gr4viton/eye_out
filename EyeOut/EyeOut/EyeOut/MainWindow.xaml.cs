@@ -96,7 +96,7 @@ namespace EyeOut
             tbAng.Value = act_ang;
             txAng.Text = act_ang.ToString();
             act_ang = act_ang + 1;*/
-            M(actMrot).angle.Dec += 0.1;
+            //M(actMrot).angle.Dec += 0.1;
         }
 
         private void btnTimSim_Toggle(object sender, EventArgs e)

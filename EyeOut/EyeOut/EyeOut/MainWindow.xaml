@@ -60,7 +60,7 @@
                     </Grid.ColumnDefinitions>
 
                     <DockPanel Grid.Column="0" Grid.Row="0">
-                        <GroupBox DockPanel.Dock="Top" Header="Connection control">
+                        <GroupBox DockPanel.Dock="Top" Header="Connection control" Visibility="Collapsed">
                             <StackPanel>
                                 <GroupBox Header="Protocol" >
                                     <StackPanel>
@@ -101,7 +101,7 @@
                                 <ToggleButton Content="Push to Connect" />
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox DockPanel.Dock="Top" Header="Motor settings" >
+                        <GroupBox DockPanel.Dock="Top" Header="Motor settings" Visibility="Collapsed" >
                             <StackPanel>
                                 <Button Content="Search for connected" Click="btnSearch4motors_Click"/>
                                 <GroupBox Header="Select">

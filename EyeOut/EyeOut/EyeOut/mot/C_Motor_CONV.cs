@@ -155,6 +155,8 @@ namespace EyeOut
         {
             decMin = 0;
             decMax = 1;
+            decLimitMin = decMin;
+            decLimitMax = decMax;
             hexMin = 0;
             hexMax = 0xffff;
             Dec = 0;
@@ -218,6 +220,8 @@ namespace EyeOut
         {
             decMin = _decMin;
             decMax = _decMax;
+            decLimitMin = decMin;
+            decLimitMax = decMax;
             hexMin = _hexMin;
             hexMax = _hexMax;
             Dec = _dec;
@@ -244,8 +248,8 @@ namespace EyeOut
             }
             set
             {
-                dec = (double)GET_bounded(value, decMin, decMax);
-                hex = dec2hex(value);
+                dec = (double)GET_bounded(value, decLimitMin, decLimitMax);
+                hex = dec2hex(dec);
             }
         }
         public byte[] Hex
@@ -267,10 +271,10 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region conv
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public byte[] dec2hex(double dec)
+        public byte[] dec2hex(double _dec)
         {
-            double decOne = (double)GET_bounded(dec, decMin, decMax); // number in interval <decMin, decMax>
-            decOne = (double)CONV_interval2one(decOne, decMin, decMax); // number in interval <0,1>
+            dec = GET_bounded(_dec, decLimitMin, decLimitMax); // number in interval <decLimitMin, decLimitMax>
+            double decOne = (double)CONV_interval2one(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
             UInt16 hexUInt16 = (UInt16)CONV_one2interval(decOne, hexMin, hexMax); // number in interval <hexMin, hexMax>
 
             Byte H = (byte)(hexUInt16 >> 8); // higher byte part
@@ -284,9 +288,11 @@ namespace EyeOut
             UInt32 hexUInt32 = ((UInt32)hex[1] >> 8) + (UInt32)hex[0];
             UInt16 hexOne = (UInt16)GET_bounded(hexUInt32, hexMin, hexMax); // number in interval <hexMin, hexMax>
             double dec = (double)CONV_interval2one(hexOne, hexMin, hexMax); // number in interval <0,1>
-            dec = (UInt16)CONV_one2interval(dec, decMin, decMax); // number in interval <decMin, decMax>
+            dec = (UInt16)CONV_one2interval(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
+            dec = GET_bounded(dec, decLimitMin, decLimitMax); // number in interval <decLimitMin, decLimitMax>
             return dec;
         }
+
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion conv
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -9,11 +9,11 @@ namespace EyeOut
 {
     public enum e_state
     {
-        started, initializing, initialized, running, closing, closed
+        started = 0, initializing, initialized, running, closing, closed
     }
     public enum e_stateMotors
     {
-        initializing, ready
+        initializing = 0, ready = 1
     }
 
     public class C_State
@@ -52,7 +52,7 @@ namespace EyeOut
 
         public static bool FURTHER(object _comparedState, object _actualState)
         {
-            return (int)_comparedState >= (int)_actualState;
+            return ((int)_actualState >= (int)_comparedState);
         }
         
 

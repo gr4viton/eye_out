@@ -24,7 +24,7 @@ namespace EyeOut
     /// 
     public enum e_rot
     {
-        roll = 0, pitch = 1, yaw = 2
+        roll = 2, pitch = 1, yaw = 0
     }
     public partial class MainWindow : Window
     {
@@ -47,12 +47,6 @@ namespace EyeOut
         #region INIT
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public void SET_sliderLimits(Slider sl, C_Value val)
-        {
-            sl.Maximum = val.DecMax;
-            sl.Value = val.Dec;
-            sl.Minimum = val.DecMin;
-        }
         public void INIT_mot()
         {
 
@@ -75,18 +69,14 @@ namespace EyeOut
             }
 
             // update position
+            foreach (e_rot rot in Enum.GetValues(typeof(e_rot)))
+            {
+                GET_slSpeed(rot).Value = M(rot).speed.Dec;
+                GET_slAngle(rot).Value = M(rot).angle.Dec;
+            }
             C_State.mot = e_stateMotors.ready;
             //UPDATE_motorsFromSliders();
-            UPDATE_slidersFromMotors();
-        }
-        public void SET_allSlidersLimits()
-        {
-            SET_sliderLimits(slAngleYaw, M(e_rot.yaw).angle);
-            SET_sliderLimits(slSpeedYaw, M(e_rot.yaw).speed);
-            SET_sliderLimits(slAnglePitch, M(e_rot.pitch).angle);
-            SET_sliderLimits(slSpeedPitch, M(e_rot.pitch).speed);
-            SET_sliderLimits(slAngleRoll, M(e_rot.roll).angle);
-            SET_sliderLimits(slSpeedRoll, M(e_rot.roll).speed);
+            //UPDATE_slidersFromMotors();
         }
         public void INIT_individualMotors()
         {
@@ -94,13 +84,7 @@ namespace EyeOut
             C_Value angleFull = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
             //C_Value speedFull = new C_Value(0, 100, C_DynAdd.SET_MOV_SPEED_MIN, C_DynAdd.SET_MOV_SPEED_MAX, 20);
             C_Value speedFull = new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5); // no control as 0
-            /*
-            C_Value angleYaw = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
-            C_Value speedYaw = new C_Value(speedFull);
 
-            C_Value anglePitch = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX * 4);
-            C_Value speedPitch = new C_Value(speedFull);
-            */
             int numOfMot = Enum.GetValues(typeof(e_rot)).Length;
             Ms = new List<C_Motor>(numOfMot);
             for (int imot = 0; imot < numOfMot; imot++)
@@ -119,14 +103,14 @@ namespace EyeOut
             Ms[(int)e_rot.pitch] =
                 new C_Motor(e_rot.pitch,
                     2,
-                    new C_Value(angleFull, 0, 360, 200), // angle
+                    new C_Value(angleFull, 111, 292, 200), // angle
                     new C_Value(speedFull, 0, 101, 20) // speed
                 );
             // Motor 
             Ms[(int)e_rot.roll] =
                 new C_Motor(e_rot.roll,
                     3,
-                    new C_Value(angleFull, 0, 360, 200), // angle
+                    new C_Value(angleFull, 156, 248, 200), // angle
                     new C_Value(speedFull, 0, 101, 20) // speed
                 );
 
@@ -171,23 +155,10 @@ namespace EyeOut
 
         private void btnStartMotors_Click(object sender, RoutedEventArgs e)
         {
-            // just trial
-
-            // connect serial port and search for motors
-            string strCmd = "FF0A11";
-            string strCmd_delimited = "FF FE FD 00 01 0A";
-            string strDelimiter = " ";
-
-            //C_DynMot.CONV_strHex2byteArray(strCmd2);
-            byte[] bys;
-
-            bys = C_Motor.strHex2byteArray(strCmd_delimited, strDelimiter);
-            C_Motor.PRINT_byteArray(bys);
-            bys = C_Motor.strHex2byteArray(strCmd);
-            C_Motor.PRINT_byteArray(bys);
-
-
-            MessageBox.Show(M(actMrot).angle.Dec.ToString());
+            foreach (C_Motor m in Ms)
+            {
+                m.ORDER_move();
+            }
         }
 
         private Byte ID_fromNUDid()
@@ -227,14 +198,31 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+        public void SET_sliderLimits(Slider sl, C_Value val)
+        {
+            sl.Maximum = val.DecMax;
+            sl.Value = val.Dec;
+            sl.Minimum = val.DecMin;
+        }
+        public void SET_allSlidersLimits()
+        {
+            foreach (e_rot rot in Enum.GetValues(typeof(e_rot)))
+            {
+                SET_sliderLimits(GET_slSpeed(rot), M(rot).speed);
+                SET_sliderLimits(GET_slAngle(rot), M(rot).angle);
+            }
+        }
         //private void UPDATE_motorsFromSliders()
         //{
         //    //foreach(e_rot
         //}
-        private void UPDATE_motorFromSlider(e_rot rot)
+        private void UPDATE_motorFromSlider(e_rot rot) //nn
         {
-            M(rot).angle.Dec = GET_slAngle(rot).Value;
-            M(rot).speed.Dec = GET_slSpeed(rot).Value;
+            if (C_State.FURTHER(e_stateMotors.ready))
+            {
+                M(rot).angle.Dec = GET_slAngle(rot).Value;
+                M(rot).speed.Dec = GET_slSpeed(rot).Value;
+            }
         }
 
         private void UPDATE_slidersFromMotors()
@@ -245,11 +233,14 @@ namespace EyeOut
             }
         }
 
-        private void UPDATE_sliderFromMotor(e_rot rot)
+        private void UPDATE_sliderFromMotor(e_rot rot)  //nn
         {
-            GET_slAngle(rot).Value = M(rot).angle.Dec;
-            GET_slSpeed(rot).Value = M(rot).speed.Dec;
-            //LOG_logger(string.Format("{0} = angle[{1}], speed[{2}]", rot, M(rot).angle.Dec, M(rot).speed.Dec));
+            if (C_State.FURTHER(e_stateMotors.ready))
+            { 
+                GET_slSpeed(rot).Value = M(rot).speed.Dec;
+                GET_slAngle(rot).Value = M(rot).angle.Dec;
+                //LOG_logger(string.Format("{0} = angle[{1}], speed[{2}]", rot, M(rot).angle.Dec, M(rot).speed.Dec));
+            }
         }
 
         private void ORDER_moveIfChecked(e_rot rot)
@@ -262,13 +253,17 @@ namespace EyeOut
 
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Slider sl = sender as Slider;
-            if (sl!=null)
+            if (C_State.FURTHER(e_stateMotors.ready))
             {
-                sl.Value = Math.Round(e.NewValue, 2);
-                e_rot rot = GET_rot(sl);
-                UPDATE_motorFromSlider(rot);
-                ORDER_moveIfChecked(rot);
+                Slider sl = sender as Slider;
+                if (sl != null)
+                {
+                    sl.Value = Math.Round(e.NewValue, 2);
+                    e_rot rot = GET_rot(sl);
+                    UPDATE_motorFromSlider(rot);
+                    UPDATE_sliderFromMotor(rot);
+                    ORDER_moveIfChecked(rot);
+                }
             }
         }
 
