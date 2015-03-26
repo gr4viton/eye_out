@@ -35,6 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="DirectShowLib-2005">
+      <HintPath>..\_dll\DirectShowLib-2005.dll</HintPath>
+    </Reference>
     <Reference Include="Emgu.CV">
       <HintPath>..\_dll\emgu2.2\Emgu.CV.dll</HintPath>
     </Reference>
@@ -78,6 +81,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Main\C_Camera.cs" />
     <Compile Include="Main_Camera.cs" />
     <Compile Include="Main\C_State.cs" />
     <Compile Include="Main\Main_SPI.cs" />

@@ -19,7 +19,7 @@ namespace EyeOut
     public partial class MainWindow : Window
     {
 
-        private object daraGrid_lock; // lock for datagrid
+        private object dgLog_lock; // lock for datagrid
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region Initialization
@@ -31,13 +31,13 @@ namespace EyeOut
             // trullyObservableCollection = http://stackoverflow.com/questions/17211462/wpf-bound-datagrid-does-not-update-items-properties
 
             // binding
-            CollectionViewSource itemCollectionViewSource;
-            itemCollectionViewSource = (CollectionViewSource)(FindResource("ItemCollectionViewSource"));
-            itemCollectionViewSource.Source = C_Logger.Instance.Data;
+            CollectionViewSource ItemCollectionViewSource_log;
+            ItemCollectionViewSource_log = (CollectionViewSource)(FindResource("ItemCollectionViewSource_log"));
+            ItemCollectionViewSource_log.Source = C_Logger.Instance.Data;
 
             // when binding is changing inner guts of dataGrid from different thread
-            daraGrid_lock = new object(); // lock for datagrid
-            BindingOperations.EnableCollectionSynchronization(C_Logger.Instance.Data, daraGrid_lock); // for multi-thread updating
+            dgLog_lock = new object(); // lock for datagrid
+            BindingOperations.EnableCollectionSynchronization(C_Logger.Instance.Data, dgLog_lock); // for multi-thread updating
 
             // init filter
             lsLogSrcSelction.SelectAll();

@@ -44,7 +44,7 @@ namespace EyeOut
             INIT_logger();
             INIT_spi();
             INIT_mot();
-            INIT_tim();
+            INIT_timSim();
             INIT_cam();
             C_State.prog = e_state.initialized;
         }
@@ -60,7 +60,7 @@ namespace EyeOut
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region INIT
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public void INIT_tim()
+        public void INIT_timSim()
         { 
             timSim = new DispatcherTimer();
             timSim.Tick += new EventHandler(timSim_Tick);
@@ -147,6 +147,9 @@ namespace EyeOut
 
             btnConnect.Content = "Connect Serial";
         }
+
+
+
 
 
 

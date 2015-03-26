@@ -8,7 +8,7 @@
         
         Closing="Window_Closing" 
         
-        Title="MainWindow" Height="700" Width="800"
+        Title="MainWindow" Height="700" Width="1000"
         >
     <!--Closed="Window_Closed"-->
 
@@ -24,7 +24,7 @@
         <!--<local:C_Motor x:Name="motYaw" x:Key="motYawDataSource"/>-->
 
         <!--Filtering and sorting of datagrid dgLog-->
-        <CollectionViewSource x:Key="ItemCollectionViewSource"  
+        <CollectionViewSource x:Key="ItemCollectionViewSource_log"  
                               CollectionViewType="ListCollectionView"
                               Filter="CollectionViewSource_Filter">
             <CollectionViewSource.SortDescriptions>
@@ -34,6 +34,17 @@
                 <scm:SortDescription PropertyName="DueDate" />-->
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
+
+        <!--cam datagrid-->
+        <CollectionViewSource x:Key="ItemCollectionViewSource_cam"  
+                              CollectionViewType="ListCollectionView">
+                              <!--Filter="CollectionViewSource_Filter">-->
+            <!--<CollectionViewSource.SortDescriptions>-->
+                <!-- Requires 'xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"' declaration. -->
+                <!--<scm:SortDescription PropertyName="time" Direction="Descending"/>-->
+            <!--</CollectionViewSource.SortDescriptions>-->
+        </CollectionViewSource>
+        
         <!--checkbox for filterming dgLog-->
         <ObjectDataProvider x:Key="enumValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
@@ -306,18 +317,46 @@
             <TabItem Header="Basler Camera" Background="GreenYellow">
                 <Grid Background="GreenYellow">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="85*"/>
+                        <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="5"/>
-                        <ColumnDefinition Width="169*"/>
+                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0">
-                        <Button x:Name="btnStart" Content="Start"  Click="btnStart_Click"/>
-                    </StackPanel>
+                    <GroupBox Header="Camera selection" Grid.Column="0">
+                        <StackPanel >
+                            <Button x:Name="btnCamSourcesRefresh" Content="Rescan video sources" Click="btnCamSourcesRefresh_Click"/>
+                            <DataGrid Grid.Column="1"
+                                    x:Name="dgCams"
+                                        DataContext="{StaticResource ItemCollectionViewSource_cam}"
+                                        ItemsSource="{Binding}"
+                                        AutoGenerateColumns = "False" 
+                                        CanUserAddRows="False"
+                                        SelectionChanged="dgCams_SelectionChanged"
+                                    >
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID"  IsReadOnly="True" Binding="{Binding Path=DeviceID}" Width="10" ></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Name" IsReadOnly="True"  Binding="{Binding Path=DeviceName}" Width="100"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Identifier" IsReadOnly="True"  Binding="{Binding Path=Identifier}" Width="200"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <GroupBox Header="Camera previews" >
+                                <StackPanel>
+                                    <ToggleButton x:Name="tbtActivePreviewList" Content="Active preview" />
+                                    <StackPanel x:Name="spCamPreview" CanHorizontallyScroll="True" Orientation="Horizontal" MaxHeight="100">
+                                        <!--there will be images generated here  camImages-->
+
+
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </GroupBox>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-                    <StackPanel Grid.Column="2">
-                        <Image x:Name="imgMain" Stretch="Fill"/>
-                        <Image x:Name="imgMini" Stretch="Fill"/>
-                    </StackPanel>
+                    <GroupBox Grid.Column="2" Header="Actual camera preview">
+                        <StackPanel >
+                            <ToggleButton x:Name="tbtActivePreviewActual" Content="Active preview" />
+                            <Image x:Name="imgMain" Stretch="Fill"/>
+                        </StackPanel>
+                    </GroupBox>
                     <!--<Image HorizontalAlignment="Left" Height="100" Margin="227.5,10,0,0" VerticalAlignment="Top" Width="100" Source="pack://siteoforigin:,,,/pic/eyeout.png" Grid.Column="1"/>-->
                 </Grid>
             </TabItem>
@@ -370,7 +409,7 @@
             
             <DataGrid Grid.Column="1"
             x:Name="dgLog"
-              DataContext="{StaticResource ItemCollectionViewSource}"
+              DataContext="{StaticResource ItemCollectionViewSource_log}"
               ItemsSource="{Binding}"
               AutoGenerateColumns = "False" 
               CanUserAddRows="False"
