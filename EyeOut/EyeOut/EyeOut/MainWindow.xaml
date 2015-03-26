@@ -307,8 +307,17 @@
                 <Grid Background="GreenYellow">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="85*"/>
+                        <ColumnDefinition Width="5"/>
                         <ColumnDefinition Width="169*"/>
                     </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <Button x:Name="btnStart" Content="Start"  Click="btnStart_Click"/>
+                    </StackPanel>
+                    <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                    <StackPanel Grid.Column="2">
+                        <Image x:Name="imgMain" Stretch="Fill"/>
+                        <Image x:Name="imgMini" Stretch="Fill"/>
+                    </StackPanel>
                     <!--<Image HorizontalAlignment="Left" Height="100" Margin="227.5,10,0,0" VerticalAlignment="Top" Width="100" Source="pack://siteoforigin:,,,/pic/eyeout.png" Grid.Column="1"/>-->
                 </Grid>
             </TabItem>

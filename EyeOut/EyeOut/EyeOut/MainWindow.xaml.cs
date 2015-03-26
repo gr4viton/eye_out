@@ -45,6 +45,7 @@ namespace EyeOut
             INIT_spi();
             INIT_mot();
             INIT_tim();
+            INIT_cam();
             C_State.prog = e_state.initialized;
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -146,6 +147,7 @@ namespace EyeOut
 
             btnConnect.Content = "Connect Serial";
         }
+
 
 
 
