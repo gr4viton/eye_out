@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         
         Closing="Window_Closing" 
-        
+        Icon="pic\eyeout.png"
         Title="MainWindow" Height="700" Width="1000"
         >
     <!--Closed="Window_Closed"-->

@@ -127,7 +127,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="pic\eyeout.png" />
+    <Resource Include="pic\eyeout.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="cam\" />
