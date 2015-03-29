@@ -362,7 +362,7 @@
             </TabItem>
 
             <TabItem Header="Oculus Headset" Background="DeepSkyBlue">
-                <Grid Background="DeepSkyBlue" Width="175" Height="150">
+                <Grid Background="DeepSkyBlue">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
@@ -370,6 +370,9 @@
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
+                    <StackPanel Grid.Column="0" Grid.Row="0">
+                        <Button x:Name="btnStartOculus" Content="Start Oculus" Click="btnStartOculus_Click"/>
+                    </StackPanel>
 
                     <!--<DockPanel Grid.Column="0" Grid.Row="0">
                         <Image Source="pack://siteoforigin:,,,/pic/eyeout.png"  />
