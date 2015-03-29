@@ -5,11 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 
 
+using System.Threading.Tasks;
+
+//using System.Threading;
+using System.ComponentModel; // backgroundWorker
+
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpOVR;
 
 using System.Windows.Forms;
+
+using Emgu.CV;
+using Emgu.CV.Structure;
+using Emgu.Util;
+
+using System.Windows.Media.Imaging; // BitmapSource 
+using System.Runtime.InteropServices;
+using System.Windows.Threading; // dispatcherTimer
+
 
 namespace EyeOut
 {
@@ -18,52 +32,167 @@ namespace EyeOut
     using SharpDX.Toolkit.Graphics;
     using SharpDX.DXGI;
 
-    public struct S_CaptureData
+    public class C_CaptureData
     {
-        cv::Mat image;
-        OVR.posef pose;
+        //cv::Mat image;
+        BitmapSource image;
+        //OVR.posef pose;
+        public C_CaptureData(BitmapSource _image)
+        {
+            image = _image;
+        }
+
+        public BitmapSource Image
+        {
+            get { return image; }
+        }
     }
+
+    /*
+    public class C_CaptureHandler<T>
+    {
+        void startCapture();
+        void stopCapture();
+        void setResult(T newResul);
+        bool getResult(T outResult);
+        public virtual void captureLoop();
+    }*/
+
     public class C_CameraCaptureHandler
     {
-        //private cv::videocapture videoCapture; // interact with webcam
-        private SharpOVR.HMD hmd;
+        // instance of class interacting with camera
+        private C_Camera cam;  // resp in fact I can use Capture & all the conversion would be defined here..
+        //private Capture capture;        //takes images from camera as image frames
+        //public static int actualId;
 
-        public C_CameraCaptureHandler(SharpOVR.HMD _hmd)
+        private C_CaptureData captureData;
+
+        private object captureData_locker = new object();
+
+        private SharpOVR.HMD hmd; // for fetching the headpose
+        bool isStopped;
+
+        public C_CameraCaptureHandler(SharpOVR.HMD _hmd, int _camId)
         {
-            
-            //if(isOpened != true)
-            //{
-            //    C_VideoDevice get
-            //}
-            //videoCapture.set(CV_CAP_PROP_FRAM_WIDTH, CAMERA_WIDTH);
-            //vid.width =cam.width
-            //vid.height =cam.height
-            //videoCapture.set(CV_CAP_PROP_FPS, 60);
+            // open the camera and set it up
+            cam = new C_Camera(_camId);
+            hmd = _hmd;
+            isStopped = true;
+        }
 
-            virtual void captureLoop()
+        public void startCapture()
+        {
+            isStopped = false;
+            startCaptureLoop();
+        }
+
+        private void startCaptureLoop()
+        {
+            // better to create [Backgroundworker with the loop] inside C_CaptureDataHandler then in upper
+            // because if I would have more cameras each would create its loop separately :)
+
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.RunWorkerCompleted += captureLoop_RunWorkerCompleted;
+            worker.DoWork += captureLoop_DoWork;
+            //worker.RunWorkerAsync((object)cmd);
+            worker.RunWorkerAsync();
+        }
+
+        public void stopCapture()
+        {
+            isStopped = true;
+        }
+
+        bool newImgReady = true;
+
+        // with a locker
+        public C_CaptureData CaptureData // nullable
+        {
+            get
             {
-                while (!isStopped())
+                lock(captureData_locker)
                 {
-                    CaptureData captured;
-                    float captureTime = OVR.GetTimeInSeconds() - CAMERA_LATENCY; // 40ms - 
-
-                    SharpOVR.TrackingState tracking = SharpOVR.TrackingCapabilities.Orientation(hmd, captureTime);
-
-                    // not predict in back time -> so tweak the sdk or make a abstract layer to store older positions
-
-                    captured.pose = SharpOVR.TrackingCapabilities.Position;
-
-                    if(!videoCapture.grab() || !videoCapture.retrieve(captured.image))
+                    if (newImgReady)
                     {
-                        //Failed video capture
-                        LOG_err("Failed video capture");
+                        // with act MOTOR pose
+                        // act Cam img
+                        return captureData;
                     }
-
-                    cv::flip(captured.image.clone(), captured.image, 0); // opencv vs opengl ? vs directX
-                    setResult(captured);
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            set
+            {
+                lock (captureData_locker)
+                {
+                    captureData = value;
                 }
             }
         }
+
+
+        private void captureLoop_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+            while (isStopped == false)
+            {
+                captureData = new C_CaptureData(
+                    cam.GET_txu()
+                    //,MOT.GET_position();
+                        );
+
+                
+            //// capture the headpose
+            //S_CaptureData captured;
+            //double captureTime = OVR.GetTimeInSeconds() - cam.CamLatency; // subtract a camera lag from pose
+                
+                // SDK can not predict in back time 
+                // -> so tweak the sdk 
+                // -> or make a abstract layer to store older positions
+                // looks like this SDK through SharpDX cannot predict at all
+                // so make predictions?
+
+                //SharpOVR.TrackingState tracking = SharpOVR.TrackingCapabilities.Orientation(hmd, captureTime);
+
+                //var pose = SharpOVR.TrackingCapabilities.Orientation;
+
+                //captured.pose = SharpOVR.TrackingCapabilities.Position;
+
+                //// capture the image
+                //if(!videoCapture.grab() || !videoCapture.retrieve(captured.image))
+                //{
+                //    //Failed video capture
+                //    LOG_err("Failed video capture");
+                //}
+
+                //cv::flip(captured.image.clone(), captured.image, 0); // opencv vs opengl ? vs directX
+                //setResult(captured);
+
+            }
+            //e.Result = C_SPI.WriteData(e.Argument as byte[]);
+        }
+
+        private void captureLoop_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // catch if response was A-OK
+            if (e.Error != null)
+            {
+                LOG_err(String.Format("Camera id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, cam.id));
+                //ie Helpers.HandleCOMException(e.Error);
+            }
+            else
+            {
+                //e.Result = "tocovrati writeData";
+                //MyResultObject result = (MyResultObject)e.Result;
+
+                //LOG("DATA SENT");
+                //var results = e.Result as List<object>;
+            }
+        }
+
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region LOG
@@ -82,6 +211,7 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     }
      
+/*
 // takes internation between Oculus VR and 
     public class CameraApp : RiftApp 
     {
@@ -185,18 +315,18 @@ namespace EyeOut
             GlfwApp::renderstringAt(message, glm::vec(-0.5f,0.5f));
         }
     }
+*/
 
     /// <summary>
-    /// Simple RiftGame game using SharpDX.Toolkit.
+    /// EyeOut telepresence using SharpDX.Toolkit
     /// </summary>
-    public class C_Telepresence : Game
+    public partial class C_Telepresence : Game
     {
         private GraphicsDeviceManager graphicsDeviceManager;
 
         private Matrix view;
         private Matrix projection;
 
-        private Model model;
 
         private HMD hmd;
         private Rect[] eyeRenderViewport;
@@ -212,157 +342,38 @@ namespace EyeOut
         private Vector3 headPos = new Vector3(0f, 0f, -5f);
         private float bodyYaw = 3.141592f;
 
-
-
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #region LOG
+        #region drawable objects
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public static void LOG(string _msg)
-        {
-            C_Logger.Instance.LOG(e_LogMsgSource.EyeOut, _msg);
-        }
-
-        public static void LOG_err(string _msg)
-        {
-            C_Logger.Instance.LOG_err(e_LogMsgSource.EyeOut, _msg);
-        }
+        private Model model;
+        private SharpDX.Toolkit.Graphics.Texture2D txuCam;
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #endregion LOG
+        #endregion drawable objects
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+        private C_CameraCaptureHandler captureHandler;
+        //private C_CaptureData captureData;
 
+
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="RiftGame" /> class.
         /// </summary>
-        public C_Telepresence()
+        public C_Telepresence(int _camId)
         {
-
-            // Creates a graphics manager. This is mandatory.
-            LOG("Creating Graphics Manager");
-            graphicsDeviceManager = new GraphicsDeviceManager(this);
-
-            // Setup the relative directory to the executable directory 
-            // for loading contents with the ContentManager
-            Content.RootDirectory = "Content\\Demo";
-
-            //Content.RootDirectory = "..\\..\\Content";
-            //Content.RootDirectory = "B:\\__DIP\\dev\\2015_03_28 - sharpovr only\\sharpOVR_wpf\\Content";
-
-
-            // Initialize OVR Library
-            LOG("Initializing OVR Library");
-            OVR.Initialize();
-
-            // Create our HMD
-            LOG("Creating HMD control");
-            hmd = OVR.HmdCreate(0) ?? OVR.HmdCreateDebug(HMDType.DK1);
-
-            // Match back buffer size with HMD resolution
-            graphicsDeviceManager.PreferredBackBufferWidth = hmd.Resolution.Width;
-            graphicsDeviceManager.PreferredBackBufferHeight = hmd.Resolution.Height;
+            INIT_toolkit();
+            // later possible more cameras -> int[] _camIds
+            INIT_captureHandler(_camId);
         }
 
-        protected override void Initialize()
+
+        public void INIT_captureHandler(int _camId)
         {
-            // Modify the title of the window
-            Window.Title = "EyeOut Telepresence";
-
-            // Attach HMD to window
-            LOG("Attaching HMD to window");
-            var control = (System.Windows.Forms.Control)Window.NativeWindow;
-            hmd.AttachToWindow(control.Handle);
-
-            // Create our render target
-            LOG("Creating render target");
-            var renderTargetSize = hmd.GetDefaultRenderTargetSize(1.5f);
-            renderTarget = RenderTarget2D.New(GraphicsDevice, renderTargetSize.Width, renderTargetSize.Height, new MipMapCount(1), PixelFormat.R8G8B8A8.UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-            renderTargetView = (RenderTargetView)renderTarget;
-            renderTargetSRView = (ShaderResourceView)renderTarget;
-
-            // Create a depth stencil buffer for our render target
-            LOG("Creating a depth stencil buffer for target of rendering");
-            depthStencilBuffer = DepthStencilBuffer.New(GraphicsDevice, renderTargetSize.Width, renderTargetSize.Height, DepthFormat.Depth32, true);
-
-            // Adjust render target size if there were any hardware limitations
-            renderTargetSize.Width = renderTarget.Width;
-            renderTargetSize.Height = renderTarget.Height;
-
-            // The viewport sizes are re-computed in case renderTargetSize changed
-            eyeRenderViewport = new Rect[2];
-            eyeRenderViewport[0] = new Rect(0, 0, renderTargetSize.Width / 2, renderTargetSize.Height);
-            eyeRenderViewport[1] = new Rect((renderTargetSize.Width + 1) / 2, 0, eyeRenderViewport[0].Width, eyeRenderViewport[0].Height);
-
-            // Create our eye texture data
-            LOG("Creating eye texture data");
-            eyeTexture = new D3D11TextureData[2];
-            eyeTexture[0].Header.API = RenderAPIType.D3D11;
-            eyeTexture[0].Header.TextureSize = renderTargetSize;
-            eyeTexture[0].Header.RenderViewport = eyeRenderViewport[0];
-            eyeTexture[0].pTexture = ((SharpDX.Direct3D11.Texture2D)renderTarget).NativePointer;
-            eyeTexture[0].pSRView = renderTargetSRView.NativePointer;
-
-            // Right eye uses the same texture, but different rendering viewport
-            eyeTexture[1] = eyeTexture[0];
-            eyeTexture[1].Header.RenderViewport = eyeRenderViewport[1];
-
-            // Configure d3d11
-            LOG("Configuring d3d11");
-            var device = (SharpDX.Direct3D11.Device)GraphicsDevice;
-            D3D11ConfigData d3d11cfg = new D3D11ConfigData();
-            d3d11cfg.Header.API = RenderAPIType.D3D11;
-            d3d11cfg.Header.RTSize = hmd.Resolution;
-            d3d11cfg.Header.Multisample = 1;
-            d3d11cfg.pDevice = device.NativePointer;
-            d3d11cfg.pDeviceContext = device.ImmediateContext.NativePointer;
-            d3d11cfg.pBackBufferRT = ((RenderTargetView)GraphicsDevice.BackBuffer).NativePointer;
-            d3d11cfg.pSwapChain = ((SharpDX.DXGI.SwapChain)GraphicsDevice.Presenter.NativePresenter).NativePointer;
-
-            // Configure rendering
-            LOG("Configuring rendering");
-            eyeRenderDesc = new EyeRenderDesc[2];
-            if (!hmd.ConfigureRendering(d3d11cfg, DistortionCapabilities.Chromatic | DistortionCapabilities.TimeWarp, hmd.DefaultEyeFov, eyeRenderDesc))
-            {
-                LOG_err("Failed to configure rendering");
-                throw new Exception("Failed to configure rendering");
-            }
-
-            // Set enabled capabilities
-            hmd.EnabledCaps = HMDCapabilities.LowPersistence | HMDCapabilities.DynamicPrediction;
-
-            // Configure tracking
-            hmd.ConfigureTracking(TrackingCapabilities.Orientation | TrackingCapabilities.Position | TrackingCapabilities.MagYawCorrection, TrackingCapabilities.None);
-
-            // Dismiss the Heatlh and Safety Window
-            hmd.DismissHSWDisplay();
-
-            // Get HMD output
-            LOG("Getting HMD output");
-            var adapter = (Adapter)GraphicsDevice.Adapter;
-            var hmdOutput = adapter.Outputs.FirstOrDefault(o => hmd.DeviceName.StartsWith(o.Description.DeviceName, StringComparison.OrdinalIgnoreCase));
-            if (hmdOutput != null)
-            {
-                // Set game to fullscreen on rift
-                var swapChain = (SwapChain)GraphicsDevice.Presenter.NativePresenter;
-                var description = swapChain.Description.ModeDescription;
-                swapChain.ResizeTarget(ref description);
-                swapChain.SetFullscreenState(true, hmdOutput);
-            }
-
-            base.Initialize();
+            captureHandler = new C_CameraCaptureHandler(hmd, _camId);
+            captureHandler.startCapture();
+            
         }
 
-        protected override void LoadContent()
-        {
-            LOG("Loading Content models etc.");
-            // Load a 3D model
-            // The [Ship.fbx] file is defined with the build action [ToolkitModel] in the project
-            model = Content.Load<Model>("Ship");
-
-            // Enable default lighting on model.
-            BasicEffect.EnableDefaultLighting(model, true);
-
-            base.LoadContent();
-        }
 
         protected override void Update(GameTime gameTime)
         {
@@ -392,8 +403,10 @@ namespace EyeOut
             // Clear the screen
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            // synchronous..
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {
+
                 var eye = hmd.EyeRenderOrder[eyeIndex];
                 var renderDesc = eyeRenderDesc[(int)eye];
                 var renderViewport = eyeRenderViewport[(int)eye];
@@ -438,7 +451,34 @@ namespace EyeOut
                         Matrix.Translation(0, -1.5f, 2.0f);
             model.Draw(GraphicsDevice, world, view, projection);
 
+
+            //txuCam.draw
+            //captureHandler.CaptureData.Image;
+
             base.Draw(gameTime);
+        }
+
+        protected void GET_txu()
+        {
+
+            /*
+            System.IO.Stream inputMemoryStream = new System.IO.MemoryStream(captureHandler.CaptureData.Image);
+            //
+            //var inputTex2D = Texture2D.FromStream<Texture2D>(device, inputMemoryStream, (int)inputMemoryStream.Length, new ImageLoadInformation()
+            var inputTex2D = Texture2D.Load(graphicsDeviceManager, inputMemoryStream, (int)inputMemoryStream.Length, new ImageLoadInformation()
+            {
+                Depth = 1,
+                FirstMipLevel = 0,
+                MipLevels = 0,
+                Usage = ResourceUsage.Default,
+                BindFlags = BindFlags.ShaderResource,
+                CpuAccessFlags = CpuAccessFlags.None,
+                OptionFlags = ResourceOptionFlags.None,
+                Format = Format.R8G8B8A8_UNorm,
+                Filter = FilterFlags.None,
+                MipFilter = FilterFlags.None,
+            });
+            */
         }
 
         protected override void Dispose(bool disposeManagedResources)
@@ -456,5 +496,25 @@ namespace EyeOut
                 OVR.Shutdown();
             }
         }
+
+        
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        public static void LOG(string _msg)
+        {
+            C_Logger.Instance.LOG(e_LogMsgSource.EyeOut, _msg);
+        }
+
+        public static void LOG_err(string _msg)
+        {
+            C_Logger.Instance.LOG_err(e_LogMsgSource.EyeOut, _msg);
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
     }
 }

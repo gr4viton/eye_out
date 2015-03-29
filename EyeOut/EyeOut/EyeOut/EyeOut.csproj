@@ -128,7 +128,8 @@
     <Compile Include="cam\C_Camera.cs" />
     <Compile Include="cam\Main_Camera.cs" />
     <Compile Include="about\Main_About.cs" />
-    <Compile Include="C_Telepresence.cs" />
+    <Compile Include="ocu_and_TP\C_Telepresence_INIT.cs" />
+    <Compile Include="ocu_and_TP\C_Telepresence.cs" />
     <Compile Include="ocu_and_TP\Main_Oculus.cs" />
     <Compile Include="Main\C_State.cs" />
     <Compile Include="Main\Main_SPI.cs" />

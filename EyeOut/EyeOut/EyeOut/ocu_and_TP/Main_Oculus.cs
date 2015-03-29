@@ -78,7 +78,7 @@ namespace EyeOut
             else
             {
                 // send active config
-                using (TP_program = new C_Telepresence())
+                using (TP_program = new C_Telepresence(C_Camera.actualId))
                 {
                     TP_program.Run();
                 }

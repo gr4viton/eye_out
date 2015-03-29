@@ -49,7 +49,6 @@ namespace EyeOut
 
     public class C_VideoDevice
     {
-        /*using System;using System.Collections.Generic;using System.Linq;using System.Text;*/
         public string deviceName;
         public int deviceID;
         public Guid identifier;
@@ -95,23 +94,29 @@ namespace EyeOut
 
     public class C_Camera
     {
-        //public static List<C_VideoDevice> camSources; //List containing all the camera available
         public static ObservableCollection<C_VideoDevice> camList;
         public static int numCamSources;
         public static int actualId;
 
         private Capture capture;        //takes images from camera as image frames
-        private bool captureInProgress;
-        //System.Windows.Controls.Image img;
         public int id;
+        private double camLatency;
 
+        private bool captureInProgress; // not used anymore?
 
         public C_Camera(int _id)
         {
-            //haarCascade = new HaarCascade(@"haarcascade_frontalface_alt_tree.xml");
             id = _id;
             INIT_capture();
         }
+
+        public C_Camera(int _id, double _camLatency)
+        {
+            id = _id;
+            camLatency = _camLatency; // 40ms - 
+            INIT_capture();
+        }
+
         public void INIT_capture()
         {
             if (capture == null)
@@ -119,6 +124,11 @@ namespace EyeOut
                 try
                 {
                     capture = new Capture(id);
+                    //videoCapture.set(CV_CAP_PROP_FRAM_WIDTH, CAMERA_WIDTH);
+                    //vid.width =cam.width
+                    //vid.height =cam.height
+                    //videoCapture.set(CV_CAP_PROP_FPS, 60);
+                    // that is took care of automatically
                 }
                 catch (NullReferenceException excpt)
                 {
@@ -134,6 +144,14 @@ namespace EyeOut
             return BitmapSourceConvert.ToBitmapSource(ImageFrame);
         }
 
+        public BitmapSource GET_txu()
+        {
+            Image<Bgr, Byte> ImageFrame = capture.QueryFrame();
+
+            return BitmapSourceConvert.ToBitmapSource(ImageFrame);
+        }
+
+
         public void TOGGLE_capture()
         {
             captureInProgress = !captureInProgress;
@@ -145,6 +163,14 @@ namespace EyeOut
                 capture.Dispose();
         }
 
+
+        public double CamLatency
+        {
+            get
+            {
+                return camLatency;
+            }
+        }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region LOG

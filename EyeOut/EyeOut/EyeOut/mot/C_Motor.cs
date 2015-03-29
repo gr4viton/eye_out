@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Threading;
-using System.ComponentModel;
+using System.ComponentModel; // backgroundWorker
 
 //using System.Linq;
 
@@ -166,7 +166,7 @@ namespace EyeOut
             // catch if response was A-OK
             if (e.Error != null)
             {
-                LOG(String.Format("Motor id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, id));
+                LOG_err(String.Format("Motor id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, id));
                 //ie Helpers.HandleCOMException(e.Error);
             }
             else
