@@ -127,8 +127,9 @@
     </Compile>
     <Compile Include="cam\C_Camera.cs" />
     <Compile Include="cam\Main_Camera.cs" />
-    <Compile Include="Main_About.cs" />
-    <Compile Include="ocu\Main_Oculus.cs" />
+    <Compile Include="about\Main_About.cs" />
+    <Compile Include="C_Telepresence.cs" />
+    <Compile Include="ocu_and_TP\Main_Oculus.cs" />
     <Compile Include="Main\C_State.cs" />
     <Compile Include="Main\Main_SPI.cs" />
     <Compile Include="Main\C_Logger.cs" />
@@ -145,7 +146,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ocu\RiftGame.cs" />
+    <Compile Include="ocu_and_TP\RiftGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -164,8 +165,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <ToolkitModel Include="Content\Ship.fbx" />
-    <ToolkitTexture Include="Content\ShipDiffuse.dds" />
+    <ToolkitModel Include="Content\Demo\Ship.fbx" />
+    <ToolkitTexture Include="Content\Demo\ShipDiffuse.dds" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -178,9 +179,7 @@
   <ItemGroup>
     <Resource Include="Content\pic\eyeout.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="about\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Content\about\aboutLibraries.txt" />
     <Content Include="Content\mot\cmdInEx.txt">

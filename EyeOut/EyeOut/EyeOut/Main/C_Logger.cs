@@ -22,9 +22,17 @@ using System.Collections.ObjectModel; // ObservableCollection
 
 namespace EyeOut
 {
+    /*
+     * spi = Serial Peripheral Interface
+     * gui = Graphical User Interface
+     * mot = Motor
+     * cam = Camera
+     * TP = Telepresence
+     * valConv = Value conversion
+     */
     public enum e_LogMsgSource
     {
-        spi, spi_sent, spi_got, gui, log, mot, mot_yaw, mot_pitch, mot_roll, cam, valConv
+        spi, spi_sent, spi_got, gui, log, mot, mot_yaw, mot_pitch, mot_roll, cam, Demo_TP, EyeOut, EyeOut_cam, valConv
     }
     public enum e_LogMsgType
     {

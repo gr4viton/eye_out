@@ -18,10 +18,178 @@ namespace EyeOut
     using SharpDX.Toolkit.Graphics;
     using SharpDX.DXGI;
 
+    public struct S_CaptureData
+    {
+        cv::Mat image;
+        OVR.posef pose;
+    }
+    public class C_CameraCaptureHandler
+    {
+        //private cv::videocapture videoCapture; // interact with webcam
+        private SharpOVR.HMD hmd;
+
+        public C_CameraCaptureHandler(SharpOVR.HMD _hmd)
+        {
+            
+            //if(isOpened != true)
+            //{
+            //    C_VideoDevice get
+            //}
+            //videoCapture.set(CV_CAP_PROP_FRAM_WIDTH, CAMERA_WIDTH);
+            //vid.width =cam.width
+            //vid.height =cam.height
+            //videoCapture.set(CV_CAP_PROP_FPS, 60);
+
+            virtual void captureLoop()
+            {
+                while (!isStopped())
+                {
+                    CaptureData captured;
+                    float captureTime = OVR.GetTimeInSeconds() - CAMERA_LATENCY; // 40ms - 
+
+                    SharpOVR.TrackingState tracking = SharpOVR.TrackingCapabilities.Orientation(hmd, captureTime);
+
+                    // not predict in back time -> so tweak the sdk or make a abstract layer to store older positions
+
+                    captured.pose = SharpOVR.TrackingCapabilities.Position;
+
+                    if(!videoCapture.grab() || !videoCapture.retrieve(captured.image))
+                    {
+                        //Failed video capture
+                        LOG_err("Failed video capture");
+                    }
+
+                    cv::flip(captured.image.clone(), captured.image, 0); // opencv vs opengl ? vs directX
+                    setResult(captured);
+                }
+            }
+        }
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        public static void LOG(string _msg)
+        {
+            C_Logger.Instance.LOG(e_LogMsgSource.EyeOut_cam, _msg);
+        }
+
+        public static void LOG_err(string _msg)
+        {
+            C_Logger.Instance.LOG_err(e_LogMsgSource.EyeOut_cam, _msg);
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    }
+     
+// takes internation between Oculus VR and 
+    public class CameraApp : RiftApp 
+    {
+        private C_CameraCaptureHandler captureHandler;
+        private S_CaptureData captureData;
+        
+        gl::ProgramPtr videoRenderProgram; // shader
+        gl::GeometryPtr videoGemoetry; // geometry
+        gl::Texture2Ptr texture; // a texture containing the image capture from the camera
+
+        // inits in initGl
+        // use in render scene
+
+        public CameraApp(): captureHandler(_hmd)
+        {
+            captureHandler.startCapture();
+        }
+
+        virtual ~CameraApp()
+        {
+            captureHandler.stopCapture();
+        }
+
+        virtual void initGl(); // once after opengl context created
+        virtual void update(); // optionaly - once per frame
+        virtual void renderScene(); // twice for frame - once for each eye
+
+        void initGl()
+        {
+            videoRenderProgram = glutils::getProgram( Resource::SHaders_textured_VS, Resource::SHaders_textured_FS);
+            texture = gl::TexturePtr(new gl::Texture2d());
+
+            texture->bind();
+
+            texture->parameter(GL_TEXTURE_MAG_FILTER,GL_LINEAR_);
+            texture->parameter(GL_TEXTURE_MIN_FILTER,GL_LINEAR_);
+            gl::Texture2d::unbind();
+
+            float halfFov = (camera_HFOV_DEGREES / 2.0f) * DEGREES_TO_RADIANS;
+            float scale = tan(halfFov) * IMAGE_DSTANCE;
+            videoGeometry = GlUtils::getQuadGeometry(Camera_ASPECT, scale * 2.0f); // create geometry of a rectangle with given aspect ratio and size of longer dimension
+
+            // same field of view as camer
+            // cam 70°
+            // distance 10 m
+            // xhalf = d*tan(delta) 
+            // xfull = 2*xhalf;
+        }
+
+        void update()
+        {
+            if (captureHandler.getResult(captureData)) // is there new data?
+            {
+                // consume it by loading it into texture
+                // openCV picture = GL texture format !
+                // does openCV picture = DX texture format ????
+
+                // format it in capture thread
+                texture->bind();
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, captureData.image.cols,
+                    captureData.image.rows, 0 , 
+                    gl_BGR, //<< opengl vs directx
+                    gl_unsigned_byte, 
+                    captureData.image.data);
+                gl::Texture2d::unbind();
+            }
+        }
+
+        void renderScene()
+        {
+            glClear(GL_DEPTH_BUFFER_BIT);
+            glutils::renderSkybox(Resource::Images_SKY_CITY_XNEG_PNG); // any vr profits
+            gl::MatrixStack & mv = global::Stacks::modelView();
+
+            mv.with_push(
+                [&]{
+                mv.identity(); // reset
+
+
+                    
+                    // between curent head pose and pose in which the image from the camera was captured
+                    // delta transform betwen capture pose and current render pose
+                    glm::quat eyePose = rift::fromOvr(getEyePose().orientation);
+                    glm::quat cameraPose = rift::fromOvr(captureData.pose.orientation);
+                    glm::mat4 webcamdelta = glm::mat4_cast(glm::inverse(eyePose) * webcampose);
+
+                    mv.preMultiply(webcamdelta);
+
+                    mv.translate(glm::vec3(0,0,-IMAGE_DISTANCE)); // move farer
+
+                    texture->bind();
+                GLutils::renderGeometry(videoGemoetry, videoRenderProgram);
+                    gl::Texture2d::unbind();
+                });
+
+            // diagnostics
+            std::string message = PlatformID::format(
+                "OpenGL FPS: %0.2f\n" + 
+                "Vidcap FPS: %0.2f\n",
+                fps, captureHandler.getCapturesPerSecond());
+            GlfwApp::renderstringAt(message, glm::vec(-0.5f,0.5f));
+        }
+    }
+
     /// <summary>
     /// Simple RiftGame game using SharpDX.Toolkit.
     /// </summary>
-    public class RiftGame : Game
+    public class C_Telepresence : Game
     {
         private GraphicsDeviceManager graphicsDeviceManager;
 
@@ -44,25 +212,49 @@ namespace EyeOut
         private Vector3 headPos = new Vector3(0f, 0f, -5f);
         private float bodyYaw = 3.141592f;
 
+
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        public static void LOG(string _msg)
+        {
+            C_Logger.Instance.LOG(e_LogMsgSource.EyeOut, _msg);
+        }
+
+        public static void LOG_err(string _msg)
+        {
+            C_Logger.Instance.LOG_err(e_LogMsgSource.EyeOut, _msg);
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RiftGame" /> class.
         /// </summary>
-        public RiftGame()
+        public C_Telepresence()
         {
+
             // Creates a graphics manager. This is mandatory.
+            LOG("Creating Graphics Manager");
             graphicsDeviceManager = new GraphicsDeviceManager(this);
 
             // Setup the relative directory to the executable directory 
             // for loading contents with the ContentManager
-            Content.RootDirectory = "Content";
+            Content.RootDirectory = "Content\\Demo";
+
             //Content.RootDirectory = "..\\..\\Content";
             //Content.RootDirectory = "B:\\__DIP\\dev\\2015_03_28 - sharpovr only\\sharpOVR_wpf\\Content";
 
 
             // Initialize OVR Library
+            LOG("Initializing OVR Library");
             OVR.Initialize();
 
             // Create our HMD
+            LOG("Creating HMD control");
             hmd = OVR.HmdCreate(0) ?? OVR.HmdCreateDebug(HMDType.DK1);
 
             // Match back buffer size with HMD resolution
@@ -76,17 +268,19 @@ namespace EyeOut
             Window.Title = "EyeOut Telepresence";
 
             // Attach HMD to window
-
+            LOG("Attaching HMD to window");
             var control = (System.Windows.Forms.Control)Window.NativeWindow;
             hmd.AttachToWindow(control.Handle);
 
             // Create our render target
+            LOG("Creating render target");
             var renderTargetSize = hmd.GetDefaultRenderTargetSize(1.5f);
             renderTarget = RenderTarget2D.New(GraphicsDevice, renderTargetSize.Width, renderTargetSize.Height, new MipMapCount(1), PixelFormat.R8G8B8A8.UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             renderTargetView = (RenderTargetView)renderTarget;
             renderTargetSRView = (ShaderResourceView)renderTarget;
 
             // Create a depth stencil buffer for our render target
+            LOG("Creating a depth stencil buffer for target of rendering");
             depthStencilBuffer = DepthStencilBuffer.New(GraphicsDevice, renderTargetSize.Width, renderTargetSize.Height, DepthFormat.Depth32, true);
 
             // Adjust render target size if there were any hardware limitations
@@ -99,6 +293,7 @@ namespace EyeOut
             eyeRenderViewport[1] = new Rect((renderTargetSize.Width + 1) / 2, 0, eyeRenderViewport[0].Width, eyeRenderViewport[0].Height);
 
             // Create our eye texture data
+            LOG("Creating eye texture data");
             eyeTexture = new D3D11TextureData[2];
             eyeTexture[0].Header.API = RenderAPIType.D3D11;
             eyeTexture[0].Header.TextureSize = renderTargetSize;
@@ -111,6 +306,7 @@ namespace EyeOut
             eyeTexture[1].Header.RenderViewport = eyeRenderViewport[1];
 
             // Configure d3d11
+            LOG("Configuring d3d11");
             var device = (SharpDX.Direct3D11.Device)GraphicsDevice;
             D3D11ConfigData d3d11cfg = new D3D11ConfigData();
             d3d11cfg.Header.API = RenderAPIType.D3D11;
@@ -122,9 +318,11 @@ namespace EyeOut
             d3d11cfg.pSwapChain = ((SharpDX.DXGI.SwapChain)GraphicsDevice.Presenter.NativePresenter).NativePointer;
 
             // Configure rendering
+            LOG("Configuring rendering");
             eyeRenderDesc = new EyeRenderDesc[2];
             if (!hmd.ConfigureRendering(d3d11cfg, DistortionCapabilities.Chromatic | DistortionCapabilities.TimeWarp, hmd.DefaultEyeFov, eyeRenderDesc))
             {
+                LOG_err("Failed to configure rendering");
                 throw new Exception("Failed to configure rendering");
             }
 
@@ -138,6 +336,7 @@ namespace EyeOut
             hmd.DismissHSWDisplay();
 
             // Get HMD output
+            LOG("Getting HMD output");
             var adapter = (Adapter)GraphicsDevice.Adapter;
             var hmdOutput = adapter.Outputs.FirstOrDefault(o => hmd.DeviceName.StartsWith(o.Description.DeviceName, StringComparison.OrdinalIgnoreCase));
             if (hmdOutput != null)
@@ -154,6 +353,7 @@ namespace EyeOut
 
         protected override void LoadContent()
         {
+            LOG("Loading Content models etc.");
             // Load a 3D model
             // The [Ship.fbx] file is defined with the build action [ToolkitModel] in the project
             model = Content.Load<Model>("Ship");
@@ -243,13 +443,16 @@ namespace EyeOut
 
         protected override void Dispose(bool disposeManagedResources)
         {
+            LOG("Disposing");
             base.Dispose(disposeManagedResources);
             if (disposeManagedResources)
             {
                 // Release the HMD
+                LOG("Release the HMD");
                 hmd.Dispose();
 
                 // Shutdown the OVR Library
+                LOG("Shutting-down the OVR Library");
                 OVR.Shutdown();
             }
         }

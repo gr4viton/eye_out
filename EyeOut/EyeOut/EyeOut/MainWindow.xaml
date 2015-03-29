@@ -380,7 +380,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Column="0" Grid.Row="0">
-                        <Button x:Name="btnStartOculus" Content="Start Oculus Demo scene" Click="btnStartOculus_Click"/>
+                        <Button x:Name="btnStartOculus" Content="Start Oculus Demo scene" Click="btnStartOculusDemo_Click"/>
                     </StackPanel>
 
                     <!--<DockPanel Grid.Column="0" Grid.Row="0">
@@ -431,17 +431,33 @@
                         </GroupBox>
                     </Grid>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-                    <GroupBox Grid.Column="2" Header="Telepresence settings">
+                    <GroupBox Grid.Column="2" Header="Telepresence configuration">
                         <StackPanel>
-                            <GroupBox Header="HUD Settings">
-                                
-                                <Button Content="Start Telepresence" Background="GreenYellow" Height="42" FontWeight="ExtraBold" FontSize="26"/>
+                            <GroupBox Header="HUD">
+                                <StackPanel>
+                                    <CheckBox Content="Time" IsEnabled="False"/>
+                                    <CheckBox Content="Radar" IsEnabled="False"/>
+                                    <CheckBox Content="Motor pose" IsEnabled="False"/>
+                                </StackPanel>
                             </GroupBox>
+
+                            <GroupBox Header="Anti-sickness">
+                                <StackPanel>
+                                    <CheckBox Content="Skybox" IsEnabled="False"/>
+                                    <CheckBox Content="Virtual Nose" IsEnabled="False"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="Config bundles">
+                                <ListBox>
+                                    Default settings
+                                </ListBox>
+                            </GroupBox>
+                            <Button Content="Start Telepresence" Click="btnStartTP_Click" Background="GreenYellow" Height="42" FontWeight="ExtraBold" FontSize="26"/>
                         </StackPanel>
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <TabItem Header="About" Width="80" MouseDown="TabItem_MouseDown" Background="WhiteSmoke">
+            <TabItem Header="About" Width="80" Background="WhiteSmoke">
                 <Grid Background="WhiteSmoke">
                     <StackPanel>
                         <Grid>
@@ -525,7 +541,7 @@
                     <DataGridTextColumn Header="Time"  IsReadOnly="True" Binding="{Binding Path=time, StringFormat=HH:mm:ss.fff}" Width="76" 
                                     ></DataGridTextColumn>
                     <DataGridTextColumn Header="Type" IsReadOnly="True"  Binding="{Binding Path=type}" Width="50"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Source" IsReadOnly="True"  Binding="{Binding Path=src}" Width="50"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Source" IsReadOnly="True"  Binding="{Binding Path=src}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" MinWidth="50" ></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
