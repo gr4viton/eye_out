@@ -82,7 +82,14 @@ namespace EyeOut
         }
         void PLOT_activePreviewImage()
         {
-            imgMain.Source = Cs[C_Camera.actualId].GET_frame();
+            if (tcMain.SelectedItem == tiCamera)
+            {
+                imgMain.Source = Cs[C_Camera.actualId].GET_frame();
+            }
+            else if (tcMain.SelectedItem == tiTelepresence)
+            {
+                imgMain_TP.Source = Cs[C_Camera.actualId].GET_frame();
+            }
         }
 
         void DISPOSE_old()

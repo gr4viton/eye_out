@@ -127,6 +127,7 @@
     </Compile>
     <Compile Include="cam\C_Camera.cs" />
     <Compile Include="cam\Main_Camera.cs" />
+    <Compile Include="Main_About.cs" />
     <Compile Include="ocu\Main_Oculus.cs" />
     <Compile Include="Main\C_State.cs" />
     <Compile Include="Main\Main_SPI.cs" />
@@ -175,9 +176,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="pic\eyeout.png" />
+    <Resource Include="Content\pic\eyeout.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="about\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\about\aboutLibraries.txt" />
+    <Content Include="Content\mot\cmdInEx.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

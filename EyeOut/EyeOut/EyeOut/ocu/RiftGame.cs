@@ -73,7 +73,7 @@ namespace EyeOut
         protected override void Initialize()
         {
             // Modify the title of the window
-            Window.Title = "RiftGame";
+            Window.Title = "EyeOut Telepresence";
 
             // Attach HMD to window
 
@@ -154,22 +154,9 @@ namespace EyeOut
 
         protected override void LoadContent()
         {
-
-
-            try
-            {
-                // Load a 3D model
-                // The [Ship.fbx] file is defined with the build action [ToolkitModel] in the project
-                model = Content.Load<Model>("Ship");
-                //model = Content.Load<Model>("Ship.fbx");
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-                MessageBox.Show(e.Source);
-
-
-            }
+            // Load a 3D model
+            // The [Ship.fbx] file is defined with the build action [ToolkitModel] in the project
+            model = Content.Load<Model>("Ship");
 
             // Enable default lighting on model.
             BasicEffect.EnableDefaultLighting(model, true);

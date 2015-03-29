@@ -46,6 +46,7 @@ namespace EyeOut
             INIT_mot();
             INIT_timSim();
             INIT_cam();
+            INIT_about();
             C_State.prog = e_state.initialized;
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -146,6 +147,11 @@ namespace EyeOut
             gpCmds.IsEnabled = false;
 
             btnConnect.Content = "Connect Serial";
+        }
+
+        private void TabItem_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
         }
 
 

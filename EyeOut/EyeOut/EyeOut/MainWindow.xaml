@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         
         Closing="Window_Closing" 
-        Icon="pic\eyeout.png"
+        Icon="Content\pic\eyeout.png"
         Title="MainWindow" Height="700" Width="1000"
         >
     <!--Closed="Window_Closed"-->
@@ -38,12 +38,19 @@
         <!--cam datagrid-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_cam"  
                               CollectionViewType="ListCollectionView">
-                              <!--Filter="CollectionViewSource_Filter">-->
+            <!--Filter="CollectionViewSource_Filter">-->
             <!--<CollectionViewSource.SortDescriptions>-->
-                <!-- Requires 'xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"' declaration. -->
-                <!--<scm:SortDescription PropertyName="time" Direction="Descending"/>-->
+            <!-- Requires 'xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"' declaration. -->
+            <!--<scm:SortDescription PropertyName="time" Direction="Descending"/>-->
             <!--</CollectionViewSource.SortDescriptions>-->
         </CollectionViewSource>
+
+        <!--cam about libraries used-->
+        <CollectionViewSource x:Key="ItemCollectionViewSource_aboutLibraries"  
+                              CollectionViewType="ListCollectionView">
+        </CollectionViewSource>
+
+        
         
         <!--checkbox for filterming dgLog-->
         <ObjectDataProvider x:Key="enumValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
@@ -54,13 +61,14 @@
     </Window.Resources>
 
     <Grid >
+        
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="5" />
             <RowDefinition Height="100"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <TabControl Grid.Row="0">
+        <TabControl x:Name="tcMain" Grid.Row="0">
             <TabItem Header="Dynamixel Motors" Background="Orange">
                 <!--<Grid Background="#FFE5E5E5">-->
                 <Grid Background="Orange">
@@ -150,7 +158,7 @@
                                     <ColumnDefinition Width="5" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                
+
                                 <DockPanel Grid.Column="0">
                                     <ListBox>
                                         <ListBox.Items>
@@ -160,7 +168,7 @@
                                 </DockPanel>
 
                                 <GridSplitter Grid.Column="2" HorizontalAlignment="Stretch" />
-                                <Grid x:Name="grAllMotors" Grid.Column="3"> 
+                                <Grid x:Name="grAllMotors" Grid.Column="3">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
@@ -185,7 +193,7 @@
                                                     <!--TickFrequency="45" />-->
                                                     <!--DataContext="{Binding Source={StaticResource motYawDataSource}}"
                                                 Value="{Binding angleDeg, Mode=Default}"-->
-                                                        <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
                                                              Text="{Binding ElementName=slAngleYaw, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
                                                 </Grid>
                                             </GroupBox>
@@ -298,30 +306,31 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBox Name="txLogMot" Grid.Column="0">Log</TextBox>
                                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />-->
-                                    <GroupBox Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
-                                        <Grid>
-                                            <DockPanel>
-                                                <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" MouseDoubleClick="lsCmdEx_wannaSend" KeyDown="lsCmdEx_wannaSend" />
-                                                <CheckBox x:Name="cbExampleDoubleClick" Content="Send by DoubleClick and Enter" DockPanel.Dock="Top" IsChecked="True"/>
-                                                <Button Name="btnSendExample" Content="Send selected [Example command]" VerticalAlignment="Top" DockPanel.Dock="Top" MaxHeight="20" Click="btnSendExample_wannaSend">
-                                                </Button>
-                                            </DockPanel>
-                                        </Grid>
-                                    </GroupBox>
+                                <GroupBox Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
+                                    <Grid>
+                                        <DockPanel>
+                                            <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" MouseDoubleClick="lsCmdEx_wannaSend" KeyDown="lsCmdEx_wannaSend" />
+                                            <CheckBox x:Name="cbExampleDoubleClick" Content="Send by DoubleClick and Enter" DockPanel.Dock="Top" IsChecked="True"/>
+                                            <Button Name="btnSendExample" Content="Send selected [Example command]" VerticalAlignment="Top" DockPanel.Dock="Top" MaxHeight="20" Click="btnSendExample_wannaSend">
+                                            </Button>
+                                        </DockPanel>
+                                    </Grid>
+                                </GroupBox>
                                 <!--</Grid>-->
                             </Grid>
                         </DockPanel>
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Basler Camera" Background="GreenYellow">
+            <TabItem x:Name="tiCamera" Header="Basler Camera" Background="GreenYellow">
                 <Grid Background="GreenYellow">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="372*"/>
+                        <ColumnDefinition Width="116*"/>
                         <ColumnDefinition Width="5"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="489*"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Header="Camera selection" Grid.Column="0">
+                    <GroupBox Header="Camera source selection" Grid.Column="0" Grid.ColumnSpan="2">
                         <StackPanel >
                             <Button x:Name="btnCamSourcesRefresh" Content="Rescan video sources" Click="btnCamSourcesRefresh_Click"/>
                             <DataGrid Grid.Column="1"
@@ -338,7 +347,7 @@
                                     <DataGridTextColumn Header="Identifier" IsReadOnly="True"  Binding="{Binding Path=Identifier}" Width="200"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <GroupBox Header="Camera previews" >
+                            <GroupBox Header="All connected camera previews" >
                                 <StackPanel>
                                     <ToggleButton x:Name="tbtActivePreviewList" Content="Active preview" />
                                     <StackPanel x:Name="spCamPreview" CanHorizontallyScroll="True" Orientation="Horizontal" MaxHeight="100">
@@ -350,8 +359,8 @@
                             </GroupBox>
                         </StackPanel>
                     </GroupBox>
-                    <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-                    <GroupBox Grid.Column="2" Header="Actual camera preview">
+                    <GridSplitter Grid.Column="2" Width="5" HorizontalAlignment="Stretch" />
+                    <GroupBox Grid.Column="3" Header="Actual camera preview">
                         <StackPanel >
                             <ToggleButton x:Name="tbtActivePreviewActual" Content="Active preview" />
                             <Image x:Name="imgMain" Stretch="Fill"/>
@@ -361,7 +370,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Oculus Headset" Background="DeepSkyBlue">
+            <TabItem x:Name="tiOculus" Header="Oculus Headset" Background="DeepSkyBlue">
                 <Grid Background="DeepSkyBlue">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -371,7 +380,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Column="0" Grid.Row="0">
-                        <Button x:Name="btnStartOculus" Content="Start Oculus" Click="btnStartOculus_Click"/>
+                        <Button x:Name="btnStartOculus" Content="Start Oculus Demo scene" Click="btnStartOculus_Click"/>
                     </StackPanel>
 
                     <!--<DockPanel Grid.Column="0" Grid.Row="0">
@@ -388,10 +397,105 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="EyeOut Telepresence" Foreground="Wheat" Background="Black">
+            <TabItem x:Name="tiTelepresence" Header="EyeOut Telepresence" Foreground="Wheat" Background="Black">
                 <!--<Grid Background="#FFE5E5E5">-->
                 <Grid Background="Black" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <GridSplitter Grid.Row="1"  Height="5" VerticalAlignment="Stretch"/>
+                        <GroupBox Grid.Row="0" Header="Actual camera preview">
+                            <StackPanel >
+                                <ToggleButton Content="Active preview" 
+                                          IsChecked="{Binding IsChecked, ElementName=tbtActivePreviewActual}"
+                                          >
+                                    <!--binding to other tbtActivePreviewActual-->
 
+                                </ToggleButton>
+                                <Image x:Name="imgMain_TP" Stretch="Fill"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox  Grid.Row="2" Header="Acquisition data">
+                            <ListBox>
+                                <ListBoxItem Content="Oculus Acc data"/>
+                                <ListBoxItem Content="Motor data"/>
+                            </ListBox>
+                        </GroupBox>
+                    </Grid>
+                    <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                    <GroupBox Grid.Column="2" Header="Telepresence settings">
+                        <StackPanel>
+                            <GroupBox Header="HUD Settings">
+                                
+                                <Button Content="Start Telepresence" Background="GreenYellow" Height="42" FontWeight="ExtraBold" FontSize="26"/>
+                            </GroupBox>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="About" Width="80" MouseDown="TabItem_MouseDown" Background="WhiteSmoke">
+                <Grid Background="WhiteSmoke">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Source="Content/pic/eyeout.png" Height="42"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock TextAlignment="Center" FontSize="42">
+                                    EyeOut
+                                </TextBlock>
+                                <TextBlock TextAlignment="Center" FontSize="20">
+                                    Telepresence frontend 
+                                </TextBlock>
+                            </StackPanel>
+                            <Image Grid.Column="2" Source="Content/pic/eyeout.png" Height="42" FlowDirection="RightToLeft"/>
+                        </Grid>
+                        <ListBox MaxWidth="320">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="2"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+
+                            <ListBoxItem Content="Author: " HorizontalAlignment="Right"/>
+                            <ListBoxItem Content="Bc. Daniel Davídek" />
+                            <ListBoxItem Content="Creation Date: " HorizontalAlignment="Right"/>
+                            <ListBoxItem Content="2014/2015" />
+                            <ListBoxItem Content="Purpose: " HorizontalAlignment="Right"/>
+                            <ListBoxItem Content="Masters thesis" />
+                            <ListBoxItem Content="University: " HorizontalAlignment="Right"/>
+                            <ListBoxItem Content="Brno University of Technology" />
+                        </ListBox>
+                        <GroupBox MaxWidth="320" Header="Used libraries">
+
+                            <DataGrid Grid.Column="1"
+                                x:Name="dgAboutLibraries"
+                                  DataContext="{StaticResource ItemCollectionViewSource_aboutLibraries}"
+                                  ItemsSource="{Binding}"
+                                  AutoGenerateColumns = "False" 
+                                  CanUserAddRows="False"
+                                      MinHeight="100"
+                                >
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name"  IsReadOnly="True" Binding="{Binding Path=name}" Width="76"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Version" IsReadOnly="True"  Binding="{Binding Path=version}" Width="50"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Purpose" IsReadOnly="True"  Binding="{Binding Path=purpose}" ></DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                        </GroupBox>
+                    </StackPanel>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -407,9 +511,9 @@
             <StackPanel Grid.Column="0">
                 <ListBox x:Name="lsLogSrcSelction" ItemsSource="{Binding Source={StaticResource enumValues}}" SelectionMode="Multiple" SelectionChanged="CompleteFilter_Changed"/>
                 <ToggleButton Content="See All" Checked="LogFilterCheckAll" Unchecked="LogFilterUncheckAll"/>
-                
+
             </StackPanel>
-            
+
             <DataGrid Grid.Column="1"
             x:Name="dgLog"
               DataContext="{StaticResource ItemCollectionViewSource_log}"
