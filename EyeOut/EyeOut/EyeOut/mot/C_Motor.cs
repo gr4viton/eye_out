@@ -84,6 +84,7 @@ namespace EyeOut
         {
             //string fname_cmdEx = @"B:\__DIP\dev\_main_dev\EyeOut\EyeOut\EyeOut\Content\mot\cmdInEx.txt";
             string fname_cmdEx = @".\Content\mot\cmdInEx.txt";
+
             //string bar;
             
 

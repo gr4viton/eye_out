@@ -133,7 +133,6 @@ namespace EyeOut
                 
                 //lsCams.Items.Add(C_Camera.camList[i].ToString()); // --> will be done through binding
             }
-            
 
             // load up cameras
             Cs = new List<C_Camera>(C_Camera.numCamSources);

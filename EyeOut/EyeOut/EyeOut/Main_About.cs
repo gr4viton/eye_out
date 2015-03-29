@@ -34,18 +34,45 @@ namespace EyeOut
             version = _version;
             purpose = _purpose;
         }
+
+        public string Name { get { return name; } }
+        public string Version { get { return version; } }
+        public string Purpose { get { return purpose; } }
     }
     /// <summary>
     /// About - gui
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static ObservableCollection<C_Lib> aboutLibraries;
+        public ObservableCollection<C_Lib> aboutLibraries;
         public object dgAboutLibraries_lock;
 
         private void INIT_about()
         {
             INIT_dgAboutLib();
+            /*
+            C_Camera.camList = new ObservableCollection<C_VideoDevice>();
+            
+            for (int i = 0; i < C_Camera.numCamSources; i++)
+            {
+                //fill web cam array
+                C_Camera.camList.Add(
+                    new C_VideoDevice(i, _SystemCamereas[i].Name, _SystemCamereas[i].ClassID)
+                    );
+
+            }
+
+            // binding
+            CollectionViewSource ItemCollectionViewSource_cam;
+            ItemCollectionViewSource_cam = (CollectionViewSource)(FindResource("ItemCollectionViewSource_cam"));
+            ItemCollectionViewSource_cam.Source = C_Camera.camList;
+
+            // when binding is changing inner guts of dataGrid from different thread
+            dgCam_lock = new object(); // lock for datagrid
+            BindingOperations.EnableCollectionSynchronization(C_Camera.camList, dgCam_lock); // for multi-thread updating
+            */
+
+
         }
 
         private void INIT_dgAboutLib()
@@ -56,7 +83,9 @@ namespace EyeOut
             //libs = ResourceDictionary.
             //libss = Properties.Resources.ResourceManager.GetStream("aboutLibraries.txt").ToString();
             //libs= Properties.Resources.ResourceManager.GetString("aboutLibraries.txt");
-            
+
+            libs = Properties.Resources.ResourceManager.GetString("aboutLibraries");
+
             string[] lines = libs.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             char sep = '|';
 

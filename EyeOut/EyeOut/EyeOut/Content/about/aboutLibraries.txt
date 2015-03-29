@@ -1,1 +1,5 @@
-System|4.2|because
+SharpDX|2.6.2.0|DircetX scene
+SharpOVR|0.4.1.1|Oculus Rift throughput
+DirectShowLib|2005|Video source searching
+EmguCV|2.2.1.1150|Acquisition of camera image
+gdi32|..|Conversion of camera picture to DirectX texture

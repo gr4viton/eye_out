@@ -450,7 +450,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Image Grid.Column="0" Source="Content/pic/eyeout.png" Height="42"/>
+                            <Image Grid.Column="0" Source="Content/pic/eyeout.png" Height="42" Width="42" />
                             <StackPanel Grid.Column="1">
                                 <TextBlock TextAlignment="Center" FontSize="42">
                                     EyeOut
@@ -459,7 +459,7 @@
                                     Telepresence frontend 
                                 </TextBlock>
                             </StackPanel>
-                            <Image Grid.Column="2" Source="Content/pic/eyeout.png" Height="42" FlowDirection="RightToLeft"/>
+                            <Image Grid.Column="2" Source="Content/pic/eyeout.png" Height="42" Width="42" FlowDirection="RightToLeft"/>
                         </Grid>
                         <ListBox MaxWidth="320">
                             <ListBox.ItemsPanel>
@@ -477,7 +477,7 @@
                             <ListBoxItem Content="University: " HorizontalAlignment="Right"/>
                             <ListBoxItem Content="Brno University of Technology" />
                         </ListBox>
-                        <GroupBox MaxWidth="320" Header="Used libraries">
+                        <GroupBox MaxWidth="420" Header="Used libraries">
 
                             <DataGrid Grid.Column="1"
                                 x:Name="dgAboutLibraries"
@@ -485,12 +485,12 @@
                                   ItemsSource="{Binding}"
                                   AutoGenerateColumns = "False" 
                                   CanUserAddRows="False"
-                                      MinHeight="100"
+                                  MinHeight="100"
                                 >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name"  IsReadOnly="True" Binding="{Binding Path=name}" Width="76"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Version" IsReadOnly="True"  Binding="{Binding Path=version}" Width="50"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Purpose" IsReadOnly="True"  Binding="{Binding Path=purpose}" ></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Name"  IsReadOnly="True" Binding="{Binding Path=Name}" Width="76"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Version" IsReadOnly="True"  Binding="{Binding Path=Version}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Purpose" IsReadOnly="True"  Binding="{Binding Path=Purpose}" ></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
 
