@@ -139,6 +139,8 @@ namespace EyeOut
 
     public class C_Value
     {
+        private const double pi = Math.PI;
+        private const double piHalf = Math.PI/2;
         private double dec;
         private double decMin;
         private double decMax;
@@ -279,6 +281,36 @@ namespace EyeOut
             {
                 dec = (double)CONV_interval01_to_intervalMinMax(
                     CONV_intervalMinMax_to_interval01(value,-1,1), decLimitMin, decLimitMax);
+                hex = dec2hex(dec);
+            }
+        }
+
+        public double Dec_interval_piPi // <-pi;pi>
+        {
+            get
+            {
+                return CONV_interval01_to_intervalMinMax(CONV_intervalMinMax_to_interval01(dec, decMin, decMax),
+                    -pi, pi);
+            }
+            set
+            {
+                dec = (double)CONV_interval01_to_intervalMinMax(
+                    CONV_intervalMinMax_to_interval01(value, -Math.PI, Math.PI), decLimitMin, decLimitMax);
+                hex = dec2hex(dec);
+            }
+        }
+
+        public double Dec_interval_piHalfPiHalf // <-pi/2;pi/2>
+        {
+            get
+            {
+                return CONV_interval01_to_intervalMinMax(CONV_intervalMinMax_to_interval01(dec, decMin, decMax),
+                    -piHalf, piHalf);
+            }
+            set
+            {
+                dec = (double)CONV_interval01_to_intervalMinMax(
+                    CONV_intervalMinMax_to_interval01(value, -Math.PI, Math.PI), decLimitMin, decLimitMax);
                 hex = dec2hex(dec);
             }
         }

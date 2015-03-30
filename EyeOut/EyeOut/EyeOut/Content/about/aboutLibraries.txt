@@ -1,5 +1,5 @@
-SharpDX|2.6.2.0|DircetX scene
-SharpOVR|0.4.1.1|Oculus Rift throughput
-DirectShowLib|2005|Video source searching
-EmguCV|2.2.1.1150|Acquisition of camera image
-gdi32|..|Conversion of camera picture to DirectX texture
+SharpDX|2.6.2.0|DircetX scene|MIT|C# Wrapper around DirectX libraries|
+SharpOVR|0.4.1.1|Oculus Rift throughput|Oculus VR Rift SDK Software License|C# Wrapper around Oculus SDK library LibOVR|https://github.com/opentrack/LibOVR
+DirectShowLib|2005|Video source searching|LGPL|Access to Microsoft's DirectShow functionality from within .NET applications|http://directshownet.sourceforge.net/about.html
+EmguCV|2.2.1.1150|Acquisition of camera image|Not free - if not openSource|Emgu CV is a cross platform .Net wrapper to the OpenCV image processing library|http://www.emgu.com/wiki/index.php/Licensing:
+gdi32|..|Conversion of camera picture to DirectX texture|Part of Windows|GDI32.DLL exports Graphics Device Interface (GDI) functions that perform primitive drawing functions for output to video displays|http://en.wikipedia.org/wiki/Microsoft_Windows_library_files#GDI32.DLL

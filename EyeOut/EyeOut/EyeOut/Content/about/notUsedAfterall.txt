@@ -1,0 +1,2 @@
+name|version|purpose|license|about|site
+DeltaEngine|Beta|nothing|Apache v2.0|a really easy way to write and convert games to any platform|https://deltaengine.net/about/license

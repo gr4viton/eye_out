@@ -47,17 +47,7 @@ namespace EyeOut
             get { return image; }
         }
     }
-
-    /*
-    public class C_CaptureHandler<T>
-    {
-        void startCapture();
-        void stopCapture();
-        void setResult(T newResul);
-        bool getResult(T outResult);
-        public virtual void captureLoop();
-    }*/
-
+    
     public class C_CameraCaptureHandler
     {
         // instance of class interacting with camera
@@ -369,6 +359,11 @@ namespace EyeOut
             INIT_captureHandler(_camId);
         }
 
+        public void RESET_magneticCorrection()
+        { 
+            // not sure!
+            hmd.ConfigureTracking(TrackingCapabilities.Orientation | TrackingCapabilities.Position | TrackingCapabilities.MagYawCorrection, TrackingCapabilities.None);
+        }
 
         public void INIT_captureHandler(int _camId)
         {
@@ -400,9 +395,7 @@ namespace EyeOut
             hmd.BeginFrame(0);
             return true;
         }
-
-        //static int maxRepeats = 1000;
-
+        static int maxRepeats = 10;
         protected override void Draw(GameTime gameTime)
         {
             // Clear the screen
@@ -444,23 +437,60 @@ namespace EyeOut
                 // Perform the actual drawing
                 InternalDraw(gameTime);
             }
-            //if (maxRepeats > 0)
+            // background worker
+            //maxRepeats--;
+            //if (maxRepeats < 1)
             {
-                Matrix ori = renderPose[0].Orientation.GetMatrix();
+                maxRepeats = 10;
+                int ieye = 0;
 
-                //LOG(string.Format("{0} {1} {2}", ori[0], ori[4], ori[8]));
+                Matrix ori = renderPose[ieye].Orientation.GetMatrix();
+                Vector3 pos = renderPose[ieye].Position;
+                float[] posArr = pos.ToArray();
+
+                StringBuilder msg = new StringBuilder();
+                int q = 0;
+                /*
+                for(q=0;q<3;q++)
+                {
+                    msg.AppendLine(string.Format("{0}\t{1}\t{2}\n", ori[q+0], ori[q+1], ori[q+2]));
+                }*/
+
+                //float yaw, pitch, roll;
+                float[] yawPitchRoll = new float[3];
+
+                hmd.GetEyePose((SharpOVR.EyeType)ieye).Orientation.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
+                //hmd.GetEyePose((SharpOVR.EyeType)ieye).Orientation.GetEulerAngles(out yaw, out pitch, out roll);
+
+                msg.AppendLine(string.Format("{0}\t{1}\t{2}\n", yawPitchRoll[q + 0], yawPitchRoll[q + 1], yawPitchRoll[q + 2]));
+                //    msg.AppendLine(string.Format("{0}\t{1}\t{2}\n", yaw,pitch,roll));
+
+                
+                LOG(msg.ToString());
 
                 //MainWindow.Ms[e_rot.pitch)] = 
                 //MainWindow.Ms[(int)e_rot.yaw].angle.Dec = ori[0];
 
-                //foreach (C_Motor mot in MainWindow.Ms)
-                var mot = MainWindow.Ms[(int)e_rot.yaw];
+                
+                foreach (C_Motor mot in MainWindow.Ms)
+                //var mot = MainWindow.Ms[(int)e_rot.yaw];
                 {
-                    int i = (int)mot.motorPlacement + 1;
-                    mot.angle.Dec_interval_11 = ori[i * i - 1];
-                    mot.ORDER_moveBrisk();
-                }                
-                //maxRepeats--;
+                    //int i = (int)mot.motorPlacement + 1;
+                    //mot.angle.Dec_interval_11 = ori[i * i - 1];
+                    //mot.angle.Dec_interval_piPi = yaw;
+                    //mot.angle.Dec_interval_piPi = yawPitchRoll[0];
+                    if (mot.motorPlacement == e_rot.pitch)
+                    {
+                        mot.angle.Dec_interval_piHalfPiHalf = yawPitchRoll[(int)mot.motorPlacement];
+                    }
+                    else
+                    {
+                        mot.angle.Dec_interval_piPi = yawPitchRoll[(int)mot.motorPlacement];
+                    }
+                    mot.speed.Dec = mot.speed.DecMax;
+                    mot.REGISTER_move();
+                }
+                C_Motor.ORDER_ActionToAll();
             }
 
             /*

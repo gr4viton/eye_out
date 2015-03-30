@@ -25,19 +25,45 @@ namespace EyeOut
 {
     public class C_Lib
     {
-        public string name;
-        public string version;
-        public string purpose;
-        public C_Lib(string _name, string _version, string _purpose)
+        public C_Lib(string _name, string _version, string _purpose, string _license, string _about, string _site)
         {
-            name = _name;
-            version = _version;
-            purpose = _purpose;
+            Name = _name;
+            Version = _version;
+            Purpose = _purpose;
+            License = _license;
+            About = _about;
+            Site = _site;
+        }
+        
+        public C_Lib(string[] splited)
+        {
+            for(int q=0; q<splited.Length; q++)
+            {
+                SET_string(q, splited[q]);
+            }
         }
 
-        public string Name { get { return name; } }
-        public string Version { get { return version; } }
-        public string Purpose { get { return purpose; } }
+        private void SET_string(int index, string str)
+        {
+            switch(index)
+            {
+                case(0): Name = str; break;
+                case(1): Version = str; break;
+                case(2): Purpose = str; break;
+                case(3): License = str; break;
+                case(4): About = str; break;
+                case(5): Site = str; break;
+                default: break;
+            }
+        }
+
+        public string Name { get; set; }
+        public string Version { get; set; }
+        public string Purpose { get; set; }
+        public string License { get; set; }
+        public string About { get; set; }
+        public string Site { get; set; }
+
     }
     /// <summary>
     /// About - gui
@@ -79,12 +105,7 @@ namespace EyeOut
         {
             aboutLibraries = new ObservableCollection<C_Lib>();
 
-            string libs = "System|4.2|because\nSystem|4.2|because"; // read from file
-            //libs = ResourceDictionary.
-            //libss = Properties.Resources.ResourceManager.GetStream("aboutLibraries.txt").ToString();
-            //libs= Properties.Resources.ResourceManager.GetString("aboutLibraries.txt");
-
-            libs = Properties.Resources.ResourceManager.GetString("aboutLibraries");
+            string libs = Properties.Resources.ResourceManager.GetString("aboutLibraries");
 
             string[] lines = libs.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             char sep = '|';
@@ -93,7 +114,7 @@ namespace EyeOut
             {
 
                 string[] splited = line.Split(sep);
-                aboutLibraries.Add(new C_Lib(splited[0], splited[1], splited[2]));
+                aboutLibraries.Add(new C_Lib(splited));
             }
             INIT_dgAboutLib_binding();
         }

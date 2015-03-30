@@ -170,6 +170,21 @@ namespace EyeOut
             }
         }
 
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        // broadcast send - may be done differently if have upper class C_MotorSet
+        public static void SEND_BROADCAST_cmd(byte[] cmd)
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += workerBC_DoWork;
+            worker.RunWorkerAsync((object)cmd);
+        }
+
+        private static void workerBC_DoWork(object sender, DoWorkEventArgs e)
+        {
+            e.Result = C_SPI.WriteData(e.Argument as byte[]);
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         public void SEND_example(int num)
         {
             SEND_cmdInner(cmdinEx[num].byCmdin);
@@ -185,6 +200,11 @@ namespace EyeOut
         private void SEND_cmdInner(Byte[] inner)
         {
             SEND_cmd(C_Motor.CREATE_cmdFromInner(inner, id));
+        }
+
+        private static void SEND_BROADCAST_cmdInner(Byte[] inner)
+        {
+            SEND_BROADCAST_cmd(C_Motor.CREATE_cmdFromInner(inner, C_DynAdd.BROAD_CAST));
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -232,7 +252,7 @@ namespace EyeOut
             return bytes;
         }
 
-        public byte[] CREATE_cmdInner(List<object> L)
+        public static byte[] CREATE_cmdInner(List<object> L)
         {
             // creates byte array out of list of byte / byte arrays - concatenates them
             List<byte> liby = new List<byte>();
@@ -273,7 +293,10 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #region ORDER
+        #region ORDER REGISTER SETUP
+        // ORDER functions sends the data directly (INS_WRITE)
+        // REGISTER functions sends the data to register (INS_REG_WRITE)
+        // SETUP functions is called from both previous with the instruction as argument
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         public void ORDER_ping()
@@ -281,20 +304,51 @@ namespace EyeOut
             SEND_cmdInner(C_DynAdd.INS_PING);
         }
 
+        /*
+         // no use - always broadcast!
+        public static void ORDER_Action(List<C_Motor> Ms)
+        {
+            foreach (C_Motor mot in Ms)
+            {
+                mot.ORDER_Action();
+            }
+        }
+        */
+
+        public static void ORDER_ActionToAll()
+        {
+            SEND_BROADCAST_cmdInner(CREATE_cmdInner(new List<object> { 
+                C_DynAdd.INS_ACTION 
+                }));
+            //LOG_mot("Broadcast to all motors: ACTION");
+            /*
+            angle.UPDATE_lastSent();
+            speed.UPDATE_lastSent();
+             */
+        }
 
         // move with speed 
         public void ORDER_move() 
         {
-            if ((angle.Dec != angle.DecLast) || (speed.Dec != speed.DecLast)) 
+            SETUP_move(C_DynAdd.INS_WRITE);
+        }
+
+        public void REGISTER_move()
+        {
+            SETUP_move(C_DynAdd.INS_REG_WRITE);
+        }
+
+        public void SETUP_move(byte INSTRUCTION_BYTE)
+        {
+            if ((angle.Dec != angle.DecLast) || (speed.Dec != speed.DecLast))
             {
                 SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-                    C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
+                    INSTRUCTION_BYTE, C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
                 }));
                 LOG_ORDER_moveSpeed(angle, speed);
-                angle.UPDATE_lastSent();
-                speed.UPDATE_lastSent();
             }
         }
+
         
         // move without speed control - does not change current speed in motor class instance
         public void ORDER_moveBrisk()
@@ -330,39 +384,12 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion ORDER
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #region MOVE
+        #region SETUP 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        /*
-        public void MOVE_absPosLastSpeed(int abs_deg)
-        {
-            // Goal Position - Address 30, 31 (0X1E, 0x1F) 
-            // CW Angle Limit ? Goal Potion ? CCW Angle Limit; 
-
-            // ptat se na boundary CW angle limit a CCW angle limit
-            Byte[] byAng = CONV_ang_deg2by(abs_deg);
-
-            Byte[] cmdInner = new Byte[4];
-            //cmdInner[0] = INS_
-            cmdInner[0] = C_DynAdd.INS_WRITE;
-            cmdInner[1] = C_DynAdd.GOAL_POS_L;
-            cmdInner[2] = byAng[0];
-            cmdInner[3] = byAng[1];
-            //{ 0x07, 0x03, 0x1E, 0x00, 0x02, 0x00, 0x02 };
-            //  len , writ, addr
-            SEND_cmd(CREATE_cmdFromInner(cmdInner, id));
-
-        }
-        */
-        /*
-        public void MOVE_relPos(Byte id, int rel_deg)
-        {
-            // Goal Position - Address 30, 31 (0X1E, 0x1F) 
-            // CW Angle Limit ? Goal Potion ? CCW Angle Limit; 
-
-        }*/
-
+        //static setup
+        
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #endregion CONV
+        #endregion SETUP
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

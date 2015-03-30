@@ -86,6 +86,19 @@ namespace EyeOut
             }
         }
 
+        public void STOP_TP()
+        {
+            if (TP_program.IsRunning)
+            {
+                TP_program.Exit();
+                C_Telepresence.LOG("The Telepresence session is stopped");
+            }
+            else
+            {
+                C_Telepresence.LOG_err("The Telepresence session is not running");
+            }
+        }
+
         public void START_TP_Demo()
         {
             RiftGame.LOG("Starting Demo of Oculus w/SharpDX & SharpOVR libraries\nby Guy Godin 2014");
@@ -101,9 +114,20 @@ namespace EyeOut
         }
 
 
-        private void btnStartTP_Click(object sender, RoutedEventArgs e)
+        private void btnToggleTP_Click(object sender, RoutedEventArgs e)
         {
-            START_TP();
+            if (btnToggleTP.IsChecked == true)
+            {
+                btnToggleTP.Content = "Stop Telepresence";
+                btnToggleTP.Background = System.Windows.Media.Brushes.MediumPurple;
+                START_TP();
+            }
+            else
+            {
+                STOP_TP();
+                btnToggleTP.Content = "Start Telepresence";
+                btnToggleTP.Background = System.Windows.Media.Brushes.GreenYellow;
+            }
         }
 
     }

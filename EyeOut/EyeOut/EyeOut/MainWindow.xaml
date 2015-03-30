@@ -452,7 +452,7 @@
                                     Default settings
                                 </ListBox>
                             </GroupBox>
-                            <Button Content="Start Telepresence" Click="btnStartTP_Click" Background="GreenYellow" Height="42" FontWeight="ExtraBold" FontSize="26"/>
+                            <ToggleButton x:Name="btnToggleTP" Content="Start Telepresence" Click="btnToggleTP_Click" Background="GreenYellow" Height="42" FontWeight="ExtraBold" FontSize="26"/>
                         </StackPanel>
                     </GroupBox>
                 </Grid>
@@ -507,6 +507,10 @@
                                     <DataGridTextColumn Header="Name"  IsReadOnly="True" Binding="{Binding Path=Name}" Width="76"></DataGridTextColumn>
                                     <DataGridTextColumn Header="Version" IsReadOnly="True"  Binding="{Binding Path=Version}"></DataGridTextColumn>
                                     <DataGridTextColumn Header="Purpose" IsReadOnly="True"  Binding="{Binding Path=Purpose}" ></DataGridTextColumn>
+                                    <DataGridTextColumn Header="License" IsReadOnly="True"  Binding="{Binding Path=License}" ></DataGridTextColumn>
+                                    <DataGridTextColumn Header="About" IsReadOnly="True"  Binding="{Binding Path=About}" ></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Site" IsReadOnly="True"  Binding="{Binding Path=Site}" ></DataGridTextColumn>
+
                                 </DataGrid.Columns>
                             </DataGrid>
 

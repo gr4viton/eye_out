@@ -50,27 +50,27 @@ namespace EyeOut
         public void INIT_TP_text()
         {
 
-            // Initialize the Font
-            FontDescription fontDescription = new FontDescription()
-            {
-                Height = 72,
-                Italic = false,
-                CharacterSet = FontCharacterSet.Ansi,
-                FaceName = "Arial",
-                MipLevels = 0,
-                OutputPrecision = FontPrecision.TrueType,
-                PitchAndFamily = FontPitchAndFamily.Default,
-                Quality = FontQuality.ClearType,
-                Weight = FontWeight.Bold
-            };
+            //// Initialize the Font
+            //FontDescription fontDescription = new FontDescription()
+            //{
+            //    Height = 72,
+            //    Italic = false,
+            //    CharacterSet = FontCharacterSet.Ansi,
+            //    FaceName = "Arial",
+            //    MipLevels = 0,
+            //    OutputPrecision = FontPrecision.TrueType,
+            //    PitchAndFamily = FontPitchAndFamily.Default,
+            //    Quality = FontQuality.ClearType,
+            //    Weight = FontWeight.Bold
+            //};
             
-            //font = new Font(device, fontDescription);
+            ////font = new Font(device, fontDescription);
 
-             displayText = "Direct3D9 Text!";
+            // displayText = "Direct3D9 Text!";
 
-            // Measure the text to display
-            fontDimension = font.MeasureText(null, displayText, new Rectangle(0, 0, renderTarget.Width, renderTarget.Height), 
-                FontDrawFlags.Center | FontDrawFlags.VerticalCenter);
+            //// Measure the text to display
+            //fontDimension = font.MeasureText(null, displayText, new Rectangle(0, 0, renderTarget.Width, renderTarget.Height), 
+            //    FontDrawFlags.Center | FontDrawFlags.VerticalCenter);
 
         }
     }

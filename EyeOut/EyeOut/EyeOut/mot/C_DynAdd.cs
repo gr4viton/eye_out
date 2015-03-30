@@ -52,7 +52,8 @@ namespace EyeOut
     {
         // ____________________________________________________Goal position
         public const Byte SET_GOAL_POS_MIN = 0;
-        public const UInt16 SET_GOAL_POS_MAX = 0x3ff ;
+        //public const UInt16 SET_GOAL_POS_MAX = 0x3ff ; // according to doc.. but it is too low *4 is 0-360°
+        public const UInt16 SET_GOAL_POS_MAX = 0x0FFC; // this is 0-360°
         //public Byte[] SET_GOAL_POS_MAX = { 0x3, 0xff };
         // ____________________________________________________Moving speed
         //public const Byte SET_MOV_SPEED_NOCONTROL = 0;
