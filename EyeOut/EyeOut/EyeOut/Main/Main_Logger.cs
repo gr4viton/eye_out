@@ -45,6 +45,10 @@ namespace EyeOut
             lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.spi);
             lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.spi_got);
             lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.spi_sent);
+            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.mot);
+            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.mot_yaw);
+            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.mot_pitch);
+            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.mot_roll);
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

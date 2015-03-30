@@ -64,25 +64,38 @@ namespace EyeOut
             TP_config.hud.time = true;
         }
 
-        public void START_TP()
+        public void START_TP_withCaution()
         {
             C_Telepresence.LOG("Starting EyeOut telepresence\nby Daniel Davídek 2015");
-            if (MessageBox.Show("I hereby confirm?\n"+
-                "[x] There is enaugh free space around the servomotor-arm!\n"+
-                "[x] No-one is standing in the dangerous distance!",
-                "Safety warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            if (cbSafe_Warning.IsChecked == true)
             {
-                C_Telepresence.LOG("Starting canceled.");
-                return;
+                if (MessageBox.Show("I hereby confirm?\n" +
+                    "[x] There is enaugh free space around the servomotor-arm!\n" +
+                    "[x] No-one is standing in the dangerous distance!",
+                    "Safety warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                {
+                    C_Telepresence.LOG("Starting canceled.");
+                    tbtToggleTP.IsChecked = false;
+                    return;
+                }
+                else
+                {
+                    START_TP();
+                }
             }
             else
             {
-                HMDType hmdType = HMDType.DK1;
-                // send active config
-                using (TP_program = new C_Telepresence(C_Camera.actualId, hmdType))
-                {
-                    TP_program.Run();
-                }
+                START_TP();
+            }
+        }
+
+        public void START_TP()
+        {
+            HMDType hmdType = HMDType.DK1;
+            // send active config
+            using (TP_program = new C_Telepresence(C_Camera.actualId, hmdType))
+            {
+                TP_program.Run();
             }
         }
 
@@ -114,19 +127,32 @@ namespace EyeOut
         }
 
 
-        private void btnToggleTP_Click(object sender, RoutedEventArgs e)
+        private void tbtToggleTP_Click(object sender, RoutedEventArgs e)
         {
-            if (btnToggleTP.IsChecked == true)
+            if (tbtToggleTP.IsChecked == true)
             {
-                btnToggleTP.Content = "Stop Telepresence";
-                btnToggleTP.Background = System.Windows.Media.Brushes.MediumPurple;
-                START_TP();
+                START_TP_withCaution();
             }
             else
             {
                 STOP_TP();
-                btnToggleTP.Content = "Start Telepresence";
-                btnToggleTP.Background = System.Windows.Media.Brushes.GreenYellow;
+                tbtToggleTP.Content = "Start Telepresence";
+                tbtToggleTP.Background = System.Windows.Media.Brushes.GreenYellow;
+            }
+        }
+
+        private void tbtToggleTP_ValueChanged(object sender, RoutedEventArgs e)
+        {
+
+            if (tbtToggleTP.IsChecked == true)
+            {
+                tbtToggleTP.Content = "Stop Telepresence";
+                tbtToggleTP.Background = System.Windows.Media.Brushes.MediumPurple;
+            }
+            else
+            {
+                tbtToggleTP.Content = "Start Telepresence";
+                tbtToggleTP.Background = System.Windows.Media.Brushes.GreenYellow;
             }
         }
 

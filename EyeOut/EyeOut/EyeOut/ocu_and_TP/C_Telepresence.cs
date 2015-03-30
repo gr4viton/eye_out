@@ -437,11 +437,22 @@ namespace EyeOut
                 // Perform the actual drawing
                 InternalDraw(gameTime);
             }
-            // background worker
+            ORDER_motors();
+
+            /*
+            RenderTarget2D.Clear(Color.White);
+            RenderTarget2D.DrawText("Hello World using DirectWrite!", TextFormat, ClientRectangle, SceneColorBrush);
+             */
+
+        }
+
+        public void ORDER_motors()
+        {
+            // background worker - if it takes too long
             //maxRepeats--;
             //if (maxRepeats < 1)
             {
-                maxRepeats = 10;
+                //maxRepeats = 10;
                 int ieye = 0;
 
                 Matrix ori = renderPose[ieye].Orientation.GetMatrix();
@@ -453,32 +464,29 @@ namespace EyeOut
                 /*
                 for(q=0;q<3;q++)
                 {
-                    msg.AppendLine(string.Format("{0}\t{1}\t{2}\n", ori[q+0], ori[q+1], ori[q+2]));
+                    msg.AppendLine(string.Format("{0}\t{1}\t{2}", ori[q+0], ori[q+1], ori[q+2]));
                 }*/
 
                 //float yaw, pitch, roll;
                 float[] yawPitchRoll = new float[3];
 
                 hmd.GetEyePose((SharpOVR.EyeType)ieye).Orientation.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
-                //hmd.GetEyePose((SharpOVR.EyeType)ieye).Orientation.GetEulerAngles(out yaw, out pitch, out roll);
+                q = 0;
+                double[] yawPitchRoll_d = new double[3];
+                for(q=0;q<3;q++)
+                {
+                    yawPitchRoll_d[q] = C_Value.CONV_rad2deg((double)yawPitchRoll[q]);
+                }
 
-                msg.AppendLine(string.Format("{0}\t{1}\t{2}\n", yawPitchRoll[q + 0], yawPitchRoll[q + 1], yawPitchRoll[q + 2]));
-                //    msg.AppendLine(string.Format("{0}\t{1}\t{2}\n", yaw,pitch,roll));
+                q = 0;
+                msg.Append(string.Format("YAW={0,5:0.00}°\tPITCH={1,5:0.00}°\tROLL={2,5:0.00}°", yawPitchRoll_d[q + 0], yawPitchRoll_d[q + 1], yawPitchRoll_d[q + 2]));
 
-                
+
                 LOG(msg.ToString());
 
-                //MainWindow.Ms[e_rot.pitch)] = 
-                //MainWindow.Ms[(int)e_rot.yaw].angle.Dec = ori[0];
 
-                
                 foreach (C_Motor mot in MainWindow.Ms)
-                //var mot = MainWindow.Ms[(int)e_rot.yaw];
                 {
-                    //int i = (int)mot.motorPlacement + 1;
-                    //mot.angle.Dec_interval_11 = ori[i * i - 1];
-                    //mot.angle.Dec_interval_piPi = yaw;
-                    //mot.angle.Dec_interval_piPi = yawPitchRoll[0];
                     if (mot.motorPlacement == e_rot.pitch)
                     {
                         mot.angle.Dec_interval_piHalfPiHalf = yawPitchRoll[(int)mot.motorPlacement];
@@ -492,13 +500,8 @@ namespace EyeOut
                 }
                 C_Motor.ORDER_ActionToAll();
             }
-
-            /*
-            RenderTarget2D.Clear(Color.White);
-            RenderTarget2D.DrawText("Hello World using DirectWrite!", TextFormat, ClientRectangle, SceneColorBrush);
-             */
-
         }
+
 
         protected override void EndDraw()
         {

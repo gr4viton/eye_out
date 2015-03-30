@@ -141,6 +141,9 @@ namespace EyeOut
     {
         private const double pi = Math.PI;
         private const double piHalf = Math.PI/2;
+        private const double deg2rad = pi/180;
+        private const double rad2deg = 180 / pi;
+        
         private double dec;
         private double decMin;
         private double decMax;
@@ -315,6 +318,21 @@ namespace EyeOut
             }
         }
 
+        public double Dec_interval_piHalfPiHalf_isDecInDecLimits // <-pi/2;pi/2>
+        {
+            get
+            {
+                return CONV_interval01_to_intervalMinMax(CONV_intervalMinMax_to_interval01(dec, decLimitMin, decLimitMax),
+                    -piHalf, piHalf);
+            }
+            set
+            {
+                dec = (double)CONV_interval01_to_intervalMinMax(
+                    CONV_intervalMinMax_to_interval01(value, -Math.PI, Math.PI), decLimitMax, decLimitMax);
+                hex = dec2hex(dec);
+            }
+        }
+
         public byte[] Hex
         {
             get
@@ -482,6 +500,16 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion UPDATE
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        public static double CONV_deg2rad(double deg)
+        {
+            return deg * deg2rad;
+        }
+
+        public static double CONV_rad2deg(double rad)
+        {
+            return rad * rad2deg;
+        }
     }
 
 }

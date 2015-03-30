@@ -345,7 +345,7 @@ namespace EyeOut
                 SEND_cmdInner(CREATE_cmdInner(new List<object> { 
                     INSTRUCTION_BYTE, C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
                 }));
-                LOG_ORDER_moveSpeed(angle, speed);
+                LOG_SETUP_moveSpeed(INSTRUCTION_BYTE, angle, speed);
             }
         }
 
@@ -363,18 +363,29 @@ namespace EyeOut
             //}));
         }
 
-        public void LOG_ORDER_moveSpeed(C_Value _angle, C_Value _speed)
+        public void LOG_SETUP_moveSpeed(byte INSTRUCTION_BYTE, C_Value _angle, C_Value _speed)
         {
+            string prefix = "ODD_MOVE";
+            switch(INSTRUCTION_BYTE)
+            {
+                case (C_DynAdd.INS_WRITE): prefix = "ORDER_move"; break;
+                case (C_DynAdd.INS_REG_WRITE): prefix = "REGISTER_move"; break;
+                case (C_DynAdd.INS_READ): prefix = "READ_move"; break;
+            }
+                
+                    
             if (_speed.Dec != C_DynAdd.SET_MOV_SPEED_NOCONTROL)
             {
-                LOG(String.Format("ORDER_move: [angle];[speed] = [{0}];[{2}] = {1}°; {3}%",
+                LOG(String.Format("{0}: [angle];[speed] = [{1}];[{3}] = {2}°; {4}%",
+                    prefix,
                     byteArray2strHex_space(_angle.Hex.Reverse().ToArray()), _angle.Dec,
                     byteArray2strHex_space(_speed.Hex.Reverse().ToArray()), _speed.Dec
                     ));
             }
             else
             {
-                LOG(String.Format("ORDER_move: [angle];[speed] = [{0}];[{2}] = {1}°; No speed control",
+                LOG(String.Format("{0}: [angle];[speed] = [{1}];[{3}] = {2}°; No speed control",
+                    prefix,
                     byteArray2strHex_space(_angle.Hex.Reverse().ToArray()), _angle.Dec,
                     byteArray2strHex_space(_speed.Hex.Reverse().ToArray())
                     ));

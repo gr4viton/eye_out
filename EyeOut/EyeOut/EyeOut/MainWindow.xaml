@@ -432,6 +432,15 @@
                     </Grid>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
                     <GroupBox Grid.Column="2" Header="Telepresence configuration">
+
+                        <GroupBox.Resources>
+                            <Style TargetType="CheckBox">
+                                <!--<Setter Property="FontSize" Value="8" />-->
+                                <!--<Setter Property="FontWeight" Value="Normal" />-->
+                                <Setter Property="Foreground" Value="Wheat"/>
+                            </Style>
+                        </GroupBox.Resources>
+
                         <StackPanel>
                             <GroupBox Header="HUD">
                                 <StackPanel>
@@ -447,12 +456,18 @@
                                     <CheckBox Content="Virtual Nose" IsEnabled="False"/>
                                 </StackPanel>
                             </GroupBox>
+                            <GroupBox Header="Safety">
+                                <StackPanel>
+                                    <CheckBox x:Name="cbSafe_Warning" Content="Safety warning before every telepresention" IsChecked="False"/>
+                                    <CheckBox Content="Don't change the motor angle limits inside motors" IsChecked="True" IsEnabled="False"/>
+                                </StackPanel>
+                            </GroupBox>
                             <GroupBox Header="Config bundles">
                                 <ListBox>
                                     Default settings
                                 </ListBox>
                             </GroupBox>
-                            <ToggleButton x:Name="btnToggleTP" Content="Start Telepresence" Click="btnToggleTP_Click" Background="GreenYellow" Height="42" FontWeight="ExtraBold" FontSize="26"/>
+                            <ToggleButton x:Name="tbtToggleTP" Content="Start Telepresence" Click="tbtToggleTP_Click" Checked="tbtToggleTP_ValueChanged" Unchecked="tbtToggleTP_ValueChanged" Background="GreenYellow" Height="42" FontWeight="ExtraBold" FontSize="26"/>
                         </StackPanel>
                     </GroupBox>
                 </Grid>
