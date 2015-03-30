@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging; // BitmapSource
 using System.Runtime.InteropServices;
 using System.Windows.Threading; // dispatcherTimer
 
+
 namespace EyeOut
 {
     // Use these namespaces here to override SharpDX.Direct3D11
@@ -31,9 +32,8 @@ namespace EyeOut
     public partial class C_Telepresence : Game
     {
 
-        public void INIT_toolkit()
+        public void INIT_toolkit(HMDType _hmdType) // called from constructor of class C_Telepresence
         {
-
             // Creates a graphics manager. This is mandatory.
             LOG("Creating Graphics Manager");
             graphicsDeviceManager = new GraphicsDeviceManager(this);
@@ -48,15 +48,14 @@ namespace EyeOut
 
             // Create our HMD
             LOG("Creating HMD control");
-            hmd = OVR.HmdCreate(0) ?? OVR.HmdCreateDebug(HMDType.DK1);
+            hmd = OVR.HmdCreate(0) ?? OVR.HmdCreateDebug(_hmdType);
 
             // Match back buffer size with HMD resolution
             graphicsDeviceManager.PreferredBackBufferWidth = hmd.Resolution.Width;
             graphicsDeviceManager.PreferredBackBufferHeight = hmd.Resolution.Height;
-
         }
 
-        protected override void Initialize()
+        protected void INIT_TP_window()
         {
             // Modify the title of the window
             Window.Title = "EyeOut Telepresence";
@@ -65,10 +64,14 @@ namespace EyeOut
             LOG("Attaching HMD to window");
             var control = (System.Windows.Forms.Control)Window.NativeWindow;
             hmd.AttachToWindow(control.Handle);
+        }
 
+        Size2 renderTargetSize;
+        protected void INIT_TP_renderTarget()
+        {
             // Create our render target
             LOG("Creating render target");
-            var renderTargetSize = hmd.GetDefaultRenderTargetSize(1.5f);
+            renderTargetSize = hmd.GetDefaultRenderTargetSize(1.5f);
             renderTarget = RenderTarget2D.New(GraphicsDevice, renderTargetSize.Width, renderTargetSize.Height, new MipMapCount(1), PixelFormat.R8G8B8A8.UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             renderTargetView = (RenderTargetView)renderTarget;
             renderTargetSRView = (ShaderResourceView)renderTarget;
@@ -80,7 +83,10 @@ namespace EyeOut
             // Adjust render target size if there were any hardware limitations
             renderTargetSize.Width = renderTarget.Width;
             renderTargetSize.Height = renderTarget.Height;
+        }
 
+        protected void INIT_TP_eyeTextureRendering()
+        {
             // The viewport sizes are re-computed in case renderTargetSize changed
             eyeRenderViewport = new Rect[2];
             eyeRenderViewport[0] = new Rect(0, 0, renderTargetSize.Width / 2, renderTargetSize.Height);
@@ -98,10 +104,13 @@ namespace EyeOut
             // Right eye uses the same texture, but different rendering viewport
             eyeTexture[1] = eyeTexture[0];
             eyeTexture[1].Header.RenderViewport = eyeRenderViewport[1];
+        }
 
+        protected void INIT_TP_d3d11()
+        {
             // Configure d3d11
             LOG("Configuring d3d11");
-            var device = (SharpDX.Direct3D11.Device)GraphicsDevice;
+            device = (SharpDX.Direct3D11.Device)GraphicsDevice;
             D3D11ConfigData d3d11cfg = new D3D11ConfigData();
             d3d11cfg.Header.API = RenderAPIType.D3D11;
             d3d11cfg.Header.RTSize = hmd.Resolution;
@@ -119,7 +128,9 @@ namespace EyeOut
                 LOG_err("Failed to configure rendering");
                 throw new Exception("Failed to configure rendering");
             }
-
+        }
+        protected void INIT_TP_hmd()
+        {
             // Set enabled capabilities
             hmd.EnabledCaps = HMDCapabilities.LowPersistence | HMDCapabilities.DynamicPrediction;
 
@@ -141,8 +152,18 @@ namespace EyeOut
                 swapChain.ResizeTarget(ref description);
                 swapChain.SetFullscreenState(true, hmdOutput);
             }
+        }
+        protected override void Initialize()
+        {
+            INIT_TP_window();
+            INIT_TP_renderTarget();
+            INIT_TP_eyeTextureRendering();
+            INIT_TP_d3d11();
+            INIT_TP_hmd();
 
             base.Initialize();
+
+            INIT_TP_text();
         }
 
         protected override void LoadContent()

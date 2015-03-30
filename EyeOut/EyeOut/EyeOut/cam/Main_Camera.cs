@@ -70,6 +70,7 @@ namespace EyeOut
 
             if (C_State.FURTHER(e_state.closing))
             {
+                DISPOSE_cameraData();
                 timCam.Stop();
             }
         }
@@ -92,7 +93,7 @@ namespace EyeOut
             }
         }
 
-        void DISPOSE_old()
+        public void DISPOSE_cameraData()
         {
             if(C_State.FURTHER(e_state.initialized))
             {
@@ -107,7 +108,7 @@ namespace EyeOut
         }
         void INIT_allSources()
         {
-            DISPOSE_old();
+            DISPOSE_cameraData();
             // ??????
             //Add the image processing to the dispatcher
             this.Dispatcher.Hooks.DispatcherInactive += new EventHandler(dispatcherTimer_Tick);

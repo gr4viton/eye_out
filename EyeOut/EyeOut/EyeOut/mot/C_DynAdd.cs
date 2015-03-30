@@ -55,8 +55,10 @@ namespace EyeOut
         public const UInt16 SET_GOAL_POS_MAX = 0x3ff ;
         //public Byte[] SET_GOAL_POS_MAX = { 0x3, 0xff };
         // ____________________________________________________Moving speed
-        public const Byte SET_MOV_SPEED_NOCONTROL = 0;
-        public const Byte SET_MOV_SPEED_MIN = 1;
+        //public const Byte SET_MOV_SPEED_NOCONTROL = 0;
+        public const UInt16 SET_MOV_SPEED_NOCONTROL = 0; // need 2 bytes for CREATE_cmdInner
+        //public const Byte SET_MOV_SPEED_MIN = 1;
+        public const UInt16 SET_MOV_SPEED_MIN = 1;
 
         public const UInt16 SET_MOV_SPEED_MAX = 0x023C; // 63.7 RPM - maximal capable at 18V
         //public Byte[] SET_MOV_SPEED_MAX = {0x02, 0x3C}; 

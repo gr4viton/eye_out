@@ -4,9 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-using System.Threading.Tasks;
-
 //using System.Threading;
 using System.ComponentModel; // backgroundWorker
 
@@ -24,6 +21,9 @@ using System.Windows.Media.Imaging; // BitmapSource
 using System.Runtime.InteropServices;
 using System.Windows.Threading; // dispatcherTimer
 
+//using SharpDX.Direct2D1; // text d3d10
+//using SharpDX.DirectWrite; // text d3d10
+using SharpDX.Direct3D9; // text d3d9
 
 namespace EyeOut
 {
@@ -331,14 +331,18 @@ namespace EyeOut
         private HMD hmd;
         private Rect[] eyeRenderViewport;
         private D3D11TextureData[] eyeTexture;
+        SharpDX.Direct3D11.Device device;
 
         private RenderTarget2D renderTarget;
         private RenderTargetView renderTargetView;
         private ShaderResourceView renderTargetSRView;
+
         private DepthStencilBuffer depthStencilBuffer;
         private EyeRenderDesc[] eyeRenderDesc;
+
         private PoseF[] renderPose = new PoseF[2];
 
+        // default head position and rotation in scene
         private Vector3 headPos = new Vector3(0f, 0f, -5f);
         private float bodyYaw = 3.141592f;
 
@@ -354,14 +358,13 @@ namespace EyeOut
         private C_CameraCaptureHandler captureHandler;
         //private C_CaptureData captureData;
 
-
-        
+                
         /// <summary>
         /// Initializes a new instance of the <see cref="RiftGame" /> class.
         /// </summary>
-        public C_Telepresence(int _camId)
+        public C_Telepresence(int _camId, HMDType _hmdType)
         {
-            INIT_toolkit();
+            INIT_toolkit(_hmdType);
             // later possible more cameras -> int[] _camIds
             INIT_captureHandler(_camId);
         }
@@ -398,6 +401,8 @@ namespace EyeOut
             return true;
         }
 
+        //static int maxRepeats = 1000;
+
         protected override void Draw(GameTime gameTime)
         {
             // Clear the screen
@@ -406,18 +411,27 @@ namespace EyeOut
             // synchronous..
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {
-
                 var eye = hmd.EyeRenderOrder[eyeIndex];
                 var renderDesc = eyeRenderDesc[(int)eye];
                 var renderViewport = eyeRenderViewport[(int)eye];
+
+                // get position from hmd
                 var pose = renderPose[(int)eye] = hmd.GetEyePose(eye);
+
+                //hmd.GetTrackingState()
+
 
                 // Calculate view matrix                
                 var rollPitchYaw = Matrix.RotationY(bodyYaw);
+
                 var finalRollPitchYaw = rollPitchYaw * pose.Orientation.GetMatrix();
+
                 var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
                 var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
+
+                // position of eye = head position + [ transform to left/right + tracked head pose ]
                 var shiftedEyePos = headPos + rollPitchYaw.Transform(pose.Position);
+
                 view = Matrix.Translation(renderDesc.ViewAdjust) * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 
                 // Calculate projection matrix
@@ -430,6 +444,30 @@ namespace EyeOut
                 // Perform the actual drawing
                 InternalDraw(gameTime);
             }
+            //if (maxRepeats > 0)
+            {
+                Matrix ori = renderPose[0].Orientation.GetMatrix();
+
+                //LOG(string.Format("{0} {1} {2}", ori[0], ori[4], ori[8]));
+
+                //MainWindow.Ms[e_rot.pitch)] = 
+                //MainWindow.Ms[(int)e_rot.yaw].angle.Dec = ori[0];
+
+                //foreach (C_Motor mot in MainWindow.Ms)
+                var mot = MainWindow.Ms[(int)e_rot.yaw];
+                {
+                    int i = (int)mot.motorPlacement + 1;
+                    mot.angle.Dec_interval_11 = ori[i * i - 1];
+                    mot.ORDER_moveBrisk();
+                }                
+                //maxRepeats--;
+            }
+
+            /*
+            RenderTarget2D.Clear(Color.White);
+            RenderTarget2D.DrawText("Hello World using DirectWrite!", TextFormat, ClientRectangle, SceneColorBrush);
+             */
+
         }
 
         protected override void EndDraw()
@@ -454,10 +492,36 @@ namespace EyeOut
 
             //txuCam.draw
             //captureHandler.CaptureData.Image;
-
+            DRAW_txu();
             base.Draw(gameTime);
         }
 
+        protected void DRAW_text()
+        {
+            // Make the text boucing on the screen limits
+            if ((fontDimension.Right + xDir) > renderTarget.Width)
+                xDir = -1;
+            else if ((fontDimension.Left + xDir) <= 0)
+                xDir = 1;
+
+            if ((fontDimension.Bottom + yDir) > renderTarget.Height)
+                yDir = -1;
+            else if ((fontDimension.Top + yDir) <= 0)
+                yDir = 1;
+
+            fontDimension.Left += (int)xDir;
+            fontDimension.Top += (int)yDir;
+            fontDimension.Bottom += (int)yDir;
+            fontDimension.Right += (int)xDir;
+
+            // Draw the text
+            font.DrawText(null, displayText, fontDimension, FontDrawFlags.Center | FontDrawFlags.VerticalCenter, Color.White);
+
+        }
+        protected void DRAW_txu()
+        {
+            GET_txu();
+        }
         protected void GET_txu()
         {
 

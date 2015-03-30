@@ -14,7 +14,7 @@ using System.IO.Ports;
 using System.Windows.Input; // GUI eventArgs
 
 //using SharpDX;
-//using SharpOVR;
+using SharpOVR; // hmdType
 
 namespace EyeOut
 {
@@ -77,8 +77,9 @@ namespace EyeOut
             }
             else
             {
+                HMDType hmdType = HMDType.DK1;
                 // send active config
-                using (TP_program = new C_Telepresence(C_Camera.actualId))
+                using (TP_program = new C_Telepresence(C_Camera.actualId, hmdType))
                 {
                     TP_program.Run();
                 }

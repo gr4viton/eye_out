@@ -32,7 +32,7 @@ namespace EyeOut
         C_Motor actMot;
         C_Motor actMot2;*/
         public e_rot actMrot;
-        public List<C_Motor> Ms;
+        static public List<C_Motor> Ms;
 
         public static Byte nudId = 1;
 

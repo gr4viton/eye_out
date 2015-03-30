@@ -118,11 +118,6 @@ namespace EyeOut
                 LOG("File with command examples found, starting to load cmdInners");
 
                 lines = System.IO.File.ReadAllLines(fname, Encoding.ASCII);
-                //lines = System.IO.File.ReadAllLines(fname);
-                //string[] lines = System.IO.File.ReadAllLines(fname);
-
-                // Display the file contents by using a foreach loop.
-                // System.Console.WriteLine("Contents of WriteLines2.txt = ");
 
                 foreach (string line in lines)
                 {
@@ -131,12 +126,8 @@ namespace EyeOut
                     strHex_concantenated = strArr[0];
                     name = strArr[1];
 
-                    //lsCmdEx.Items.Add(string.Format("{0} - {1}", Convert.ToString(c.byCmdin), c.cmdStr));
                     cmdinEx_str.Add(string.Format("{0} - {1}", name, strHex_concantenated));
-                    //cmdinEx.Items.Add(name);
                     C_Motor.cmdinEx.Add(new C_cmdin(strHex_concantenated, name));
-                    // Use a tab to indent each line of the file.
-                    //Console.WriteLine("\t" + line);
                 }
                 LOG("Command examples loaded succesfully!");
                 cmdinEx_initialized = true;
@@ -232,14 +223,8 @@ namespace EyeOut
 
         private static Byte[] CREATE_cmdFromStr(string str)
         {
-            //string hex = BitConverter.ToString(read_buff).Replace("-", " ");
             str.Replace(" ", ", 0x");
             string[] words = str.Split(' ');
-            //int len = words.Length;
-            //Byte[] cmd = new Byte[len];
-            //for(;len>=0; len--)
-            //  cmd[len] = (Byte) BitConverter.(words[len]);
-            //foreach (string word in words)
 
             byte[] bytes = new byte[words.Length * sizeof(char)];
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
@@ -264,6 +249,10 @@ namespace EyeOut
                         liby.AddRange((byte[])o);
                     }
                 }
+                else if (o is UInt16)
+                {
+                    liby.AddRange(BitConverter.GetBytes((UInt16)o));
+                }
             }
             return liby.ToArray();
         }
@@ -279,8 +268,6 @@ namespace EyeOut
 
         public void LOG_err(string _msg)
         {
-            // afterwards -> through another type
-            //C_Logger.Instance.LOG(e_LogMsgSource.mot, _msg, type = error); 
             C_Logger.Instance.LOG_err(e_LogMsgSource.mot, _msg);
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -293,18 +280,7 @@ namespace EyeOut
         {
             SEND_cmdInner(C_DynAdd.INS_PING);
         }
-        // move with speed stored in motor - not writing to control speed register
-        public void ORDER_moveLastSpeed()
-        {
-            if ((angle.Dec != angle.DecLast)) 
-            {
-                SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-                    C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex
-                }));
-                LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
-                angle.UPDATE_lastSent();
-            }
-        }
+
 
         // move with speed 
         public void ORDER_move() 
@@ -314,18 +290,41 @@ namespace EyeOut
                 SEND_cmdInner(CREATE_cmdInner(new List<object> { 
                     C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
                 }));
-                LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
+                LOG_ORDER_moveSpeed(angle, speed);
                 angle.UPDATE_lastSent();
                 speed.UPDATE_lastSent();
             }
         }
+        
         // move without speed control - does not change current speed in motor class instance
         public void ORDER_moveBrisk()
         {
-            SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-                C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, C_DynAdd.SET_MOV_SPEED_NOCONTROL
-            }));
-            LOG(String.Format("ORDER_move: [{0}] = {1}°", byteArray2strHex_space(angle.Hex), angle.Dec));
+            C_Value lastSpeed = speed;
+            speed.Dec = C_DynAdd.SET_MOV_SPEED_NOCONTROL;
+            ORDER_move();
+            speed = lastSpeed;
+
+            //SEND_cmdInner(CREATE_cmdInner(new List<object> { 
+            //    C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, C_DynAdd.SET_MOV_SPEED_NOCONTROL
+            //}));
+        }
+
+        public void LOG_ORDER_moveSpeed(C_Value _angle, C_Value _speed)
+        {
+            if (_speed.Dec != C_DynAdd.SET_MOV_SPEED_NOCONTROL)
+            {
+                LOG(String.Format("ORDER_move: [angle];[speed] = [{0}];[{2}] = {1}°; {3}%",
+                    byteArray2strHex_space(_angle.Hex.Reverse().ToArray()), _angle.Dec,
+                    byteArray2strHex_space(_speed.Hex.Reverse().ToArray()), _speed.Dec
+                    ));
+            }
+            else
+            {
+                LOG(String.Format("ORDER_move: [angle];[speed] = [{0}];[{2}] = {1}°; No speed control",
+                    byteArray2strHex_space(_angle.Hex.Reverse().ToArray()), _angle.Dec,
+                    byteArray2strHex_space(_speed.Hex.Reverse().ToArray())
+                    ));
+            }
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

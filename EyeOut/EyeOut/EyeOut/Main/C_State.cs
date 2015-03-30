@@ -31,12 +31,17 @@ namespace EyeOut
         {
             prog = e_state.closing;
 
-            Thread dexter = new Thread(new ThreadStart(C_SPI.CLOSE_connection)); // the serial_killer
+            // Kill serial port
+            Thread dexter = new Thread(new ThreadStart(C_SPI.CLOSE_connection)); // the serial (port) killer
             int q = 10; // try to stop it X-times
             while (q > 0)
             {
                 dexter.Start();
                 System.Threading.Thread.Sleep(500);
+                if (C_SPI.spi.IsOpen == false)
+                {
+                    break;
+                }
             }
         }
 
@@ -47,7 +52,7 @@ namespace EyeOut
 
         public static bool FURTHER(e_state _comparedState)
         {
-            return FURTHER((object)_comparedState, (object)mot);
+            return FURTHER((object)_comparedState, (object)prog);
         }
 
         public static bool FURTHER(object _comparedState, object _actualState)

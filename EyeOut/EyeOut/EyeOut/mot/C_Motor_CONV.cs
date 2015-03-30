@@ -160,7 +160,7 @@ namespace EyeOut
             decLimitMax = decMax;
             hexMin = 0;
             hexMax = 0xffff;
-            Dec = 0;
+            Dec = 0; // must be zero because of ORDER_moveBrisk
         }
         public C_Value(C_Value _val, double _decLimitMin, double _decLimitMax)
         {
@@ -242,7 +242,8 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public double Dec{
+        public double Dec // <decLimitMin; decLimitMax>
+        {
             get
             {
                 return dec;
@@ -253,6 +254,35 @@ namespace EyeOut
                 hex = dec2hex(dec);
             }
         }
+
+        public double Dec_interval01 // <0;1>
+        {
+            get
+            {
+                return CONV_intervalMinMax_to_interval01(dec,decMin,decMax);
+            }
+            set
+            {
+                dec = (double)CONV_interval01_to_intervalMinMax(value, decLimitMin, decLimitMax);
+                hex = dec2hex(dec);
+            }
+        }
+
+        public double Dec_interval_11 // <-1;1>
+        {
+            get
+            {
+                return CONV_interval01_to_intervalMinMax(CONV_intervalMinMax_to_interval01(dec, decMin, decMax),
+                    -1,1);
+            }
+            set
+            {
+                dec = (double)CONV_interval01_to_intervalMinMax(
+                    CONV_intervalMinMax_to_interval01(value,-1,1), decLimitMin, decLimitMax);
+                hex = dec2hex(dec);
+            }
+        }
+
         public byte[] Hex
         {
             get
@@ -278,8 +308,8 @@ namespace EyeOut
         public byte[] dec2hex(double _dec)
         {
             dec = GET_bounded(_dec, decLimitMin, decLimitMax); // number in interval <decLimitMin, decLimitMax>
-            double decOne = (double)CONV_interval2one(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
-            UInt16 hexUInt16 = (UInt16)CONV_one2interval(decOne, hexMin, hexMax); // number in interval <hexMin, hexMax>
+            double decOne = (double)CONV_intervalMinMax_to_interval01(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
+            UInt16 hexUInt16 = (UInt16)CONV_interval01_to_intervalMinMax(decOne, hexMin, hexMax); // number in interval <hexMin, hexMax>
 
             Byte H = (byte)(hexUInt16 >> 8); // higher byte part
             Byte L = (byte)(hexUInt16 & 0xFF); // lower byte part
@@ -291,8 +321,8 @@ namespace EyeOut
         {
             UInt32 hexUInt32 = ((UInt32)hex[1] >> 8) + (UInt32)hex[0];
             UInt16 hexOne = (UInt16)GET_bounded(hexUInt32, hexMin, hexMax); // number in interval <hexMin, hexMax>
-            double dec = (double)CONV_interval2one(hexOne, hexMin, hexMax); // number in interval <0,1>
-            dec = (UInt16)CONV_one2interval(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
+            double dec = (double)CONV_intervalMinMax_to_interval01(hexOne, hexMin, hexMax); // number in interval <0,1>
+            dec = (UInt16)CONV_interval01_to_intervalMinMax(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
             dec = GET_bounded(dec, decLimitMin, decLimitMax); // number in interval <decLimitMin, decLimitMax>
             return dec;
         }
@@ -314,13 +344,13 @@ namespace EyeOut
         }*/
 
         // make generic type!
-        private double CONV_interval2one(double val, double min, double max)
+        private double CONV_intervalMinMax_to_interval01(double val, double min, double max)
         {
             return  (val - min) / (max - min) ;
         }
-        private byte CONV_interval2one(byte val, byte min, byte max)
+        private byte CONV_intervalMinMax_to_interval01(byte val, byte min, byte max)
         {
-            return (byte)CONV_interval2one((double)val, (double)min, (double)max);
+            return (byte)CONV_intervalMinMax_to_interval01((double)val, (double)min, (double)max);
         }
 
         /*
@@ -334,13 +364,13 @@ namespace EyeOut
             return CONV_interval2one((double)val, (double)min, (double)max);
         }*/
 
-        private double CONV_one2interval(double val, double min, double max)
+        private double CONV_interval01_to_intervalMinMax(double val, double min, double max)
         {
             return val * (max - min) + min;
         }
-        private byte CONV_one2interval(byte val, byte min, byte max)
+        private byte CONV_interval01_to_intervalMinMax(byte val, byte min, byte max)
         {
-            return (byte)CONV_one2interval((double)val, (double)min, (double)max);
+            return (byte)CONV_interval01_to_intervalMinMax((double)val, (double)min, (double)max);
         }
 
         private double GET_bounded(double val, double min, double max)
