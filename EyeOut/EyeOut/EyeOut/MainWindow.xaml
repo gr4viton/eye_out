@@ -15,8 +15,6 @@
     <!--Closed="Window_Closed"-->
 
 
-
-
     <!--instances of binding classes, styles definitions-->
     <Window.Resources>
         <!--new instance of C_controlMot named controlMot-->

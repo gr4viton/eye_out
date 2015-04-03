@@ -360,6 +360,19 @@ namespace EyeOut
                 decDefault = GET_bounded_decLimits(value);
             }
         }
+
+        public double Dec_FromDefault // <decLimitMin; decLimitMax>
+        {
+            get
+            {
+                return dec - decDefault;
+            }
+            set
+            {
+                Dec = GET_bounded_decLimits(value+decDefault);
+            }
+        }
+        
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public byte[] Hex
         {

@@ -281,8 +281,7 @@ namespace EyeOut
             SEND_cmdInner(C_DynAdd.INS_PING);
         }
 
-        /*
-         // no use - always broadcast!
+        //____________________________________________________ ORDER ACTION
         public static void ORDER_Action(List<C_Motor> Ms)
         {
             foreach (C_Motor mot in Ms)
@@ -290,8 +289,15 @@ namespace EyeOut
                 mot.ORDER_Action();
             }
         }
-        */
 
+        public void ORDER_Action()
+        {
+            SEND_cmdInner(CREATE_cmdInner(new List<object> { 
+                C_DynAdd.INS_ACTION 
+                }));
+        }
+
+        // broadcasting
         public static void ORDER_ActionToAll()
         {
             SEND_BROADCAST_cmdInner(CREATE_cmdInner(new List<object> { 
@@ -303,6 +309,8 @@ namespace EyeOut
             speed.UPDATE_lastSent();
              */
         }
+
+        //____________________________________________________ ORDER MOVE
 
         // move with speed 
         public void ORDER_move() 
@@ -353,10 +361,11 @@ namespace EyeOut
                     
             if (_speed.Dec != C_DynAdd.SET_MOV_SPEED_NOCONTROL)
             {
-                LOG(String.Format("{0}: [angle];[speed] = [{1}];[{3}] = {2}°; {4}%",
+                LOG(String.Format("{0}:[angle];[speed] =\t[{1}]; [{3}] =\t{2:0.00}°;\t{4:0.00}%, [angle-default]=\t{5:0.00}°",
                     prefix,
                     byteArray2strHex_space(_angle.Hex.Reverse().ToArray()), _angle.Dec,
-                    byteArray2strHex_space(_speed.Hex.Reverse().ToArray()), _speed.Dec
+                    byteArray2strHex_space(_speed.Hex.Reverse().ToArray()), _speed.Dec,
+                    _angle.Dec_FromDefault
                     ));
             }
             else
