@@ -147,9 +147,11 @@ namespace EyeOut
         private double dec;
         private double decMin;
         private double decMax;
+        private double decDefault;
 
         private double decLimitMin;
         private double decLimitMax;
+        
 
         private byte[] hex;
         private UInt16 hexMin;
@@ -157,6 +159,9 @@ namespace EyeOut
 
         private double decLast;
         
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region constructors
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public C_Value() // because of search motor
         {
             decMin = 0;
@@ -165,6 +170,7 @@ namespace EyeOut
             decLimitMax = decMax;
             hexMin = 0;
             hexMax = 0xffff;
+            decDefault = 0;
             Dec = 0; // must be zero because of ORDER_moveBrisk
         }
         public C_Value(C_Value _val, double _decLimitMin, double _decLimitMax)
@@ -176,6 +182,7 @@ namespace EyeOut
             hexMin = _val.hexMin;
             hexMax = _val.hexMax;
             Dec = _val.Dec;
+            decDefault = Dec;
         }
 
         public C_Value(C_Value _val, double _decLimitMin, double _decLimitMax, double _dec)
@@ -187,6 +194,7 @@ namespace EyeOut
             hexMin = _val.hexMin;
             hexMax = _val.hexMax;
             Dec = _dec;
+            decDefault = Dec;
         }
 
         public C_Value(C_Value _val) // because of search motor
@@ -198,6 +206,7 @@ namespace EyeOut
             hexMin = _val.hexMin;
             hexMax = _val.hexMax;
             Dec = _val.Dec;
+            decDefault = Dec;
         }
 
         public C_Value(double _decMin, double _decMax, UInt16 _hexMin, UInt16 _hexMax)
@@ -209,6 +218,7 @@ namespace EyeOut
             hexMin = _hexMin;
             hexMax = _hexMax;
             Dec = 0;
+            decDefault = Dec;
         }
 
         public C_Value(double _decLimitMin, double _decLimitMax, double _decMin, double _decMax, UInt16 _hexMin, UInt16 _hexMax)
@@ -220,6 +230,7 @@ namespace EyeOut
             hexMin = _hexMin;
             hexMax = _hexMax;
             Dec = 0;
+            decDefault = Dec;
         }
 
         public C_Value(double _decMin, double _decMax, UInt16 _hexMin, UInt16 _hexMax, double _dec)
@@ -231,6 +242,7 @@ namespace EyeOut
             hexMin = _hexMin;
             hexMax = _hexMax;
             Dec = _dec;
+            decDefault = Dec;
         }
 
         public C_Value(double _decLimitMin, double _decLimitMax, double _decMin, double _decMax, UInt16 _hexMin, UInt16 _hexMax, double _dec)
@@ -242,8 +254,11 @@ namespace EyeOut
             hexMin = _hexMin;
             hexMax = _hexMax;
             Dec = _dec;
+            decDefault = Dec;
         }
 
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion constructors
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -255,7 +270,7 @@ namespace EyeOut
             }
             set
             {
-                dec = (double)GET_bounded(value, decLimitMin, decLimitMax);
+                dec = GET_bounded_decLimits(value);
                 hex = dec2hex(dec);
             }
         }
@@ -332,7 +347,20 @@ namespace EyeOut
                 hex = dec2hex(dec);
             }
         }
-
+        
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        public double DecDefault // <decLimitMin; decLimitMax>
+        {
+            get
+            {
+                return decDefault;
+            }
+            set
+            {
+                decDefault = GET_bounded_decLimits(value);
+            }
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public byte[] Hex
         {
             get
@@ -357,7 +385,7 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public byte[] dec2hex(double _dec)
         {
-            dec = GET_bounded(_dec, decLimitMin, decLimitMax); // number in interval <decLimitMin, decLimitMax>
+            dec = GET_bounded_decLimits(_dec); // number in interval <decLimitMin, decLimitMax>
             double decOne = (double)CONV_intervalMinMax_to_interval01(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
             UInt16 hexUInt16 = (UInt16)CONV_interval01_to_intervalMinMax(decOne, hexMin, hexMax); // number in interval <hexMin, hexMax>
 
@@ -373,12 +401,21 @@ namespace EyeOut
             UInt16 hexOne = (UInt16)GET_bounded(hexUInt32, hexMin, hexMax); // number in interval <hexMin, hexMax>
             double dec = (double)CONV_intervalMinMax_to_interval01(hexOne, hexMin, hexMax); // number in interval <0,1>
             dec = (UInt16)CONV_interval01_to_intervalMinMax(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
-            dec = GET_bounded(dec, decLimitMin, decLimitMax); // number in interval <decLimitMin, decLimitMax>
+            dec = GET_bounded_decLimits(dec); // number in interval <decLimitMin, decLimitMax>
             return dec;
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion conv
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region default
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        public void RESET_toDefault()
+        {
+            Dec = decDefault;
+        }
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion default
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region bounds
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -443,6 +480,11 @@ namespace EyeOut
             {
                 return val;
             }
+        }
+
+        private double GET_bounded_decLimits(double val)
+        {
+            return GET_bounded(val, decLimitMin, decLimitMax);
         }
 
         private byte GET_bounded(byte val, byte min, byte max)

@@ -73,13 +73,17 @@ namespace EyeOut
 
         }
 
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
-        {            /*
-            if (C_SPI.act_con_status != e_con.port_opened)
-                WANNA_SPI_OpenConnection();
-            else
-                WANNA_SPI_CloseConnection();*/
+        private void btnSPIConnect_Click(object sender, RoutedEventArgs e)
+        {
+            C_SPI.OPEN_connection();
+            //System.Windows.MessageBox.Show(C_State.Spi.ToString());
         }
+
+        private void btnSPIClose_Click(object sender, RoutedEventArgs e)
+        {
+            C_SPI.CLOSE_connection(); 
+        }
+
         private void btnRescanPort_Click(object sender, RoutedEventArgs e)
         {
             SPI_rescanPorts();

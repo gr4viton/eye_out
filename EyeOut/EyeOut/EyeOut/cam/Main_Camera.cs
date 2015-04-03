@@ -68,7 +68,7 @@ namespace EyeOut
                 PLOT_activePreviewImage();
             }
 
-            if (C_State.FURTHER(e_state.closing))
+            if (C_State.FURTHER(e_stateProg.closing))
             {
                 DISPOSE_cameraData();
                 timCam.Stop();
@@ -95,7 +95,7 @@ namespace EyeOut
 
         public void DISPOSE_cameraData()
         {
-            if(C_State.FURTHER(e_state.initialized))
+            if(C_State.FURTHER(e_stateProg.initialized))
             {
                 if(Cs.Count > 0)
                 {

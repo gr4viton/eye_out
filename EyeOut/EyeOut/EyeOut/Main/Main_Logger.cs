@@ -102,5 +102,9 @@ namespace EyeOut
         {
             C_Logger.Instance.LOG(e_LogMsgSource.log, _msg);
         }
+        public static void LOG_gui(string _msg)
+        {
+            C_Logger.Instance.LOG(e_LogMsgSource.gui, _msg);
+        }
     }
 }

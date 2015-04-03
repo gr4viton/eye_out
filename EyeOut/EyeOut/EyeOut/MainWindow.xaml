@@ -6,6 +6,8 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"      
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         
+        xmlns:diagnostics="clr-namespace:System.Diagnostics;assembly=WindowsBase" 
+        
         Closing="Window_Closing" 
         Icon="Content\pic\eyeout.png"
         Title="MainWindow" Height="700" Width="1000"
@@ -19,6 +21,7 @@
     <Window.Resources>
         <!--new instance of C_controlMot named controlMot-->
         <local:C_SPI x:Key="spi"/>
+        <!--<local:C_State x:Key="C_State"/>-->
         <!--<local:App x:Key="app"/>-->
 
         <!--<local:C_Motor x:Name="motYaw" x:Key="motYawDataSource"/>-->
@@ -52,12 +55,36 @@
 
         
         
-        <!--checkbox for filterming dgLog-->
-        <ObjectDataProvider x:Key="enumValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+        <!--checkbox list for filterming dgLog-->
+        <ObjectDataProvider x:Key="enumValues_LogMsgSource" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="local:e_LogMsgSource"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+
+        <!--checkbox list for selecting active motor-->
+        <ObjectDataProvider x:Key="enumValues_rot" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:e_rot"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        
+        <!--____________________________________________________-->
+        <!--ENUM TO string convertors-->
+        <!--spi connection status-->
+        <local:VCMyEnumToString x:Key="vcMyEnumToString"/>
+        <!--motor e_rot -->
+        <local:CONV_e_rot_ToString x:Key="conv_e_rot_ToString"/>
+        
+        <local:C_State x:Key="C_state"/>
+        <!--<ResourceDictionary>
+            <ObjectDataProvider x:Key="MyEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="local:e_stateSPI" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ValueConverters:VCMyEnumToString x:Key="vcMyEnumToString"/>
+        </ResourceDictionary>-->
     </Window.Resources>
 
     <Grid >
@@ -79,7 +106,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Grid.Row="0">
-                        <GroupBox  Header="Connection control" Visibility="Collapsed">
+                        <GroupBox  Header="Connection control" >
                             <StackPanel>
                                 <GroupBox Header="Protocol" >
                                     <StackPanel>
@@ -95,9 +122,9 @@
                                             <TextBox.Text>
                                                 <!--<Binding ElementName="lsBaudRate" Path="SelectedValue"/>-->
                                                 <Binding Source="{StaticResource spi}" Path="BaudRate">
-                                                    <Binding.ValidationRules>
+                                                    <!--<Binding.ValidationRules>
                                                         <ExceptionValidationRule/>
-                                                    </Binding.ValidationRules>
+                                                    </Binding.ValidationRules>-->
                                                 </Binding>
                                             </TextBox.Text>
                                         </TextBox>
@@ -105,19 +132,20 @@
                                         <ListBox x:Name="lsBaudRate" MinHeight="20" SelectionMode="Single" SelectedIndex="0">
                                             <ListBox.SelectedValue>
                                                 <Binding Source="{StaticResource spi}" Path="BaudRate">
-                                                    <Binding.ValidationRules>
+                                                    <!--<Binding.ValidationRules>
                                                         <ExceptionValidationRule/>
-                                                    </Binding.ValidationRules>
+                                                    </Binding.ValidationRules>-->
                                                 </Binding>
                                             </ListBox.SelectedValue>
 
                                         </ListBox>
                                     </StackPanel>
                                 </GroupBox>
-                                <Button Name="btnConnect" Content="Connect" Click="btnConnect_Click" />
+                                <Button Name="btnConnect" Content="ReConnect" Click="btnSPIConnect_Click" />
+                                <Button x:Name="btnSPIClose" Content="Close connection" Click="btnSPIClose_Click" />
 
                                 <!--<Check Content="Connect" Appearence="Button" />-->
-                                <ToggleButton Content="Push to Connect" />
+                                <!--<ToggleButton Content="Push to Connect" />-->
                             </StackPanel>
                         </GroupBox>
                         <GroupBox  Header="Motor settings" Visibility="Collapsed" >
@@ -138,8 +166,6 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <Button MaxHeight="20" Content="START motors" VerticalAlignment="Top" Click="btnStartMotors_Click" />
-                        <ToggleButton Content="timSim" Checked="btnTimSim_Toggle" Unchecked="btnTimSim_Toggle"/>
                     </StackPanel>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
@@ -154,18 +180,29 @@
                         <DockPanel Grid.Row="0" >
                             <Grid Grid.Column="2" Background="#FFE5E5E5">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="120" />
                                     <ColumnDefinition Width="5" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <DockPanel Grid.Column="0">
-                                    <ListBox>
-                                        <ListBox.Items>
-                                            motor parameters
-                                        </ListBox.Items>
-                                    </ListBox>
-                                </DockPanel>
+                                <StackPanel Grid.Column="0">
+                                    <GroupBox Header="All motors">
+                                        <StackPanel>
+                                            <GroupBox Header="position &amp; speed">
+                                                <StackPanel>
+                                                    <Button MaxHeight="20" Content="Apply sliders" VerticalAlignment="Top" Click="btnStartMotors_Click" />
+                                                    <Button MaxHeight="20" Content="Reset to default" VerticalAlignment="Top" Click="btnResetMotors_Click" />
+                                                </StackPanel>
+                                            </GroupBox>
+                                            <ToggleButton Content="timSim" Checked="btnTimSim_Toggle" Unchecked="btnTimSim_Toggle"/>
+                                            <ListBox>
+                                                <ListBox.Items>
+                                                    motor parameters
+                                                </ListBox.Items>
+                                            </ListBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                </StackPanel>
 
                                 <GridSplitter Grid.Column="2" HorizontalAlignment="Stretch" />
                                 <Grid x:Name="grAllMotors" Grid.Column="3">
@@ -177,7 +214,7 @@
                                     <!--YAW MOTOR-->
                                     <GroupBox Header="Yaw Motor" Grid.Row="0">
                                         <StackPanel>
-                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorYaw"/>
+                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorYaw" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
                                             <GroupBox Header="Position">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -217,7 +254,7 @@
                                     <!--PITCH MOTOR-->
                                     <GroupBox Header="Pitch Motor" Grid.Row="1">
                                         <StackPanel>
-                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorPitch"/>
+                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorPitch" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
                                             <GroupBox Header="Position">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -255,7 +292,7 @@
                                     <!--ROLL MOTOR-->
                                     <GroupBox Header="Roll Motor" Grid.Row="2">
                                         <StackPanel>
-                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorRoll"/>
+                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorRoll" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
                                             <GroupBox Header="Position">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -298,23 +335,37 @@
 
                         <DockPanel Grid.Row="2" >
                             <Grid Grid.Column="2" Background="#FFE5E5E5">
-                                <!--<Grid Grid.Column="2" Background="#FFE5E5E5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="5" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox Name="txLogMot" Grid.Column="0">Log</TextBox>
-                                    <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />-->
-                                <GroupBox Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
-                                    <Grid>
-                                        <DockPanel>
-                                            <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" MouseDoubleClick="lsCmdEx_wannaSend" KeyDown="lsCmdEx_wannaSend" />
-                                            <CheckBox x:Name="cbExampleDoubleClick" Content="Send by DoubleClick and Enter" DockPanel.Dock="Top" IsChecked="True"/>
-                                            <Button Name="btnSendExample" Content="Send selected [Example command]" VerticalAlignment="Top" DockPanel.Dock="Top" MaxHeight="20" Click="btnSendExample_wannaSend">
-                                            </Button>
-                                        </DockPanel>
-                                    </Grid>
+                                <GroupBox Header="Settings of individual motors">
+                                    <DockPanel>
+                                        <StackPanel>
+                                            <GroupBox Header="Chosen motor:">
+                                                <ListBox x:Name="lsChosenMotor" 
+                                                     ItemsSource="{Binding Source={StaticResource enumValues_rot}}"         
+                                                     SelectionMode="Single" SelectionChanged="lsChosenMotor_SelectionChanged"
+                                                     MinWidth="160">
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Converter={StaticResource conv_e_rot_ToString}}"/>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                            
+                                            <!--Converter={StaticResource conv_e_rot_ToString}-->
+                                            </GroupBox>
+                                            <CheckBox x:Name="cbExampleDoubleClick" Content="Send by DoubleClick and Enter" 
+                                                      DockPanel.Dock="Top" IsChecked="True"/>
+                                            <Button Name="btnSendExample" Content="Send example to [Chosen motor]" 
+                                                            VerticalAlignment="Top" DockPanel.Dock="Top" MaxHeight="20" Click="btnSendExample_Click"/>
+                                        </StackPanel>
+                                        <GroupBox Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
+                                            <Grid>
+                                                <DockPanel>
+                                                    <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" 
+                                                             MouseDoubleClick="lsCmdEx_MouseDoubleClick" KeyDown="lsCmdEx_KeyDown" />
+                                                </DockPanel>
+                                            </Grid>
+                                        </GroupBox>
+                                    </DockPanel>
                                 </GroupBox>
                                 <!--</Grid>-->
                             </Grid>
@@ -544,7 +595,9 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
-                <ListBox x:Name="lsLogSrcSelction" ItemsSource="{Binding Source={StaticResource enumValues}}" SelectionMode="Multiple" SelectionChanged="CompleteFilter_Changed"/>
+                <ListBox x:Name="lsLogSrcSelction" 
+                         ItemsSource="{Binding Source={StaticResource enumValues_LogMsgSource}}" 
+                         SelectionMode="Multiple" SelectionChanged="CompleteFilter_Changed"/>
                 <ToggleButton Content="See All" Checked="LogFilterCheckAll" Unchecked="LogFilterUncheckAll"/>
 
             </StackPanel>
@@ -569,9 +622,18 @@
         </Grid>
         <!--LOG end-->
         <StatusBar Grid.Row="3">
+            <!--DataContext="{Binding Path=C_State}"-->
             <StatusBarItem>
-                <Label x:Name="tslConnected" Content="Connected" BorderThickness="1" BorderBrush="Black"/>
+                <!--<Label x:Name="tslConnected" BorderThickness="1" BorderBrush="Black"
+                    Content="{Binding Source={x:Static local:C_State.Spi}, Converter={StaticResource vcMyEnumToString},Mode=OneWay}" />-->
+                    <!--<Content-->
+                    <!--Content="{Binding Source={x:Static local:C_State.Spi}, Converter={StaticResource vcMyEnumToString}}" >-->
+                    <!--<TextBlock Text="{Binding Converter={StaticResource vcMyEnumToString}}"/>-->
+
+                <Label x:Name="tslConnected" BorderThickness="1" BorderBrush="Black"
+                    Content="{Binding Source={StaticResource ResourceKey=C_state}, Path=Spi,
+                    Converter={StaticResource vcMyEnumToString},Mode =OneWay}" />
             </StatusBarItem>
-        </StatusBar>
+        </StatusBar>    
     </Grid>
 </Window>

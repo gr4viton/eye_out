@@ -11,9 +11,19 @@ using System.ComponentModel; // backgroundWorker
 
 namespace EyeOut
 {
+    public enum e_rot
+    {
+        [Description("Roll = Around sight axis")]
+        roll = 2,
+        [Description("Pitch = Up/Down = nod")]
+        pitch = 1,
+        [Description("Yaw = Left/Right = zenit turn")]
+        yaw = 0
+    }
+
     public partial class C_Motor
     {
-        public e_rot motorPlacement;
+        public e_rot rotationMotor;
         private e_LogMsgSource motorLog;
         public byte id;
         public C_Value angle;
@@ -51,8 +61,8 @@ namespace EyeOut
             angle = _angle;
             speed = _speed;
             
-            motorPlacement = _rot;
-            switch(motorPlacement)
+            rotationMotor = _rot;
+            switch(rotationMotor)
             {
                 case(e_rot.yaw):
                     motorLog = e_LogMsgSource.mot_yaw;
@@ -141,48 +151,13 @@ namespace EyeOut
 
         public void SEND_cmd(byte[] cmd)
         {
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-            worker.DoWork += worker_DoWork;
-            worker.RunWorkerAsync((object)cmd);
+            C_SPI.SEND_data(cmd);
         }
-
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            e.Result = C_SPI.WriteData(e.Argument as byte[]);
-        }
-
-        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            // catch if response was A-OK
-            if (e.Error != null)
-            {
-                LOG_err(String.Format("Motor id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, id));
-                //ie Helpers.HandleCOMException(e.Error);
-            }
-            else
-            {
-                //e.Result = "tocovrati writeData";
-                //MyResultObject result = (MyResultObject)e.Result;
-
-                //LOG("DATA SENT");
-                //var results = e.Result as List<object>;
-            }
-        }
-
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        // broadcast send - may be done differently if have upper class C_MotorSet
         public static void SEND_BROADCAST_cmd(byte[] cmd)
         {
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += workerBC_DoWork;
-            worker.RunWorkerAsync((object)cmd);
+            C_SPI.SEND_data(cmd);
         }
 
-        private static void workerBC_DoWork(object sender, DoWorkEventArgs e)
-        {
-            e.Result = C_SPI.WriteData(e.Argument as byte[]);
-        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         public void SEND_example(int num)
@@ -297,6 +272,8 @@ namespace EyeOut
         // ORDER functions sends the data directly (INS_WRITE)
         // REGISTER functions sends the data to register (INS_REG_WRITE)
         // SETUP functions is called from both previous with the instruction as argument
+
+        // all functions send spi commands and wants to get echo
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         public void ORDER_ping()

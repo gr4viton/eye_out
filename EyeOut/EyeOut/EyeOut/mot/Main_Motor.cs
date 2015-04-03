@@ -22,10 +22,6 @@ namespace EyeOut
     /// Motor - gui
     /// </summary>
     /// 
-    public enum e_rot
-    {
-        roll = 2, pitch = 1, yaw = 0
-    }
     public partial class MainWindow : Window
     {
         /*
@@ -74,7 +70,11 @@ namespace EyeOut
                 GET_slSpeed(rot).Value = M(rot).speed.Dec;
                 GET_slAngle(rot).Value = M(rot).angle.Dec;
             }
-            C_State.mot = e_stateMotors.ready;
+
+            lsChosenMotor.SelectedIndex = 0;
+            lsCmdEx.SelectedIndex = 0;
+
+            C_State.mot = e_stateMotor.ready;
             //UPDATE_motorsFromSliders();
             //UPDATE_slidersFromMotors();
         }
@@ -157,43 +157,83 @@ namespace EyeOut
         {
             foreach (C_Motor m in Ms)
             {
-                m.ORDER_move();
+                UPDATE_motorFromSlider(m.rotationMotor);
+                //m.angle.Dec = 160;
+                m.REGISTER_move();
             }
+            C_Motor.ORDER_ActionToAll();
         }
 
-        private Byte ID_fromNUDid()
+
+        private void btnResetMotors_Click(object sender, RoutedEventArgs e)
         {
-            //return Convert.ToByte(nudID.Text);
-            return nudId;
+            foreach (C_Motor m in Ms)
+            {
+                m.angle.RESET_toDefault();
+                m.speed.RESET_toDefault();
+                //UPDATE_sliderFromMotor(m.rotationMotor);
+                m.REGISTER_move();
+            }
+            C_Motor.ORDER_ActionToAll();
+            /*
+            foreach (C_Motor m in Ms)
+            {
+                UPDATE_sliderFromMotor(m.rotationMotor);
+            }*/
         }
 
-        private void lsCmdEx_wannaSend(object sender, MouseButtonEventArgs e)
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region examples
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        private void lsChosenMotor_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            lsCmdEx_SEND_selected();
+            if (lsChosenMotor.SelectedIndex == -1)
+            {
+                lsChosenMotor.SelectedIndex = 0;
+            }
+            actMrot = (e_rot)lsChosenMotor.SelectedIndex;
         }
 
-        private void lsCmdEx_wannaSend(object sender, KeyEventArgs e)
-        {
-            if ((e.Key == Key.Enter) || (e.Key == Key.Space))
-                lsCmdEx_SEND_selected();
-        }
-
-        private void btnSendExample_wannaSend(object sender, RoutedEventArgs e)
-        {
-            M(actMrot).SEND_example(3);
-        }
-
-
-        public void lsCmdEx_SEND_selected()
+        private void lsCmdEx_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (cbExampleDoubleClick.IsChecked == true)
             {
-                M(actMrot).SEND_example(lsCmdEx.SelectedIndex);
-                //lsCmdEx_SEND_selected(); 
+                SEND_selectedCmdEx();
             }
         }
 
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        private void lsCmdEx_KeyDown(object sender, KeyEventArgs e)
+        {
+            if ((e.Key == Key.Enter) || (e.Key == Key.Space))
+            {   
+                if (cbExampleDoubleClick.IsChecked == true)
+                {
+                    SEND_selectedCmdEx();
+                }
+            }
+        }
+
+        private void btnSendExample_Click(object sender, RoutedEventArgs e)
+        {
+            SEND_selectedCmdEx();
+        }
+
+        public void SEND_selectedCmdEx()
+        {
+            if (lsCmdEx.SelectedIndex == -1)
+            {
+                LOG_gui("No command example selected!");
+            }
+            else
+            {
+                M(actMrot).SEND_example(lsCmdEx.SelectedIndex);
+            }
+        }
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion examples
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region Angle & Speed sliders
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -218,7 +258,7 @@ namespace EyeOut
         //}
         private void UPDATE_motorFromSlider(e_rot rot) //nn
         {
-            if (C_State.FURTHER(e_stateMotors.ready))
+            if (C_State.FURTHER(e_stateMotor.ready))
             {
                 M(rot).angle.Dec = GET_slAngle(rot).Value;
                 M(rot).speed.Dec = GET_slSpeed(rot).Value;
@@ -235,7 +275,7 @@ namespace EyeOut
 
         private void UPDATE_sliderFromMotor(e_rot rot)  //nn
         {
-            if (C_State.FURTHER(e_stateMotors.ready))
+            if (C_State.FURTHER(e_stateMotor.ready))
             { 
                 GET_slSpeed(rot).Value = M(rot).speed.Dec;
                 GET_slAngle(rot).Value = M(rot).angle.Dec;
@@ -253,7 +293,7 @@ namespace EyeOut
 
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (C_State.FURTHER(e_stateMotors.ready))
+            if (C_State.FURTHER(e_stateMotor.ready))
             {
                 Slider sl = sender as Slider;
                 if (sl != null)
@@ -263,6 +303,27 @@ namespace EyeOut
                     UPDATE_motorFromSlider(rot);
                     UPDATE_sliderFromMotor(rot);
                     ORDER_moveIfChecked(rot);
+                }
+            }
+        }
+
+
+        private void cbSetValues_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            if (C_State.FURTHER(e_stateMotor.ready))
+            {
+                CheckBox cb = sender as CheckBox;
+                if (cb == cbSendValuesToMotorYaw)
+                {
+                    ORDER_moveIfChecked(e_rot.yaw);
+                }
+                else if (cb == cbSendValuesToMotorPitch)
+                {
+                    ORDER_moveIfChecked(e_rot.pitch);
+                }
+                else if (cb == cbSendValuesToMotorRoll)
+                {
+                    ORDER_moveIfChecked(e_rot.roll);
                 }
             }
         }

@@ -34,7 +34,7 @@ namespace EyeOut
         public DispatcherTimer timSim;
         public MainWindow()
         {
-            C_State.prog = e_state.initializing;
+            C_State.prog = e_stateProg.initializing;
             InitializeComponent();
 
             /*
@@ -48,7 +48,7 @@ namespace EyeOut
             INIT_cam();
             INIT_TP();
             INIT_about();
-            C_State.prog = e_state.initialized;
+            C_State.prog = e_stateProg.initialized;
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region prog status
@@ -149,6 +149,7 @@ namespace EyeOut
 
             btnConnect.Content = "Connect Serial";
         }
+
 
 
 

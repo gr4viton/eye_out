@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.IO.Ports;
 using System.Threading;
 
+using System.ComponentModel; // backgroundWorker
+
 namespace EyeOut
 {
     // conection_status 
@@ -23,7 +25,11 @@ namespace EyeOut
     internal class C_SPI
     {
         private static object spi_locker = new object();
+        private static object queue_locker = new object();
+        
         public static SerialPort spi;
+        //private static BackgroundWorker worker_SEND;
+        private static Queue<byte[]> queueData;
 
         public static Byte[] readBuff;
         public static int i_readBuff = 0;
@@ -69,6 +75,7 @@ namespace EyeOut
 
             timeoutExceptionPeriod = 10; // according to datahseet.?.
             // spi
+            //spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
             spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
 
             /*
@@ -77,19 +84,35 @@ namespace EyeOut
             SPI.WriteTimeout = 50;*/
 
             // NOT NEEDED as all the motors are just CLIENTS - only responding to my (SERVER) orders
-            // when I sent some cmd -> I call C_SPI.READ_cmd() afterwards
+            // when I sent some cmd -> I call C_SPI.READ_cmd() afterwards if I want to read some echo or response
             //spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
-        }
 
+            queueData = new Queue<byte[]>();
+
+            
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Initialization
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region Open close
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        private static bool OPEN_connection()
+        public static bool OPEN_connection()
         {
+            //UPDATE_SPI_Settings();
             //SPI_UPDATE_baudRate();
             //SPI_UPDATE_portName();
+            /*
+            if (C_State.FURTHER(e_stateSPI.notConnected))
+            else
+            */
+            if (C_State.FURTHER(e_stateSPI.connected))
+            {
+                // we need to close it first
+                CLOSE_connection();
+            }
+
+            C_State.Spi = e_stateSPI.connecting;
+
             try
             {
                 spi.Open();
@@ -100,7 +123,11 @@ namespace EyeOut
                 LOG("Port could not be opened");
                 LOG_err(ex); 
                 //SET_state(E_GUI_MainState.error);
+                C_State.Spi = e_stateSPI.disconnected;
+                return false;
             }
+
+            C_State.Spi = e_stateSPI.connected;
             LOG(String.Format("Port {0} opened successfuly with {1} bps",
                         spi.PortName, spi.BaudRate.ToString())
                         );
@@ -115,11 +142,21 @@ namespace EyeOut
                 spi.DiscardOutBuffer();
                 spi.DiscardInBuffer();
                 spi.Close();
-            }
-            Thread.CurrentThread.Abort();
-            //PROG_QUITTING = false;
 
-            LOG(String.Format("Port {0} closed", spi.PortName));
+                LOG(String.Format("Port {0} closed", spi.PortName));
+                C_State.Spi = e_stateSPI.disconnected;
+            }
+            else
+            {
+                LOG("There is no open port to close!");
+            }
+
+        }
+
+        public static void CLOSE_connectionAndAbortThread()
+        {
+            CLOSE_connection();
+            Thread.CurrentThread.Abort();
         }
 
 
@@ -129,27 +166,85 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region Writing
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public static bool WriteData(byte[] data)
+
+        public static void SEND_data(byte[] data)
+        {
+            QUEUE_data(data);
+
+            BackgroundWorker worker_SEND = new BackgroundWorker();
+            worker_SEND.RunWorkerCompleted += workerSEND_RunWorkerCompleted;
+            worker_SEND.DoWork += workerSEND_DoWork;
+            worker_SEND.RunWorkerAsync();
+        }
+
+        private static void QUEUE_data(byte[] data)
+        {
+            // adds data to sending queue
+            lock (queue_locker)
+            {
+                queueData.Enqueue(data);
+            }
+        }
+
+        private static void workerSEND_DoWork(object sender, DoWorkEventArgs e)
         {
             lock (spi_locker)
             {
-                int q = 10; // try q-times
-                while (q > 0)
+                lock (queue_locker)
                 {
-                    if (spi.IsOpen)
+                    if (queueData.Count != 0)
                     {
-                        WriteSerialPort(data);
-                        //SPI.Send(cmd);
-
-                        return true;
-                        //responseBuffer = ReadSerialPort(8);
+                        e.Result = C_SPI.WriteData(queueData.Dequeue());
                     }
                     else
                     {
-                        OPEN_connection();
+#if (!DEBUG)
+                        throw new InvalidOperationException(
+                            "An error occured when tried to send data!\nThe queue of data to send was empty!");
+#endif
                     }
-                    q--;
                 }
+            }
+        }
+
+// Not used
+        private static void workerSEND_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // catch if response was A-OK
+            if (e.Error != null)
+            {
+                LOG_err(e.Error);
+                //LOG_err(String.Format("Motor id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, id));
+                //ie Helpers.HandleCOMException(e.Error);
+            }
+            else
+            {
+                //e.Result = "tocovrati writeData";
+                //MyResultObject result = (MyResultObject)e.Result;
+
+                //LOG("DATA SENT");
+                //var results = e.Result as List<object>;
+            }
+        }
+
+        private static bool WriteData(byte[] data)
+        {
+            int q = 10; // try q-times
+            while (q > 0)
+            {
+                if (spi.IsOpen)
+                {
+                    WriteSerialPort(data);
+                    //SPI.Send(cmd);
+
+                    return true;
+                    //responseBuffer = ReadSerialPort(8);
+                }
+                else
+                {
+                    OPEN_connection();
+                }
+                q--;
             }
             return false; // should never run as far as to this line
         }
@@ -158,6 +253,14 @@ namespace EyeOut
         {
             spi.Write(data, 0, data.Length);
             lastCmd = data;
+
+            // another zeros for slowing down serial commands
+            byte[] zeros = new byte[20];
+            for(int q = 0;q<20;q++)
+            {
+                zeros[q] = 0;
+            }
+            spi.Write(zeros, 0, zeros.Length);
             LOG_cmd(data, e_cmd.sent);
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -170,7 +273,7 @@ namespace EyeOut
         {
             // this function tries to read echo of the motor after sending [lastSentCmd]
 
-            if (C_State.prog == e_state.closing)
+            if (C_State.prog == e_stateProg.closing)
             {
                 System.Threading.Thread.CurrentThread.Abort();
             }
@@ -231,6 +334,7 @@ namespace EyeOut
                                                 // the recieved curCmd command is the same as the last sent lastCmd
                                                 // so print only Echo confirmation
                                                 LOG("Echo confirmation");
+                                                LOG_cmd(lastCmd, e_cmd.received);
                                                 // and reset last Cmd in the case the next Status Msg is the same as the command
                                                 lastCmd = new Byte[0];
                                             }
@@ -276,120 +380,6 @@ namespace EyeOut
                 }
             }
         }
-        private void SPI_DataReceivedHandler__NOT_USED(object sender, SerialDataReceivedEventArgs e)
-        {
-            //}
-            //private void srpOdo_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
-            //{
-            //fLog.log.notProcessed = true;
-            if (C_State.prog == e_state.closing)
-            {
-                System.Threading.Thread.CurrentThread.Abort();
-            }
-
-            try
-            {
-                SerialPort sp = (SerialPort)sender;
-                //string indata = sp.ReadExisting();
-                //Console.WriteLine("Data Received:");
-                //Console.Write(indata);
-
-                int b2r = sp.BytesToRead;
-                //read_buff = new Byte[b2r];
-                //read_buff = new Byte()
-
-                while (0 != sp.BytesToRead)
-                //for (int i = 0; i < b2r; i++)
-                {
-                    this_byte = (Byte)sp.ReadByte();
-                    readBuff[i_readBuff] = this_byte;
-                    if (START_NEW_MSG == true)
-                    {
-                        switch (i_curCmd)
-                        {
-                            case (0):
-                                curCmd_id = this_byte;
-                                break;
-                            case (1):
-                                curCmd_len = this_byte;
-                                // len = Nparam+2   = Nparam + Error + Length
-                                // len + 1          = Nparam + Error + Length + ID 
-                                // len + 1 + 1      = zero indexing correction?
-                                curCmd = new Byte[curCmd_len + 1];
-                                curCmd[0] = curCmd_id;
-                                curCmd[1] = curCmd_len;
-
-                                break;
-                            default: // 2 and more
-                                // ERROR, PARAM1 .. PARAMN, CHECKSUM
-                                if (i_curCmd > curCmd_len)
-                                {
-                                    // end of current cmd message = the checksum
-                                    //curCmd[i_curCmd] = this_byte; // checksum
-                                    START_NEW_MSG = false;
-                                    // check if it is the lastCmd echo from the motor
-
-                                    if (curCmd.Length == lastCmd.Length - 3)
-                                    {
-                                        // the lenght is the same as the last sent lastCmd 
-                                        // curCmd is without [0xFF 0xFF] and without checksum = [-3]
-                                        int qmax = curCmd.Length;
-                                        bool the_same = true;
-                                        for (int q = 0; q < qmax; q++)
-                                        {
-                                            if (curCmd[q] != lastCmd[q + 2])
-                                            {
-                                                the_same = false;
-                                                break;
-                                            }
-                                        }
-                                        if (the_same == true)
-                                        {
-                                            // the recieved curCmd command is the same as the last sent lastCmd
-                                            // so print only Echo confirmation
-                                            LOG("Echo confirmation");
-                                            // and reset last Cmd in the case the next Status Msg is the same as the command
-                                            lastCmd = new Byte[0];
-                                        }
-                                    }
-                                    else
-                                    { // it's not the echo command of the last send
-                                        SPI_CHECK_receivedCmd(curCmd, this_byte);
-                                    }
-                                }
-                                else
-                                { // ERROR, PARAM1 .. PARAMN
-                                    curCmd[i_curCmd] = this_byte;
-                                }
-                                break;
-                        }
-                        i_curCmd++;
-                    }
-                    if (i_readBuff > 0)
-                    {
-                        if ((readBuff[i_readBuff] == 0xFF) && (readBuff[i_readBuff - 1] == 0xFF))
-                        {
-                            START_NEW_MSG = true;
-                            i_curCmd = 0;
-                            curCmd_len = 0;
-                            i_readBuff = 0;
-                        }
-                        else
-                        {
-                            i_readBuff++;
-                        }
-                    }
-                    else
-                    {
-                        i_readBuff++;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LOG_err(ex);
-            }
-        }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Reading
@@ -411,8 +401,6 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
         public static void LOG(string _msg)
         {
