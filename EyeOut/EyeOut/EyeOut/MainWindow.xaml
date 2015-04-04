@@ -10,8 +10,8 @@
         
         Closing="Window_Closing" 
         Icon="Content\pic\eyeout.png"
-        Title="EyeOut Telepresence 2015, Daniel Davidek" Height="730" Width="1000"
-        Top="0" Left="200"
+        Title="EyeOut Telepresence 2015, Daniel Davidek" Height="730" Width="1200"
+        Top="0" Left="70"
         >
     <!--Closed="Window_Closed"-->
 
@@ -32,6 +32,7 @@
             <CollectionViewSource.SortDescriptions>
                 <!-- Requires 'xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"' declaration. -->
                 <scm:SortDescription PropertyName="time" Direction="Descending"/>
+                <scm:SortDescription PropertyName="queue" Direction="Descending"/>
                 <!--<scm:SortDescription PropertyName="Complete" />
                 <scm:SortDescription PropertyName="DueDate" />-->
             </CollectionViewSource.SortDescriptions>
@@ -47,11 +48,16 @@
             <!--</CollectionViewSource.SortDescriptions>-->
         </CollectionViewSource>
 
-        <!--cam about libraries used-->
+        <!--about libraries-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_aboutLibraries"  
                               CollectionViewType="ListCollectionView">
         </CollectionViewSource>
 
+        <!--motorData-->
+        <CollectionViewSource x:Key="ItemCollectionViewSource_motorData"  
+                              CollectionViewType="ListCollectionView">
+        </CollectionViewSource>
+        
         
         
         <!--checkbox list for filterming dgLog-->
@@ -182,7 +188,11 @@
                                     <ColumnDefinition Width="120" />
                                     <ColumnDefinition Width="5" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="5" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
+                                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+                                <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" />
 
                                 <StackPanel Grid.Column="0">
                                     <GroupBox Header="All motors">
@@ -203,8 +213,8 @@
                                     </GroupBox>
                                 </StackPanel>
 
-                                <GridSplitter Grid.Column="2" HorizontalAlignment="Stretch" />
-                                <Grid x:Name="grAllMotors" Grid.Column="3">
+                                <GroupBox Header="Individual motor Position &amp; Speed gui control" Grid.Column="2">
+                                <Grid x:Name="grAllMotors" >
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
@@ -327,6 +337,24 @@
                                         </StackPanel>
                                     </GroupBox>
                                 </Grid>
+                                </GroupBox>
+
+                                <GroupBox Header="Individual motor data" Grid.Column="4">
+                                    <DataGrid
+                                        x:Name="dgMotorData"
+                                          DataContext="{StaticResource ItemCollectionViewSource_motorData}"
+                                          ItemsSource="{Binding}"
+                                          AutoGenerateColumns = "False" 
+                                          CanUserAddRows="False"
+                                        >
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="90" />
+                                            <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw}" Width="2*" />
+                                            <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
+                                            <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
                             </Grid>
                         </DockPanel>
 
@@ -334,7 +362,7 @@
 
                         <DockPanel Grid.Row="2" >
                             <Grid Grid.Column="2" Background="#FFE5E5E5">
-                                <GroupBox Header="Settings of individual motors">
+                                <GroupBox Header="Control of individual motors">
                                     <DockPanel>
                                         <StackPanel>
                                             <GroupBox Header="Chosen motor:">
@@ -392,9 +420,9 @@
                                         SelectionChanged="dgCams_SelectionChanged"
                                     >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID"  IsReadOnly="True" Binding="{Binding Path=DeviceID}" Width="10" ></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Name" IsReadOnly="True"  Binding="{Binding Path=DeviceName}" Width="100"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Identifier" IsReadOnly="True"  Binding="{Binding Path=Identifier}" Width="200"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="ID"  IsReadOnly="True" Binding="{Binding Path=DeviceID}" Width="10" />
+                                    <DataGridTextColumn Header="Name" IsReadOnly="True"  Binding="{Binding Path=DeviceName}" Width="100"/>
+                                    <DataGridTextColumn Header="Identifier" IsReadOnly="True"  Binding="{Binding Path=Identifier}" Width="200"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <GroupBox Header="All connected camera previews" >
@@ -609,11 +637,11 @@
               CanUserAddRows="False"
             >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Time"  IsReadOnly="True" Binding="{Binding Path=time, StringFormat=HH:mm:ss.fff}" Width="76" 
-                                    ></DataGridTextColumn>
-                    <DataGridTextColumn Header="Type" IsReadOnly="True"  Binding="{Binding Path=type}" Width="50"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Source" IsReadOnly="True"  Binding="{Binding Path=src}"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" MinWidth="50" ></DataGridTextColumn>
+                    <DataGridTextColumn Header="Time"  IsReadOnly="True" Binding="{Binding Path=time, StringFormat=HH:mm:ss.fff}" Width="76" />
+                    <DataGridTextColumn Header="#"  IsReadOnly="True" Binding="{Binding Path=queue}" Width="5" />
+                    <DataGridTextColumn Header="Type" IsReadOnly="True"  Binding="{Binding Path=type}" Width="50" />
+                    <DataGridTextColumn Header="Source" IsReadOnly="True"  Binding="{Binding Path=src}" />
+                    <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" MinWidth="50" />
                 </DataGrid.Columns>
             </DataGrid>
 

@@ -57,12 +57,30 @@ namespace EyeOut
 
         public void PROCESS(e_cmdEchoType echo)
         {
+            byte[] _packetBytes = PacketBytes;
+
+            // error 
+            if (_packetBytes[IndexOfInstructionOrError] == 0)
+            {
+                // no error
+                C_SPI.LOG_cmd(_packetBytes, e_cmd.received);
+                PROCESS_statusPacket(echo);
+            }
+            else
+            {
+                C_SPI.LOG_cmd(_packetBytes, e_cmd.receivedWithError);
+                C_SPI.LOG_cmdError(_packetBytes[IndexOfId], _packetBytes[IndexOfInstructionOrError]);
+            }
+        }
+
+        public void PROCESS_statusPacket(e_cmdEchoType echo)
+        {
             // do something with it
             switch (echo)
             {
                 case (e_cmdEchoType.presentPosition):
-                    // write it down
-                    C_SPI.LOG(string.Format("motor position = \t{0}", this.Par[0]));
+                    //C_Value presentPosition = new C_Value(
+                    C_SPI.LOG(string.Format("Motor position = \t[{0:X} {1:X}]", this.Par[0], this.Par[1]));
                     break;
             }
         }
@@ -137,8 +155,7 @@ namespace EyeOut
             {
                 return CREATE_instructionPacket_bytes();
             }
-            /*
-             
+            /*             
             set
             {
                 C_Packet pack;

@@ -43,7 +43,7 @@ namespace EyeOut
             // new
             INIT_logger();
             INIT_spi();
-            INIT_mot();
+            INIT_allMotors();
             INIT_timSim();
             INIT_cam();
             INIT_TP();

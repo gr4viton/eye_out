@@ -498,7 +498,7 @@ namespace EyeOut
                     }
                     */
                     //mot.angle.Dec_interval_piPi = yawPitchRoll[(int)mot.rotationMotor];
-                    mot.angle.Dec_FromDefault = yawPitchRoll_d[(int)mot.rotationMotor];
+                    mot.angle.Dec_FromDefault = yawPitchRoll_d[(int)mot.rotMotor];
 
                     mot.speed.Dec = mot.speed.DecMax;
                     mot.REGISTER_move();

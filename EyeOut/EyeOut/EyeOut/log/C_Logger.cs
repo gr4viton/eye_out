@@ -20,6 +20,8 @@ using System.Windows.Shapes;
 using System.Data; //DataGrid
 using System.Collections.ObjectModel; // ObservableCollection
 
+using System.Linq; // Last
+
 namespace EyeOut
 {
     /*
@@ -86,7 +88,8 @@ namespace EyeOut
             //create business data
             //var itemList = new List<StockItem>();
 
-            itemList.Add(new C_LogMsg { time = DateTime.UtcNow, src = e_LogMsgSource.log, msg = "Logging system initialized! Time is [Ascending] == new messages on first row == ^^^^^^" });
+            itemList.Add(new C_LogMsg { time = DateTime.UtcNow, src = e_LogMsgSource.log, 
+                msg = "Logging system initialized! Time is [Ascending] == new messages on first row == ^^^^^^" });
             //...
 
         }
@@ -123,6 +126,10 @@ namespace EyeOut
             {
                 try
                 {
+                    if (itemList.Last().time == _logMsg.time) // multiple at the same time
+                    {
+                        _logMsg.queue = itemList.Last().queue + 1;
+                    }
                     itemList.Add(_logMsg);
                     errorAntiLoopCounter = 0;
                 }
@@ -152,6 +159,7 @@ namespace EyeOut
     public class C_LogMsg
     {
         public DateTime time { get; set; }
+        public int queue { get; set; } // if more messages arrive at the exact same time
         public e_LogMsgSource src { get; set; }
         public e_LogMsgType type { get; set; }
         public string msg { get; set; }
@@ -159,6 +167,7 @@ namespace EyeOut
         {
             time = DateTime.UtcNow;
             type = e_LogMsgType.info;
+            queue = 0;
         }
     }
 }

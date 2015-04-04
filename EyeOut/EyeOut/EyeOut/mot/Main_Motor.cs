@@ -15,6 +15,7 @@ using System.Windows.Controls; // checkbox
 using System.IO.Ports;
 
 using System.Windows.Input; // GUI eventArgs
+//using MainWindow.Ms;
 
 namespace EyeOut
 {
@@ -23,13 +24,12 @@ namespace EyeOut
     /// </summary>
     public partial class MainWindow : Window
     {
-        /*
-        C_Motor actMot;
-        C_Motor actMot2;*/
-        public e_rot actMrot;
-        static public List<C_Motor> Ms;
+        public static C_MotorControl Ms;
 
         public static Byte nudId = 1;
+        // dgMotorData
+        public ObservableCollection<C_MotorDataRow> motorData;
+        public object dgMotorData_lock;
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properies
@@ -41,19 +41,11 @@ namespace EyeOut
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region INIT
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        public void INIT_mot()
+        public void INIT_allMotors()
         {
-
-            INIT_individualMotors();
-
-            // actual motor selection
-            actMrot = e_rot.yaw;
-
-            /*
-            mot = this.Resources["motYawDataSource"] as C_Motor;
-            */
-
+            Ms = new C_MotorControl();
+            //Ms.INIT_individualMotors();
+            
             // set slider limits
             SET_allSlidersLimits();
             
@@ -64,64 +56,22 @@ namespace EyeOut
             }
 
             // update position
-            foreach (e_rot rot in Enum.GetValues(typeof(e_rot)))
-            {
-                GET_slSpeed(rot).Value = M(rot).speed.Dec;
-                GET_slAngle(rot).Value = M(rot).angle.Dec;
-            }
+            UPDATE_slidersFromMotors();
 
             lsChosenMotor.SelectedIndex = 0;
             lsCmdEx.SelectedIndex = 0;
 
+            INIT_dgMotorData();
             C_State.mot = e_stateMotor.ready;
             //UPDATE_motorsFromSliders();
             //UPDATE_slidersFromMotors();
         }
-        public void INIT_individualMotors()
-        {
 
-            C_Value angleFull = new C_Value(0, 360, C_DynAdd.SET_GOAL_POS_MIN, C_DynAdd.SET_GOAL_POS_MAX);
-            //C_Value speedFull = new C_Value(0, 100, C_DynAdd.SET_MOV_SPEED_MIN, C_DynAdd.SET_MOV_SPEED_MAX, 20);
-            C_Value speedFull = new C_Value(0, 101, C_DynAdd.SET_MOV_SPEED_NOCONTROL, C_DynAdd.SET_MOV_SPEED_MAX, 5); // no control as 0
 
-            int numOfMot = Enum.GetValues(typeof(e_rot)).Length;
-            Ms = new List<C_Motor>(numOfMot);
-            for (int imot = 0; imot < numOfMot; imot++)
-            {
-                Ms.Add(new C_Motor((byte)imot));
-            }
 
-            // Motor Yaw
-            Ms[(int)e_rot.yaw] =
-                new C_Motor(e_rot.yaw,
-                    1,
-                    new C_Value(angleFull, 0, 360, 200), // angle
-                    new C_Value(speedFull, 0, 101, 20) // speed
-                );
-            // Motor Pitch
-            Ms[(int)e_rot.pitch] =
-                new C_Motor(e_rot.pitch,
-                    2,
-                    new C_Value(angleFull, 111, 292, 200), // angle
-                    new C_Value(speedFull, 0, 101, 20) // speed
-                );
-            // Motor 
-            Ms[(int)e_rot.roll] =
-                new C_Motor(e_rot.roll,
-                    3,
-                    new C_Value(angleFull, 156, 248, 200), // angle
-                    new C_Value(speedFull, 0, 101, 20) // speed
-                );
-
-        }
-
-        public C_Motor M(e_rot rot)
-        {
-            return Ms[(int)rot];
-        }
         public void SEARCH_motors()
         {
-            Ms = new List<C_Motor>();
+            Ms = new C_MotorControl();
             // send pings and get responses - add items to [Ms] motor list
             // - use local Search motor for pinging and changing of id..
             Byte id = C_DynAdd.ID_MIN;
@@ -135,18 +85,38 @@ namespace EyeOut
                 
                 srchM.ORDER_ping();
 
-                if (C_SPI.READ_cmd(e_cmdEchoType.echoLast)) 
+                if (C_SPI.READ_packet(e_cmdEchoType.echoLast)) 
                 {
                     MessageBox.Show(id.ToString());
                 }
                     
-                    /*
-                     * No ak to mas threadsafe, tak pred kazdou read/write dvojicou vycisti buffer pre istotu
-                    Dal by som normalne port read do cyklu kolkto dat ocakavas
-                        Nad to hodis try catch na timeoutexception
-                    Ak mas response, metoda vrati true, ak exceptiom false
-                     */
             }
+        }
+
+        private void INIT_dgMotorData()
+        {
+            motorData = new ObservableCollection<C_MotorDataRow>();
+
+            // add all
+            foreach (e_motorDataType _type in Enum.GetValues(typeof(e_motorDataType)))
+            {
+                motorData.Add(new C_MotorDataRow(_type));
+            }
+
+            INIT_dgMotorData_binding();
+        }
+
+
+        private void INIT_dgMotorData_binding()
+        {
+            // binding
+            CollectionViewSource ItemCollectionViewSource_motorData;
+            ItemCollectionViewSource_motorData = (CollectionViewSource)(FindResource("ItemCollectionViewSource_motorData"));
+            ItemCollectionViewSource_motorData.Source = motorData;
+
+            // when binding is changing inner guts of dataGrid from different thread
+            dgMotorData_lock = new object(); // lock for datagrid
+            BindingOperations.EnableCollectionSynchronization(motorData, dgMotorData_lock); // for multi-thread updating
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion INIT
@@ -156,7 +126,7 @@ namespace EyeOut
         {
             foreach (C_Motor m in Ms)
             {
-                UPDATE_motorFromSlider(m.rotationMotor);
+                UPDATE_motorFromSlider(m.rotMotor);
                 //m.angle.Dec = 160;
                 m.REGISTER_move();
             }
@@ -191,7 +161,7 @@ namespace EyeOut
             {
                 lsChosenMotor.SelectedIndex = 0;
             }
-            actMrot = (e_rot)lsChosenMotor.SelectedIndex;
+            Ms.actMrot = (e_rot)lsChosenMotor.SelectedIndex;
         }
 
         private void lsCmdEx_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -226,7 +196,7 @@ namespace EyeOut
             }
             else
             {
-                M(actMrot).SEND_example(lsCmdEx.SelectedIndex);
+                Ms.ActualMotor.SEND_example(lsCmdEx.SelectedIndex);
             }
         }
 
@@ -235,7 +205,6 @@ namespace EyeOut
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region Angle & Speed sliders
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
         public void SET_sliderLimits(Slider sl, C_Value val)
         {
@@ -247,8 +216,8 @@ namespace EyeOut
         {
             foreach (e_rot rot in Enum.GetValues(typeof(e_rot)))
             {
-                SET_sliderLimits(GET_slSpeed(rot), M(rot).speed);
-                SET_sliderLimits(GET_slAngle(rot), M(rot).angle);
+                SET_sliderLimits(GET_slSpeed(rot), Ms.GET_M(rot).speed);
+                SET_sliderLimits(GET_slAngle(rot), Ms.GET_M(rot).angle);
             }
         }
         //private void UPDATE_motorsFromSliders()
@@ -259,8 +228,8 @@ namespace EyeOut
         {
             if (C_State.FURTHER(e_stateMotor.ready))
             {
-                M(rot).angle.Dec = GET_slAngle(rot).Value;
-                M(rot).speed.Dec = GET_slSpeed(rot).Value;
+                Ms.GET_M(rot).angle.Dec = GET_slAngle(rot).Value;
+                Ms.GET_M(rot).speed.Dec = GET_slSpeed(rot).Value;
             }
         }
 
@@ -268,16 +237,16 @@ namespace EyeOut
         {
             foreach (e_rot rot in Enum.GetValues(typeof(e_rot)))
             {
-                UPDATE_sliderFromMotor(rot);
+                UPDATE_slidersFromMotor(rot);
             }
         }
 
-        private void UPDATE_sliderFromMotor(e_rot rot)  //nn
+        private void UPDATE_slidersFromMotor(e_rot rot)  //nn
         {
             if (C_State.FURTHER(e_stateMotor.ready))
             { 
-                GET_slSpeed(rot).Value = M(rot).speed.Dec;
-                GET_slAngle(rot).Value = M(rot).angle.Dec;
+                GET_slSpeed(rot).Value = Ms.GET_M(rot).speed.Dec;
+                GET_slAngle(rot).Value = Ms.GET_M(rot).angle.Dec;
                 //LOG_logger(string.Format("{0} = angle[{1}], speed[{2}]", rot, M(rot).angle.Dec, M(rot).speed.Dec));
             }
         }
@@ -286,7 +255,7 @@ namespace EyeOut
         {
             if (GET_cbSendValuesToMotor(rot).IsChecked == true)
             {
-                M(rot).ORDER_move();
+                Ms.GET_M(rot).ORDER_move();
             }
         }
 
@@ -300,7 +269,7 @@ namespace EyeOut
                     sl.Value = Math.Round(e.NewValue, 2);
                     e_rot rot = GET_rot(sl);
                     UPDATE_motorFromSlider(rot);
-                    UPDATE_sliderFromMotor(rot);
+                    UPDATE_slidersFromMotor(rot);
                     ORDER_moveIfChecked(rot);
                 }
             }
@@ -395,4 +364,6 @@ namespace EyeOut
 
 
     }
+
+    
 }

@@ -106,25 +106,6 @@ namespace EyeOut
     }
 
 
-    public static class EnumGetDescription
-    {
-        public static string GetDescription(this Enum enumObj)
-        {
-            FieldInfo fieldInfo = enumObj.GetType().GetField(enumObj.ToString());
-
-            object[] attribArray = fieldInfo.GetCustomAttributes(false);
-
-            if (attribArray.Length == 0)
-            {
-                return enumObj.ToString();
-            }
-            else
-            {
-                DescriptionAttribute attrib = attribArray[0] as DescriptionAttribute;
-                return attrib.Description;
-            }
-        }
-    }
 
     public class VCMyEnumToString : IValueConverter
     {
@@ -159,13 +140,13 @@ namespace EyeOut
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (string.IsNullOrEmpty(value.ToString()))  // This is for databinding
-                return e_stateSPI.disconnected;
+                return e_rot.yaw;
             return (StringToEnum<e_rot>(value.ToString())).GetDescription(); // <-- The extention method
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (string.IsNullOrEmpty(value.ToString())) // This is for databinding
-                return e_stateSPI.disconnected;
+                return e_rot.yaw;
             return StringToEnum<e_rot>(value.ToString());
         }
 

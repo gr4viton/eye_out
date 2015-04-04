@@ -37,23 +37,23 @@ namespace EyeOut
 
         public static C_Packet packetSent;
         public static C_Packet packetReceived;
-        public static List<byte> receivedBytes;
+        public static List<byte> receivedPacketBytes;
         public static int i_receivedByte;
 
-        public static Byte[] curCmd;
-        public static int i_curCmd;
-        public static Byte[] lastCmd;
+        //public static Byte[] curCmd;
+        //public static int i_curCmd;
+        //public static Byte[] lastCmd;
 
-        static int counter_openConnection;
-        static int counter_openConnection_default = 10; // try to open connection x-times
+        static C_CounterDown openConnection = new C_CounterDown(10); // try to open connection x-times
+        static C_CounterDown readReturn = new C_CounterDown(10); // try to read return status packet x-times
 
         // const!?
         public static int packetNumOfBytes; // number of bytes in received packet - including PACKETSTART bytes
         public static int i_cmdId = 0;     // = first byte in status packet (not counting 0xff 0xff)
         public static int i_cmdError = 2;  // = third byte in status packet (not counting 0xff 0xff)
 
-        public static Byte curCmd_id;
-        public static Byte curCmd_len;
+        //public static Byte curCmd_id;
+        //public static Byte curCmd_len;
 
         public static bool INCOMING_PACKET = false;
 
@@ -80,7 +80,7 @@ namespace EyeOut
         {
             i_readBuff = 0;
             readBuff = new Byte[1024];
-            curCmd = new Byte[1];
+            //curCmd = new Byte[1];
 
             timeoutExceptionPeriod = 10; // according to datahseet.?.
             // spi
@@ -204,8 +204,11 @@ namespace EyeOut
 
         private static void workerSEND_DoWork(object sender, DoWorkEventArgs e)
         {
+
             lock (spi_locker)
             {
+                spi.DiscardInBuffer();
+                spi.DiscardOutBuffer();
                 lock (queue_locker)
                 {
                     if (queueData.Count != 0)
@@ -213,7 +216,7 @@ namespace EyeOut
                         if (C_SPI.WriteData(queueData.Dequeue()) == false)
                         {
                             LOG_err(string.Format(
-                                "Cannot open the serial port. Tried [{0}]-times", counter_openConnection_default
+                                "Cannot open the serial port. Tried [{0}]-times", openConnection.ValDef
                                 ));
                         }
                     }
@@ -228,13 +231,44 @@ namespace EyeOut
                 e_cmdEchoType echo = (e_cmdEchoType)e.Argument;
                 if (echo != e_cmdEchoType.noEcho)
                 {
-                    // read out echo
-                    READ_cmd(echo);
+                    TRY_READ_packet(echo);
                 }
             }
         }
 
-// Not used
+        private static void TRY_READ_packet(e_cmdEchoType echo)
+        {
+            bool packetRead = false;
+            readReturn.Restart();
+
+            // TODO: implement timeoutException
+            //try
+            //{
+
+            //}
+            //catch (TimeoutException ex)
+            //{
+
+            //}
+
+            while (readReturn.Decrement() != 0)
+            {
+                // read out echo
+                packetRead = READ_packet(echo);
+                if (packetRead == true)
+                {
+                    break;
+                }
+            }
+            if (packetRead == false)
+            {
+                // didn't read anything
+                LOG_err(string.Format(
+                    "Cannot read the response status packet from serial port. Tried [{0}]-times", readReturn.ValDef
+                    ));
+            }
+        }
+
         private static void workerSEND_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             // catch if response was A-OK
@@ -250,12 +284,13 @@ namespace EyeOut
 
         private static bool WriteData(byte[] data)
         {
-            counter_openConnection = counter_openConnection_default; 
-            while (counter_openConnection > 0)
+            openConnection.Restart();
+            while (openConnection.Decrement() != 0)
             {
                 if (spi.IsOpen)
                 {
                     WriteSerialPort(data);
+                    LOG_cmd(data, e_cmd.sent);
                     packetSent = new C_InstructionPacket(data);
 
                     return true;
@@ -264,7 +299,6 @@ namespace EyeOut
                 {
                     OPEN_connection();
                 }
-                counter_openConnection--;
             }
             return false; 
         }
@@ -272,7 +306,7 @@ namespace EyeOut
         private static void WriteSerialPort(byte[] data)
         {
             spi.Write(data, 0, data.Length);
-            lastCmd = data;
+            //lastCmd = data;
 
             // IS NEEDED another zeros for slowing down serial commands
             // can be deleted if the Resets Return Delay Time is set greater - as in Example 9 from RX-64 Manual
@@ -282,8 +316,6 @@ namespace EyeOut
                 zeros[q] = 0;
             }
             spi.Write(zeros, 0, zeros.Length);
-
-            LOG_cmd(data, e_cmd.sent);
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Writing
@@ -292,58 +324,51 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         public static bool echoProcessed;
-        public static bool READ_cmd(e_cmdEchoType echo)
+        public static bool READ_packet(e_cmdEchoType echo)
         {
             // this function tries to read echo / return message of the motor after sending [lastSentCmd]
-
             if (C_State.prog == e_stateProg.closing)
             {
                 System.Threading.Thread.CurrentThread.Abort();
             }
-
             lock (spi_locker)
             {
                 try
                 {
-                    receivedBytes = new List<byte>();
+                    receivedPacketBytes = new List<byte>();
                     echoProcessed = false;
-
                     while (0 != C_SPI.spi.BytesToRead)
                     {
                         this_byte = (Byte)C_SPI.spi.ReadByte();
                         readBuff[i_readBuff] = this_byte;
-
                         if (INCOMING_PACKET == true)
                         {
                             // we already have PACKETSTART bytes filled in
-                            receivedBytes.Add(this_byte);
+                            receivedPacketBytes.Add(this_byte);
                             // all the bytes of the packet are stored in the readBuff
-
                             // just get the LENGTH_BYTE to find out on which byte the packet ends
                             if(i_receivedByte == C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET)
                             {
                                     // this_byte = LENGTH_BYTE = NParams + 2
                                     // packetNumOfBytes = PACKETSTART[2] + ID + Length + Error + Nparam + CheckSum = NParams + 6
                                     packetNumOfBytes = (int)this_byte + 4;
-
-                                    
                             }
                             if(i_receivedByte == packetNumOfBytes-1) 
                             {
                                 // this_byte is the last received byte from this packet
                                 INCOMING_PACKET = false; // other bytes would not make sense in context of packets with defined length
-                                LOG_cmd(receivedBytes.ToArray(), e_cmd.received);
-
+                                
                                 if (echoProcessed == false)
                                 {
                                     if(echo == e_cmdEchoType.echoLast)
                                     {
                                     
                                         // it should be last instruction packet echo
-                                        packetReceived = new C_InstructionPacket(receivedBytes);
+                                        packetReceived = new C_InstructionPacket(receivedPacketBytes);
                                         if (packetReceived == packetSent)
                                         {
                                             C_SPI.LOG("Echo confirmation");
+                                            LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
                                             // and reset last Cmd in the case the next Status Msg is the same as the command
                                             //lastCmd = new Byte[0];
                                         }
@@ -353,15 +378,12 @@ namespace EyeOut
                                 else if(echo > e_cmdEchoType.echoLast)
                                 {
                                     // its status packet
-                                    packetReceived = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
+                                    packetReceived = new C_StatusPacket(receivedPacketBytes); // constructor throws error if incosistent
                                     C_StatusPacket staPack = (C_StatusPacket)packetReceived;
                                     staPack.PROCESS(echo);
                                 }
-
                             }
-
                             i_receivedByte++;
-
                         }
                         // not detected NEW message yet
                         if (i_readBuff > 0)
@@ -370,18 +392,15 @@ namespace EyeOut
                             if ((readBuff[i_readBuff] == 0xFF) && (readBuff[i_readBuff - 1] == 0xFF))
                             {
                                 INCOMING_PACKET = true;
-                                // reset indexes and counters
-                                i_curCmd = 0;
-                                curCmd_len = 0;
-                                i_readBuff = 0;
-                                // reset receivedBytes buffer
-                                receivedBytes = new List<byte>();
-                                // insert the PACKETSTART sequence
+                                i_readBuff = 0; // reset index counters
+                                receivedPacketBytes = new List<byte>();
+
+                                // insert the PACKETSTART sequence 
                                 for( int q = 0; q< C_DynAdd.SIZEOF_PACKETSTART; q++)
                                 {
-                                    receivedBytes.Add(C_DynAdd.PACKETSTART[q]);
+                                    receivedPacketBytes.Add(C_DynAdd.PACKETSTART[q]);
                                 }
-                                i_receivedByte = 2; // as we have already detected the PACKETSTART sequence
+                                i_receivedByte = receivedPacketBytes.Count; // as we have already detected the PACKETSTART sequence
                             }
                             else
                             {
@@ -437,8 +456,6 @@ namespace EyeOut
         {
             C_Logger.Instance.LOG(e_LogMsgSource.spi_got, _msg);
         }
-
-
         public static void LOG_err(string _msg)
         {
             C_Logger.Instance.LOG_err(e_LogMsgSource.spi, _msg);
@@ -452,7 +469,7 @@ namespace EyeOut
 
 
 
-        private static void LOG_cmdError(Byte byId, Byte byError)
+        public static void LOG_cmdError(Byte byId, Byte byError)
         {
             for (int b = 0; b < 7; b++)
                 if (C_Motor.GET_bit(byError, b) == true)
@@ -463,7 +480,7 @@ namespace EyeOut
                 }
         }
 
-        private static void LOG_cmd(Byte[] cmd, e_cmd type)
+        public static void LOG_cmd(Byte[] cmd, e_cmd type)
         {
             string prefix = "";
             string hex = BitConverter.ToString(cmd).Replace("-", " ");
@@ -495,29 +512,31 @@ namespace EyeOut
         #endregion LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        private static void SPI_CHECK_receivedCmd(Byte[] cmdWithoutChecksumByte, Byte rec_checkSum)
-        {
-            // check for [checksum error] and cmd [error byte] sub-bites disambiguation
-            Byte calc_checkSum = C_CheckSum.GET_checkSum(cmdWithoutChecksumByte);
-            if (C_CheckSum.CHECK_checkSum(calc_checkSum, rec_checkSum))
-            //if( calc_check == 0 )
-            {
-                if (cmdWithoutChecksumByte[i_cmdError] == 0)
-                    // no error
-                    LOG_cmd(cmdWithoutChecksumByte, e_cmd.received);
-                else
-                {
-                    LOG_cmd(cmdWithoutChecksumByte, e_cmd.receivedWithError);
-                    LOG_cmdError(cmdWithoutChecksumByte[i_cmdId], cmdWithoutChecksumByte[i_cmdError]);
-                }
-            }
-            else
-            {
-                LOG_cmd(cmdWithoutChecksumByte, e_cmd.receivedCheckNot);
-                LOG(String.Format("CheckSumGot != CheckSumCounted :: {0} != {1}", (Byte)rec_checkSum, (Byte)calc_checkSum));
-                //LOG_msgAppendLine(String.Format("CheckSumGot = {0} ", (Byte)calc_check));
-            }
-        }
+        //// not used
+        //private static void SPI_CHECK_receivedCmd(Byte[] cmdWithoutChecksumByte, Byte rec_checkSum)
+        //{
+        //    // check for [checksum error] and cmd [error byte] sub-bites disambiguation
+        //    Byte calc_checkSum = C_CheckSum.GET_checkSum(cmdWithoutChecksumByte);
+
+        //    if (C_CheckSum.CHECK_checkSum(calc_checkSum, rec_checkSum))
+        //    //if( calc_check == 0 )
+        //    {
+        //        if (cmdWithoutChecksumByte[i_cmdError] == 0)
+        //            // no error
+        //            LOG_cmd(cmdWithoutChecksumByte, e_cmd.received);
+        //        else
+        //        {
+        //            LOG_cmd(cmdWithoutChecksumByte, e_cmd.receivedWithError);
+        //            LOG_cmdError(cmdWithoutChecksumByte[i_cmdId], cmdWithoutChecksumByte[i_cmdError]);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        LOG_cmd(cmdWithoutChecksumByte, e_cmd.receivedCheckNot);
+        //        LOG(String.Format("CheckSumGot != CheckSumCounted :: {0} != {1}", (Byte)rec_checkSum, (Byte)calc_checkSum));
+        //        //LOG_msgAppendLine(String.Format("CheckSumGot = {0} ", (Byte)calc_check));
+        //    }
+        //}
     }
 
 }

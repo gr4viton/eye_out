@@ -142,10 +142,17 @@ namespace EyeOut
 
     public class C_Value
     {
+        // angle constants
         private const double pi = Math.PI;
         private const double piHalf = Math.PI/2;
         private const double deg2rad = pi/180;
         private const double rad2deg = 180 / pi;
+        
+        // speed constants
+        // 100 should be [decLimitMax - decLimitMin - 1] 
+        // so these values should be recalculated whenever decLimit changes
+        private const double dec2RPM = 0.111 / 100 * C_DynAdd.SET_MOV_SPEED_MAX;
+        private const double RPM2dec = 1 / dec2RPM;
         
         private double dec;
         private double decMin;
@@ -154,7 +161,6 @@ namespace EyeOut
 
         private double decLimitMin;
         private double decLimitMax;
-        
 
         private byte[] hex;
         private UInt16 hexMin;
@@ -277,7 +283,17 @@ namespace EyeOut
                 hex = dec2hex(dec);
             }
         }
-
+        public double Dec_inRPM // Dec * constant
+        {
+            get
+            {
+                return Dec * dec2RPM;
+            }
+            set
+            {
+                Dec = value * RPM2dec;
+            }
+        }
         public double Dec_interval01 // <0;1>
         {
             get

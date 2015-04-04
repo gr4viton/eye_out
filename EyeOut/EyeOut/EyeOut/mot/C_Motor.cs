@@ -23,7 +23,7 @@ namespace EyeOut
 
     public partial class C_Motor
     {
-        public e_rot rotationMotor;
+        public e_rot rotMotor;
         private e_LogMsgSource motorLog;
         public byte id;
 
@@ -50,23 +50,30 @@ namespace EyeOut
         }*/
         private static bool cmdinEx_initialized = false;
 
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region constructor
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public C_Motor(byte _id) // because of search motor
         {
             id = 0;
             angle = new C_Value();
             speed = new C_Value();
+            angleActual = angle;
+            speedActual = speed;
             motorLog = e_LogMsgSource.mot;
             motorEcho = e_cmdEchoType.echoLast;
         }
-
-        public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed)
+        public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed) 
+            : this(_id)
         {
             id = _id;
             angle = _angle;
             speed = _speed;
-            
-            rotationMotor = _rot;
-            switch(rotationMotor)
+            angleActual = angle;
+            speedActual = speed;
+
+            rotMotor = _rot;
+            switch(rotMotor)
             {
                 case(e_rot.yaw):
                     motorLog = e_LogMsgSource.mot_yaw;
@@ -87,11 +94,7 @@ namespace EyeOut
             motorEcho = e_cmdEchoType.echoLast;
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #region properties
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #endregion properties
+        #endregion constructor
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region INIT
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

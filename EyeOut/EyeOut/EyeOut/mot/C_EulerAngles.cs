@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace EyeOut.mot
+namespace EyeOut
 {
     public struct S_EulerAngles
     {
