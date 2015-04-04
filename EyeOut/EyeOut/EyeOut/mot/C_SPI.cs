@@ -39,6 +39,9 @@ namespace EyeOut
         public static int i_curCmd;
         public static Byte[] lastCmd;
 
+        static int counter_openConnection;
+        static int counter_openConnection_default = 10; // try to open connection x-times
+
         // const!?
         public static int i_cmdId = 0;     // = first byte in status packet (not counting 0xff 0xff)
         public static int i_cmdError = 2;  // = third byte in status packet (not counting 0xff 0xff)
@@ -166,16 +169,22 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region Writing
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        public static void SEND_data(byte[] data)
+        //// I allways need to know if the command send will produce some command receive!
+        //public static void SEND_data(byte[] data)
+        //{
+        //    SEND_data(e_cmdEcho.noEcho, data);
+        //}
+       
+        public static void SEND_data(e_cmdEcho echo, byte[] data)
         {
             QUEUE_data(data);
 
             BackgroundWorker worker_SEND = new BackgroundWorker();
             worker_SEND.RunWorkerCompleted += workerSEND_RunWorkerCompleted;
             worker_SEND.DoWork += workerSEND_DoWork;
-            worker_SEND.RunWorkerAsync();
+            worker_SEND.RunWorkerAsync((object)echo);
         }
+
 
         private static void QUEUE_data(byte[] data)
         {
@@ -204,6 +213,12 @@ namespace EyeOut
 #endif
                     }
                 }
+                e_cmdEcho echo = (e_cmdEcho)e.Argument;
+                if (echo != e_cmdEcho.noEcho)
+                {
+                    // read out echo
+                    READ_cmd(echo);
+                }
             }
         }
 
@@ -229,8 +244,8 @@ namespace EyeOut
 
         private static bool WriteData(byte[] data)
         {
-            int q = 10; // try q-times
-            while (q > 0)
+            counter_openConnection = counter_openConnection_default; 
+            while (counter_openConnection > 0)
             {
                 if (spi.IsOpen)
                 {
@@ -244,7 +259,7 @@ namespace EyeOut
                 {
                     OPEN_connection();
                 }
-                q--;
+                counter_openConnection--;
             }
             return false; // should never run as far as to this line
         }
@@ -254,13 +269,15 @@ namespace EyeOut
             spi.Write(data, 0, data.Length);
             lastCmd = data;
 
-            // another zeros for slowing down serial commands
+            // IS NEEDED another zeros for slowing down serial commands
+            // can be deleted if the Resets Return Delay Time is set greater - as in Example 9 from RX-64 Manual
             byte[] zeros = new byte[20];
-            for(int q = 0;q<20;q++)
+            for (int q = 0; q < 20; q++)
             {
                 zeros[q] = 0;
             }
             spi.Write(zeros, 0, zeros.Length);
+
             LOG_cmd(data, e_cmd.sent);
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -269,9 +286,9 @@ namespace EyeOut
         #region Reading
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public static bool READ_cmd()
+        public static bool READ_cmd(e_cmdEcho echo)
         {
-            // this function tries to read echo of the motor after sending [lastSentCmd]
+            // this function tries to read echo / return message of the motor after sending [lastSentCmd]
 
             if (C_State.prog == e_stateProg.closing)
             {

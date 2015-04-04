@@ -14,6 +14,9 @@ namespace EyeOut
             , smaller = 2
     }
 
+    /// <summary>
+    /// C_Motor - CONVersion methods
+    /// </summary>
     public partial class C_Motor
     {
         

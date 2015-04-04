@@ -104,6 +104,7 @@ namespace EyeOut
             if (TP_program.IsRunning)
             {
                 TP_program.Exit();
+                System.Windows.Forms.Cursor.Show(); // not working
                 C_Telepresence.LOG("The Telepresence session is stopped");
             }
             else

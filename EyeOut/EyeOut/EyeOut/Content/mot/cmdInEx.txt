@@ -1,6 +1,21 @@
-01|Ping
+01|Ex3: Ping
 022B01|Ex1: Read internal temeperature
 03180101|Ex16: Turns on the LED and enables Torque
 031E00020002|Ex17: Locates at the Position 180° with the speed of 57RPM
 031E00030002|Ex17.2: Locates at the Position 185° with the speed of 57RPM
+020003|Ex6: Reads the Model Number and Firmware Version. 
+831E040010005001012002600302300070010320028003|Ex5: (SyncWrite) Moves to the following position and speed for each RX-64. :: RX-64 with ID 0 : Moves to the position of 0x010 at the speed of 0x150 :: RX-64 with ID 1 : Moves to the position of 0x220 at the speed of 0x360 :: RX-64 with ID 2: Moves to the position of 0x030 at the speed of 0x170 :: RX-64 with ID 3: Moves to the position of 0x220 at the speed of 0x380 
+030300|Ex7: USE WITH CAUTION! Changes the ID of RX-64 to 0. :: (Don't broadcast with multiple servos connected - all would be set to the same ID)
+030401|Ex8: USE WITH CAUTION! Changes the Baud Rate to 1M bps.
+030502|Ex9: USE WITH CAUTION! Resets Return Delay Time as 4usec. 
+06|Ex4: USE WITH CAUTION! Resets the Control Table of RX-64.
+030301|Ex2: USE WITH CAUTION! Sets the ID of RX-64 as “1’”. :: (Don't broadcast with multiple servos connected - all would be set to the same ID)
+03080002|Ex10: USE WITH CAUTION! Restricts the movement angle from 0 to 150°. 
+030B50|Ex11: Resets the highest limit of operating temperature as 80°.
+030C64AA|Ex12: Sets the operating voltage as 10 to 17V.  
+030EFF01|Ex13: Only generates 50% of the maximum torque.
+031000|Ex14: Do not return Status Packet all the time. 
+03110404|Ex15: Sets the Alarm as such that LED flickers and shutdown (torque off) ::  when the operating temperature is higher than the limit temperature. 
+03A101014040|Ex18: Sets Compliance Margin=1 and Compliance Slope=0x40. 
+03304000|Ex19: Sets the minimum output Torque (Punch) as 0x40. 
 

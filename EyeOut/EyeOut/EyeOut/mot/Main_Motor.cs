@@ -21,7 +21,6 @@ namespace EyeOut
     /// <summary>
     /// Motor - gui
     /// </summary>
-    /// 
     public partial class MainWindow : Window
     {
         /*
