@@ -340,7 +340,9 @@
                                 </GroupBox>
 
                                 <GroupBox Header="Individual motor data" Grid.Column="4">
-                                    <DataGrid
+                                    <StackPanel>
+                                        <ToggleButton x:Name="tbtMotorDataRefresh" Content="Refresh every 20ms" Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>
+                                        <DataGrid
                                         x:Name="dgMotorData"
                                           DataContext="{StaticResource ItemCollectionViewSource_motorData}"
                                           ItemsSource="{Binding}"
@@ -354,6 +356,7 @@
                                             <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
                                         </DataGrid.Columns>
                                     </DataGrid>
+                                    </StackPanel>
                                 </GroupBox>
                             </Grid>
                         </DockPanel>
@@ -427,7 +430,7 @@
                             </DataGrid>
                             <GroupBox Header="All connected camera previews" >
                                 <StackPanel>
-                                    <ToggleButton x:Name="tbtActivePreviewList" Content="Active preview" />
+                                    <ToggleButton x:Name="tbtActivePreviewList" Content="Active preview of All connected cameras" Checked="tbtActivePreviewList_Checked" />
                                     <StackPanel x:Name="spCamPreview" CanHorizontallyScroll="True" Orientation="Horizontal" MaxHeight="100">
                                         <!--there will be images generated here  camImages-->
 
@@ -440,7 +443,7 @@
                     <GridSplitter Grid.Column="2" Width="5" HorizontalAlignment="Stretch" />
                     <GroupBox Grid.Column="3" Header="Actual camera preview">
                         <StackPanel >
-                            <ToggleButton x:Name="tbtActivePreviewActual" Content="Active preview" />
+                            <ToggleButton x:Name="tbtActivePreviewActual" Content="Active preview of Actual camera" Checked="tbtActivePreviewActual_Checked" />
                             <Image x:Name="imgMain" Stretch="Fill"/>
                         </StackPanel>
                     </GroupBox>

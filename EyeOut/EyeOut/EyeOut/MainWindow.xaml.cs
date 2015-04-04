@@ -87,11 +87,6 @@ namespace EyeOut
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
-        {
-            //LOG_UPDATE_tx();
-        }
-
         private void timSim_Tick(object sender, EventArgs e)
         {
             /*
@@ -149,6 +144,8 @@ namespace EyeOut
 
             btnConnect.Content = "Connect Serial";
         }
+
+
 
 
 

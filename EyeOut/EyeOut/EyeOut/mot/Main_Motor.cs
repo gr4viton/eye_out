@@ -27,10 +27,6 @@ namespace EyeOut
         public static C_MotorControl Ms;
 
         public static Byte nudId = 1;
-        // dgMotorData
-        public ObservableCollection<C_MotorDataRow> motorData;
-        public object dgMotorData_lock;
-
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properies
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,31 +89,6 @@ namespace EyeOut
             }
         }
 
-        private void INIT_dgMotorData()
-        {
-            motorData = new ObservableCollection<C_MotorDataRow>();
-
-            // add all
-            foreach (e_motorDataType _type in Enum.GetValues(typeof(e_motorDataType)))
-            {
-                motorData.Add(new C_MotorDataRow(_type));
-            }
-
-            INIT_dgMotorData_binding();
-        }
-
-
-        private void INIT_dgMotorData_binding()
-        {
-            // binding
-            CollectionViewSource ItemCollectionViewSource_motorData;
-            ItemCollectionViewSource_motorData = (CollectionViewSource)(FindResource("ItemCollectionViewSource_motorData"));
-            ItemCollectionViewSource_motorData.Source = motorData;
-
-            // when binding is changing inner guts of dataGrid from different thread
-            dgMotorData_lock = new object(); // lock for datagrid
-            BindingOperations.EnableCollectionSynchronization(motorData, dgMotorData_lock); // for multi-thread updating
-        }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion INIT
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

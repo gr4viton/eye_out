@@ -50,13 +50,13 @@ namespace EyeOut
         private void INIT_timCam()
         {
             timCam = new DispatcherTimer();
-            timCam.Tick += new EventHandler(timer_Tick);
+            timCam.Tick += new EventHandler(timCam_Tick);
             timCam.Interval = new TimeSpan(0, 0, 0, 0, 1);
             timCam.Start();
         }
 
-
-        void timer_Tick(object sender, EventArgs e)
+        
+        void timCam_Tick(object sender, EventArgs e)
         {
             if (tbtActivePreviewList.IsChecked == true)
             {
@@ -70,8 +70,14 @@ namespace EyeOut
 
             if (C_State.FURTHER(e_stateProg.closing))
             {
-                DISPOSE_cameraData();
                 timCam.Stop();
+                DISPOSE_cameraData();
+            }
+
+            if (tbtActivePreviewList.IsChecked == false && tbtActivePreviewActual.IsChecked == false)
+            {
+                timCam.Stop();
+                DISPOSE_cameraData();
             }
         }
         void PLOT_listPreviewImages()
@@ -109,9 +115,6 @@ namespace EyeOut
         void INIT_allSources()
         {
             DISPOSE_cameraData();
-            // ??????
-            //Add the image processing to the dispatcher
-            this.Dispatcher.Hooks.DispatcherInactive += new EventHandler(dispatcherTimer_Tick);
 
             //-> Find systems cameras with DirectShow.Net dll
             //Get the information about the installed cameras and add the combobox items 
@@ -174,13 +177,11 @@ namespace EyeOut
             spCamPreview.Children.Clear();
             foreach(System.Windows.Controls.Image im in camImages)
             {
-
                 spCamPreview.Children.Add(im);
             }
         }
         private void INIT_dgCam()
         {
-
             // binding
             CollectionViewSource ItemCollectionViewSource_cam;
             ItemCollectionViewSource_cam = (CollectionViewSource)(FindResource("ItemCollectionViewSource_cam"));
@@ -189,28 +190,35 @@ namespace EyeOut
             // when binding is changing inner guts of dataGrid from different thread
             dgCam_lock = new object(); // lock for datagrid
             BindingOperations.EnableCollectionSynchronization(C_Camera.camList, dgCam_lock); // for multi-thread updating
-
         }
 
         private void dgCams_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             C_Camera.actualId = dgCams.SelectedIndex;
+            // looses selectionIndex
+            //if (C_State.FURTHER(e_stateProg.initialized))
+            //{
+            //    START_timCam();
+            //}
         }
 
-        //btnStart_Click() function is the one that handles our "Start!" button' click 
-        //event. it creates a new capture object if its not created already. e.g at first time
-        //starting. once the capture is created, it checks if the capture is still in progress,
-        //if so the
-
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+        public void START_timCam()
         {
-            //Cs.TOGGLE_capture();
+            if (timCam.IsEnabled == false)
+            {
+                INIT_allSources();
+                timCam.Start();
+            }
         }
 
-
-        private void CameraCapture_Load(object sender, EventArgs e)
+        private void tbtActivePreviewList_Checked(object sender, RoutedEventArgs e)
         {
+            START_timCam();
+        }
 
+        private void tbtActivePreviewActual_Checked(object sender, RoutedEventArgs e)
+        {
+            START_timCam();
         }
     }
 }
