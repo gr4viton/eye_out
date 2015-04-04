@@ -19,25 +19,24 @@ namespace EyeOut
         // sizeof individual parts of packet (instruction and status
         public const int SIZEOF_PACKETSTART = PACKETSTART.Length;
         public const int SIZEOF_ID = sizeof(byte);
-        public const int SIZEOF_LENGTH_BYTE = sizeof(byte);
+        public const int SIZEOF_LENGTH = sizeof(byte);
         public const int SIZEOF_INSTRUCTION = sizeof(byte);
         public const int SIZEOF_CHECKSUM = sizeof(byte);
 
-        public const int SIZEOF_ERROR_BYTE = sizeof(byte);
+        public const int SIZEOF_ERROR = sizeof(byte);
 
-        // index of individual bytes in instruction packet
-        public const int INDEXOF_PACKETSTART_IN_INSTRUCTIONPACKET = 0;
-        public const int INDEXOF_ID_IN_INSTRUCTIONPACKET = 2;
-        public const int INDEXOF_LENGTH_IN_INSTRUCTIONPACKET = 3;
-        public const int INDEXOF_INSTRUCTION_IN_INSTRUCTIONPACKET = 4;
-        public const int INDEXOF_FIRSTPARAM_IN_INSTRUCTIONPACKET = 5;
+        // index of individual bytes in instruction & status(return) packet
+        public const int INDEXOF_PACKETSTART_IN_INSTRUCTIONPACKET   = 0;
+        public const int INDEXOF_PACKETSTART_IN_STATUSPACKET        = 0;
+        public const int INDEXOF_ID_IN_INSTRUCTIONPACKET            = 2;
+        public const int INDEXOF_ID_IN_STATUSPACKET                 = 2;
+        public const int INDEXOF_LENGTH_IN_INSTRUCTIONPACKET        = 3;
+        public const int INDEXOF_LENGTH_IN_STATUSPACKET             = 3;
+        public const int INDEXOF_INSTRUCTION_IN_INSTRUCTIONPACKET   = 4;
+        public const int INDEXOF_ERROR_IN_STATUSPACKET              = 4;
+        public const int INDEXOF_FIRSTPARAM_IN_INSTRUCTIONPACKET    = 5;
+        public const int INDEXOF_FIRSTPARAM_IN_STATUSPACKET         = 5;
 
-        // index of individual bytes in return packet
-        public const int INDEXOF_PACKETSTART_IN_STATUSPACKET = 0;
-        public const int INDEXOF_ID_IN_STATUSPACKET = 2;
-        public const int INDEXOF_LENGTH_BYTE_IN_STATUSPACKET = 3;
-        public const int INDEXOF_ERROR_IN_STATUSPACKET = 4;
-        public const int INDEXOF_FIRSTPAR_IN_STATUSPACKET = 5;
 
         //public static byte[] byStart = { 0xFF, 0xFF };
         // cmds

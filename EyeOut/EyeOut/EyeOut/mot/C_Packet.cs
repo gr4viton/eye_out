@@ -6,13 +6,34 @@ using System.Threading.Tasks;
 
 namespace EyeOut
 {
-    // can be rewritten as 
-    // public class C_InstructionPacket : C_Packet
-    public class C_InstructionPacket
+    public class C_InstructionPacket : C_Packet
+    {
+        public static const int PacketLengthAddition = C_DynAdd.SIZEOF_PACKETSTART + C_DynAdd.SIZEOF_ID +
+             C_DynAdd.SIZEOF_LENGTH + C_DynAdd.SIZEOF_INSTRUCTION + C_DynAdd.SIZEOF_CHECKSUM;
+        
+        public const int IndexOfId = C_DynAdd.INDEXOF_ID_IN_INSTRUCTIONPACKET;
+        public const int IndexOfLength = C_DynAdd.INDEXOF_LENGTH_IN_INSTRUCTIONPACKET;
+        public const int IndexOfInstructionError = C_DynAdd.INDEXOF_INSTRUCTION_IN_INSTRUCTIONPACKET;
+        public const int IndexOfFirstParam = C_DynAdd.INDEXOF_FIRSTPARAM_IN_INSTRUCTIONPACKET;
+    }
+
+    public class C_StatusPacket : C_Packet
+    {
+        public static const int PacketLengthAddition = C_DynAdd.SIZEOF_PACKETSTART + C_DynAdd.SIZEOF_ID +
+             C_DynAdd.SIZEOF_LENGTH + C_DynAdd.SIZEOF_ERROR + C_DynAdd.SIZEOF_CHECKSUM;
+        
+        public const int IndexOfId = C_DynAdd.INDEXOF_ID_IN_STATUSPACKET;
+        public const int IndexOfLength = C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET;
+        public const int IndexOfInstructionError = C_DynAdd.INDEXOF_ID_IN_STATUSPACKET;
+        public const int IndexOfFirstParam = C_DynAdd.INDEXOF_FIRSTPARAM_IN_STATUSPACKET;
+    }
+
+    public abstract class C_Packet
     {
         private byte idByte;
         private byte lengthByte; //  The length is calculated as “the number of Parameters (N) + 2”
         //private byte lengthByteReceived;
+        private e_cmdEcho echo;
         
         private byte instructionByte; // instruction
         private List<byte> par; // parameters
@@ -22,14 +43,12 @@ namespace EyeOut
         private int packetNumOfBytes;
 
         private const int maxParameters = C_DynAdd.MAX_PARAMETERS;
-
-        private static const int PacketLengthAddition = C_DynAdd.SIZEOF_PACKETSTART + C_DynAdd.SIZEOF_ID +
-             C_DynAdd.SIZEOF_LENGTH_BYTE + C_DynAdd.SIZEOF_INSTRUCTION + C_DynAdd.SIZEOF_CHECKSUM;
         
-        private static const int IndexOfId = C_DynAdd.INDEXOF_ID_IN_INSTRUCTIONPACKET;
-        private static const int IndexOfLength = C_DynAdd.INDEXOF_LENGTH_IN_INSTRUCTIONPACKET;
-        private static const int IndexOfInstruction = C_DynAdd.INDEXOF_INSTRUCTION_IN_INSTRUCTIONPACKET;
-        private static const int IndexOfFirstParam = C_DynAdd.INDEXOF_FIRSTPARAM_IN_INSTRUCTIONPACKET;
+        public int PacketLengthAddition;
+        public int IndexOfId;
+        public int IndexOfLength;
+        public int IndexOfInstructionError;
+        public int IndexOfFirstParam;
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properties
@@ -39,11 +58,12 @@ namespace EyeOut
             get { return idByte; }
             set { idByte = value; }
         }
-        public byte LengthByteReceived
-        {
-            get { return lengthByteReceived; }
-            set { lengthByteReceived = value; }
-        }
+        
+        //public byte LengthByteReceived
+        //{
+        //    get { return lengthByteReceived; }
+        //    set { lengthByteReceived = value; }
+        //}
         public byte CheckSumByte
         {
             get { return checkSumByte; }
@@ -77,6 +97,10 @@ namespace EyeOut
             {
                 return CREATE_instructionPacket_list();
             }
+            set
+            {
+                PacketBytes = value.ToArray();
+            }
         }
         public byte[] PacketBytes // returns whole cmd
         {
@@ -86,7 +110,7 @@ namespace EyeOut
             }
             set
             {
-                C_InstructionPacket pack;
+                C_Packet pack;
                 try
                 {
                     // parse byte array into individual parameters
@@ -101,7 +125,8 @@ namespace EyeOut
                     return;
                 }
                 
-                this = new C_InstructionPacket(pack); // how to asign
+                SET_this(pack)
+                this = new C_Packet(pack); // how to asign
             }
         }
 
@@ -121,12 +146,12 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region constructor
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public C_InstructionPacket()
+        public C_Packet()
         {
             idByte = 0;
             par = new List<byte>();
         }
-        public C_InstructionPacket(C_Motor mot, List<byte> _par)
+        public C_Packet(C_Motor mot, List<byte> _par)
         {
             idByte = mot.id;
             //mot.motorEcho
@@ -134,31 +159,31 @@ namespace EyeOut
             Par = _par;
         }
 
-        public C_InstructionPacket(C_Motor mot, List<object> _par)
+        public C_Packet(C_Motor mot, List<object> _par)
         {
             idByte = mot.id;
             // like create_cmdFromInner -> possible byte arrays & bytes in list
             //par = _par;
         }
         
-        public C_InstructionPacket(byte[] receivedBytes)
+        public C_Packet(byte[] receivedBytes)
         {
             PacketBytes = receivedBytes;
             //this = C_InstructionPacket(PARSE_byteInstructionPakcet(receivedBytes)); // HOW TO 
         }
         
-        public C_InstructionPacket(List<byte> receivedBytes)
+        public C_Packet(List<byte> lsReceivedBytes)
         {
-            PacketBytes = receivedBytes
+            lsPacketBytes = lsReceivedBytes;
             try
             {
-                C_InstructionPacket pack = PARSE_instructionPacket_list(receivedBytes);
+                C_Packet pack = PARSE_instructionPacket_list(lsReceivedBytes);
             }
             catch(
             //this = C_InstructionPacket(PARSE_byteInstructionPakcet(receivedBytes)); // HOW TO 
         }
 
-        public C_InstructionPacket(C_InstructionPacket pack)
+        public C_Packet(C_Packet pack)
         {
             IdByte = pack.idByte;
             lengthByte = pack.lengthByte;
@@ -222,7 +247,7 @@ namespace EyeOut
             // length byte
             cmd[IndexOfLength] = lengthByte;
             // instruction
-            cmd[IndexOfInstruction] = instructionByte;
+            cmd[IndexOfInstructionError] = instructionByte;
 
             // parameters
             q = IndexOfFirstParam;
@@ -236,12 +261,12 @@ namespace EyeOut
             return cmd;
         }
         
-        public C_InstructionPacket  PARSE_instructionPacket_list(List<byte> _pack)
+        public C_Packet  PARSE_instructionPacket_list(List<byte> _pack)
         {
             return PARSE_instructionPacket_byte(_pack.ToArray());
         }
     
-        public C_InstructionPacket PARSE_instructionPacket_byte(byte[] _packetBytes)
+        public C_Packet PARSE_instructionPacket_byte(byte[] _packetBytes)
         {
             // fill in the new instructionPacket:
             //      id | instruction/error | params  | 
@@ -253,30 +278,45 @@ namespace EyeOut
             //      ChecksumByte ?= ChecksumByteReceived
             // if anything goes wrong throw an exception
 
-            C_InstructionPacket pack = new C_InstructionPacket();
+            C_Packet pack;
+            if( this.Equals(new C_InstructionPacket()))
+            {
+                pack = new C_InstructionPacket();
+            }
+            else if(this.Equals(new C_StatusPacket()))
+            {
+                pack = new C_StatusPacket();
+            }
+
             int IndexOfCheckSum = _packetBytes.Length - 1;
 
             // fill in instructionByte
-            pack.instructionByte = _packetBytes[IndexOfInstruction];
+            pack.instructionByte = _packetBytes[pack.IndexOfInstructionError];
             // fill in id
-            pack.idByte = _packetBytes[IndexOfInstruction];
+            pack.idByte = _packetBytes[pack.IndexOfInstructionError];
             // fill in params (from const to length (checksum))
             for(int q = IndexOfFirstParam; q < IndexOfCheckSum; q++)
             {
                 pack.Par.Add(_packetBytes[q]);
             }
             
-            if(pack.lengthByte != _packetBytes[IndexOfLength])
+            if(pack.lengthByte != _packetBytes[pack.IndexOfLength])
             {
                 // bad - but should never happen 
                 // as the length byte directly creates the length of the byte array 
                 // in the serial read function
-                throw new Exception("bad"
+                throw new Exception( String.Format(
+                    "The LENGTH_BYTE counted from PACKET bytes =[{0}] is different from the value of LENGTH_BYTE =[{1}] received in the PACKET.",
+                    pack.lengthByte, _packetBytes[pack.IndexOfLength]
+                    ));
             }
             
             if(pack.CheckSumByte != _packetBytes[IndexOfCheckSum])
             {
-                // bad
+                throw new Exception( String.Format(
+                    "The CHECKSUM_BYTE counted from PACKET bytes =[{0}] is different from the value of CHECKSUM_BYTE =[{1}] received in the PACKET.",
+                    pack.CheckSumByte, _packetBytes[IndexOfCheckSum]
+                    ));
             }
 
             /*

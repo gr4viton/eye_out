@@ -35,7 +35,7 @@ namespace EyeOut
         public static int i_readBuff = 0;
         public static Byte this_byte;
 
-        public static C_InstructionPacket received;
+        public static C_Packet received;
         public static List<byte> receivedBytes;
         public static int i_receivedByte;
 
@@ -129,7 +129,7 @@ namespace EyeOut
             catch (Exception ex)
             {
                 LOG("Port could not be opened");
-                LOG_err(ex); 
+                LOG_ex(ex); 
                 //SET_state(E_GUI_MainState.error);
                 C_State.Spi = e_stateSPI.disconnected;
                 return false;
@@ -316,25 +316,23 @@ namespace EyeOut
                             // all the bytes of the packet are stored in the readBuff
 
                             // just get the LENGTH_BYTE to find out on which byte the packet ends
-                            if(i_receivedByte == C_DynAdd.INDEXOF_LENGTH_BYTE_IN_STATUSPACKET)
+                            if(i_receivedByte == C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET)
                             {
                                     // this_byte = LENGTH_BYTE = NParams + 2
                                     // packetNumOfBytes = PACKETSTART[2] + ID + Length + Error + Nparam + CheckSum = NParams + 6
                                     packetNumOfBytes = (int)this_byte + 4;
-                                    receivedBytes = new List<byte>(packetNumOfBytes);
 
-                                    // fill it backwards
-                                    receivedBytes[2] = readBuff[i_readBuff-1]
                                     
                             }
                             if(i_receivedByte == packetNumOfBytes) 
                             {
-                                // this is the last received byte from this packet
+                                // this_byte is the last received byte from this packet
                                 INCOMING_PACKET = false; // other bytes would not make sense in context of packets with defined length
                                 
                                 if(echo == e_cmdEcho.echo)
                                 {
-                                    received = new C_InstructionPacket(receivedBytes);
+                                    // its instruction packet echo
+                                    received = new C_Packet(receivedBytes);
                                 }
                                 else if(echo > e_cmdEcho.echo)
                                 {
