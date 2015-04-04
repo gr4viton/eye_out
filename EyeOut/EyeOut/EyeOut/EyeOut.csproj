@@ -130,6 +130,7 @@
     <Compile Include="about\Main_About.cs" />
     <Compile Include="mot\C_Motor_ORDER.cs" />
     <Compile Include="mot\C_EulerAngles.cs" />
+    <Compile Include="mot\C_Packet.cs" />
     <Compile Include="ocu_and_TP\C_Telepresence_TEXT_d3d9.cs" />
     <Compile Include="ocu_and_TP\C_Telepresence_TEXT_d3d10.cs" />
     <Compile Include="ocu_and_TP\C_Telepresence_INIT.cs" />

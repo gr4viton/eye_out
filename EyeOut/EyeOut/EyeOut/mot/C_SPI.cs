@@ -35,6 +35,10 @@ namespace EyeOut
         public static int i_readBuff = 0;
         public static Byte this_byte;
 
+        public static C_InstructionPacket received;
+        public static List<byte> receivedBytes;
+        public static int i_receivedByte;
+
         public static Byte[] curCmd;
         public static int i_curCmd;
         public static Byte[] lastCmd;
@@ -43,13 +47,14 @@ namespace EyeOut
         static int counter_openConnection_default = 10; // try to open connection x-times
 
         // const!?
+        public static int packetNumOfBytes; // number of bytes in received packet - including PACKETSTART bytes
         public static int i_cmdId = 0;     // = first byte in status packet (not counting 0xff 0xff)
         public static int i_cmdError = 2;  // = third byte in status packet (not counting 0xff 0xff)
 
         public static Byte curCmd_id;
         public static Byte curCmd_len;
 
-        public static bool START_NEW_MSG = false;
+        public static bool INCOMING_PACKET = false;
 
         public static int timeoutExceptionPeriod = 10;
         // make it into HASHTABLE
@@ -228,7 +233,7 @@ namespace EyeOut
             // catch if response was A-OK
             if (e.Error != null)
             {
-                LOG_err(e.Error);
+                LOG_ex(e.Error);
                 //LOG_err(String.Format("Motor id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, id));
                 //ie Helpers.HandleCOMException(e.Error);
             }
@@ -303,21 +308,62 @@ namespace EyeOut
                     {
                         this_byte = (Byte)C_SPI.spi.ReadByte();
                         readBuff[i_readBuff] = this_byte;
-                        if (START_NEW_MSG == true)
+
+                        if (INCOMING_PACKET == true)
                         {
+                            // we already have PACKETSTART bytes filled in
+                            receivedBytes.Add(this_byte);
+                            // all the bytes of the packet are stored in the readBuff
+
+                            // just get the LENGTH_BYTE to find out on which byte the packet ends
+                            if(i_receivedByte == C_DynAdd.INDEXOF_LENGTH_BYTE_IN_STATUSPACKET)
+                            {
+                                    // this_byte = LENGTH_BYTE = NParams + 2
+                                    // packetNumOfBytes = PACKETSTART[2] + ID + Length + Error + Nparam + CheckSum = NParams + 6
+                                    packetNumOfBytes = (int)this_byte + 4;
+                                    receivedBytes = new List<byte>(packetNumOfBytes);
+
+                                    // fill it backwards
+                                    receivedBytes[2] = readBuff[i_readBuff-1]
+                                    
+                            }
+                            if(i_receivedByte == packetNumOfBytes) 
+                            {
+                                // this is the last received byte from this packet
+                                INCOMING_PACKET = false; // other bytes would not make sense in context of packets with defined length
+                                
+                                if(echo == e_cmdEcho.echo)
+                                {
+                                    received = new C_InstructionPacket(receivedBytes);
+                                }
+                                else if(echo > e_cmdEcho.echo)
+                                {
+                                    // its status packet
+                                    //received = new C_StatusPacket(receivedBytes);
+                                }
+                            }
+
+                            
+                            i_receivedByte++;
+
                             // message bytes after C_DynAdd.MSG_START was detected
                             switch (i_curCmd) // byte index in current cmd
                             {
-                                case (0): // as the C_DynAdd.MSG_START of each message are cutted away
-                                    curCmd_id = this_byte;
+                                case (0):  // ID
+                                    received.IdByte = this_byte; // as the C_DynAdd.MSG_START of each message are cutted away
                                     break;
-                                case (1):
-                                    curCmd_len = this_byte; // lengthe of current cmd
+                                case (1): // LENGTH_BYTE 
+                                    
+                                    // as the C_DynAdd.MSG_START of each message are cutted away
+                                    // this_byte = LENGTH_BYTE = NParams + 2
+                                    // packetNumOfBytes = PACKETSTART[2] + ID + Length + Error + Nparam + CheckSum = NParams + 6
+                                    packetNumOfBytes = (int)this_byte + 4;
+
                                     // len = Nparam+2   = Nparam + Error + Length
-                                    // len + 1          = Nparam + Error + Length + ID 
-                                    curCmd = new Byte[curCmd_len + 1];
-                                    curCmd[0] = curCmd_id; // does not need it
-                                    curCmd[1] = curCmd_len;
+                                    // len + 1          = ID + Length + Error + Nparam + Error + + 
+                                    //curCmd = new Byte[curCmd_len + 1];
+                                    //curCmd[0] = curCmd_id; // does not need it
+                                    //curCmd[1] = curCmd_len;
 
                                     break;
                                 default: // [2] and next bytes = [2]ERROR, [3]PARAM1 .. [LEN]PARAMN, [LEN+1]CHECKSUM
@@ -328,8 +374,8 @@ namespace EyeOut
                                     }
                                     else
                                     {
-                                        // Checksum byte
-                                        START_NEW_MSG = false;
+                                        // this byte = Checksum byte 
+                                        INCOMING_PACKET = false; // so end of msg
                                         // check if it is the lastCmd echo from the motor
 
                                         if (curCmd.Length == lastCmd.Length - 3)
@@ -358,6 +404,8 @@ namespace EyeOut
                                         }
                                         else
                                         { // it's not the echo command of the last send
+                                            byte[] cmdWithoutChecksumByte = 
+                                            List<byte> cmdWithoutChecksumByte = new List<byte>(curCmd);
                                             SPI_CHECK_receivedCmd(curCmd, this_byte);
                                         }
                                     }
@@ -371,11 +419,19 @@ namespace EyeOut
                             // C_DynAdd.MSG_START detection
                             if ((readBuff[i_readBuff] == 0xFF) && (readBuff[i_readBuff - 1] == 0xFF))
                             {
-                                START_NEW_MSG = true;
+                                INCOMING_PACKET = true;
                                 // reset indexes and counters
                                 i_curCmd = 0;
                                 curCmd_len = 0;
                                 i_readBuff = 0;
+                                // reset receivedBytes buffer
+                                receivedBytes = new List<byte>();
+                                // insert the PACKETSTART sequence
+                                for( int q = 0; q< C_DynAdd.SIZEOF_PACKETSTART; q++)
+                                {
+                                    receivedBytes.Add(C_DynAdd.PACKETSTART[q]);
+                                }
+                                i_receivedByte = 2; // as we have already detected the PACKETSTART sequence
                             }
                             else
                             {
@@ -392,7 +448,7 @@ namespace EyeOut
                 }
                 catch (Exception ex)
                 {
-                    LOG_err(ex);
+                    LOG_ex(ex);
                     return false;
                 }
             }
@@ -433,7 +489,12 @@ namespace EyeOut
         }
 
 
-        public static void LOG_err(Exception ex)
+        public static void LOG_err(string _msg)
+        {
+            C_Logger.Instance.LOG_err(e_LogMsgSource.spi, _msg);
+        }
+
+        public static void LOG_ex(Exception ex)
         {
             string msg = "Catched exception = " + ex.Message; 
             C_Logger.Instance.LOG_err(e_LogMsgSource.spi, msg);
@@ -484,25 +545,25 @@ namespace EyeOut
         #endregion LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        private static void SPI_CHECK_receivedCmd(Byte[] cmd, Byte rec_checkSum)
+        private static void SPI_CHECK_receivedCmd(Byte[] cmdWithoutChecksumByte, Byte rec_checkSum)
         {
             // check for [checksum error] and cmd [error byte] sub-bites disambiguation
-            Byte calc_checkSum = C_CheckSum.GET_checkSum(cmd);
+            Byte calc_checkSum = C_CheckSum.GET_checkSum(cmdWithoutChecksumByte);
             if (C_CheckSum.CHECK_checkSum(calc_checkSum, rec_checkSum))
             //if( calc_check == 0 )
             {
-                if (cmd[i_cmdError] == 0)
+                if (cmdWithoutChecksumByte[i_cmdError] == 0)
                     // no error
-                    LOG_cmd(cmd, e_cmd.received);
+                    LOG_cmd(cmdWithoutChecksumByte, e_cmd.received);
                 else
                 {
-                    LOG_cmd(cmd, e_cmd.receivedWithError);
-                    LOG_cmdError(cmd[i_cmdId], cmd[i_cmdError]);
+                    LOG_cmd(cmdWithoutChecksumByte, e_cmd.receivedWithError);
+                    LOG_cmdError(cmdWithoutChecksumByte[i_cmdId], cmdWithoutChecksumByte[i_cmdError]);
                 }
             }
             else
             {
-                LOG_cmd(cmd, e_cmd.receivedCheckNot);
+                LOG_cmd(cmdWithoutChecksumByte, e_cmd.receivedCheckNot);
                 LOG(String.Format("CheckSumGot != CheckSumCounted :: {0} != {1}", (Byte)rec_checkSum, (Byte)calc_checkSum));
                 //LOG_msgAppendLine(String.Format("CheckSumGot = {0} ", (Byte)calc_check));
             }
