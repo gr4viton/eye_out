@@ -17,7 +17,8 @@ namespace EyeOut
         {
             get
             {
-                return GET_M(e_rot.yaw);
+                //return GET_M(e_rot.yaw);
+                return this[(int)e_rot.yaw];
             }
             set
             {
@@ -28,7 +29,8 @@ namespace EyeOut
         {
             get
             {
-                return GET_M(e_rot.pitch);
+                //return GET_M(e_rot.pitch);
+                return this[(int)e_rot.pitch];
             }
             set
             {
@@ -39,7 +41,8 @@ namespace EyeOut
         {
             get
             {
-                return GET_M(e_rot.roll);
+                //return GET_M(e_rot.roll);
+                return this[(int)e_rot.roll];
             }
             set
             {
@@ -59,14 +62,13 @@ namespace EyeOut
         }
         public C_Motor GET_M(e_rot rot)
         {
-            //return (this[(int)rot] as C_Motor);
-            return this[(int)rot] ;
+            return (this[(int)rot] as C_Motor);
         }
         public void SET_M(e_rot rot, C_Motor _mot)
         {
             if (GET_M(rot) != null) // is already initialized
             {
-                this[(int)e_rot.yaw] = _mot;
+                this[(int)rot] = _mot;
             }
             //else
             //{

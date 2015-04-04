@@ -64,13 +64,12 @@ namespace EyeOut
             motorEcho = e_cmdEchoType.echoLast;
         }
         public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed) 
-            : this(_id)
         {
             id = _id;
             angle = _angle;
             speed = _speed;
-            angleActual = angle;
-            speedActual = speed;
+            angleActual = new C_Value();
+            speedActual = new C_Value();
 
             rotMotor = _rot;
             switch(rotMotor)

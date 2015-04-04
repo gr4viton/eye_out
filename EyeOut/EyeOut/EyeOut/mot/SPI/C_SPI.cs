@@ -207,8 +207,11 @@ namespace EyeOut
 
             lock (spi_locker)
             {
-                spi.DiscardInBuffer();
-                spi.DiscardOutBuffer();
+                if (spi.IsOpen == true)
+                {
+                    spi.DiscardInBuffer();
+                    spi.DiscardOutBuffer();
+                }
                 lock (queue_locker)
                 {
                     if (queueData.Count != 0)
