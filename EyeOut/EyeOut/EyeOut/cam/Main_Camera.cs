@@ -23,7 +23,6 @@ using Emgu.Util;
 //DiresctShow
 using DirectShowLib; // search for videosources
 
-
 using System.Collections.ObjectModel; // ObservableCollection
 using System.Windows.Data; //CollectionViewSource
 
@@ -54,7 +53,6 @@ namespace EyeOut
             timCam.Interval = new TimeSpan(0, 0, 0, 0, 1);
             timCam.Start();
         }
-
         
         void timCam_Tick(object sender, EventArgs e)
         {
@@ -133,9 +131,7 @@ namespace EyeOut
                     new C_VideoDevice(i, _SystemCamereas[i].Name, _SystemCamereas[i].ClassID)
                     );
                 camImages.Add(new System.Windows.Controls.Image());
-                
-                
-                //lsCams.Items.Add(C_Camera.camList[i].ToString()); // --> will be done through binding
+                //lsCams.Items.Add(C_Camera.camList[i].ToString()); // --> can be done through binding too
             }
 
             // load up cameras
@@ -169,9 +165,7 @@ namespace EyeOut
             timCam.Stop();
             INIT_allSources();
         }
-
-
-
+        
         private void UPDATE_spCamPreview()
         {
             spCamPreview.Children.Clear();

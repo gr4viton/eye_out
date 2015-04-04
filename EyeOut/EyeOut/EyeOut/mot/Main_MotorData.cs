@@ -16,6 +16,9 @@ using System.Windows.Controls; // checkbox
 using System.Windows.Input; // GUI eventArgs
 using System.Windows.Threading; // dispatcherTimer
 
+
+using System.Runtime.InteropServices;
+
 namespace EyeOut
 {
     /// <summary>
@@ -24,9 +27,10 @@ namespace EyeOut
     public partial class MainWindow : Window
     {
         // dgMotorData
+        public DispatcherTimer timMotorDataRefresh;
+        //public event
         public ObservableCollection<C_MotorDataRow> motorData;
         public object dgMotorData_lock;
-        public DispatcherTimer timMotorDataRefresh;
 
         private void INIT_dgMotorData()
         {
@@ -45,10 +49,12 @@ namespace EyeOut
         public void INIT_timMotorDataRefresh()
         {
             //timMotorDataRefresh = new DispatcherTimer();
-            timMotorDataRefresh = new DispatcherTimer(
-                DispatcherPriority.Background, Application.Current.Dispatcher);
+            timMotorDataRefresh = new DispatcherTimer();
+                //DispatcherPriority.Background, Application.Current.Dispatcher);
             timMotorDataRefresh.Tick += new EventHandler(timMotorDataRefresh_Tick);
-            timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 100);
+            timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            timMotorDataRefresh.Start();
+
         }
 
         private void timMotorDataRefresh_Tick(object sender, EventArgs e)
