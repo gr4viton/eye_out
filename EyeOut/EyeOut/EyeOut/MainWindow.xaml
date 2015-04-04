@@ -10,7 +10,8 @@
         
         Closing="Window_Closing" 
         Icon="Content\pic\eyeout.png"
-        Title="MainWindow" Height="700" Width="1000"
+        Title="EyeOut Telepresence 2015, Daniel Davidek" Height="730" Width="1000"
+        Top="0" Left="200"
         >
     <!--Closed="Window_Closed"-->
 

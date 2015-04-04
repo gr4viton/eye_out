@@ -38,7 +38,7 @@ namespace EyeOut
         public double lastSend_angle;
         public double lastSend_speed;
 
-        public e_cmdEcho motorEcho;
+        public e_cmdEchoType motorEcho;
 
         // cmd examples
         public static List<C_cmdin> cmdinEx;
@@ -56,7 +56,7 @@ namespace EyeOut
             angle = new C_Value();
             speed = new C_Value();
             motorLog = e_LogMsgSource.mot;
-            motorEcho = e_cmdEcho.echo;
+            motorEcho = e_cmdEchoType.echoLast;
         }
 
         public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed)
@@ -84,7 +84,7 @@ namespace EyeOut
             {
                 INIT_cmdinEx();
             }
-            motorEcho = e_cmdEcho.echo;
+            motorEcho = e_cmdEchoType.echoLast;
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properties
@@ -159,14 +159,14 @@ namespace EyeOut
             SEND_cmd(motorEcho, cmd);
         }
 
-        public void SEND_cmd(e_cmdEcho echo, byte[] cmd)
+        public void SEND_cmd(e_cmdEchoType echo, byte[] cmd)
         {
             C_SPI.SEND_data(echo, cmd);
         }
 
         public static void SEND_BROADCAST_cmd(byte[] cmd)
         {
-            C_SPI.SEND_data(e_cmdEcho.noEcho, cmd);
+            C_SPI.SEND_data(e_cmdEchoType.noEcho, cmd);
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,14 +190,14 @@ namespace EyeOut
         }
 
         // one byte inner command with given echo
-        private void SEND_cmdInner(e_cmdEcho echo, Byte cmdInner)
+        private void SEND_cmdInner(e_cmdEchoType echo, Byte cmdInner)
         {
             Byte[] bys_inner = new Byte[1] { cmdInner };
             SEND_cmd(echo, C_Motor.CREATE_cmdFromCmdInner(bys_inner, id));
         }
 
         // command with given echo
-        private void SEND_cmdInner(e_cmdEcho echo, Byte[] cmdInner)
+        private void SEND_cmdInner(e_cmdEchoType echo, Byte[] cmdInner)
         {
             SEND_cmd(echo, C_Motor.CREATE_cmdFromCmdInner(cmdInner, id));
         }

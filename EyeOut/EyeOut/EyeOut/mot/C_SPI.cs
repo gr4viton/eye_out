@@ -35,7 +35,8 @@ namespace EyeOut
         public static int i_readBuff = 0;
         public static Byte this_byte;
 
-        public static C_Packet received;
+        public static C_Packet packetSent;
+        public static C_Packet packetReceived;
         public static List<byte> receivedBytes;
         public static int i_receivedByte;
 
@@ -95,6 +96,7 @@ namespace EyeOut
             // when I sent some cmd -> I call C_SPI.READ_cmd() afterwards if I want to read some echo or response
             //spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
 
+            
             queueData = new Queue<byte[]>();
 
             
@@ -180,7 +182,7 @@ namespace EyeOut
         //    SEND_data(e_cmdEcho.noEcho, data);
         //}
        
-        public static void SEND_data(e_cmdEcho echo, byte[] data)
+        public static void SEND_data(e_cmdEchoType echo, byte[] data)
         {
             QUEUE_data(data);
 
@@ -208,7 +210,12 @@ namespace EyeOut
                 {
                     if (queueData.Count != 0)
                     {
-                        e.Result = C_SPI.WriteData(queueData.Dequeue());
+                        if (C_SPI.WriteData(queueData.Dequeue()) == false)
+                        {
+                            LOG_err(string.Format(
+                                "Cannot open the serial port. Tried [{0}]-times", counter_openConnection_default
+                                ));
+                        }
                     }
                     else
                     {
@@ -218,8 +225,8 @@ namespace EyeOut
 #endif
                     }
                 }
-                e_cmdEcho echo = (e_cmdEcho)e.Argument;
-                if (echo != e_cmdEcho.noEcho)
+                e_cmdEchoType echo = (e_cmdEchoType)e.Argument;
+                if (echo != e_cmdEchoType.noEcho)
                 {
                     // read out echo
                     READ_cmd(echo);
@@ -234,16 +241,10 @@ namespace EyeOut
             if (e.Error != null)
             {
                 LOG_ex(e.Error);
-                //LOG_err(String.Format("Motor id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, id));
-                //ie Helpers.HandleCOMException(e.Error);
             }
             else
             {
                 //e.Result = "tocovrati writeData";
-                //MyResultObject result = (MyResultObject)e.Result;
-
-                //LOG("DATA SENT");
-                //var results = e.Result as List<object>;
             }
         }
 
@@ -255,10 +256,9 @@ namespace EyeOut
                 if (spi.IsOpen)
                 {
                     WriteSerialPort(data);
-                    //SPI.Send(cmd);
+                    packetSent = new C_InstructionPacket(data);
 
                     return true;
-                    //responseBuffer = ReadSerialPort(8);
                 }
                 else
                 {
@@ -266,7 +266,7 @@ namespace EyeOut
                 }
                 counter_openConnection--;
             }
-            return false; // should never run as far as to this line
+            return false; 
         }
 
         private static void WriteSerialPort(byte[] data)
@@ -291,7 +291,8 @@ namespace EyeOut
         #region Reading
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public static bool READ_cmd(e_cmdEcho echo)
+        public static bool echoProcessed;
+        public static bool READ_cmd(e_cmdEchoType echo)
         {
             // this function tries to read echo / return message of the motor after sending [lastSentCmd]
 
@@ -304,6 +305,9 @@ namespace EyeOut
             {
                 try
                 {
+                    receivedBytes = new List<byte>();
+                    echoProcessed = false;
+
                     while (0 != C_SPI.spi.BytesToRead)
                     {
                         this_byte = (Byte)C_SPI.spi.ReadByte();
@@ -324,92 +328,40 @@ namespace EyeOut
 
                                     
                             }
-                            if(i_receivedByte == packetNumOfBytes) 
+                            if(i_receivedByte == packetNumOfBytes-1) 
                             {
                                 // this_byte is the last received byte from this packet
                                 INCOMING_PACKET = false; // other bytes would not make sense in context of packets with defined length
-                                
-                                if(echo == e_cmdEcho.echo)
+                                LOG_cmd(receivedBytes.ToArray(), e_cmd.received);
+
+                                if (echoProcessed == false)
                                 {
-                                    // its instruction packet echo
-                                    received = new C_Packet(receivedBytes);
+                                    if(echo == e_cmdEchoType.echoLast)
+                                    {
+                                    
+                                        // it should be last instruction packet echo
+                                        packetReceived = new C_InstructionPacket(receivedBytes);
+                                        if (packetReceived == packetSent)
+                                        {
+                                            C_SPI.LOG("Echo confirmation");
+                                            // and reset last Cmd in the case the next Status Msg is the same as the command
+                                            //lastCmd = new Byte[0];
+                                        }
+                                        echoProcessed = true;
+                                    }
                                 }
-                                else if(echo > e_cmdEcho.echo)
+                                else if(echo > e_cmdEchoType.echoLast)
                                 {
                                     // its status packet
-                                    //received = new C_StatusPacket(receivedBytes);
+                                    packetReceived = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
+                                    C_StatusPacket staPack = (C_StatusPacket)packetReceived;
+                                    staPack.PROCESS(echo);
                                 }
+
                             }
 
-                            
                             i_receivedByte++;
 
-                            // message bytes after C_DynAdd.MSG_START was detected
-                            switch (i_curCmd) // byte index in current cmd
-                            {
-                                case (0):  // ID
-                                    received.IdByte = this_byte; // as the C_DynAdd.MSG_START of each message are cutted away
-                                    break;
-                                case (1): // LENGTH_BYTE 
-                                    
-                                    // as the C_DynAdd.MSG_START of each message are cutted away
-                                    // this_byte = LENGTH_BYTE = NParams + 2
-                                    // packetNumOfBytes = PACKETSTART[2] + ID + Length + Error + Nparam + CheckSum = NParams + 6
-                                    packetNumOfBytes = (int)this_byte + 4;
-
-                                    // len = Nparam+2   = Nparam + Error + Length
-                                    // len + 1          = ID + Length + Error + Nparam + Error + + 
-                                    //curCmd = new Byte[curCmd_len + 1];
-                                    //curCmd[0] = curCmd_id; // does not need it
-                                    //curCmd[1] = curCmd_len;
-
-                                    break;
-                                default: // [2] and next bytes = [2]ERROR, [3]PARAM1 .. [LEN]PARAMN, [LEN+1]CHECKSUM
-                                    if (i_curCmd <= curCmd_len)
-                                    {
-                                        // store bytes
-                                        curCmd[i_curCmd] = this_byte;
-                                    }
-                                    else
-                                    {
-                                        // this byte = Checksum byte 
-                                        INCOMING_PACKET = false; // so end of msg
-                                        // check if it is the lastCmd echo from the motor
-
-                                        if (curCmd.Length == lastCmd.Length - 3)
-                                        {
-                                            // the lenght is the same as the last sent lastCmd 
-                                            // curCmd is without [0xFF 0xFF] and without checksum = [-3]
-                                            int qmax = curCmd.Length;
-                                            bool the_same = true;
-                                            for (int q = 0; q < qmax; q++)
-                                            {
-                                                if (curCmd[q] != lastCmd[q + 2])
-                                                {
-                                                    the_same = false;
-                                                    break;
-                                                }
-                                            }
-                                            if (the_same == true)
-                                            {
-                                                // the recieved curCmd command is the same as the last sent lastCmd
-                                                // so print only Echo confirmation
-                                                LOG("Echo confirmation");
-                                                LOG_cmd(lastCmd, e_cmd.received);
-                                                // and reset last Cmd in the case the next Status Msg is the same as the command
-                                                lastCmd = new Byte[0];
-                                            }
-                                        }
-                                        else
-                                        { // it's not the echo command of the last send
-                                            byte[] cmdWithoutChecksumByte = 
-                                            List<byte> cmdWithoutChecksumByte = new List<byte>(curCmd);
-                                            SPI_CHECK_receivedCmd(curCmd, this_byte);
-                                        }
-                                    }
-                                    break;
-                            }
-                            i_curCmd++;
                         }
                         // not detected NEW message yet
                         if (i_readBuff > 0)
@@ -494,7 +446,7 @@ namespace EyeOut
 
         public static void LOG_ex(Exception ex)
         {
-            string msg = "Catched exception = " + ex.Message; 
+            string msg = "Catched exception: " + ex.Message; 
             C_Logger.Instance.LOG_err(e_LogMsgSource.spi, msg);
         }
 

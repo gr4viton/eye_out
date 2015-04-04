@@ -17,7 +17,7 @@ namespace EyeOut
     public sealed partial class C_DynAdd
     {
         // sizeof individual parts of packet (instruction and status
-        public const int SIZEOF_PACKETSTART = PACKETSTART.Length;
+        public const int SIZEOF_PACKETSTART = 2*sizeof(byte);
         public const int SIZEOF_ID = sizeof(byte);
         public const int SIZEOF_LENGTH = sizeof(byte);
         public const int SIZEOF_INSTRUCTION = sizeof(byte);

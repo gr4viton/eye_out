@@ -135,7 +135,7 @@ namespace EyeOut
                 
                 srchM.ORDER_ping();
 
-                if (C_SPI.READ_cmd()) 
+                if (C_SPI.READ_cmd(e_cmdEchoType.echoLast)) 
                 {
                     MessageBox.Show(id.ToString());
                 }

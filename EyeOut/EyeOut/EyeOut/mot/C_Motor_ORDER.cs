@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 namespace EyeOut
 {
     // decide if the sent command should produce any returned message
-    public enum e_cmdEcho
+    public enum e_cmdEchoType
     {
-        noEcho = 0, echo = 1, presentPosition, presentSpeed //, presentLoad , ...
-
+        noEcho = 0, echoLast = 1, presentPosition, presentSpeed //, presentLoad , ...
     }
     /// <summary>
     /// C_Motor - ORDERS etc.
@@ -152,7 +151,7 @@ namespace EyeOut
         public void SETUP_getPosition(byte INSTRUCTION_BYTE)
         {
             byte BYTE_LENGTH = 2;
-            SEND_cmdInner(e_cmdEcho.presentPosition,
+            SEND_cmdInner(e_cmdEchoType.presentPosition,
                 CREATE_cmdInnerFromBytes(new List<object> { 
                     INSTRUCTION_BYTE, C_DynAdd.PRESENT_POS_L, BYTE_LENGTH
                 }));
