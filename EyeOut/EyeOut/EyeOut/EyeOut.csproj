@@ -132,7 +132,7 @@
     <Compile Include="mot\C_MotorDataRow.cs" />
     <Compile Include="mot\C_Motor_ORDER.cs" />
     <Compile Include="mot\C_EulerAngles.cs" />
-    <Compile Include="mot\C_Packet.cs" />
+    <Compile Include="mot\SPI\C_Packet.cs" />
     <Compile Include="mot\Main_MotorData.cs" />
     <Compile Include="ocu_and_TP\C_Telepresence_TEXT_d3d9.cs" />
     <Compile Include="ocu_and_TP\C_Telepresence_TEXT_d3d10.cs" />

@@ -102,7 +102,7 @@ namespace EyeOut
                         SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speed.Dec_inRPM));
                         break;
                     case (e_motorDataType.speedPresent):
-                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speed.Dec_inRPM));
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speedActual.Dec_inRPM));
                         break;
                 }
             }

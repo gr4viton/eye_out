@@ -18,7 +18,7 @@ namespace EyeOut
     };
     enum e_cmd
     {
-        sent = 1, received, receivedCheckNot, receivedWithError
+        sent = 1, received, receivedEchoOf, receivedStatusPacket, receivedCheckNot, receivedWithError
     };
 
 
@@ -204,7 +204,6 @@ namespace EyeOut
 
         private static void workerSEND_DoWork(object sender, DoWorkEventArgs e)
         {
-
             lock (spi_locker)
             {
                 if (spi.IsOpen == true)
@@ -234,7 +233,12 @@ namespace EyeOut
                 e_cmdEchoType echo = (e_cmdEchoType)e.Argument;
                 if (echo != e_cmdEchoType.noEcho)
                 {
-                    TRY_READ_packet(echo);
+                    TRY_READ_packet(e_cmdEchoType.echoLast); // read echoLast
+                    if (echo > e_cmdEchoType.echoLast)
+                    {
+                        TRY_READ_packet(echo);
+                    }
+
                 }
             }
         }
@@ -365,25 +369,25 @@ namespace EyeOut
                                 {
                                     if(echo == e_cmdEchoType.echoLast)
                                     {
-                                    
                                         // it should be last instruction packet echo
                                         packetReceived = new C_InstructionPacket(receivedPacketBytes);
                                         if (packetReceived == packetSent)
                                         {
-                                            C_SPI.LOG("Echo confirmation");
-                                            LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
+                                            C_SPI.LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.receivedEchoOf);
+                                            //LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
                                             // and reset last Cmd in the case the next Status Msg is the same as the command
                                             //lastCmd = new Byte[0];
                                         }
                                         echoProcessed = true;
                                     }
-                                }
-                                else if(echo > e_cmdEchoType.echoLast)
-                                {
-                                    // its status packet
-                                    packetReceived = new C_StatusPacket(receivedPacketBytes); // constructor throws error if incosistent
-                                    C_StatusPacket staPack = (C_StatusPacket)packetReceived;
-                                    staPack.PROCESS(echo);
+                                    else if (echo > e_cmdEchoType.echoLast)
+                                    {
+                                        // its status packet
+                                        packetReceived = new C_StatusPacket(receivedPacketBytes); // constructor throws error if incosistent
+                                        C_StatusPacket staPack = (C_StatusPacket)packetReceived;
+                                        staPack.PROCESS(echo);
+                                        C_SPI.LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.receivedStatusPacket);
+                                    }
                                 }
                             }
                             i_receivedByte++;
@@ -496,6 +500,15 @@ namespace EyeOut
                     break;
                 case (e_cmd.received):
                     prefix = "Got:\t";
+                    LOG_got(hex);
+                    break;
+                case (e_cmd.receivedEchoOf):
+                    prefix = "Echo confirm:\t";
+                    LOG_got(hex);
+                    break;
+                case (e_cmd.
+                    receivedStatusPacket):
+                    prefix = "Got Status:\t";
                     LOG_got(hex);
                     break;
                 case (e_cmd.receivedCheckNot):

@@ -341,7 +341,11 @@
 
                                 <GroupBox Header="Individual motor data" Grid.Column="4">
                                     <StackPanel>
-                                        <ToggleButton x:Name="tbtMotorDataRefresh" Content="Refresh every 20ms" Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>
+                                        <ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
+                                                      IsChecked="True"
+                                                      Checked="tbtMotorDataRefresh_CheckedChanged"
+                                                      Unchecked="tbtMotorDataRefresh_CheckedChanged"/>
+                                                      <!--Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>-->
                                         <DataGrid
                                         x:Name="dgMotorData"
                                           DataContext="{StaticResource ItemCollectionViewSource_motorData}"

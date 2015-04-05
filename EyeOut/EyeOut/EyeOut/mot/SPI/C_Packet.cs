@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Linq; // SequenceEqual
+
 namespace EyeOut
 {
     public class C_InstructionPacket : C_Packet
@@ -100,8 +102,15 @@ namespace EyeOut
 
         protected const int maxParameters = C_DynAdd.MAX_PARAMETERS;
 
+        public static bool operator ==(C_Packet x, C_Packet y) 
+        {
+            return x.PacketBytes.SequenceEqual(y.PacketBytes);
+        }
 
-
+        public static bool operator !=(C_Packet x, C_Packet y)
+        {
+            return !(x.PacketBytes.SequenceEqual(y.PacketBytes));
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

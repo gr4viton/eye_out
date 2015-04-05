@@ -30,6 +30,9 @@ namespace EyeOut
         public DispatcherTimer timMotorDataRefresh;
         //public event
         public ObservableCollection<C_MotorDataRow> motorData;
+        
+        public static event EventHandler motorDataChanged;
+
         public object dgMotorData_lock;
 
         private void INIT_dgMotorData()
@@ -48,37 +51,58 @@ namespace EyeOut
 
         public void INIT_timMotorDataRefresh()
         {
-            //timMotorDataRefresh = new DispatcherTimer();
             timMotorDataRefresh = new DispatcherTimer();
-                //DispatcherPriority.Background, Application.Current.Dispatcher);
             timMotorDataRefresh.Tick += new EventHandler(timMotorDataRefresh_Tick);
             timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 100);
             timMotorDataRefresh.Start();
-
         }
-
+        
+        CollectionViewSource ItemCollectionViewSource_motorData;
         private void timMotorDataRefresh_Tick(object sender, EventArgs e)
         {
-            foreach (C_MotorDataRow row in motorData)
+            if(C_State.FURTHER(e_stateProg.initialized))
             {
-                row.REFRESH();
+                
+                foreach (C_MotorDataRow row in motorData)
+                {
+                    row.REFRESH();
+                }
+
+                // it does not change the datagrid if the motorData is not recreated
+                //motorData.
+                ItemCollectionViewSource_motorData.Source = new ObservableCollection<C_MotorDataRow>(motorData);
+                
+                // when binding is changing inner guts of dataGrid from different thread
+                //dgMotorData_lock = new object(); // lock for datagrid
+                //BindingOperations.EnableCollectionSynchronization(motorData, dgMotorData_lock); // for multi-thread updating 
+
+                //motorData = new ObservableCollection<C_MotorDataRow>();
+                //INIT_dgMotorData_binding();
+                /*
+                EventHandler handler = motorDataChanged;
+                if (handler != null)
+                    handler(null, EventArgs.Empty);*/
             }
         }
         private void INIT_dgMotorData_binding()
         {
             // binding
-            CollectionViewSource ItemCollectionViewSource_motorData;
+            //CollectionViewSource ItemCollectionViewSource_motorData;
             ItemCollectionViewSource_motorData = (CollectionViewSource)(FindResource("ItemCollectionViewSource_motorData"));
             ItemCollectionViewSource_motorData.Source = motorData;
 
+            
             // when binding is changing inner guts of dataGrid from different thread
             dgMotorData_lock = new object(); // lock for datagrid
-            BindingOperations.EnableCollectionSynchronization(motorData, dgMotorData_lock); // for multi-thread updating
+            BindingOperations.EnableCollectionSynchronization(motorData, dgMotorData_lock); // for multi-thread updating 
         }
 
-        private void tbtMotorDataRefresh_Checked(object sender, RoutedEventArgs e)
+        private void tbtMotorDataRefresh_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            timMotorDataRefresh.Start();
+            if (C_State.FURTHER(e_stateProg.initialized))
+            {
+                timMotorDataRefresh.IsEnabled = (bool)tbtMotorDataRefresh.IsChecked;
+            }
         }
 
         private void tbtMotorDataRefresh_Unchecked(object sender, RoutedEventArgs e)

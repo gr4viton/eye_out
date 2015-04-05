@@ -227,6 +227,8 @@ namespace EyeOut
             if (GET_cbSendValuesToMotor(rot).IsChecked == true)
             {
                 Ms.GET_M(rot).ORDER_move();
+                Ms.GET_M(rot).ORDER_getPosition();
+
             }
         }
 

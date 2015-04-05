@@ -487,23 +487,19 @@ namespace EyeOut
 
                 foreach (C_Motor mot in MainWindow.Ms)
                 {
-                    /*
-                    if (mot.rotationMotor == e_rot.pitch)
-                    {
-                        mot.angle.Dec_interval_piHalfPiHalf = yawPitchRoll[(int)mot.rotationMotor];
-                    }
-                    else
-                    {
-                        mot.angle.Dec_interval_piPi = yawPitchRoll[(int)mot.rotationMotor];
-                    }
-                    */
-                    //mot.angle.Dec_interval_piPi = yawPitchRoll[(int)mot.rotationMotor];
                     mot.angle.Dec_FromDefault = yawPitchRoll_d[(int)mot.rotMotor];
-
                     mot.speed.Dec = mot.speed.DecMax;
                     mot.REGISTER_move();
                 }
                 C_Motor.ORDER_ActionToAll();
+
+
+                MainWindow.Ms.Yaw.ORDER_getPosition();
+                
+                //foreach (C_Motor mot in MainWindow.Ms)
+                //{
+                //    mot.ORDER_getPosition();
+                //}
             }
         }
 
