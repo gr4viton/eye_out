@@ -11,11 +11,19 @@ namespace EyeOut
 
     public enum e_motorDataType
     {
+        // Wanted = value stored in C_motor
+        // Sent = Goal - sent into the Dynamixel Motor
+        // Actual = Present - received as actual Dynamixel Motor position
+
         // if not said otherwise the unit is degree for angle and RPM for speed
-        [Description("Goal angle")]
-        angleGoal = 0,
+        [Description("Wanted angle")]
+        angleWanted = 0,
+        [Description("Sent angle")]
+        angleGoal,
         [Description("Actual angle")]
         anglePresent,
+        [Description("Wanted speed")] 
+        speedWanted,
         [Description("Goal speed")]
         speedGoal,
         [Description("Actual speed")]

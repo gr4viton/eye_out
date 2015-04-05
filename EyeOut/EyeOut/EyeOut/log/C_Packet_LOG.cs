@@ -28,7 +28,7 @@ namespace EyeOut
             StringBuilder str = new StringBuilder();
             str.Append(string.Format(
                 "Sent Instruction packet!\tMotId[{0}]\tEcho[{1}]\tReturnPacket[{2}]",
-                packet.IdByte, packet.packetEcho, packet.packetReturn
+                packet.IdByte, packet.packetEcho, packet.statusType
                 ));
             LOG_packInstruct(str.ToString());
         }
@@ -38,7 +38,7 @@ namespace EyeOut
             StringBuilder str = new StringBuilder();
             str.Append(string.Format(
                 "Got Status packet!\tMotId[{0}]\tEcho[{1}]\tReturnPacket[{2}]",
-                packet.IdByte, packet.packetEcho, packet.packetReturn
+                packet.IdByte, packet.packetEcho, packet.statusType
                 ));
             LOG_packInstruct(str.ToString());
         }
@@ -97,7 +97,7 @@ namespace EyeOut
             return string.Format(
                 "MotId[{0}]\tMot[{1}]\tEcho[{2}]\tReturn[{3}]\tBytes[{4}]",
                 packet.IdByte, GET_rotMotorInfo(packet),
-                packet.packetEcho, packet.packetReturn,
+                packet.packetEcho, packet.statusType,
                 C_CONV.byteArray2strHex_space(packet.PacketBytes.ToArray())
                     );
         }

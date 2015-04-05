@@ -145,6 +145,16 @@ namespace EyeOut
             btnConnect.Content = "Connect Serial";
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnSendRawBytes_Click(object sender, RoutedEventArgs e)
+        {
+            C_Packet.SEND_packet(new C_Packet(C_CONV.strHex2byteArray(txRawBytes.Text, " ")));
+        }
+
 
 
 

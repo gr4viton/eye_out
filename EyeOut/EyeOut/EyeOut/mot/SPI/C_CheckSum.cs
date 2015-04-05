@@ -10,24 +10,26 @@ namespace EyeOut
 {
     public class C_CheckSum
     {
-        public static Byte GET_checkSum(Byte[] _data)
+        public static byte GET_checkSum(byte[] _data)
         {
             // data should not contain the checksum byte
-            Byte calc_check = 0x00;
+            byte calc_check = 0x00;
             unchecked // Let overflow occur without exceptions
             {
-                foreach (Byte ch in _data)
+                foreach (byte ch in _data)
                 {
                     calc_check += ch;
                 }
             }
-            calc_check = (Byte)~calc_check;
-            return calc_check;
+            calc_check = (byte)~calc_check;
+
+            //return calc_check;
+            return (byte)(calc_check-1);
         }
 
-        public static bool CHECK_checkSum(Byte check1, Byte check2)
+        public static bool CHECK_checkSum(byte check1, byte check2)
         {
-            return (Byte)check1 == (Byte)(check2);
+            return (byte)check1 == (byte)(check2);
         }
     }
 }

@@ -38,7 +38,8 @@ namespace EyeOut
         public double lastSend_angle;
         public double lastSend_speed;
 
-        public e_packetEcho motorEcho;
+        //public e_packetEcho motorEcho;
+        protected e_statusType statusType = e_statusType.noReturn;
 
         // cmd examples
         //public static List<C_cmdin> cmdinEx;
@@ -150,7 +151,9 @@ namespace EyeOut
                     cmdEx_str.Add(string.Format("{0} - {1}", name, strHex_concantenated));
 
                     // this can be added as a new constructor of C_Packet(mot, insAndPar)
-                    List<byte> insAndParams = C_CONV.stringOfBytes2listOfBytes(strHex_concantenated);
+                    List<byte> insAndParams = new List<byte>();
+                    //byte[] insAndParams = 
+                    insAndParams.AddRange(C_CONV.strHex2byteArray(strHex_concantenated));
                     C_Motor.cmdPackets.Add(
                         new C_Packet(
                             this, insAndParams[0],
@@ -169,6 +172,7 @@ namespace EyeOut
         
         public void SEND_example(int num)
         {
+
             C_Packet.SEND_packet(
                 new C_Packet(
                     this, cmdPackets[num].IdByte, cmdPackets[num].Par

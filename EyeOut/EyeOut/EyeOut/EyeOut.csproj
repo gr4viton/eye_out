@@ -147,7 +147,7 @@
     <Compile Include="mot\C_Motor.cs" />
     <Compile Include="mot\SPI\C_SPI.cs" />
     <Compile Include="log\Main_Logger.cs" />
-    <Compile Include="mot\C_CheckSum.cs" />
+    <Compile Include="mot\SPI\C_CheckSum.cs" />
     <Compile Include="other\C_Helpers.cs" />
     <Compile Include="mot\C_DynAdd.cs" />
     <Compile Include="MainWindow.xaml.cs">

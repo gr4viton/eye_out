@@ -4,24 +4,33 @@ using System.Linq; // SequenceEqual
 using System.Text;
 using System.Threading.Tasks;
 
+using System.ComponentModel; // description
 
 namespace EyeOut
 {
-    public enum e_packetReturn
+    public enum e_statusType
     {
         noReturn, presentPosition, presentSpeed //, presentLoad , ...
     }
 
-    // decide if the sent command should produce returning echo message
-    public enum e_packetEcho
-    {
-        noEcho = 0, echoLast = 1
-    }
+    //// decide if the sent command should produce returning echo message
+    //public enum e_packetEcho
+    //{
+    //    noEcho = 0, echoLast = 1
+    //}
 
     public enum e_packetType
     {
         echoOfInstructionPacket, statusPacket, instructionPacket
     }
+
+    public enum e_returnStatusLevel // address 16
+    {
+        [Description("0 No return against all instructions")] never = 0,
+        [Description("1 Retrun only for the READ_DATA command")] onRead = 1,
+        [Description("2 Return for all Instructions")] allways = 2,
+    }
+
     public class C_InstructionPacket : C_Packet
     {
         // new for hiding inherited acceptance
@@ -77,35 +86,6 @@ namespace EyeOut
         }
 
 
-        public void PROCESS(C_Packet packet)
-        {
-            byte[] _packetBytes = PacketBytes;
-
-            // error 
-            if (_packetBytes[IndexOfInstructionOrError] == 0)
-            {
-                // no error
-                C_SPI.LOG_cmd(_packetBytes, e_cmd.received);
-                PROCESS_statusPacket(packet);
-            }
-            else
-            {
-                C_SPI.LOG_cmd(_packetBytes, e_cmd.receivedWithError);
-                //C_SPI.LOG_cmdError(_packetBytes[IndexOfId], _packetBytes[IndexOfInstructionOrError]);
-            }
-        }
-
-        public void PROCESS_statusPacket(C_Packet packet)
-        {
-            // do something with it
-            switch (packet.PacketReturn)
-            {
-                case (e_packetReturn.presentPosition):
-                    //C_Value presentPosition = new C_Value(
-                    C_SPI.LOG(string.Format("Motor position = \t[{0:X} {1:X}]", this.Par[0], this.Par[1]));
-                    break;
-            }
-        }
     }
 
 
@@ -115,9 +95,11 @@ namespace EyeOut
         public e_rot rotMotor;
         protected byte idByte;
         protected byte lengthByte; //  The length is calculated as “the number of Parameters (N) + 2”
-        protected e_packetEcho packetEcho;
-        protected e_packetReturn packetReturn;
-        protected e_packetType packetType;
+        protected e_returnStatusLevel returnStatusLevel = e_returnStatusLevel.never;
+            
+        //protected e_packetEcho packetEcho = e_packetEcho.echoLast;
+        protected e_statusType statusType = e_statusType.noReturn;
+        protected e_packetType packetType = e_packetType.instructionPacket;
         
         protected byte instructionOrErrorByte; // instruction
         protected List<byte> par; // parameters
@@ -155,9 +137,9 @@ namespace EyeOut
         {
             get { return packetType; }
         }
-        public e_packetReturn PacketReturn
+        public e_statusType PacketReturn
         {
-            get { return packetReturn; }
+            get { return statusType; }
         }
         public byte CheckSumByte
         {
@@ -274,6 +256,12 @@ namespace EyeOut
         {
             get { return C_DynAdd.INDEXOF_FIRSTPARAM_IN_STATUSPACKET; }
         }
+        public virtual int IndexOfPacketStart
+        {
+            get { return C_DynAdd.INDEXOF_PACKETSTART_IN_STATUSPACKET; }
+        }
+        
+
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion virtual properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -291,7 +279,7 @@ namespace EyeOut
         {
             idByte = 0;
             packetEcho = e_packetEcho.echoLast;
-            packetReturn = e_packetReturn.noReturn;
+            statusType = e_statusType.noReturn;
             packetType = e_packetType.instructionPacket;
             par = new List<byte>();
 
@@ -395,7 +383,7 @@ namespace EyeOut
 
             int q = 0;
             // packet start
-            for (q = IndexOfFirstParam; q < C_DynAdd.SIZEOF_PACKETSTART; q++)
+            for (q = IndexOfPacketStart; q < C_DynAdd.SIZEOF_PACKETSTART; q++)
             {
                 _packetBytes[q] = C_DynAdd.PACKETSTART[q];
             }
@@ -418,8 +406,12 @@ namespace EyeOut
 
             if (forChecksum == true)
             {
+                /*
                 int from = C_DynAdd.INDEXOF_ID_IN_STATUSPACKET;
                 int count = packetNumOfBytes - C_DynAdd.SIZEOF_PACKETSTART - C_DynAdd.SIZEOF_CHECKSUM;
+                */
+                int from = 0;
+                int count = packetNumOfBytes - C_DynAdd.SIZEOF_CHECKSUM;
                 return (new ArraySegment<byte>(_packetBytes, from, count)).ToArray();
             }
             else
@@ -490,34 +482,34 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region static functions
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public static Byte[] CREATE_cmdFromCmdInner(Byte[] byCmdin, Byte id)
-        {
-            // Instruction Packet = from pc to servo
-            // OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 …PARAMETER N CHECK SUM 
-            // inner contains only these bytes:
-            // INSTRUCTION, PARAMETER_1, ..., PARAMETER_N
 
-            // this function adds first two startBytes [0xFF,0xFF], its id Byte, length Byte and Checksum Byte
+        //public static Byte[] CREATE_cmdFromCmdInner(Byte[] byCmdin, Byte id)
+        //{
+        //    // Instruction Packet = from pc to servo
+        //    // OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 …PARAMETER N CHECK SUM 
+        //    // inner contains only these bytes:
+        //    // INSTRUCTION, PARAMETER_1, ..., PARAMETER_N
 
-            // make it into ArrayList
-            Byte[] cmd = new Byte[5 + byCmdin.Length];
-            //ArrayList a_cmd = new ArrayList();
-            //a_cmd.Add({0xFF, 0xFF})
+        //    // this function adds first two startBytes [0xFF,0xFF], its id Byte, length Byte and Checksum Byte
 
-            //{ 0xFF, 0xFF, id, len, inner, 0x00 };
-            //{ 0   , 1   , 2 , 3  , 4...., last };
-            cmd[2] = id;
-            int q = 4;
-            foreach (Byte by in byCmdin)
-            {
-                cmd[q] = by;
-                q++;
-            }
-            cmd[3] = (Byte)(byCmdin.Length + 1); // = paramN+Instruction + 1 = paramN + 2 = len
-            cmd[q] = C_CheckSum.GET_checkSum(cmd);
-            cmd[0] = cmd[1] = 0xFF;
-            return cmd;
-        }
+        //    // make it into ArrayList
+        //    Byte[] cmd = new Byte[5 + byCmdin.Length];
+        //    //ArrayList a_cmd = new ArrayList();
+        //    //a_cmd.Add({0xFF, 0xFF})
+        //    //{ 0xFF, 0xFF, id, len, inner, 0x00 };
+        //    //{ 0   , 1   , 2 , 3  , 4...., last };
+        //    cmd[2] = id;
+        //    int q = 4;
+        //    foreach (Byte by in byCmdin)
+        //    {
+        //        cmd[q] = by;
+        //        q++;
+        //    }
+        //    cmd[3] = (Byte)(byCmdin.Length + 1); // = paramN+Instruction + 1 = paramN + 2 = len
+        //    cmd[q] = C_CheckSum.GET_checkSum(cmd);
+        //    cmd[0] = cmd[1] = 0xFF;
+        //    return cmd;
+        //}
 
 
 
@@ -533,6 +525,7 @@ namespace EyeOut
         {
             idByte = _mot.id;
             rotMotor = _mot.rotMotor;
+            returnStatusLevel = _mot.returnStatusLevel;
             instructionOrErrorByte = _instructionByte;
             Par_obj = _lsParameters;
         }
@@ -541,6 +534,7 @@ namespace EyeOut
         {
             idByte = _mot.id;
             rotMotor = _mot.rotMotor;
+            returnStatusLevel = _mot.returnStatusLevel;
             instructionOrErrorByte = _instructionByte;
             Par = _lsParameters;
         }
@@ -563,5 +557,157 @@ namespace EyeOut
         #endregion static functions
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+        public static bool IS_error(C_Packet received, List<byte> receivedBytes)
+        {
+            if (receivedBytes[C_DynAdd.INDEXOF_ERROR_IN_STATUSPACKET] != 0) // instead of echo ther may be error returned
+            {
+                // it is error - log error and dont process anything else as it won't come
+                C_Packet.LOG_errorByte(received);
+                return true;
+            }
+            return false;
+        }
+
+        public static void PROCESS_echo(C_Packet received, C_Packet lastSent)
+        {
+            // it should be last instruction packet echo
+            if (received == lastSent)
+            {
+                C_SPI.LOG_cmd(received.PacketBytes.ToArray(), e_cmd.receivedEchoOf);
+                //LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
+            }
+            else
+            {
+                throw new Exception(string.Format(
+                    "The echo StatusPacket is not the same as the last sent InstructionPacket!\nRec:{0}\nSent:{1}",
+                    GET_packetInfo(received),
+                    GET_packetInfo(lastSent)
+                    ));
+            }
+        }
+        public static bool IS_statusPacketFollowing(C_Packet lastSent)
+        {
+            if(
+                (lastSent.idByte == C_DynAdd.ID_BROADCAST) // never no matter of returnStatusLevel
+                ||
+                (lastSent.returnStatusLevel == e_returnStatusLevel.never) 
+                )
+            {
+                return false;
+            }
+            else if (
+                (lastSent.instructionOrErrorByte == C_DynAdd.INS_PING)
+                ||
+                (lastSent.returnStatusLevel == e_returnStatusLevel.allways) // always no matter of returnStatusLevel
+                )
+            {
+                return true;
+            }
+            else 
+            {
+                // (lastSent.returnStatusLevel == e_returnStatusLevel.onRead)
+                if(lastSent.instructionOrErrorByte == C_DynAdd.INS_READ)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        // returns false when you dont have to continue
+        public static void PROCESS_receivedPacket(C_Packet lastSent, List<byte> receivedBytes, int numPacket)
+        {
+            // we have received whole message
+            C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
+
+            if (lastSent.packetEcho == e_packetEcho.echoLast) // echo is turned on
+            {
+                if (IS_statusPacketFollowing(lastSent) == true) // writing instruction
+                {
+                    if (numPacket == 0)
+                    { 
+                        // it is echo or error
+                        if (IS_error(received, receivedBytes) == false)
+                        {
+                            // it is echo
+                            PROCESS_echo(received, lastSent);
+                        }
+                    }
+                }
+
+                if (lastSent.instructionOrErrorByte == C_DynAdd.INS_READ) // writing instruction
+                {
+                    if (numPacket == 0)
+                    {
+                        // it is echo or error
+                        if (IS_error(received, receivedBytes) == false)
+                        {
+                            // it is echo
+                            PROCESS_echo(received, lastSent);
+                        }
+                    }
+                }
+            }
+
+            // if the lastSent is INS_WRITE
+            // -> write to motor
+            // if echo is turned on
+            //    return echo / return error
+            // elseif echo is turned off
+            //    no return / return error
+
+            // if the lastSent is INS_READ
+            // if echo is turned on
+            //    return echo, return status 
+            //    / return error, return nothing
+            // elseif echo is turned off
+            //    return status / return error
+
+
+            // is it error?
+            // - log echo
+            // should it be echo?
+            // - is it echo? 
+            // -- log echo
+            // should it be status?
+            // - is it status?
+            // -- process status
+            // -- log status
+
+            if (echoProcessed == false) 
+            {
+                // echo == e_packetEcho.echoLast
+                
+                
+            }
+            else
+            {
+                if (returnProcessed == false)
+                {
+                    // its status packet
+                    received.PROCESS_statusPacket();
+                    
+                    C_SPI.LOG_cmd(receivedBytes.ToArray(), e_cmd.receivedStatusPacket);
+                }
+                else
+                {
+                    // message which is very probably not echoLast neither returnStatusPacket..
+                    LOG_err(received, "Got packet which is not last sent InstructionPacket echo neither any StatusPacket.");
+                }
+            }
+        }
+
+        public void PROCESS_statusPacket()
+        {
+            switch (statusType)
+            {
+                case (e_statusType.presentPosition):
+                    //C_Value presentPosition = new C_Value(
+                    C_Packet.LOG_packStatus(string.Format("Motor position = \t[{0:X} {1:X}]", this.Par[0], this.Par[1]));
+                    break;
+            }
+        }
     }
 }

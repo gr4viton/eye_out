@@ -31,7 +31,7 @@ namespace EyeOut
         //public event
         public ObservableCollection<C_MotorDataRow> motorData;
         
-        public static event EventHandler motorDataChanged;
+        //public static event EventHandler motorDataChanged;
 
         public object dgMotorData_lock;
 
