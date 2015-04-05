@@ -35,7 +35,7 @@ namespace EyeOut
         public e_motorDataType type { get; set; }
         public string name { get; set; }
 
-        public static event EventHandler yawChanged;
+        //public static event EventHandler yawChanged;
         //public static event EventHandler pitchChanged;
         //public static event EventHandler rollChanged;
 
@@ -44,11 +44,10 @@ namespace EyeOut
             get { return GET_ypr(e_rot.yaw); }
             set
             {
-
-                //SET_ypr(e_rot.yaw, value);
-                EventHandler handler = yawChanged;
-                if (handler != null)
-                    handler(null, EventArgs.Empty);
+                SET_ypr(e_rot.yaw, value);
+                //EventHandler handler = yawChanged;
+                //if (handler != null)
+                //    handler(null, EventArgs.Empty);
             }
         }
         public string pitch
@@ -72,10 +71,10 @@ namespace EyeOut
         public void SET_ypr(e_rot rot, string value)
         {
             ypr[(int)rot] = value;
-            switch (rot)
-            {
-                case (e_rot.yaw): yaw = value; break;
-            }
+            //switch (rot)
+            //{
+            //    case (e_rot.yaw): yaw = value; break;
+            //}
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public C_MotorDataRow(e_motorDataType _type)
@@ -104,13 +103,13 @@ namespace EyeOut
                         SET_ypr(mot.rotMotor, string.Format(form_2dec + "°", mot.angle.Dec));
                         break;
                     case (e_motorDataType.anglePresent):
-                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "°", mot.angleActual.Dec));
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "°", mot.anglePresent.Dec));
                         break;
                     case (e_motorDataType.speedGoal):
                         SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speed.Dec_inRPM));
                         break;
                     case (e_motorDataType.speedPresent):
-                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speedActual.Dec_inRPM));
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speedPresent.Dec_inRPM));
                         break;
                 }
             }

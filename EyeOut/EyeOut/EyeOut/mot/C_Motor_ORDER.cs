@@ -89,13 +89,25 @@ namespace EyeOut
         public void ORDER_moveBrisk()
         {
             C_Value lastSpeed = speed;
-            speed.Dec = C_DynAdd.SET_MOV_SPEED_NOCONTROL;
+            speed.Dec = C_DynVal.SET_MOV_SPEED_NOCONTROL;
             ORDER_move();
             speed = lastSpeed;
 
             //SEND_cmdInner(CREATE_cmdInner(new List<object> { 
-            //    C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, C_DynAdd.SET_MOV_SPEED_NOCONTROL
+            //    C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, C_DynVal.SET_MOV_SPEED_NOCONTROL
             //}));
+        }
+
+        public void ORDER_SET(byte add, byte val)
+        {
+            SETUP_SET(C_DynAdd.INS_WRITE, add, val);
+        }
+
+        public void SETUP_SET(byte INSTRUCTION_BYTE, byte add, byte val)
+        {
+            SEND_packet(INSTRUCTION_BYTE, new List<object> {
+                    val
+                    });
         }
 
         public void LOG_SETUP_moveSpeed(byte INSTRUCTION_BYTE, C_Value _angle, C_Value _speed)
@@ -109,7 +121,7 @@ namespace EyeOut
             }
 
 
-            if (_speed.Dec != C_DynAdd.SET_MOV_SPEED_NOCONTROL)
+            if (_speed.Dec != C_DynVal.SET_MOV_SPEED_NOCONTROL)
             {
                 LOG(String.Format("{0}:[angle];[speed] =\t[{1}]; [{3}] =\t{2:0.00}°;\t{4:0.00}%, [angle-default]=\t{5:0.00}°",
                     prefix,

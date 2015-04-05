@@ -8,10 +8,12 @@ using System.ComponentModel; // description
 
 namespace EyeOut
 {
-    public enum e_statusType
-    {
-        noReturn, presentPosition, presentSpeed //, presentLoad , ...
-    }
+    //public enum e_statusType
+    //{
+    //    noReturn, 
+    //    presentPosition, 
+    //    presentSpeed //, presentLoad , ...
+    //}
 
     //// decide if the sent command should produce returning echo message
     //public enum e_packetEcho
@@ -98,7 +100,7 @@ namespace EyeOut
         protected e_returnStatusLevel returnStatusLevel = e_returnStatusLevel.never;
             
         //protected e_packetEcho packetEcho = e_packetEcho.echoLast;
-        protected e_statusType statusType = e_statusType.noReturn;
+        protected e_motorDataType motorDataType = e_motorDataType.anglePresent;
         protected e_packetType packetType = e_packetType.instructionPacket;
         
         protected byte instructionOrErrorByte; // instruction
@@ -133,10 +135,10 @@ namespace EyeOut
         {
             get { return packetType; }
         }
-        public e_statusType PacketReturn
-        {
-            get { return statusType; }
-        }
+        //public e_statusType StatusType
+        //{
+        //    get { return motorDataType; }
+        //}
         public byte CheckSumByte
         {
             get { return checkSumByte; }
@@ -282,7 +284,7 @@ namespace EyeOut
         public C_Packet(byte[] receivedBytes)
         {
             idByte = 0;
-            statusType = e_statusType.noReturn;
+            //statusType = e_statusType.noReturn;
             packetType = e_packetType.instructionPacket;
             par = new List<byte>();
 
@@ -569,25 +571,7 @@ namespace EyeOut
             }
             return false;
         }
-
-        //public static void PROCESS_echo(C_Packet received, C_Packet lastSent)
-        //{
-        //    // it should be last instruction packet echo
-        //    if (received == lastSent)
-        //    {
-        //        C_SPI.LOG_cmd(received.PacketBytes.ToArray(), e_cmd.receivedEchoOf);
-        //        //LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
-        //    }
-        //    else
-        //    {
-        //        throw new Exception(string.Format(
-        //            "The echo StatusPacket is not the same as the last sent InstructionPacket!\nRec:{0}\nSent:{1}",
-        //            GET_packetInfo(received),
-        //            GET_packetInfo(lastSent)
-        //            ));
-        //    }
-        //}
-
+        
         public static bool IS_statusPacketFollowing(C_Packet lastSent)
         {
             if(
@@ -637,67 +621,6 @@ namespace EyeOut
                     PROCESS_statusPacket(received, lastSent);
                 }
             }
-
-            //    if (lastSent.instructionOrErrorByte == C_DynAdd.INS_READ) // writing instruction
-            //    {
-            //        if (numPacket == 0)
-            //        {
-            //            // it is echo or error
-            //            if (IS_error(received, receivedBytes) == false)
-            //            {
-            //                // it is echo
-            //                PROCESS_echo(received, lastSent);
-            //            }
-            //        }
-            //    }
-            //}
-
-            // if the lastSent is INS_WRITE
-            // -> write to motor
-            // if echo is turned on
-            //    return echo / return error
-            // elseif echo is turned off
-            //    no return / return error
-
-            // if the lastSent is INS_READ
-            // if echo is turned on
-            //    return echo, return status 
-            //    / return error, return nothing
-            // elseif echo is turned off
-            //    return status / return error
-
-
-            // is it error?
-            // - log echo
-            // should it be echo?
-            // - is it echo? 
-            // -- log echo
-            // should it be status?
-            // - is it status?
-            // -- process status
-            // -- log status
-
-            //if (echoProcessed == false) 
-            //{
-            //    // echo == e_packetEcho.echoLast
-                
-                
-            //}
-            //else
-            //{
-            //    if (returnProcessed == false)
-            //    {
-            //        // its status packet
-            //        received.PROCESS_statusPacket();
-                    
-            //        C_SPI.LOG_cmd(receivedBytes.ToArray(), e_cmd.receivedStatusPacket);
-            //    }
-            //    else
-            //    {
-            //        // message which is very probably not echoLast neither returnStatusPacket..
-            //        LOG_err(received, "Got packet which is not last sent InstructionPacket echo neither any StatusPacket.");
-            //    }
-            //}
         }
 
         public static void PROCESS_statusPacket(C_Packet received, C_Packet lastSent)
@@ -706,18 +629,23 @@ namespace EyeOut
             if (lastSent.instructionOrErrorByte == C_DynAdd.INS_WRITE)
             {
                 // probably just normal status packet with no parameters 
-                LOG_statusPacket(string.Format("Status OK: {0}", received.PacketBytes_toString));
+                //LOG_statusPacket(string.Format("Status OK after INS_WRITE:\t{0}", received.PacketBytes_toString));
+                // actualize the parameters which were written into motors
+
+                //switch (lastSent.statusType)
+                //{
+
+                //}
+                //C_MotorControl.ACTUALIZE_motorStatus();
+                //C_MotorControl.ACTUALIZE_motorStatus(lastSent.rotMotor, lastSent.motorDataType, lastSent.Par);
             }
             else
             {
-                switch (received.statusType)
-                {
-                    case (e_statusType.presentPosition):
-                        //C_Value presentPosition = new C_Value(
-                        C_Packet.LOG_statusPacket(string.Format("Motor position = \t[{0:X} {1:X}]", received.Par[0], received.Par[1]));
-                        break;
-                }
+                //C_MotorControl.ACTUALIZE_motorStatus(lastSent.rotMotor, lastSent.motorDataType, received.Par);
             }
+            LOG_statusPacket(string.Format("Status OK:\t{0}", received.PacketBytes_toString));
+
         }
+
     }
 }

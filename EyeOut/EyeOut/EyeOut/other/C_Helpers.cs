@@ -147,7 +147,7 @@ namespace EyeOut
         // speed constants
         // 100 should be [decLimitMax - decLimitMin - 1] 
         // so these values should be recalculated whenever decLimit changes
-        private const double dec2RPM = 0.111 / 100 * C_DynAdd.SET_MOV_SPEED_MAX;
+        private const double dec2RPM = 0.111 / 100 * C_DynVal.SET_MOV_SPEED_MAX;
         private const double RPM2dec = 1 / dec2RPM;
         
         private double dec;

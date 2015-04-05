@@ -31,12 +31,15 @@ namespace EyeOut
         public C_Value angle;
         public C_Value speed;
 
-        // values from motor
-        public C_Value angleActual;
-        public C_Value speedActual;
+        // values sent to motor
+        public double angleGoal;
+        public double speedGoal;
 
-        public double lastSend_angle;
-        public double lastSend_speed;
+        // values from motor
+        public C_Value anglePresent;
+        public C_Value speedPresent;
+
+        
 
         //public e_packetEcho motorEcho;
         protected e_returnStatusLevel returnStatusLevel = e_returnStatusLevel.never; // befor we set it we will ignore the statusPackets
@@ -68,8 +71,8 @@ namespace EyeOut
             id = 0;
             angle = new C_Value();
             speed = new C_Value();
-            angleActual = angle;
-            speedActual = speed;
+            anglePresent = angle;
+            speedPresent = speed;
             motorLog = e_LogMsgSource.mot;
         }
         public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed) 
@@ -77,8 +80,8 @@ namespace EyeOut
             id = _id;
             angle = _angle;
             speed = _speed;
-            angleActual = new C_Value();
-            speedActual = new C_Value();
+            anglePresent = new C_Value();
+            speedPresent = new C_Value();
 
             rotMotor = _rot;
             switch(rotMotor)

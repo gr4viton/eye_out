@@ -91,12 +91,15 @@ namespace EyeOut
             return string.Format(
                 "MotId[{0}] rot[{1}] returnStatusLevel[{2}]\ttype[{3}]\tBytes[{4}]",
                 packet.IdByte, GET_rotMotorInfo(packet),
-                packet.returnStatusLevel, packet.statusType,
+                packet.returnStatusLevel, GET_motorDataTypeInfo(packet),
                 packet.PacketBytes_toString
                     );
         }
 
-
+        public static string GET_motorDataTypeInfo(C_Packet packet)
+        {
+            return EnumGetDescription.GetDescription(packet.motorDataType);
+        }
         public static string GET_errorByteInfo(C_Packet packet)
         {
             StringBuilder str = new StringBuilder();

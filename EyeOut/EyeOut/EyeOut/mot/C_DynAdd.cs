@@ -14,7 +14,7 @@ namespace EyeOut
     /// <summary>
     /// Addresses of Dynamixel MX-64AR Servomotor
     /// </summary>
-    public sealed partial class C_DynAdd
+    public sealed class C_DynAdd
     {
         // sizeof individual parts of packet (instruction and status
         public const int SIZEOF_PACKETSTART = 2*sizeof(byte);
@@ -76,6 +76,8 @@ namespace EyeOut
         public const byte PRESENT_SPEED_H = 39;
         // ____________________________________________________ Torque enable
         public const byte TORQUE_ENABLE = 24;
+        // ____________________________________________________ Status Return Level
+        public const byte STATUS_RETURN_LEVEL = 16;
         // ____________________________________________________ LED
         public const byte LED_ENABLE = 25; // one = turned on
         // ____________________________________________________ Compliance - Margin & Slope
@@ -103,14 +105,13 @@ namespace EyeOut
         public const byte ANGLE_LIMIT_CW_H = 7;
         public const byte ANGLE_LIMIT_CCW_L = 8;
         public const byte ANGLE_LIMIT_CCW_H = 9;
-        
     }
 
 
     /// <summary>
     /// Value ranges of Dynamixel MX-64AR Servomotor
     /// </summary>
-    public sealed partial class C_DynAdd
+    public sealed class C_DynVal
     {
         // ____________________________________________________ Goal position
         public const byte SET_GOAL_POS_MIN = 0;
@@ -131,5 +132,9 @@ namespace EyeOut
 
         // conversion to RPM = MOV_SPEED * 0.111
 
+        // ____________________________________________________ Status Return Level
+        public const byte STATUS_RETURN_LEVEL_NEVER = 0;
+        public const byte STATUS_RETURN_LEVEL_ONREAD = 1;
+        public const byte STATUS_RETURN_LEVEL_ALWAYS = 2;
     }
 }
