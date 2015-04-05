@@ -46,10 +46,7 @@ namespace EyeOut
             SET_allSlidersLimits();
             
             // Examples
-            foreach (string str in C_Motor.cmdinEx_str)
-            {
-                lsCmdEx.Items.Add(str);
-            }
+            INIT_examples();
 
             // update position
             UPDATE_slidersFromMotors();
@@ -62,16 +59,25 @@ namespace EyeOut
             //UPDATE_motorsFromSliders();
             //UPDATE_slidersFromMotors();
         }
-
+        public void INIT_examples()
+        {
+            foreach (string str in C_Motor.cmdEx_str)
+            {
+                lsCmdEx.Items.Add(str);
+            }
+        }
 
 
         public void SEARCH_motors()
         {
-            Ms = new C_MotorControl();
+            // should be in C_Motor
+            // should use background worker
+
             // send pings and get responses - add items to [Ms] motor list
             // - use local Search motor for pinging and changing of id..
             Byte id = C_DynAdd.ID_MIN;
             C_Motor srchM = new C_Motor(id);
+            C_Packet querryPacket;
 
             for (id = C_DynAdd.ID_MIN; id < C_DynAdd.ID_MAX; id++)
             {
@@ -81,10 +87,18 @@ namespace EyeOut
                 
                 srchM.ORDER_ping();
 
-                if (C_SPI.READ_packet(e_cmdEchoType.echoLast)) 
+                querryPacket = new C_Packet(srchM, C_DynAdd.INS_PING);
+                C_Packet.SEND_packet(querryPacket);
+
+                /*
+                if (querryPacket.returnProcessed)
                 {
-                    MessageBox.Show(id.ToString());
-                }
+
+                }*/
+                //if (C_SPI.READ_packet(querryPacket) 
+                //{
+                //    MessageBox.Show(id.ToString());
+                //}
                     
             }
         }
@@ -228,7 +242,6 @@ namespace EyeOut
             {
                 Ms.GET_M(rot).ORDER_move();
                 Ms.GET_M(rot).ORDER_getPosition();
-
             }
         }
 

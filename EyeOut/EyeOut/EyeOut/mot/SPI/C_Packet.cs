@@ -1,13 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq; // SequenceEqual
 using System.Text;
 using System.Threading.Tasks;
 
-using System.Linq; // SequenceEqual
 
 namespace EyeOut
 {
+    public enum e_packetReturn
+    {
+        noReturn, presentPosition, presentSpeed //, presentLoad , ...
+    }
+
+    // decide if the sent command should produce returning echo message
+    public enum e_packetEcho
+    {
+        noEcho = 0, echoLast = 1
+    }
+
+    public enum e_packetType
+    {
+        echoOfInstructionPacket, statusPacket, instructionPacket
+    }
     public class C_InstructionPacket : C_Packet
     {
         // new for hiding inherited acceptance
@@ -53,11 +67,17 @@ namespace EyeOut
             get { return C_DynAdd.INDEXOF_FIRSTPARAM_IN_STATUSPACKET;}
         }
 
-        public C_StatusPacket(byte[] receivedBytes) : base(receivedBytes) { }
-        public C_StatusPacket(List<byte> lsReceivedBytes) : base(lsReceivedBytes) { }
+        public C_StatusPacket(byte[] receivedBytes)
+            : base(receivedBytes) 
+        {
+        }
+        public C_StatusPacket(List<byte> lsReceivedBytes) : base(lsReceivedBytes) 
+        { 
+            
+        }
 
 
-        public void PROCESS(e_cmdEchoType echo)
+        public void PROCESS(C_Packet packet)
         {
             byte[] _packetBytes = PacketBytes;
 
@@ -66,21 +86,21 @@ namespace EyeOut
             {
                 // no error
                 C_SPI.LOG_cmd(_packetBytes, e_cmd.received);
-                PROCESS_statusPacket(echo);
+                PROCESS_statusPacket(packet);
             }
             else
             {
                 C_SPI.LOG_cmd(_packetBytes, e_cmd.receivedWithError);
-                C_SPI.LOG_cmdError(_packetBytes[IndexOfId], _packetBytes[IndexOfInstructionOrError]);
+                //C_SPI.LOG_cmdError(_packetBytes[IndexOfId], _packetBytes[IndexOfInstructionOrError]);
             }
         }
 
-        public void PROCESS_statusPacket(e_cmdEchoType echo)
+        public void PROCESS_statusPacket(C_Packet packet)
         {
             // do something with it
-            switch (echo)
+            switch (packet.PacketReturn)
             {
-                case (e_cmdEchoType.presentPosition):
+                case (e_packetReturn.presentPosition):
                     //C_Value presentPosition = new C_Value(
                     C_SPI.LOG(string.Format("Motor position = \t[{0:X} {1:X}]", this.Par[0], this.Par[1]));
                     break;
@@ -88,19 +108,26 @@ namespace EyeOut
         }
     }
 
-    public abstract class C_Packet
+
+    //public abstract class C_Packet
+    public partial class C_Packet
     {
+        public e_rot rotMotor;
         protected byte idByte;
         protected byte lengthByte; //  The length is calculated as “the number of Parameters (N) + 2”
-        protected e_cmdEchoType echo;
+        protected e_packetEcho packetEcho;
+        protected e_packetReturn packetReturn;
+        protected e_packetType packetType;
         
-        protected byte instructionByte; // instruction
+        protected byte instructionOrErrorByte; // instruction
         protected List<byte> par; // parameters
         protected byte checkSumByte;
 
         protected int packetNumOfBytes;
 
         protected const int maxParameters = C_DynAdd.MAX_PARAMETERS;
+
+        public bool IsConsistent=true;
 
         public static bool operator ==(C_Packet x, C_Packet y) 
         {
@@ -119,7 +146,19 @@ namespace EyeOut
             get { return idByte; }
             set { idByte = value; }
         }
-        
+
+        public e_packetEcho PacketEcho
+        {
+            get { return packetEcho; }
+        }
+        public e_packetType PacketType
+        {
+            get { return packetType; }
+        }
+        public e_packetReturn PacketReturn
+        {
+            get { return packetReturn; }
+        }
         public byte CheckSumByte
         {
             get { return checkSumByte; }
@@ -138,12 +177,20 @@ namespace EyeOut
                 }
                 else
                 {
-                    C_SPI.LOG_err(
+                    C_Packet.LOG_err(this,
                         string.Format(
                         "Inner packet is longer than maximal value. [{0}] < [{1}]",
                         value.Count, maxParameters
                         ));
                 }
+            }
+        }
+        
+        public List<Object> Par_obj
+        {
+            set
+            {
+                Par = C_CONV.listOfByteAndByteArrays2listOfbytes(value);
             }
         }
         
@@ -235,33 +282,26 @@ namespace EyeOut
         public C_Packet()
         {
             idByte = 0;
+            packetEcho = e_packetEcho.echoLast;
             par = new List<byte>();
         }
-        public C_Packet(C_Motor mot, List<byte> _par)
-        {
-            idByte = mot.id;
-            //mot.motorEcho
-            Par = _par;
-        }
-
-
-        //public C_Packet(C_Motor mot, List<object> _par)
-        //{
-        //    idByte = mot.id;
-        //    // like create_cmdFromInner -> possible byte arrays & bytes in list
-        //    //par = _par;
-        //}
+        
 
         public C_Packet(byte[] receivedBytes)
-            : this()
         {
+            idByte = 0;
+            packetEcho = e_packetEcho.echoLast;
+            packetReturn = e_packetReturn.noReturn;
+            packetType = e_packetType.instructionPacket;
+            par = new List<byte>();
+
             try
             {
                 RESET_from_packetBytes(receivedBytes);
             }
             catch(Exception e)
             {
-                C_SPI.LOG_ex(e);
+                C_Packet.LOG_ex(this, e);
             }
         }
         
@@ -364,7 +404,7 @@ namespace EyeOut
             // length byte
             _packetBytes[IndexOfLength] = lengthByte;
             // instruction
-            _packetBytes[IndexOfInstructionOrError] = instructionByte;
+            _packetBytes[IndexOfInstructionOrError] = instructionOrErrorByte;
 
             // parameters
             q = IndexOfFirstParam;
@@ -413,7 +453,7 @@ namespace EyeOut
             int IndexOfCheckSum = _packetBytes.Length - 1;
 
             // fill in instructionByte
-            instructionByte = _packetBytes[IndexOfInstructionOrError];
+            instructionOrErrorByte = _packetBytes[IndexOfInstructionOrError];
             // fill in id
             idByte = _packetBytes[IndexOfId];
             // fill in params (from const to length (checksum))
@@ -426,6 +466,7 @@ namespace EyeOut
             
             if(lengthByte != _packetBytes[IndexOfLength])
             {
+                IsConsistent = false;
                 // bad - but should never happen 
                 // as the length byte directly creates the length of the byte array 
                 // in the serial read function
@@ -437,6 +478,7 @@ namespace EyeOut
             
             if(CheckSumByte != _packetBytes[IndexOfCheckSum])
             {
+                IsConsistent = false;
                 throw new Exception( String.Format(
                     "The CHECKSUM_BYTE counted from PACKET bytes =[{0}] is different from the value of CHECKSUM_BYTE =[{1}] received in the PACKET.",
                     CheckSumByte, _packetBytes[IndexOfCheckSum]
@@ -446,5 +488,80 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion RESET
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region static functions
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        public static Byte[] CREATE_cmdFromCmdInner(Byte[] byCmdin, Byte id)
+        {
+            // Instruction Packet = from pc to servo
+            // OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 …PARAMETER N CHECK SUM 
+            // inner contains only these bytes:
+            // INSTRUCTION, PARAMETER_1, ..., PARAMETER_N
+
+            // this function adds first two startBytes [0xFF,0xFF], its id Byte, length Byte and Checksum Byte
+
+            // make it into ArrayList
+            Byte[] cmd = new Byte[5 + byCmdin.Length];
+            //ArrayList a_cmd = new ArrayList();
+            //a_cmd.Add({0xFF, 0xFF})
+
+            //{ 0xFF, 0xFF, id, len, inner, 0x00 };
+            //{ 0   , 1   , 2 , 3  , 4...., last };
+            cmd[2] = id;
+            int q = 4;
+            foreach (Byte by in byCmdin)
+            {
+                cmd[q] = by;
+                q++;
+            }
+            cmd[3] = (Byte)(byCmdin.Length + 1); // = paramN+Instruction + 1 = paramN + 2 = len
+            cmd[q] = C_CheckSum.GET_checkSum(cmd);
+            cmd[0] = cmd[1] = 0xFF;
+            return cmd;
+        }
+
+
+
+        public static void SEND_packet(C_Packet packet)
+        {
+            C_SPI.SEND_data(packet);
+        }
+
+        
+
+        // Optional parameters - i.e. INS_ACTION don't need any parameters
+        public C_Packet(C_Motor _mot, byte _instructionByte, List<object> _lsParameters)
+        {
+            idByte = _mot.id;
+            rotMotor = _mot.rotMotor;
+            instructionOrErrorByte = _instructionByte;
+            Par_obj = _lsParameters;
+        }
+
+        public C_Packet(C_Motor _mot, byte _instructionByte, List<byte> _lsParameters = null)
+        {
+            idByte = _mot.id;
+            rotMotor = _mot.rotMotor;
+            instructionOrErrorByte = _instructionByte;
+            Par = _lsParameters;
+        }
+
+        public C_Packet(byte _instructionByte, List<object> _lsParameters)
+        {
+            idByte = C_DynAdd.ID_BROADCAST;
+            instructionOrErrorByte = _instructionByte;
+            Par_obj = _lsParameters;
+        }
+
+        public C_Packet(byte _instructionByte, List<byte> _lsParameters = null)
+        {
+            idByte = C_DynAdd.ID_BROADCAST;
+            instructionOrErrorByte = _instructionByte;
+            Par = _lsParameters;
+        }
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion static functions
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     }
 }

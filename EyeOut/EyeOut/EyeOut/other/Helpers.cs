@@ -75,4 +75,47 @@ namespace EyeOut
             }
         }
     }
+    public partial class C_CONV
+    {
+        public static List<byte> listOfByteAndByteArrays2listOfbytes(List<object> L)
+        {
+            // creates byte array out of list of byte / byte arrays - concatenates them
+            List<byte> liby = new List<byte>();
+            foreach (object o in L)
+            {
+                if (o is byte)
+                {
+                    liby.Add((byte)o);
+                }
+                else if (o is byte[])
+                {
+                    if (((byte[])o).Length > 0)
+                    {
+                        liby.AddRange((byte[])o);
+                    }
+                }
+                else if (o is UInt16)
+                {
+                    liby.AddRange(BitConverter.GetBytes((UInt16)o));
+                }
+            }
+            return liby;
+        }
+
+        public static byte[] stringOfBytes2arrayOfBytes(string str)
+        {
+            str.Replace(" ", ", 0x");
+            string[] words = str.Split(' ');
+
+            byte[] bytes = new byte[words.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+
+            return bytes;
+        }
+
+        public static List<byte> stringOfBytes2listOfBytes(string str)
+        {
+            return new List<byte>(stringOfBytes2arrayOfBytes(str));
+        }
+    }
 }

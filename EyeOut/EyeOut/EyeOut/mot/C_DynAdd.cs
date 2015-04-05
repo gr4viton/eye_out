@@ -48,9 +48,9 @@ namespace EyeOut
         public const byte INS_RESET = 6;
         public const byte INS_SYNC_WRITE = 131;
 
-        public const byte BROAD_CAST    = 254;
+        public const byte ID_BROADCAST    = 254;
         public const byte ID_MIN        = 0;
-        public const byte ID_MAX = BROAD_CAST;
+        public const byte ID_MAX = ID_BROADCAST;
 
         public static byte[] PACKETSTART = { 255, 255 }; // Starting bytes of message
         public const int RECEIVING_BUFFER_VOLUME = 143; // the volume of receiving buffer of RX-64 

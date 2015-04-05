@@ -8,16 +8,12 @@ namespace EyeOut
 {
     public enum e_bounds
     {
-        in_bounds = 0
-        ,
-        bigger = 1
-            , smaller = 2
+        in_bounds = 0,
+        bigger = 1,
+        smaller = 2
     }
 
-    /// <summary>
-    /// C_Motor - CONVersion methods
-    /// </summary>
-    public partial class C_Motor
+    public partial class C_CONV
     {
         
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  

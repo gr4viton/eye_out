@@ -34,7 +34,14 @@ namespace EyeOut
      */
     public enum e_LogMsgSource
     {
-        spi, spi_sent, spi_got, gui, log, mot, mot_yaw, mot_pitch, mot_roll, cam, Demo_TP, EyeOut, EyeOut_cam, valConv
+        packet, packInstruct, packStatus, 
+        spi, spi_sent, spi_got, 
+        gui, log, 
+        mot, mot_yaw, mot_pitch, mot_roll, 
+        cam, 
+        Demo_TP, EyeOut, 
+        EyeOut_cam, 
+        valConv
     }
     public enum e_LogMsgType
     {

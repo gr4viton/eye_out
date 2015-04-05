@@ -128,6 +128,7 @@
     <Compile Include="cam\C_Camera.cs" />
     <Compile Include="cam\Main_Camera.cs" />
     <Compile Include="about\Main_About.cs" />
+    <Compile Include="log\C_Packet_LOG.cs" />
     <Compile Include="mot\C_MotorControl.cs" />
     <Compile Include="mot\C_MotorDataRow.cs" />
     <Compile Include="mot\C_Motor_ORDER.cs" />
@@ -147,7 +148,7 @@
     <Compile Include="mot\SPI\C_SPI.cs" />
     <Compile Include="log\Main_Logger.cs" />
     <Compile Include="mot\C_CheckSum.cs" />
-    <Compile Include="mot\C_Motor_CONV.cs" />
+    <Compile Include="other\C_Helpers.cs" />
     <Compile Include="mot\C_DynAdd.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

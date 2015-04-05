@@ -29,7 +29,7 @@ namespace EyeOut
         
         public static SerialPort spi;
         //private static BackgroundWorker worker_SEND;
-        private static Queue<byte[]> queueData;
+        private static Queue<C_Packet> packetQueue;
 
         public static Byte[] readBuff;
         public static int i_readBuff = 0;
@@ -58,16 +58,6 @@ namespace EyeOut
         public static bool INCOMING_PACKET = false;
 
         public static int timeoutExceptionPeriod = 10;
-        // make it into HASHTABLE
-        static string[] errStr = {     
-                                     "Input Voltage Error"
-                                  , "Angle Limit Error"
-                                  , "Overheating Error"
-                                  , "Range Error"
-                                  , "Checksum Error"
-                                  , "Overload Error"
-                                  , "Instruction Error"
-                              };
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // SPI hang - thread: http://www.codeproject.com/Questions/179614/Serial-Port-in-WPF-Application
@@ -93,13 +83,9 @@ namespace EyeOut
             SPI.WriteTimeout = 50;*/
 
             // NOT NEEDED as all the motors are just CLIENTS - only responding to my (SERVER) orders
-            // when I sent some cmd -> I call C_SPI.READ_cmd() afterwards if I want to read some echo or response
             //spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
 
-            
-            queueData = new Queue<byte[]>();
-
-            
+            packetQueue = new Queue<C_Packet>();
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Initialization
@@ -182,28 +168,30 @@ namespace EyeOut
         //    SEND_data(e_cmdEcho.noEcho, data);
         //}
        
-        public static void SEND_data(e_cmdEchoType echo, byte[] data)
+        public static void SEND_data(C_Packet instructionPacket)
         {
-            QUEUE_data(data);
+            QUEUE_data(instructionPacket);
 
             BackgroundWorker worker_SEND = new BackgroundWorker();
-            worker_SEND.RunWorkerCompleted += workerSEND_RunWorkerCompleted;
             worker_SEND.DoWork += workerSEND_DoWork;
-            worker_SEND.RunWorkerAsync((object)echo);
+            worker_SEND.RunWorkerCompleted += workerSEND_RunWorkerCompleted;
+            //worker_SEND.RunWorkerAsync((object)echo);
+            worker_SEND.RunWorkerAsync();
         }
 
 
-        private static void QUEUE_data(byte[] data)
+        private static void QUEUE_data(C_Packet instructionPacket)
         {
             // adds data to sending queue
             lock (queue_locker)
             {
-                queueData.Enqueue(data);
+                packetQueue.Enqueue(instructionPacket);
             }
         }
 
         private static void workerSEND_DoWork(object sender, DoWorkEventArgs e)
         {
+            C_Packet thisInstructionPacket;
             lock (spi_locker)
             {
                 if (spi.IsOpen == true)
@@ -213,9 +201,10 @@ namespace EyeOut
                 }
                 lock (queue_locker)
                 {
-                    if (queueData.Count != 0)
+                    if (packetQueue.Count != 0)
                     {
-                        if (C_SPI.WriteData(queueData.Dequeue()) == false)
+                        thisInstructionPacket = packetQueue.Dequeue();
+                        if (C_SPI.WriteData(thisInstructionPacket) == false)
                         {
                             LOG_err(string.Format(
                                 "Cannot open the serial port. Tried [{0}]-times", openConnection.ValDef
@@ -228,22 +217,24 @@ namespace EyeOut
                         throw new InvalidOperationException(
                             "An error occured when tried to send data!\nThe queue of data to send was empty!");
 #endif
+                        LOG_err("Packet queue is empty! Cannot send packet");
+                        return;
                     }
                 }
-                e_cmdEchoType echo = (e_cmdEchoType)e.Argument;
-                if (echo != e_cmdEchoType.noEcho)
-                {
-                    TRY_READ_packet(e_cmdEchoType.echoLast); // read echoLast
-                    if (echo > e_cmdEchoType.echoLast)
-                    {
-                        TRY_READ_packet(echo);
-                    }
 
+                if(
+                    (thisInstructionPacket.PacketEcho != e_packetEcho.noEcho)
+                    ||
+                    (thisInstructionPacket.PacketReturn != e_packetReturn.noReturn)
+                    )
+                {
+                    // try to read echoLast or returnPacket
+                    TRY_READ_packet(thisInstructionPacket); 
                 }
             }
         }
 
-        private static void TRY_READ_packet(e_cmdEchoType echo)
+        private static void TRY_READ_packet(C_Packet instructionPacket)
         {
             bool packetRead = false;
             readReturn.Restart();
@@ -261,7 +252,7 @@ namespace EyeOut
             while (readReturn.Decrement() != 0)
             {
                 // read out echo
-                packetRead = READ_packet(echo);
+                packetRead = READ_packet(instructionPacket);
                 if (packetRead == true)
                 {
                     break;
@@ -289,16 +280,18 @@ namespace EyeOut
             }
         }
 
-        private static bool WriteData(byte[] data)
+        private static bool WriteData(C_Packet instructionPacket)
         {
             openConnection.Restart();
             while (openConnection.Decrement() != 0)
             {
                 if (spi.IsOpen)
                 {
+                    byte[] data = instructionPacket.PacketBytes;
                     WriteSerialPort(data);
+                    C_Packet.LOG_sent(instructionPacket);
                     LOG_cmd(data, e_cmd.sent);
-                    packetSent = new C_InstructionPacket(data);
+                    packetSent = instructionPacket;
 
                     return true;
                 }
@@ -330,23 +323,36 @@ namespace EyeOut
         #region Reading
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public static bool echoProcessed;
-        public static bool READ_packet(e_cmdEchoType echo)
+
+        public static bool READ_packet(C_Packet instructionPacket)
         {
-            // this function tries to read echo / return message of the motor after sending [lastSentCmd]
             if (C_State.prog == e_stateProg.closing)
             {
                 System.Threading.Thread.CurrentThread.Abort();
             }
+
+            // this function tries to read echo / return message of the motor after sending [lastSentCmd]
+            bool echoProcessed = true;
+            bool returnProcessed = true;
+            if (instructionPacket.PacketEcho != e_packetEcho.noEcho)
+            {
+                echoProcessed = false;
+            }
+            if (instructionPacket.PacketReturn != e_packetReturn.noReturn)
+            {
+                returnProcessed = false;
+            }
+
             lock (spi_locker)
             {
                 try
                 {
                     receivedPacketBytes = new List<byte>();
                     echoProcessed = false;
+                    
                     while (0 != C_SPI.spi.BytesToRead)
                     {
-                        this_byte = (Byte)C_SPI.spi.ReadByte();
+                        this_byte = (byte)C_SPI.spi.ReadByte();
                         readBuff[i_readBuff] = this_byte;
                         if (INCOMING_PACKET == true)
                         {
@@ -364,31 +370,7 @@ namespace EyeOut
                             {
                                 // this_byte is the last received byte from this packet
                                 INCOMING_PACKET = false; // other bytes would not make sense in context of packets with defined length
-                                
-                                if (echoProcessed == false)
-                                {
-                                    if(echo == e_cmdEchoType.echoLast)
-                                    {
-                                        // it should be last instruction packet echo
-                                        packetReceived = new C_InstructionPacket(receivedPacketBytes);
-                                        if (packetReceived == packetSent)
-                                        {
-                                            C_SPI.LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.receivedEchoOf);
-                                            //LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
-                                            // and reset last Cmd in the case the next Status Msg is the same as the command
-                                            //lastCmd = new Byte[0];
-                                        }
-                                        echoProcessed = true;
-                                    }
-                                    else if (echo > e_cmdEchoType.echoLast)
-                                    {
-                                        // its status packet
-                                        packetReceived = new C_StatusPacket(receivedPacketBytes); // constructor throws error if incosistent
-                                        C_StatusPacket staPack = (C_StatusPacket)packetReceived;
-                                        staPack.PROCESS(echo);
-                                        C_SPI.LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.receivedStatusPacket);
-                                    }
-                                }
+                                C_SPI.PROCESS_receivedPacket(instructionPacket, echoProcessed, returnProcessed);
                             }
                             i_receivedByte++;
                         }
@@ -430,6 +412,52 @@ namespace EyeOut
             }
         }
 
+        public static void PROCESS_receivedPacket(C_Packet instructionPacket,bool echoProcessed, bool returnProcessed)
+        {
+            // we have received whole message
+            packetReceived = new C_StatusPacket(receivedPacketBytes);
+            // is it error?
+            // - log echo
+            // should it be echo?
+            // - is it echo? 
+            // -- log echo
+            // should it be status?
+            // - is it status?
+            // -- process status
+            // -- log status
+            if (receivedPacketBytes[C_DynAdd.INDEXOF_ERROR_IN_STATUSPACKET] != 0)
+            {
+                // it is error - log error and dont process anything else as it won't come
+                C_Packet.LOG_errorByte(packetReceived);
+            }
+
+
+            //if (echoProcessed == false) // 
+            //{
+            //    if(echo == e_packetEcho.echoLast)
+            //    {
+            //        // it should be last instruction packet echo
+            //        packetReceived = new C_InstructionPacket(receivedPacketBytes);
+            //        if (packetReceived == instructionPacket)
+            //        {
+            //            C_SPI.LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.receivedEchoOf);
+            //            //LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
+            //            // and reset last Cmd in the case the next Status Msg is the same as the command
+            //            //lastCmd = new Byte[0];
+            //        }
+            //        echoProcessed = true;
+            //    }
+            //    else if (echo > e_packetEcho.echoLast)
+            //    {
+            //        // its status packet
+            //        packetReceived = new C_StatusPacket(receivedPacketBytes); // constructor throws error if incosistent
+            //        C_StatusPacket staPack = (C_StatusPacket)packetReceived;
+            //        staPack.PROCESS(echo);
+            //        C_SPI.LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.receivedStatusPacket);
+            //    }
+            //}
+
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Reading
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -476,16 +504,6 @@ namespace EyeOut
 
 
 
-        public static void LOG_cmdError(Byte byId, Byte byError)
-        {
-            for (int b = 0; b < 7; b++)
-                if (C_Motor.GET_bit(byError, b) == true)
-                {
-                    LOG(
-                        string.Format("ID[{0}] error: {1}", byId, errStr[b])
-                        );
-                }
-        }
 
         public static void LOG_cmd(Byte[] cmd, e_cmd type)
         {

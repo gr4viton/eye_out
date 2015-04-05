@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace EyeOut
 {
-    // decide if the sent command should produce any returned message
-    public enum e_cmdEchoType
-    {
-        noEcho = 0, echoLast = 1, presentPosition, presentSpeed //, presentLoad , ...
-    }
     /// <summary>
     /// C_Motor - ORDERS etc.
     /// ORDER functions sends the data directly (INS_WRITE)
@@ -27,7 +22,7 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public void ORDER_ping()
         {
-            SEND_cmdInner(C_DynAdd.INS_PING);
+            new C_Packet(this, C_DynAdd.INS_PING);
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Other ORDERs
@@ -44,17 +39,13 @@ namespace EyeOut
 
         public void ORDER_Action()
         {
-            SEND_cmdInner(CREATE_cmdInnerFromBytes(new List<object> { 
-                C_DynAdd.INS_ACTION 
-                }));
+            SEND_packet(C_DynAdd.INS_ACTION);
         }
 
         // broadcasting
         public static void ORDER_ActionToAll()
         {
-            SEND_BROADCAST_cmdInner(CREATE_cmdInnerFromBytes(new List<object> { 
-                C_DynAdd.INS_ACTION 
-                }));
+            SEND_packetToAll(C_DynAdd.INS_ACTION);
             //LOG_mot("Broadcast to all motors: ACTION");
             /*
             angle.UPDATE_lastSent();
@@ -86,10 +77,11 @@ namespace EyeOut
         {
             if ((angle.Dec != angle.DecLast) || (speed.Dec != speed.DecLast))
             {
-                SEND_cmdInner(CREATE_cmdInnerFromBytes(new List<object> { 
-                    INSTRUCTION_BYTE, C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
-                }));
                 LOG_SETUP_moveSpeed(INSTRUCTION_BYTE, angle, speed);
+                SEND_packet( INSTRUCTION_BYTE, new List<object> {
+                    C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
+                    });
+
             }
         }
 
@@ -121,8 +113,8 @@ namespace EyeOut
             {
                 LOG(String.Format("{0}:[angle];[speed] =\t[{1}]; [{3}] =\t{2:0.00}°;\t{4:0.00}%, [angle-default]=\t{5:0.00}°",
                     prefix,
-                    byteArray2strHex_space(_angle.Hex.Reverse().ToArray()), _angle.Dec,
-                    byteArray2strHex_space(_speed.Hex.Reverse().ToArray()), _speed.Dec,
+                    C_CONV.byteArray2strHex_space(_angle.Hex.Reverse().ToArray()), _angle.Dec,
+                    C_CONV.byteArray2strHex_space(_speed.Hex.Reverse().ToArray()), _speed.Dec,
                     _angle.Dec_FromDefault
                     ));
             }
@@ -130,8 +122,8 @@ namespace EyeOut
             {
                 LOG(String.Format("{0}: [angle];[speed] = [{1}];[{3}] = {2}°; No speed control",
                     prefix,
-                    byteArray2strHex_space(_angle.Hex.Reverse().ToArray()), _angle.Dec,
-                    byteArray2strHex_space(_speed.Hex.Reverse().ToArray())
+                    C_CONV.byteArray2strHex_space(_angle.Hex.Reverse().ToArray()), _angle.Dec,
+                    C_CONV.byteArray2strHex_space(_speed.Hex.Reverse().ToArray())
                     ));
             }
         }
@@ -150,10 +142,14 @@ namespace EyeOut
         public void SETUP_getPosition(byte INSTRUCTION_BYTE)
         {
             byte BYTE_LENGTH = 2;
-            SEND_cmdInner(e_cmdEchoType.presentPosition,
-                CREATE_cmdInnerFromBytes(new List<object> { 
-                    INSTRUCTION_BYTE, C_DynAdd.PRESENT_POS_L, BYTE_LENGTH
+            C_Packet.SEND_packet( new C_Packet(
+                this, INSTRUCTION_BYTE, new List<object> {
+                C_DynAdd.PRESENT_POS_L, BYTE_LENGTH
                 }));
+            //SEND_cmdInner(e_packetEcho.presentPosition,
+            //    CREATE_cmdInnerFromBytes(new List<object> { 
+            //        INSTRUCTION_BYTE, C_DynAdd.PRESENT_POS_L, BYTE_LENGTH
+                //}));
             //LOG_SETUP_moveSpeed(INSTRUCTION_BYTE, angle, speed);
         }
 
