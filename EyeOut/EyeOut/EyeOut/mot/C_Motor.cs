@@ -39,7 +39,12 @@ namespace EyeOut
         public double lastSend_speed;
 
         //public e_packetEcho motorEcho;
-        protected e_statusType statusType = e_statusType.noReturn;
+        protected e_returnStatusLevel returnStatusLevel = e_returnStatusLevel.never; // befor we set it we will ignore the statusPackets
+
+        public e_returnStatusLevel ReturnStatusLevel
+        {
+            get { return returnStatusLevel; }
+        }
 
         // cmd examples
         //public static List<C_cmdin> cmdinEx;
@@ -66,7 +71,6 @@ namespace EyeOut
             angleActual = angle;
             speedActual = speed;
             motorLog = e_LogMsgSource.mot;
-            motorEcho = e_packetEcho.echoLast;
         }
         public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed) 
         {
@@ -95,7 +99,6 @@ namespace EyeOut
             {
                 INIT_cmdinEx();
             }
-            motorEcho = e_packetEcho.echoLast;
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion constructor

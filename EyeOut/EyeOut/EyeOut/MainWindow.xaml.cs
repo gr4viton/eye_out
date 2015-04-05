@@ -32,6 +32,8 @@ namespace EyeOut
     public partial class MainWindow : Window
     {
         public DispatcherTimer timSim;
+        public static C_Packet raw;
+
         public MainWindow()
         {
             C_State.prog = e_stateProg.initializing;
@@ -152,7 +154,22 @@ namespace EyeOut
 
         private void btnSendRawBytes_Click(object sender, RoutedEventArgs e)
         {
-            C_Packet.SEND_packet(new C_Packet(C_CONV.strHex2byteArray(txRawBytes.Text, " ")));
+            C_Packet.SEND_packet(raw);
+        }
+
+        private void txRawBytes_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (C_State.FURTHER(e_stateProg.initialized))
+            {
+                try
+                {
+                    raw = new C_Packet(C_CONV.strHex2byteArray(txRawBytes.Text, " "));
+                }
+                finally
+                {
+                    btnSendRawBytes.IsEnabled = raw.IsConsistent;
+                }
+            }
         }
 
 

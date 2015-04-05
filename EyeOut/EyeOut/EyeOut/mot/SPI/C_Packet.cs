@@ -129,10 +129,6 @@ namespace EyeOut
             set { idByte = value; }
         }
 
-        public e_packetEcho PacketEcho
-        {
-            get { return packetEcho; }
-        }
         public e_packetType PacketType
         {
             get { return packetType; }
@@ -224,6 +220,15 @@ namespace EyeOut
                 return CREATE_instructionPacket_bytes(true);
             }
         }
+
+        public string PacketBytes_toString
+        {
+            get
+            {
+                return C_CONV.byteArray2strHex_space(PacketBytes);
+            }
+            //set
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -270,7 +275,6 @@ namespace EyeOut
         public C_Packet()
         {
             idByte = 0;
-            packetEcho = e_packetEcho.echoLast;
             par = new List<byte>();
         }
         
@@ -278,7 +282,6 @@ namespace EyeOut
         public C_Packet(byte[] receivedBytes)
         {
             idByte = 0;
-            packetEcho = e_packetEcho.echoLast;
             statusType = e_statusType.noReturn;
             packetType = e_packetType.instructionPacket;
             par = new List<byte>();
@@ -382,11 +385,6 @@ namespace EyeOut
             byte[] _packetBytes = new byte[packetNumOfBytes];
 
             int q = 0;
-            // packet start
-            for (q = IndexOfPacketStart; q < C_DynAdd.SIZEOF_PACKETSTART; q++)
-            {
-                _packetBytes[q] = C_DynAdd.PACKETSTART[q];
-            }
             // id
             _packetBytes[IndexOfId] = idByte;
             // length byte
@@ -401,17 +399,21 @@ namespace EyeOut
                 _packetBytes[q] = by;
                 q++;
             }
-            // checksum
+            // checksum - counted without PACKETSTART
             _packetBytes[q] = C_CheckSum.GET_checkSum(_packetBytes);
+
+            // packet start
+            for (q = IndexOfPacketStart; q < C_DynAdd.SIZEOF_PACKETSTART; q++)
+            {
+                _packetBytes[q] = C_DynAdd.PACKETSTART[q];
+            }
 
             if (forChecksum == true)
             {
-                /*
+
                 int from = C_DynAdd.INDEXOF_ID_IN_STATUSPACKET;
-                int count = packetNumOfBytes - C_DynAdd.SIZEOF_PACKETSTART - C_DynAdd.SIZEOF_CHECKSUM;
-                */
-                int from = 0;
-                int count = packetNumOfBytes - C_DynAdd.SIZEOF_CHECKSUM;
+                int count = packetNumOfBytes - from - C_DynAdd.SIZEOF_CHECKSUM;
+                
                 return (new ArraySegment<byte>(_packetBytes, from, count)).ToArray();
             }
             else
@@ -525,7 +527,7 @@ namespace EyeOut
         {
             idByte = _mot.id;
             rotMotor = _mot.rotMotor;
-            returnStatusLevel = _mot.returnStatusLevel;
+            returnStatusLevel = _mot.ReturnStatusLevel;
             instructionOrErrorByte = _instructionByte;
             Par_obj = _lsParameters;
         }
@@ -534,7 +536,7 @@ namespace EyeOut
         {
             idByte = _mot.id;
             rotMotor = _mot.rotMotor;
-            returnStatusLevel = _mot.returnStatusLevel;
+            returnStatusLevel = _mot.ReturnStatusLevel;
             instructionOrErrorByte = _instructionByte;
             Par = _lsParameters;
         }
@@ -568,23 +570,24 @@ namespace EyeOut
             return false;
         }
 
-        public static void PROCESS_echo(C_Packet received, C_Packet lastSent)
-        {
-            // it should be last instruction packet echo
-            if (received == lastSent)
-            {
-                C_SPI.LOG_cmd(received.PacketBytes.ToArray(), e_cmd.receivedEchoOf);
-                //LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
-            }
-            else
-            {
-                throw new Exception(string.Format(
-                    "The echo StatusPacket is not the same as the last sent InstructionPacket!\nRec:{0}\nSent:{1}",
-                    GET_packetInfo(received),
-                    GET_packetInfo(lastSent)
-                    ));
-            }
-        }
+        //public static void PROCESS_echo(C_Packet received, C_Packet lastSent)
+        //{
+        //    // it should be last instruction packet echo
+        //    if (received == lastSent)
+        //    {
+        //        C_SPI.LOG_cmd(received.PacketBytes.ToArray(), e_cmd.receivedEchoOf);
+        //        //LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
+        //    }
+        //    else
+        //    {
+        //        throw new Exception(string.Format(
+        //            "The echo StatusPacket is not the same as the last sent InstructionPacket!\nRec:{0}\nSent:{1}",
+        //            GET_packetInfo(received),
+        //            GET_packetInfo(lastSent)
+        //            ));
+        //    }
+        //}
+
         public static bool IS_statusPacketFollowing(C_Packet lastSent)
         {
             if(
@@ -619,37 +622,35 @@ namespace EyeOut
         // returns false when you dont have to continue
         public static void PROCESS_receivedPacket(C_Packet lastSent, List<byte> receivedBytes, int numPacket)
         {
-            // we have received whole message
+            // we have received one whole packet
             C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
 
-            if (lastSent.packetEcho == e_packetEcho.echoLast) // echo is turned on
-            {
-                if (IS_statusPacketFollowing(lastSent) == true) // writing instruction
+            if (numPacket == 0)
+            { 
+                // it is echo or error
+                if (IS_error(received, receivedBytes) == true)
                 {
-                    if (numPacket == 0)
-                    { 
-                        // it is echo or error
-                        if (IS_error(received, receivedBytes) == false)
-                        {
-                            // it is echo
-                            PROCESS_echo(received, lastSent);
-                        }
-                    }
+                    return;
                 }
-
-                if (lastSent.instructionOrErrorByte == C_DynAdd.INS_READ) // writing instruction
+                else
                 {
-                    if (numPacket == 0)
-                    {
-                        // it is echo or error
-                        if (IS_error(received, receivedBytes) == false)
-                        {
-                            // it is echo
-                            PROCESS_echo(received, lastSent);
-                        }
-                    }
+                    PROCESS_statusPacket(received, lastSent);
                 }
             }
+
+            //    if (lastSent.instructionOrErrorByte == C_DynAdd.INS_READ) // writing instruction
+            //    {
+            //        if (numPacket == 0)
+            //        {
+            //            // it is echo or error
+            //            if (IS_error(received, receivedBytes) == false)
+            //            {
+            //                // it is echo
+            //                PROCESS_echo(received, lastSent);
+            //            }
+            //        }
+            //    }
+            //}
 
             // if the lastSent is INS_WRITE
             // -> write to motor
@@ -676,37 +677,46 @@ namespace EyeOut
             // -- process status
             // -- log status
 
-            if (echoProcessed == false) 
+            //if (echoProcessed == false) 
+            //{
+            //    // echo == e_packetEcho.echoLast
+                
+                
+            //}
+            //else
+            //{
+            //    if (returnProcessed == false)
+            //    {
+            //        // its status packet
+            //        received.PROCESS_statusPacket();
+                    
+            //        C_SPI.LOG_cmd(receivedBytes.ToArray(), e_cmd.receivedStatusPacket);
+            //    }
+            //    else
+            //    {
+            //        // message which is very probably not echoLast neither returnStatusPacket..
+            //        LOG_err(received, "Got packet which is not last sent InstructionPacket echo neither any StatusPacket.");
+            //    }
+            //}
+        }
+
+        public static void PROCESS_statusPacket(C_Packet received, C_Packet lastSent)
+        {
+            // we have no error in statusPacket
+            if (lastSent.instructionOrErrorByte == C_DynAdd.INS_WRITE)
             {
-                // echo == e_packetEcho.echoLast
-                
-                
+                // probably just normal status packet with no parameters 
+                LOG_statusPacket(string.Format("Status OK: {0}", received.PacketBytes_toString));
             }
             else
             {
-                if (returnProcessed == false)
+                switch (received.statusType)
                 {
-                    // its status packet
-                    received.PROCESS_statusPacket();
-                    
-                    C_SPI.LOG_cmd(receivedBytes.ToArray(), e_cmd.receivedStatusPacket);
+                    case (e_statusType.presentPosition):
+                        //C_Value presentPosition = new C_Value(
+                        C_Packet.LOG_statusPacket(string.Format("Motor position = \t[{0:X} {1:X}]", received.Par[0], received.Par[1]));
+                        break;
                 }
-                else
-                {
-                    // message which is very probably not echoLast neither returnStatusPacket..
-                    LOG_err(received, "Got packet which is not last sent InstructionPacket echo neither any StatusPacket.");
-                }
-            }
-        }
-
-        public void PROCESS_statusPacket()
-        {
-            switch (statusType)
-            {
-                case (e_statusType.presentPosition):
-                    //C_Value presentPosition = new C_Value(
-                    C_Packet.LOG_packStatus(string.Format("Motor position = \t[{0:X} {1:X}]", this.Par[0], this.Par[1]));
-                    break;
             }
         }
     }

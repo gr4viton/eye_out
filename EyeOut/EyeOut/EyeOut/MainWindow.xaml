@@ -218,7 +218,7 @@
                                                 <ListBoxItem>Syntax</ListBoxItem>
                                                 <ListBoxItem FontSize="8">FF FF ID LEN INS PAR CHS</ListBoxItem>
                                             </ListBox>
-                                            <TextBox x:Name="txRawBytes" FontSize="8">
+                                            <TextBox x:Name="txRawBytes" FontSize="8" TextChanged="txRawBytes_TextChanged">
                                                 FF FF 01 02 01 FB
                                             </TextBox>
                                             <Button x:Name="btnSendRawBytes" Content="Send raw bytes" Click="btnSendRawBytes_Click"/>

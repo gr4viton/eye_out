@@ -25,22 +25,16 @@ namespace EyeOut
 
         public static void LOG_sent(C_Packet packet)
         {
-            StringBuilder str = new StringBuilder();
-            str.Append(string.Format(
-                "Sent Instruction packet!\tMotId[{0}]\tEcho[{1}]\tReturnPacket[{2}]",
-                packet.IdByte, packet.packetEcho, packet.statusType
+            LOG_instruPacket(string.Format(
+                "Sent Instruction packet!\n{0}", GET_packetInfo(packet)
                 ));
-            LOG_packInstruct(str.ToString());
         }
 
         public static void LOG_echo(C_Packet packet)
         {
-            StringBuilder str = new StringBuilder();
-            str.Append(string.Format(
-                "Got Status packet!\tMotId[{0}]\tEcho[{1}]\tReturnPacket[{2}]",
-                packet.IdByte, packet.packetEcho, packet.statusType
+            LOG_statusPacket(string.Format(
+                "Got Status packet!\n{0}", GET_packetInfo(packet)
                 ));
-            LOG_packInstruct(str.ToString());
         }
 
         public static void LOG_ex(C_Packet packet, Exception ex)
@@ -77,12 +71,12 @@ namespace EyeOut
             C_Logger.Instance.LOG(e_LogMsgSource.packet, _msg);
         }
 
-        public static void LOG_packInstruct(string _msg)
+        public static void LOG_instruPacket(string _msg)
         {
             C_Logger.Instance.LOG(e_LogMsgSource.packInstruct, _msg);
         }
 
-        public static void LOG_packStatus(string _msg)
+        public static void LOG_statusPacket(string _msg)
         {
             C_Logger.Instance.LOG(e_LogMsgSource.packStatus, _msg);
         }
@@ -95,12 +89,13 @@ namespace EyeOut
         public static string GET_packetInfo(C_Packet packet)
         {
             return string.Format(
-                "MotId[{0}]\tMot[{1}]\tEcho[{2}]\tReturn[{3}]\tBytes[{4}]",
+                "MotId[{0}] rot[{1}] returnStatusLevel[{2}]\ttype[{3}]\tBytes[{4}]",
                 packet.IdByte, GET_rotMotorInfo(packet),
-                packet.packetEcho, packet.statusType,
-                C_CONV.byteArray2strHex_space(packet.PacketBytes.ToArray())
+                packet.returnStatusLevel, packet.statusType,
+                packet.PacketBytes_toString
                     );
         }
+
 
         public static string GET_errorByteInfo(C_Packet packet)
         {

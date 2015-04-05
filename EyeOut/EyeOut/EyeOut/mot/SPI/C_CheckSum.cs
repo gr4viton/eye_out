@@ -23,8 +23,8 @@ namespace EyeOut
             }
             calc_check = (byte)~calc_check;
 
-            //return calc_check;
-            return (byte)(calc_check-1);
+            return calc_check;
+            //return (byte)(calc_check-2);
         }
 
         public static bool CHECK_checkSum(byte check1, byte check2)

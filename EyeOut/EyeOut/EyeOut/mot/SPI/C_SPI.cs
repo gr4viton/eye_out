@@ -335,7 +335,6 @@ namespace EyeOut
                 try
                 {
                     receivedPacketBytes = new List<byte>();
-                    //echoProcessed = false;
                     
                     while (0 != C_SPI.spi.BytesToRead)
                     {
@@ -343,20 +342,18 @@ namespace EyeOut
                         readBuff[i_readBuff] = this_byte;
                         if (INCOMING_PACKET == true)
                         {
-                            // we already have PACKETSTART bytes filled in
-                            receivedPacketBytes.Add(this_byte);
-                            // all the bytes of the packet are stored in the readBuff
-                            // just get the LENGTH_BYTE to find out on which byte the packet ends
-                            if(i_receivedByte == C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET)
+                            receivedPacketBytes.Add(this_byte); // we already have PACKETSTART bytes filled in
+
+
+                            if (i_receivedByte == C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET) // get the LENGTH_BYTE to find out on which byte the packet ends
                             {
                                     // this_byte = LENGTH_BYTE = NParams + 2
                                     // packetNumOfBytes = PACKETSTART[2] + ID + Length + Error + Nparam + CheckSum = NParams + 6
                                     packetNumOfBytes = (int)this_byte + 4;
                             }
-                            if(i_receivedByte == packetNumOfBytes-1) 
+                            if (i_receivedByte == packetNumOfBytes - 1) // this_byte is the last received byte from this packet
                             {
-                                // this_byte is the last received byte from this packet
-                                INCOMING_PACKET = false; // other bytes would not make sense in context of packets with defined length
+                                INCOMING_PACKET = false; 
                                 C_Packet.PROCESS_receivedPacket(lastSent, receivedPacketBytes, numPacket);
                                 numPacket++;
                             }
@@ -365,7 +362,7 @@ namespace EyeOut
                         // not detected NEW message yet
                         if (i_readBuff > 0)
                         {
-                            // C_DynAdd.MSG_START detection
+                            // C_DynAdd.PACKETSTART detection
                             if ((readBuff[i_readBuff] == 0xFF) && (readBuff[i_readBuff - 1] == 0xFF))
                             {
                                 INCOMING_PACKET = true;
