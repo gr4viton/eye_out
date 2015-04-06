@@ -138,12 +138,28 @@ namespace EyeOut
         }
 
 
-        public static void ACTUALIZE_motorStatus(e_rot rot, e_motorDataType type, List<byte> parsSent, List<byte> parsGot)
+        public static void ACTUALIZE_motorRegister(e_rot rot, e_regByteType type, List<byte> pars)
         {
             //lock()
             //lock(lock_roll)
             C_Motor mot = MainWindow.Ms.GET_M(rot);
             // BROADCAST??
+            
+            bool addGot = false;
+            byte addressByte = 0;
+            foreach(byte by in pars)
+            {
+                if(addGot == false)
+                {
+                    addressByte = by;
+                }
+                else
+                {
+                    mot.Reg.SET(addressByte, by, type);
+                    mot.ACTUALIZE_registerBinding(addressByte);
+                    addressByte++;
+                }
+            }
 
             //type = GET_typeFromParams(parsSent, parsGot);
 

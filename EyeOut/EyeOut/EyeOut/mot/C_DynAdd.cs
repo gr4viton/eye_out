@@ -59,7 +59,7 @@ namespace EyeOut
         // ____________________________________________________ Goal position
         public const byte GOAL_POS_L = 30;
         public const byte GOAL_POS_H = 31;
-        public const byte GOAL_POS = GOAL_POS_L;
+        public const byte GOAL_POS = GOAL_POS_L; // First address
         // ____________________________________________________ Present position
         public const byte PRESENT_POS_L = 36;
         public const byte PRESENT_POS_H = 37;
@@ -70,7 +70,7 @@ namespace EyeOut
         // ____________________________________________________ Moving speed
         public const byte MOV_SPEED_L = 32;
         public const byte MOV_SPEED_H = 33;
-        public const byte MOV_SPEED = MOV_SPEED_L;
+        public const byte MOV_SPEED = MOV_SPEED_L; // First address
         // ____________________________________________________ Present speed
         public const byte PRESENT_SPEED_L = 38;
         public const byte PRESENT_SPEED_H = 39;

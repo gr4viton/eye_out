@@ -167,16 +167,19 @@ namespace EyeOut
     // copy of the register stored in motor
     public class C_ByteRegister
     {
+        object lock_reg;
         private List<C_RegByte> reg = new List<C_RegByte>();
         private int i_maxReg;
+        
 
         public C_ByteRegister()
         {
-            INIT_byteRegister();
+            lock_reg = new object();
+            INIT_byteRegisterDefaultValues();
             //BIND_bytes();
         }
 
-        public void INIT_byteRegister()
+        public void INIT_byteRegisterDefaultValues()
         {
             // load it from txt file
 
@@ -216,25 +219,31 @@ namespace EyeOut
         
         public void SET(int _add, byte _value, e_regByteType _type)
         {
-            if (_add < i_maxReg)
+            lock (lock_reg)
             {
-                reg[_add].SET(_value,_type);
-            }
-            else
-            {
-                throw new Exception(GET_outOfBoundsInfo(_add));
+                if (_add < i_maxReg)
+                {
+                    reg[_add].SET(_value, _type);
+                }
+                else
+                {
+                    throw new Exception(GET_outOfBoundsInfo(_add));
+                }
             }
         }
         
-        public C_RegByteValue GET(int _add, byte _value, e_regByteType _type)
+        public C_RegByteValue GET(int _add, e_regByteType _type)
         {
-            if (_add < i_maxReg)
+            lock (lock_reg)
             {
-                return reg[_add].GET(_type);
-            }
-            else
-            {
-                throw new Exception(GET_outOfBoundsInfo(_add));
+                if (_add < i_maxReg)
+                {
+                    return reg[_add].GET(_type);
+                }
+                else
+                {
+                    throw new Exception(GET_outOfBoundsInfo(_add));
+                }
             }
         }
 

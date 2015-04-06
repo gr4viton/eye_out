@@ -45,17 +45,14 @@ namespace EyeOut
         // only manageable by functions REG_write REG_read
         private C_ByteRegister reg;
 
-        //public C_ByteRegister Reg
-        //{
-        //    //get
-        //    //{
-        //    //    return reg;
-        //    //}
-        //    //set
-        //    //{
-
-        //    //}
-        //}
+        public C_ByteRegister Reg
+        {
+            get
+            {
+                return reg;
+                //Actualize reg binding
+            }
+        }
 
 
         public e_returnStatusLevel ReturnStatusLevel
@@ -83,15 +80,19 @@ namespace EyeOut
         public C_Motor(byte _id) // because of search motor
         {
             id = 0;
+            motorLog = e_LogMsgSource.mot;
+            reg = new C_ByteRegister();
+
             angle = new C_Value();
             speed = new C_Value();
             anglePresent = angle;
             speedPresent = speed;
-            motorLog = e_LogMsgSource.mot;
         }
         public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed) 
         {
             id = _id;
+            reg = new C_ByteRegister();
+
             angle = _angle;
             speed = _speed;
             anglePresent = new C_Value();
@@ -226,6 +227,43 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        public void ACTUALIZE_registerBinding(byte add)
+        {
+            // after change in register this is called
+            // react only on high bytes 
+            // -> as I always send command to actualize both L and H 
+            // -> I only need to react on the second one written to register (H)
+            switch (add)
+            {
+                case(C_DynAdd.PRESENT_POS_H):
+                {
+                    anglePresent.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_POS_L, C_DynAdd.PRESENT_POS_H, e_regByteType.lastReceived);
+                    break;
+                }
+                case (C_DynAdd.GOAL_POS_H):
+                {
+                    anglePresent.Hex = GET_2bytesFromReg(C_DynAdd.GOAL_POS_L, C_DynAdd.GOAL_POS_H, e_regByteType.lastReceived);
+                    break;
+                }
+                case (C_DynAdd.PRESENT_SPEED_H):
+                {
+                    anglePresent.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_SPEED_L, C_DynAdd.PRESENT_SPEED_H, e_regByteType.lastReceived);
+                    break;
+                }
+                case (C_DynAdd.MOV_SPEED_H):
+                {
+                    anglePresent.Hex = GET_2bytesFromReg(C_DynAdd.MOV_SPEED_L, C_DynAdd.MOV_SPEED_H, e_regByteType.lastReceived);
+                    break;
+                }
+            }
+        }
+
+        public byte[] GET_2bytesFromReg(byte add_L, byte add_H, e_regByteType type)
+        {
+            return new byte[] { reg.GET((int)add_L, type).Val, reg.GET((int)add_H, type).Val };
+        }
+
 
     }
 }

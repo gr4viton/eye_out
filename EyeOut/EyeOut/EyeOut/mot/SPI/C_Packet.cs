@@ -636,14 +636,17 @@ namespace EyeOut
                 //{
 
                 //}
-                //C_MotorControl.ACTUALIZE_motorStatus();
+                C_MotorControl.ACTUALIZE_motorRegister(lastSent.rotMotor, e_regByteType.sentValue, lastSent.Par);
+                LOG_statusPacket(string.Format("Status OK - actualizing motor register SentValues: \t{0}", lastSent.PacketBytes_toString));
                 //C_MotorControl.ACTUALIZE_motorStatus(lastSent.rotMotor, lastSent.motorDataType, lastSent.Par);
             }
             else
             {
+                C_MotorControl.ACTUALIZE_motorRegister(received.rotMotor, e_regByteType.lastReceived, received.Par);
+                LOG_statusPacket(string.Format("Status OK - actualizing motor register LastReceived: \t{0}", received.PacketBytes_toString));
                 //C_MotorControl.ACTUALIZE_motorStatus(lastSent.rotMotor, lastSent.motorDataType, received.Par);
             }
-            LOG_statusPacket(string.Format("Status OK:\t{0}", received.PacketBytes_toString));
+            //LOG_statusPacket(string.Format("Status OK:\t{0}", received.PacketBytes_toString));
 
         }
 

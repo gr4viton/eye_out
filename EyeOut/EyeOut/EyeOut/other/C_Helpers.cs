@@ -389,7 +389,7 @@ namespace EyeOut
         }
         
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public byte[] Hex
+        public byte[] Hex // hex[0] = LOW, hex[1] = HIGH
         {
             get
             {
@@ -411,7 +411,7 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region conv
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public byte[] dec2hex(double _dec)
+        public byte[] dec2hex(double _dec) // hex[0] = LOW, hex[1] = HIGH
         {
             dec = GET_bounded_decLimits(_dec); // number in interval <decLimitMin, decLimitMax>
             double decOne = (double)CONV_intervalMinMax_to_interval01(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
@@ -423,7 +423,7 @@ namespace EyeOut
             return new byte[] { L, H };
         }
 
-        public double hex2dec(byte[] hex)
+        public double hex2dec(byte[] hex) // hex[0] = LOW, hex[1] = HIGH
         {
             UInt32 hexUInt32 = ((UInt32)hex[1] >> 8) + (UInt32)hex[0];
             UInt16 hexOne = (UInt16)GET_bounded(hexUInt32, hexMin, hexMax); // number in interval <hexMin, hexMax>

@@ -35,8 +35,8 @@ namespace EyeOut
         public static int i_readBuff = 0;
         public static byte this_byte;
         
-        public static C_Packet packetSent;
-        public static C_Packet packetReceived;
+        //public static C_Packet packetSent;
+        //public static C_Packet packetReceived;
 
         public static List<byte> receivedPacketBytes;
         public static int i_receivedByte;
@@ -287,7 +287,7 @@ namespace EyeOut
                     WRITE_byteArray(data);
                     C_Packet.LOG_sent(instructionPacket);
                     LOG_cmd(data, e_cmd.sent);
-                    packetSent = instructionPacket;
+                    //packetSent = instructionPacket;
 
                     return true;
                 }
