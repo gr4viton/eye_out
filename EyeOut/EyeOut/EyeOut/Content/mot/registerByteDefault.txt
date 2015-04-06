@@ -1,0 +1,51 @@
+40 R #0 Model Number L
+00 R #1 Model Number H
+00 R #2 Version of Firmware
+01 B #3 ID
+22 B #4 Baud Rage
+FA B #5 Return Delay time
+00 B #6 CW Angle Limit L
+00 B #7 CW Angle Limit H
+FF B #8 CCW Angle Limit L
+03 B #9 CCW Angle Limit H
+00 X #10 -
+50 B #11 Highest Limit Temperature
+3C B #12 Lowest Limit Voltage
+F0 B #13 Highest Limit Voltage
+FF B #14 Max Torque L
+03 B #15 Max Torque H
+02 B #16 Status Return Level
+24 B #17 Alarm LED
+24 B #18 Alarm Shutdown
+00 X #19 -
+00 X #20 -
+00 X #21 -
+00 X #22 -
+00 X #23 -
+00 B #24 Torque Enable
+00 B #25 LED
+00 B #26 CW Compliance Margin
+00 B #27 CCW Compliance Margin
+20 B #28 CW Compliance Slope
+20 B #29 CCW Compliance Slope
+00 B #30 Goal Position L
+00 B #31 Goal Position H
+00 B #32 Moving Speed L
+00 B #33 Moving Speed H
+00 B #34 Torque Limit L
+00 B #35 Torque Limit H
+00 R #36 Present Position L
+00 R #37 Present Position H
+00 R #38 Present Speed L
+00 R #39 Present Speed H
+00 R #40 Present Load L
+00 R #41 Present Load H
+00 R #42 Present Voltage
+00 R #43 Present Temperature
+00 B #44 Registred Instruction
+00 X #45 - 
+00 R #46 Moving
+00 B #47 Locking EEPROM
+00 B #48 Punch L
+00 B #49 Punch H
+

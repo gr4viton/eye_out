@@ -20,30 +20,30 @@ namespace EyeOut
         #region strHex 2 byte
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public static Byte strHex2byte(string strHex)
+        public static byte strHex2byte(string strHex)
         {
             byte by = strHex2byteArray(strHex)[0];
             return by;
         }
 
-        public static Byte[] strHex2byteArray(string strHex, string delimiter)
+        public static byte[] strHex2byteArray(string strHex, string delimiter)
         {
             string[] strHexDoubles = strHex.Split(' ');
             return strHexDoubles2byteArray(strHexDoubles);
         }
-        public static Byte[] strHexDoubles2byteArray(string[] strHexDoubles)
+        public static byte[] strHexDoubles2byteArray(string[] strHexDoubles)
         {
-            Byte[] by = new Byte[strHexDoubles.Length];
+            byte[] by = new byte[strHexDoubles.Length];
             int i = 0;
             foreach (String hex in strHexDoubles)
             {
-                by[i] = (Byte)Convert.ToInt32(hex, 16);
+                by[i] = (byte)Convert.ToInt32(hex, 16);
                 //Console.WriteLine("int value = {0} ", by[i]);
                 i++;
             }
             return by;
         }
-        public static Byte[] strHex2byteArray(string strHex_concatenated)
+        public static byte[] strHex2byteArray(string strHex_concatenated)
         {
             int numOfDoubles = strHex_concatenated.Length / 2;
             string[] strHexDoubles = new string[numOfDoubles];
@@ -61,17 +61,17 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
         #region byte 2 strHex
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public static string byteArray2strHex_hyphen(Byte[] bys)
+        public static string byteArray2strHex_hyphen(byte[] bys)
         {
             return BitConverter.ToString(bys);
         }
 
-        public static string byteArray2strHex_space(Byte[] bys)
+        public static string byteArray2strHex_space(byte[] bys)
         {
             return BitConverter.ToString(bys).Replace("-", " ");
         }
 
-        public static string byteArray2strHex_delimiter(Byte[] bys, string del)
+        public static string byteArray2strHex_delimiter(byte[] bys, string del)
         {
             return BitConverter.ToString(bys).Replace("-", del);
         }
@@ -85,11 +85,11 @@ namespace EyeOut
 
         
             /*
-        private Byte[] CONV_ang_deg2by(double deg)
+        private byte[] CONV_ang_deg2by(double deg)
         {
             // by = 0 to 1023 (0x3FF)
             // ang = 0 to 300
-            //(Byte) 1023*
+            //(byte) 1023*
             double min = 0;
             double max = 360;
             double maxHex = 1023;
@@ -110,12 +110,12 @@ namespace EyeOut
 
             UInt16 degconv = Convert.ToUInt16(maxHex * GET_bounded(deg, min, max) / max * 4);
 
-            Byte H = (byte)(degconv >> 8);
-            Byte L = (byte)(degconv & 0xff);
-            return new Byte[] { L, H };
+            byte H = (byte)(degconv >> 8);
+            byte L = (byte)(degconv & 0xff);
+            return new byte[] { L, H };
            
         }
-        private Byte[] CONV_speed_deg2by(double deg)
+        private byte[] CONV_speed_deg2by(double deg)
         {
 
         }*/
@@ -123,13 +123,13 @@ namespace EyeOut
         #endregion CONV
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
         
-        public static void PRINT_byteArray(Byte[] bys)
+        public static void PRINT_byteArray(byte[] bys)
         {
             foreach (byte by in bys)
                 Console.WriteLine("dec {0}\t= 0x{0:X}", by);
         }
 
-        public static bool GET_bit(Byte by, int bitNumber)
+        public static bool GET_bit(byte by, int bitNumber)
         {
             return (by & (1 << bitNumber)) != 0;
         }
@@ -417,10 +417,10 @@ namespace EyeOut
             double decOne = (double)CONV_intervalMinMax_to_interval01(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
             UInt16 hexUInt16 = (UInt16)CONV_interval01_to_intervalMinMax(decOne, hexMin, hexMax); // number in interval <hexMin, hexMax>
 
-            Byte H = (byte)(hexUInt16 >> 8); // higher byte part
-            Byte L = (byte)(hexUInt16 & 0xFF); // lower byte part
+            byte H = (byte)(hexUInt16 >> 8); // higher byte part
+            byte L = (byte)(hexUInt16 & 0xFF); // lower byte part
 
-            return new Byte[] { L, H };
+            return new byte[] { L, H };
         }
 
         public double hex2dec(byte[] hex)

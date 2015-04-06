@@ -129,6 +129,7 @@
     <Compile Include="cam\Main_Camera.cs" />
     <Compile Include="about\Main_About.cs" />
     <Compile Include="log\C_Packet_LOG.cs" />
+    <Compile Include="mot\C_ByteRegister.cs" />
     <Compile Include="mot\C_MotorControl.cs" />
     <Compile Include="mot\C_MotorDataRow.cs" />
     <Compile Include="mot\C_Motor_ORDER.cs" />
@@ -193,6 +194,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Content\about\aboutLibraries.txt" />
+    <Content Include="Content\mot\registerByteDefault.txt" />
     <Resource Include="Content\about\notUsedAfterall.txt" />
     <Content Include="Content\mot\cmdInEx.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

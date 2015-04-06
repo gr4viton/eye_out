@@ -38,11 +38,25 @@ namespace EyeOut
         // values from motor
         public C_Value anglePresent;
         public C_Value speedPresent;
-
         
-
         //public e_packetEcho motorEcho;
         protected e_returnStatusLevel returnStatusLevel = e_returnStatusLevel.never; // befor we set it we will ignore the statusPackets
+
+        // only manageable by functions REG_write REG_read
+        private C_ByteRegister reg;
+
+        //public C_ByteRegister Reg
+        //{
+        //    //get
+        //    //{
+        //    //    return reg;
+        //    //}
+        //    //set
+        //    //{
+
+        //    //}
+        //}
+
 
         public e_returnStatusLevel ReturnStatusLevel
         {

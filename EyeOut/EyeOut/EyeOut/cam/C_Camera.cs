@@ -139,14 +139,14 @@ namespace EyeOut
 
         public BitmapSource GET_frame()
         {
-            Image<Bgr, Byte> ImageFrame = capture.QueryFrame();
+            Image<Bgr, byte> ImageFrame = capture.QueryFrame();
 
             return BitmapSourceConvert.ToBitmapSource(ImageFrame);
         }
 
         public BitmapSource GET_txu()
         {
-            Image<Bgr, Byte> ImageFrame = capture.QueryFrame();
+            Image<Bgr, byte> ImageFrame = capture.QueryFrame();
 
             return BitmapSourceConvert.ToBitmapSource(ImageFrame);
         }

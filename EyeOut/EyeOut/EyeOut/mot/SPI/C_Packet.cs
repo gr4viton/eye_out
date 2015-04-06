@@ -144,7 +144,7 @@ namespace EyeOut
             get { return checkSumByte; }
         }
 
-        public List<Byte> Par
+        public List<byte> Par
         {
             get { return par; }
             set
@@ -371,17 +371,17 @@ namespace EyeOut
         }
 
         
-        public Byte[] CREATE_instructionPacket_bytes()
+        public byte[] CREATE_instructionPacket_bytes()
         {
             return CREATE_instructionPacket_bytes(false);
         }
 
-        public Byte[] CREATE_instructionPacket_bytes(bool forChecksum)
+        public byte[] CREATE_instructionPacket_bytes(bool forChecksum)
         {
             // Instruction Packet = from pc to servo
             // OXFF | 0XFF | ID | LENGTH | INSTRUCTION | PARAMETER_1 | … | PARAMETER_N | CHECK_SUM 
 
-            // this function adds first two startBytes [0xFF,0xFF], its id Byte, length Byte, instruction Byte and Checksum Byte 
+            // this function adds first two startBytes [0xFF,0xFF], its id byte, length byte, instruction byte and Checksum byte 
             // around parameters and returns the byte array of it
 
             byte[] _packetBytes = new byte[packetNumOfBytes];
@@ -396,7 +396,7 @@ namespace EyeOut
 
             // parameters
             q = IndexOfFirstParam;
-            foreach (Byte by in par)
+            foreach (byte by in par)
             {
                 _packetBytes[q] = by;
                 q++;
@@ -487,29 +487,29 @@ namespace EyeOut
         #region static functions
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        //public static Byte[] CREATE_cmdFromCmdInner(Byte[] byCmdin, Byte id)
+        //public static byte[] CREATE_cmdFromCmdInner(byte[] byCmdin, byte id)
         //{
         //    // Instruction Packet = from pc to servo
         //    // OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 …PARAMETER N CHECK SUM 
         //    // inner contains only these bytes:
         //    // INSTRUCTION, PARAMETER_1, ..., PARAMETER_N
 
-        //    // this function adds first two startBytes [0xFF,0xFF], its id Byte, length Byte and Checksum Byte
+        //    // this function adds first two startBytes [0xFF,0xFF], its id byte, length byte and Checksum byte
 
         //    // make it into ArrayList
-        //    Byte[] cmd = new Byte[5 + byCmdin.Length];
+        //    byte[] cmd = new byte[5 + byCmdin.Length];
         //    //ArrayList a_cmd = new ArrayList();
         //    //a_cmd.Add({0xFF, 0xFF})
         //    //{ 0xFF, 0xFF, id, len, inner, 0x00 };
         //    //{ 0   , 1   , 2 , 3  , 4...., last };
         //    cmd[2] = id;
         //    int q = 4;
-        //    foreach (Byte by in byCmdin)
+        //    foreach (byte by in byCmdin)
         //    {
         //        cmd[q] = by;
         //        q++;
         //    }
-        //    cmd[3] = (Byte)(byCmdin.Length + 1); // = paramN+Instruction + 1 = paramN + 2 = len
+        //    cmd[3] = (byte)(byCmdin.Length + 1); // = paramN+Instruction + 1 = paramN + 2 = len
         //    cmd[q] = C_CheckSum.GET_checkSum(cmd);
         //    cmd[0] = cmd[1] = 0xFF;
         //    return cmd;

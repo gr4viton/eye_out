@@ -31,9 +31,9 @@ namespace EyeOut
         //private static BackgroundWorker worker_SEND;
         private static Queue<C_Packet> packetQueue;
 
-        public static Byte[] readBuff;
+        public static byte[] readBuff;
         public static int i_readBuff = 0;
-        public static Byte this_byte;
+        public static byte this_byte;
         
         public static C_Packet packetSent;
         public static C_Packet packetReceived;
@@ -41,9 +41,9 @@ namespace EyeOut
         public static List<byte> receivedPacketBytes;
         public static int i_receivedByte;
 
-        //public static Byte[] curCmd;
+        //public static byte[] curCmd;
         //public static int i_curCmd;
-        //public static Byte[] lastCmd;
+        //public static byte[] lastCmd;
 
         static C_CounterDown openConnection = new C_CounterDown(10); // try to open connection x-times
         static C_CounterDown readReturn = new C_CounterDown(10); // try to read return status packet x-times
@@ -54,8 +54,8 @@ namespace EyeOut
         //public static int i_cmdId = 0;     // = first byte in status packet (not counting 0xff 0xff)
         //public static int i_cmdError = 2;  // = third byte in status packet (not counting 0xff 0xff)
 
-        //public static Byte curCmd_id;
-        //public static Byte curCmd_len;
+        //public static byte curCmd_id;
+        //public static byte curCmd_len;
 
         public static bool INCOMING_PACKET = false;
 
@@ -70,8 +70,8 @@ namespace EyeOut
         public C_SPI()
         {
             i_readBuff = 0;
-            readBuff = new Byte[1024];
-            //curCmd = new Byte[1];
+            readBuff = new byte[1024];
+            //curCmd = new byte[1];
 
             timeoutExceptionPeriod = 10; // according to datahseet.?.
             // spi
@@ -444,7 +444,7 @@ namespace EyeOut
 
 
 
-        public static void LOG_cmd(Byte[] cmd, e_cmd type)
+        public static void LOG_cmd(byte[] cmd, e_cmd type)
         {
             string prefix = "";
             string hex = BitConverter.ToString(cmd).Replace("-", " ");
@@ -486,10 +486,10 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         //// not used
-        //private static void SPI_CHECK_receivedCmd(Byte[] cmdWithoutChecksumByte, Byte rec_checkSum)
+        //private static void SPI_CHECK_receivedCmd(byte[] cmdWithoutChecksumByte, byte rec_checkSum)
         //{
         //    // check for [checksum error] and cmd [error byte] sub-bites disambiguation
-        //    Byte calc_checkSum = C_CheckSum.GET_checkSum(cmdWithoutChecksumByte);
+        //    byte calc_checkSum = C_CheckSum.GET_checkSum(cmdWithoutChecksumByte);
 
         //    if (C_CheckSum.CHECK_checkSum(calc_checkSum, rec_checkSum))
         //    //if( calc_check == 0 )
@@ -506,8 +506,8 @@ namespace EyeOut
         //    else
         //    {
         //        LOG_cmd(cmdWithoutChecksumByte, e_cmd.receivedCheckNot);
-        //        LOG(String.Format("CheckSumGot != CheckSumCounted :: {0} != {1}", (Byte)rec_checkSum, (Byte)calc_checkSum));
-        //        //LOG_msgAppendLine(String.Format("CheckSumGot = {0} ", (Byte)calc_check));
+        //        LOG(String.Format("CheckSumGot != CheckSumCounted :: {0} != {1}", (byte)rec_checkSum, (byte)calc_checkSum));
+        //        //LOG_msgAppendLine(String.Format("CheckSumGot = {0} ", (byte)calc_check));
         //    }
         //}
     }

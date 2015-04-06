@@ -26,7 +26,7 @@ namespace EyeOut
     {
         public static C_MotorControl Ms;
 
-        public static Byte nudId = 1;
+        public static byte nudId = 1;
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properies
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,7 +75,7 @@ namespace EyeOut
 
             // send pings and get responses - add items to [Ms] motor list
             // - use local Search motor for pinging and changing of id..
-            Byte id = C_DynAdd.ID_MIN;
+            byte id = C_DynAdd.ID_MIN;
             C_Motor srchM = new C_Motor(id);
             C_Packet querryPacket;
 
