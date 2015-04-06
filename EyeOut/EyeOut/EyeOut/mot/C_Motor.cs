@@ -28,19 +28,19 @@ namespace EyeOut
         public byte id;
 
         // values to set
-        public C_Value angle;
-        public C_Value speed;
+        public C_Value angleWanted;
+        public C_Value speedWanted;
 
         // values sent to motor
-        public double angleGoal;
-        public double speedGoal;
+        public C_Value angleSent;
+        public C_Value speedSent;
 
         // values from motor
-        public C_Value anglePresent;
-        public C_Value speedPresent;
+        public C_Value angleSeen;
+        public C_Value speedSeen;
         
         //public e_packetEcho motorEcho;
-        protected e_returnStatusLevel returnStatusLevel = e_returnStatusLevel.never; // befor we set it we will ignore the statusPackets
+        protected e_statusReturnLevel statusReturnLevel = e_statusReturnLevel.never; // befor we set it we will ignore the statusPackets
 
         // only manageable by functions REG_write REG_read
         private C_ByteRegister reg;
@@ -55,9 +55,12 @@ namespace EyeOut
         }
 
 
-        public e_returnStatusLevel ReturnStatusLevel
+        public e_statusReturnLevel StatusReturnLevel
         {
-            get { return returnStatusLevel; }
+            get { return statusReturnLevel; }
+            set { 
+                statusReturnLevel = value; 
+            }
         }
 
         // cmd examples
@@ -83,20 +86,24 @@ namespace EyeOut
             motorLog = e_LogMsgSource.mot;
             reg = new C_ByteRegister();
 
-            angle = new C_Value();
-            speed = new C_Value();
-            anglePresent = angle;
-            speedPresent = speed;
+            angleWanted = new C_Value();
+            speedWanted = new C_Value();
+            angleSeen = angleWanted;
+            speedSeen = speedWanted;
+            angleSent = angleWanted;
+            speedSent = speedWanted;
         }
         public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed) 
         {
             id = _id;
             reg = new C_ByteRegister();
 
-            angle = _angle;
-            speed = _speed;
-            anglePresent = new C_Value();
-            speedPresent = new C_Value();
+            angleWanted = _angle;
+            speedWanted = _speed;
+            angleSeen = new C_Value();
+            speedSeen = new C_Value();
+            angleSent = new C_Value();
+            speedSent = new C_Value();
 
             rotMotor = _rot;
             switch(rotMotor)
@@ -193,7 +200,6 @@ namespace EyeOut
         
         public void SEND_example(int num)
         {
-
             C_Packet.SEND_packet(
                 new C_Packet(
                     this, cmdPackets[num].IdByte, cmdPackets[num].Par
@@ -224,6 +230,11 @@ namespace EyeOut
         {
             C_Logger.Instance.LOG_err(e_LogMsgSource.mot, _msg);
         }
+
+        public void LOG_reg(string _msg) // may be different in the future?
+        {
+            C_Logger.Instance.LOG_err(motorLog, _msg);
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -237,25 +248,25 @@ namespace EyeOut
             switch (add)
             {
                 case(C_DynAdd.PRESENT_POS_H):
-                {
-                    anglePresent.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_POS_L, C_DynAdd.PRESENT_POS_H, e_regByteType.lastReceived);
+                    angleSeen.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_POS_L, C_DynAdd.PRESENT_POS_H, e_regByteType.lastReceived);
+                    LOG_reg("[Present Position] actualized form motor!");
                     break;
-                }
                 case (C_DynAdd.GOAL_POS_H):
-                {
-                    anglePresent.Hex = GET_2bytesFromReg(C_DynAdd.GOAL_POS_L, C_DynAdd.GOAL_POS_H, e_regByteType.lastReceived);
+                    angleSent.Hex = GET_2bytesFromReg(C_DynAdd.GOAL_POS_L, C_DynAdd.GOAL_POS_H, e_regByteType.lastReceived);
+                    LOG_reg("[Goal Position] actualized form motor!");
                     break;
-                }
                 case (C_DynAdd.PRESENT_SPEED_H):
-                {
-                    anglePresent.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_SPEED_L, C_DynAdd.PRESENT_SPEED_H, e_regByteType.lastReceived);
+                    speedSeen.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_SPEED_L, C_DynAdd.PRESENT_SPEED_H, e_regByteType.lastReceived);
+                    LOG_reg("[Present Speed] actualized form motor!");
                     break;
-                }
                 case (C_DynAdd.MOV_SPEED_H):
-                {
-                    anglePresent.Hex = GET_2bytesFromReg(C_DynAdd.MOV_SPEED_L, C_DynAdd.MOV_SPEED_H, e_regByteType.lastReceived);
+                    speedSent.Hex = GET_2bytesFromReg(C_DynAdd.MOV_SPEED_L, C_DynAdd.MOV_SPEED_H, e_regByteType.lastReceived);
+                    LOG_reg("[Moving Speed] actualized form motor!");
                     break;
-                }
+                case (C_DynAdd.STATUS_RETURN_LEVEL):
+                    statusReturnLevel = (e_statusReturnLevel)(reg.GET(C_DynAdd.STATUS_RETURN_LEVEL, e_regByteType.sentValue).Val);
+                    LOG_reg("[Status Return Level] actualized form motor!");
+                    break;
             }
         }
 

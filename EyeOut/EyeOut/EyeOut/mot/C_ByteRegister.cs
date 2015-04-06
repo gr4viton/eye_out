@@ -183,36 +183,39 @@ namespace EyeOut
         {
             // load it from txt file
 
-            string libs = Properties.Resources.ResourceManager.GetString("registerByteDefault");
+            string txt = Properties.Resources.ResourceManager.GetString("registerByteDefault");
 
-            string[] lines = libs.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            string[] lines = txt.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             char sep = ' ';
 
             foreach (string line in lines)
             {
-                string[] splited = line.Split(sep);
-                // syntax of each line:
-                // XX A #num name
-                // legend:
-                // splited[0]= XX - hexa
-                // splited[1]= A - [X]registered [R]ead [B]oth ([W]rite)
-                // splited[2]= # - number symbol
-                // splited[2]= num - address in register - not needed
-                // splited[3]= name - address byte name string
-
-                e_readWrite rw = e_readWrite.registered;
-                switch(splited[1])
+                if (line.Length > 2)
                 {
-                    case("X"): rw = e_readWrite.registered; break;
-                    case("B"): rw = e_readWrite.readWrite; break;
-                    case("R"): rw = e_readWrite.readOnly; break;
-                    case("W"): rw = e_readWrite.writeOnly; break;
-                }
+                    string[] splited = line.Split(sep);
+                    // syntax of each line:
+                    // XX A #num name
+                    // legend:
+                    // splited[0]= XX - hexa
+                    // splited[1]= A - [X]registered [R]ead [B]oth ([W]rite)
+                    // splited[2]= # - number symbol
+                    // splited[2]= num - address in register - not needed
+                    // splited[3]= name - address byte name string
 
-                reg.Add(new C_RegByte(
-                    splited[3], rw, C_CONV.strHex2byte(splited[0])
-                    ));
-                //reg[reg.Count-1].
+                    e_readWrite rw = e_readWrite.registered;
+                    switch (splited[1])
+                    {
+                        case ("X"): rw = e_readWrite.registered; break;
+                        case ("B"): rw = e_readWrite.readWrite; break;
+                        case ("R"): rw = e_readWrite.readOnly; break;
+                        case ("W"): rw = e_readWrite.writeOnly; break;
+                    }
+
+                    reg.Add(new C_RegByte(
+                        splited[3], rw, C_CONV.strHex2byte(splited[0])
+                        ));
+                    //reg[reg.Count-1].
+                }
             }
             i_maxReg = reg.Count;
         }

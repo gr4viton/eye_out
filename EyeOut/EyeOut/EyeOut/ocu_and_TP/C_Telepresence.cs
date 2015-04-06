@@ -487,8 +487,8 @@ namespace EyeOut
 
                 foreach (C_Motor mot in MainWindow.Ms)
                 {
-                    mot.angle.Dec_FromDefault = yawPitchRoll_d[(int)mot.rotMotor];
-                    mot.speed.Dec = mot.speed.DecMax;
+                    mot.angleWanted.Dec_FromDefault = yawPitchRoll_d[(int)mot.rotMotor];
+                    mot.speedWanted.Dec = mot.speedWanted.DecMax;
                     mot.REGISTER_move();
                 }
                 C_Motor.ORDER_ActionToAll();

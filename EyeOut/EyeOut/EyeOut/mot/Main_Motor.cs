@@ -123,8 +123,8 @@ namespace EyeOut
         {
             foreach (C_Motor m in Ms)
             {
-                m.angle.RESET_toDefault();
-                m.speed.RESET_toDefault();
+                m.angleWanted.RESET_toDefault();
+                m.speedWanted.RESET_toDefault();
                 //UPDATE_sliderFromMotor(m.rotationMotor);
                 m.REGISTER_move();
             }
@@ -201,8 +201,8 @@ namespace EyeOut
         {
             foreach (e_rot rot in Enum.GetValues(typeof(e_rot)))
             {
-                SET_sliderLimits(GET_slSpeed(rot), Ms.GET_M(rot).speed);
-                SET_sliderLimits(GET_slAngle(rot), Ms.GET_M(rot).angle);
+                SET_sliderLimits(GET_slSpeed(rot), Ms.GET_M(rot).speedWanted);
+                SET_sliderLimits(GET_slAngle(rot), Ms.GET_M(rot).angleWanted);
             }
         }
         //private void UPDATE_motorsFromSliders()
@@ -213,8 +213,8 @@ namespace EyeOut
         {
             if (C_State.FURTHER(e_stateMotor.ready))
             {
-                Ms.GET_M(rot).angle.Dec = GET_slAngle(rot).Value;
-                Ms.GET_M(rot).speed.Dec = GET_slSpeed(rot).Value;
+                Ms.GET_M(rot).angleWanted.Dec = GET_slAngle(rot).Value;
+                Ms.GET_M(rot).speedWanted.Dec = GET_slSpeed(rot).Value;
             }
         }
 
@@ -230,8 +230,8 @@ namespace EyeOut
         {
             if (C_State.FURTHER(e_stateMotor.ready))
             { 
-                GET_slSpeed(rot).Value = Ms.GET_M(rot).speed.Dec;
-                GET_slAngle(rot).Value = Ms.GET_M(rot).angle.Dec;
+                GET_slSpeed(rot).Value = Ms.GET_M(rot).speedWanted.Dec;
+                GET_slAngle(rot).Value = Ms.GET_M(rot).angleWanted.Dec;
                 //LOG_logger(string.Format("{0} = angle[{1}], speed[{2}]", rot, M(rot).angle.Dec, M(rot).speed.Dec));
             }
         }

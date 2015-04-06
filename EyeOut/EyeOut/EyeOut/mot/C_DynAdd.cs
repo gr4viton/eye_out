@@ -10,7 +10,35 @@ namespace EyeOut
 {
     // RX-64_Manual.pdf
     // 18-03-2015
+    
+    /// <summary>
+    /// Addresses of Dynamixel MX-64AR Servomotor
+    /// </summary>
+    public sealed class C_DynSize
+    {
 
+    }
+    /// <summary>
+    /// Addresses of Dynamixel MX-64AR Servomotor
+    /// </summary>
+    public sealed class C_DynIndex
+    {
+
+    }
+    /// <summary>
+    /// Addresses of Dynamixel MX-64AR Servomotor
+    /// </summary>
+    public sealed class C_DynInstruction
+    {
+
+    }
+    /// <summary>
+    /// Addresses of Dynamixel MX-64AR Servomotor
+    /// </summary>
+    public sealed class C_DynId
+    {
+
+    }
     /// <summary>
     /// Addresses of Dynamixel MX-64AR Servomotor
     /// </summary>
@@ -55,7 +83,7 @@ namespace EyeOut
         public static byte[] PACKETSTART = { 255, 255 }; // Starting bytes of message
         public const int RECEIVING_BUFFER_VOLUME = 143; // the volume of receiving buffer of RX-64 
         public const int MAX_BYTES_OF_PACKET = RECEIVING_BUFFER_VOLUME;
-        public const int MAX_PARAMETERS = MAX_BYTES_OF_PACKET - 6; // 6 = STARTING ZEROS, ID, LENGTH, INSTRUCTION, CHECKSUM
+        public const int MAX_PARAMETERS = MAX_BYTES_OF_PACKET - 6; // 6 = PACKETSTART, ID, LENGTH, INSTRUCTION, CHECKSUM
         // ____________________________________________________ Goal position
         public const byte GOAL_POS_L = 30;
         public const byte GOAL_POS_H = 31;

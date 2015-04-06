@@ -200,6 +200,7 @@ namespace EyeOut
                     spi.DiscardInBuffer();
                     spi.DiscardOutBuffer();
                 }
+                
                 lock (queue_locker)
                 {
                     if (packetQueue.Count != 0)
@@ -338,6 +339,10 @@ namespace EyeOut
                     
                     while (0 != C_SPI.spi.BytesToRead)
                     {
+                        //if (numPacket == 1)
+                        //{
+                        //    break; // get only one packet
+                        //}
                         this_byte = (byte)C_SPI.spi.ReadByte();
                         readBuff[i_readBuff] = this_byte;
                         if (INCOMING_PACKET == true)
@@ -353,14 +358,15 @@ namespace EyeOut
                             }
                             if (i_receivedByte == packetNumOfBytes - 1) // this_byte is the last received byte from this packet
                             {
-                                INCOMING_PACKET = false; 
+                                INCOMING_PACKET = false;
+                                LOG_cmd(receivedPacketBytes.ToArray(), e_cmd.received);
                                 C_Packet.PROCESS_receivedPacket(lastSent, receivedPacketBytes, numPacket);
                                 numPacket++;
                             }
                             i_receivedByte++;
                         }
                         // not detected NEW message yet
-                        if (i_readBuff > 0)
+                        if (i_readBuff >= 0)
                         {
                             // C_DynAdd.PACKETSTART detection
                             if ((readBuff[i_readBuff] == 0xFF) && (readBuff[i_readBuff - 1] == 0xFF))

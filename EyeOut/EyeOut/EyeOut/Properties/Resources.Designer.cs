@@ -61,7 +61,10 @@ namespace EyeOut.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to System|4.2|because.
+        ///   Looks up a localized string similar to SharpDX|2.6.2.0|DircetX scene|MIT|C# Wrapper around DirectX libraries|
+        ///SharpOVR|0.4.1.1|Oculus Rift throughput|Oculus VR Rift SDK Software License|C# Wrapper around Oculus SDK library LibOVR|https://github.com/opentrack/LibOVR
+        ///DirectShowLib|2005|Video source searching|LGPL|Access to Microsoft&apos;s DirectShow functionality from within .NET applications|http://directshownet.sourceforge.net/about.html
+        ///EmguCV|2.2.1.1150|Acquisition of camera image|Not free - if not openSource|Emgu CV is a cross platform .Net wr [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string aboutLibraries {
             get {
@@ -70,13 +73,13 @@ namespace EyeOut.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 01|Ping
+        ///   Looks up a localized string similar to 01|Ex3: Ping
         ///022B01|Ex1: Read internal temeperature
         ///03180101|Ex16: Turns on the LED and enables Torque
         ///031E00020002|Ex17: Locates at the Position 180° with the speed of 57RPM
         ///031E00030002|Ex17.2: Locates at the Position 185° with the speed of 57RPM
-        ///
-        ///.
+        ///020003|Ex6: Reads the Model Number and Firmware Version. 
+        ///831E040010005001012002600302300070010320028003|Ex5: (SyncWrite) Moves to the following position and speed for each RX-64. :: RX-64 with ID 0 : Moves to the position of 0x010 at the speed of 0x150 ::  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string cmdInEx {
             get {
@@ -91,6 +94,37 @@ namespace EyeOut.Properties {
             get {
                 object obj = ResourceManager.GetObject("eyeout", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 40 R #0 Model Number L
+        ///00 R #1 Model Number H
+        ///00 R #2 Version of Firmware
+        ///01 B #3 ID
+        ///22 B #4 Baud Rage
+        ///FA B #5 Return Delay time
+        ///00 B #6 CW Angle Limit L
+        ///00 B #7 CW Angle Limit H
+        ///FF B #8 CCW Angle Limit L
+        ///03 B #9 CCW Angle Limit H
+        ///00 X #10 -
+        ///50 B #11 Highest Limit Temperature
+        ///3C B #12 Lowest Limit Voltage
+        ///F0 B #13 Highest Limit Voltage
+        ///FF B #14 Max Torque L
+        ///03 B #15 Max Torque H
+        ///02 B #16 Status Return Level
+        ///24 B #17 Alarm LED
+        ///24 B #18 Alarm Shutdown
+        ///00 X #19 -
+        ///00 X #20 -
+        ///00 X #21 -
+        ///00  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string registerByteDefault {
+            get {
+                return ResourceManager.GetString("registerByteDefault", resourceCulture);
             }
         }
     }

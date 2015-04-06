@@ -48,4 +48,3 @@ FF B #14 Max Torque L
 00 B #47 Locking EEPROM
 00 B #48 Punch L
 00 B #49 Punch H
-

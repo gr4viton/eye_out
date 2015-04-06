@@ -109,7 +109,13 @@ namespace EyeOut
         {
             foreach (C_Motor mot in this)
             {
-                mot.ORDER_SET(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ALWAYS);
+                // call it twice
+                // 1) to set it 
+                // 2) we must set the StatusReturnLevel value in register to always (because default is never)
+                // 2) to actualize motorRegister stored in pc and to know that it is set to always
+                mot.ORDER_SET(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ONREAD);
+                mot.StatusReturnLevel = e_statusReturnLevel.onRead;
+                mot.ORDER_SET(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ONREAD); 
             }
         }
         public void INIT_individualMotors()

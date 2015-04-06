@@ -19,15 +19,15 @@ namespace EyeOut
         [Description("Wanted angle")]
         angleWanted = 0,
         [Description("Sent angle")]
-        angleGoal,
+        angleSent,
         [Description("Actual angle")]
-        anglePresent,
+        angleSeen,
         [Description("Wanted speed")] 
         speedWanted,
         [Description("Goal speed")]
-        speedGoal,
+        speedSent,
         [Description("Actual speed")]
-        speedPresent,
+        speedSeen,
     }
 
     public class C_MotorDataRow
@@ -99,17 +99,23 @@ namespace EyeOut
             {
                 switch (_type)
                 {
-                    case (e_motorDataType.angleGoal):
-                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "°", mot.angle.Dec));
+                    case (e_motorDataType.angleWanted):
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "°", mot.angleWanted.Dec));
                         break;
-                    case (e_motorDataType.anglePresent):
-                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "°", mot.anglePresent.Dec));
+                    case (e_motorDataType.angleSent):
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "°", mot.angleSent.Dec));
                         break;
-                    case (e_motorDataType.speedGoal):
-                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speed.Dec_inRPM));
+                    case (e_motorDataType.angleSeen):
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "°", mot.angleSeen.Dec));
                         break;
-                    case (e_motorDataType.speedPresent):
-                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speedPresent.Dec_inRPM));
+                    case (e_motorDataType.speedWanted):
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speedWanted.Dec_inRPM));
+                        break;
+                    case (e_motorDataType.speedSent):
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speedSent.Dec));
+                        break;
+                    case (e_motorDataType.speedSeen):
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speedSeen.Dec_inRPM));
                         break;
                 }
             }

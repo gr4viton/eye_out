@@ -26,7 +26,7 @@ namespace EyeOut
         echoOfInstructionPacket, statusPacket, instructionPacket
     }
 
-    public enum e_returnStatusLevel // address 16
+    public enum e_statusReturnLevel // address 16
     {
         [Description("0 No return against all instructions")] never = 0,
         [Description("1 Retrun only for the READ_DATA command")] onRead = 1,
@@ -97,10 +97,10 @@ namespace EyeOut
         public e_rot rotMotor;
         protected byte idByte;
         protected byte lengthByte; //  The length is calculated as “the number of Parameters (N) + 2”
-        protected e_returnStatusLevel returnStatusLevel = e_returnStatusLevel.never;
+        protected e_statusReturnLevel returnStatusLevel = e_statusReturnLevel.never;
             
         //protected e_packetEcho packetEcho = e_packetEcho.echoLast;
-        protected e_motorDataType motorDataType = e_motorDataType.anglePresent;
+        protected e_motorDataType motorDataType = e_motorDataType.angleSeen;
         protected e_packetType packetType = e_packetType.instructionPacket;
         
         protected byte instructionOrErrorByte; // instruction
@@ -283,16 +283,44 @@ namespace EyeOut
 
         public C_Packet(byte[] receivedBytes)
         {
-            idByte = 0;
+
             //statusType = e_statusType.noReturn;
             packetType = e_packetType.instructionPacket;
-            par = new List<byte>();
+
+            int IndexOfCheckSum = receivedBytes.Length - 1;
+
+            idByte = receivedBytes[IndexOfId];
+            instructionOrErrorByte = receivedBytes[IndexOfInstructionOrError];
+            // fill in params (from const to length (checksum))
+            List<byte> _par = new List<byte>();
+            for (int q = IndexOfFirstParam; q < IndexOfCheckSum; q++)
+            {
+                _par.Add(receivedBytes[q]);
+            }
+            Par = _par;
+            //Par = _par;
 
             try
             {
-                RESET_from_packetBytes(receivedBytes);
+                //    RESET_from_packetBytes(receivedBytes);
+                IS_consistent();
+
+                if (lengthByte != receivedBytes[IndexOfLength])
+                {
+                    IsConsistent = false;
+                    // bad - but should never happen 
+                    // as the length byte directly creates the length of the byte array 
+                    // in the serial read function
+                    throw new Exception(GET_ByteFailInfo("LENGTH_BYTE", lengthByte, receivedBytes[IndexOfLength]));
+                }
+
+                if (CheckSumByte != receivedBytes[IndexOfCheckSum])
+                {
+                    IsConsistent = false;
+                    throw new Exception(GET_ByteFailInfo("CHECKSUM_BYTE", CheckSumByte, receivedBytes[IndexOfCheckSum]));
+                }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 C_Packet.LOG_ex(this, e);
             }
@@ -317,7 +345,7 @@ namespace EyeOut
         public void REFRESH_checkSum()
         {
             // count checksum from whole cmd
-            checkSumByte = C_CheckSum.GET_checkSum(PacketBytes_forChecksum);
+            checkSumByte = C_CheckSum.GET_checkSum_fromWholePacket(PacketBytes);
         }
         public void REFRESH_length()
         {
@@ -339,18 +367,18 @@ namespace EyeOut
 
             // just try to create it from bytes and than find out if its equal
             //return true;
-            return (IS_consistentLengthByteReceived() 
-                 && IS_consistentCheckSumByteReceived());
+            return (IS_consistentLengthByte() 
+                 && IS_consistentCheckSumByte());
         }
 
-        public bool IS_consistentLengthByteReceived()
+        public bool IS_consistentLengthByte()
         {
             // make sure that all of these are correct
             // checkSumByteReceived
             return true;
         }
 
-        public bool IS_consistentCheckSumByteReceived()
+        public bool IS_consistentCheckSumByte()
         {
             // make sure that all of these are correct
             // lengthByteReceived
@@ -402,7 +430,7 @@ namespace EyeOut
                 q++;
             }
             // checksum - counted without PACKETSTART
-            _packetBytes[q] = C_CheckSum.GET_checkSum(_packetBytes);
+            _packetBytes[q] = C_CheckSum.GET_checkSum_fromDataBytes(_packetBytes);
 
             // packet start
             for (q = IndexOfPacketStart; q < C_DynAdd.SIZEOF_PACKETSTART; q++)
@@ -429,57 +457,59 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region RESET
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public void RESET_from_lsPack(List<byte> _lsPack)
-        {
-            RESET_from_packetBytes(_lsPack.ToArray());
-        }
+        //public void RESET_from_lsPack(List<byte> _lsPack)
+        //{
+        //    RESET_from_packetBytes(_lsPack.ToArray());
+        //}
     
-        public void RESET_from_packetBytes(byte[] _packetBytes)
+        //public void RESET_from_packetBytes(byte[] _packetBytes)
+        //{
+        //    // fill in the new instructionPacket:
+        //    //      id | instruction/error | params  | 
+        //    // -> it'll compute automatically: 
+        //    //      LengthByte, ChecksumByte
+        //    // get PacketBytes 
+        //    // compare:
+        //    //      LengthByte ?= LengthByteReceived
+        //    //      ChecksumByte ?= ChecksumByteReceived
+        //    // if anything goes wrong throw an exception
+
+        //    int IndexOfCheckSum = _packetBytes.Length - 1;
+
+        //    // fill in instructionByte
+        //    instructionOrErrorByte = _packetBytes[IndexOfInstructionOrError];
+        //    // fill in id
+        //    idByte = _packetBytes[IndexOfId];
+        //    // fill in params (from const to length (checksum))
+        //    List<byte> _par = new List<byte>();
+        //    for (int q = IndexOfFirstParam; q < IndexOfCheckSum; q++)
+        //    {
+        //        _par.Add(_packetBytes[q]);
+        //    }
+        //    Par = _par;
+            
+        //    if(lengthByte != _packetBytes[IndexOfLength])
+        //    {
+        //        IsConsistent = false;
+        //        // bad - but should never happen 
+        //        // as the length byte directly creates the length of the byte array 
+        //        // in the serial read function
+        //        throw new Exception(GET_ByteFailInfo("LENGTH_BYTE", lengthByte, _packetBytes[IndexOfLength]));
+        //    }
+            
+        //    if(CheckSumByte != _packetBytes[IndexOfCheckSum])
+        //    {
+        //        IsConsistent = false;
+        //        throw new Exception(GET_ByteFailInfo("CHECKSUM_BYTE", CheckSumByte, _packetBytes[IndexOfCheckSum]));
+        //    }
+        //}
+
+        public string GET_ByteFailInfo(string byteName, byte csCounted, byte csReceived)
         {
-            // fill in the new instructionPacket:
-            //      id | instruction/error | params  | 
-            // -> it'll compute automatically: 
-            //      LengthByte, ChecksumByte
-            // get PacketBytes 
-            // compare:
-            //      LengthByte ?= LengthByteReceived
-            //      ChecksumByte ?= ChecksumByteReceived
-            // if anything goes wrong throw an exception
-
-            int IndexOfCheckSum = _packetBytes.Length - 1;
-
-            // fill in instructionByte
-            instructionOrErrorByte = _packetBytes[IndexOfInstructionOrError];
-            // fill in id
-            idByte = _packetBytes[IndexOfId];
-            // fill in params (from const to length (checksum))
-            List<byte> _par = new List<byte>();
-            for (int q = IndexOfFirstParam; q < IndexOfCheckSum; q++)
-            {
-                _par.Add(_packetBytes[q]);
-            }
-            Par = _par;
-            
-            if(lengthByte != _packetBytes[IndexOfLength])
-            {
-                IsConsistent = false;
-                // bad - but should never happen 
-                // as the length byte directly creates the length of the byte array 
-                // in the serial read function
-                throw new Exception( String.Format(
-                    "The LENGTH_BYTE counted from PACKET bytes =[{0}] is different from the value of LENGTH_BYTE =[{1}] received in the PACKET.",
-                    lengthByte, _packetBytes[IndexOfLength]
-                    ));
-            }
-            
-            if(CheckSumByte != _packetBytes[IndexOfCheckSum])
-            {
-                IsConsistent = false;
-                throw new Exception( String.Format(
-                    "The CHECKSUM_BYTE counted from PACKET bytes =[{0}] is different from the value of CHECKSUM_BYTE =[{1}] received in the PACKET.",
-                    CheckSumByte, _packetBytes[IndexOfCheckSum]
-                    ));
-            }
+            return String.Format(
+                    "The {2} counted from PACKET bytes =[{0}={0:X}] is different from the value of {2} =[{1}={1:X}] received in the PACKET.",
+                    csCounted, csReceived, byteName
+                    );
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion RESET
@@ -529,7 +559,7 @@ namespace EyeOut
         {
             idByte = _mot.id;
             rotMotor = _mot.rotMotor;
-            returnStatusLevel = _mot.ReturnStatusLevel;
+            returnStatusLevel = _mot.StatusReturnLevel;
             instructionOrErrorByte = _instructionByte;
             Par_obj = _lsParameters;
         }
@@ -538,7 +568,7 @@ namespace EyeOut
         {
             idByte = _mot.id;
             rotMotor = _mot.rotMotor;
-            returnStatusLevel = _mot.ReturnStatusLevel;
+            returnStatusLevel = _mot.StatusReturnLevel;
             instructionOrErrorByte = _instructionByte;
             Par = _lsParameters;
         }
@@ -577,7 +607,7 @@ namespace EyeOut
             if(
                 (lastSent.idByte == C_DynAdd.ID_BROADCAST) // never no matter of returnStatusLevel
                 ||
-                (lastSent.returnStatusLevel == e_returnStatusLevel.never) 
+                (lastSent.returnStatusLevel == e_statusReturnLevel.never) 
                 )
             {
                 return false;
@@ -585,7 +615,7 @@ namespace EyeOut
             else if (
                 (lastSent.instructionOrErrorByte == C_DynAdd.INS_PING)
                 ||
-                (lastSent.returnStatusLevel == e_returnStatusLevel.allways) // always no matter of returnStatusLevel
+                (lastSent.returnStatusLevel == e_statusReturnLevel.allways) // always no matter of returnStatusLevel
                 )
             {
                 return true;
@@ -609,10 +639,14 @@ namespace EyeOut
             // we have received one whole packet
             C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
 
-            if (numPacket == 0)
+            //if (numPacket == 0)
             { 
                 // it is echo or error
-                if (IS_error(received, receivedBytes) == true)
+                if (received == lastSent)
+                {
+                    LOG_echo(lastSent);
+                }
+                else if (IS_error(received, receivedBytes) == true)
                 {
                     return;
                 }

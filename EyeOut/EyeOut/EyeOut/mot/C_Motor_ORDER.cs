@@ -75,23 +75,22 @@ namespace EyeOut
 
         public void SETUP_move(byte INSTRUCTION_BYTE)
         {
-            if ((angle.Dec != angle.DecLast) || (speed.Dec != speed.DecLast))
+            if ((angleWanted.Dec != angleWanted.DecLast) || (speedWanted.Dec != speedWanted.DecLast))
             {
-                LOG_SETUP_moveSpeed(INSTRUCTION_BYTE, angle, speed);
+                LOG_SETUP_moveSpeed(INSTRUCTION_BYTE, angleWanted, speedWanted);
                 SEND_packet( INSTRUCTION_BYTE, new List<object> {
-                    C_DynAdd.GOAL_POS_L, angle.Hex, speed.Hex 
+                    C_DynAdd.GOAL_POS_L, angleWanted.Hex, speedWanted.Hex 
                     });
-
             }
         }
 
         // move without speed control - does not change current speed in motor class instance
         public void ORDER_moveBrisk()
         {
-            C_Value lastSpeed = speed;
-            speed.Dec = C_DynVal.SET_MOV_SPEED_NOCONTROL;
+            C_Value lastSpeed = speedWanted;
+            speedWanted.Dec = C_DynVal.SET_MOV_SPEED_NOCONTROL;
             ORDER_move();
-            speed = lastSpeed;
+            speedWanted = lastSpeed;
 
             //SEND_cmdInner(CREATE_cmdInner(new List<object> { 
             //    C_DynAdd.INS_WRITE, C_DynAdd.GOAL_POS_L, angle.Hex, C_DynVal.SET_MOV_SPEED_NOCONTROL
