@@ -62,7 +62,10 @@ namespace EyeOut
         {
             if(C_State.FURTHER(e_stateProg.initialized))
             {
-                
+                foreach (C_Motor mot in Ms)
+                {
+                    //mot.ORDER_getPosition();
+                }
                 foreach (C_MotorDataRow row in motorData)
                 {
                     row.REFRESH();

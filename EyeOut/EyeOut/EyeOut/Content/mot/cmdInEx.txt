@@ -18,4 +18,12 @@
 03110404|Ex15: Sets the Alarm as such that LED flickers and shutdown (torque off) ::  when the operating temperature is higher than the limit temperature. 
 03A101014040|Ex18: Sets Compliance Margin=1 and Compliance Slope=0x40. 
 03304000|Ex19: Sets the minimum output Torque (Punch) as 0x40. 
-
+030401|Set BaudRate to 1000 kbps ~ 1000 kbps = 0% Tolerance
+030403|Set BaudRate to 500 kbps ~ 500 kbps = 0% Tolerance
+030404|Set BaudRate to 400 kbps ~ 400 kbps = 0% Tolerance
+030407|Set BaudRate to 250 kbps ~ 250 kbps = 0% Tolerance
+030409|Set BaudRate to 200 kbps ~ 200 kbps = 0% Tolerance
+030410|Set BaudRate to 117674.1 bps ~ 115200 kbps = -2.124% Tolerance
+030422|Set BaudRate to 57142.9 bps ~ 57600 kbps = 0.794% Tolerance
+030467|Set BaudRate to 19230.8 bps ~ 19200 kbps = -0.160% Tolerance
+0304CF|Set BaudRate to 9615.4 kbps ~ 9600 kbps = -0.160% Tolerance
