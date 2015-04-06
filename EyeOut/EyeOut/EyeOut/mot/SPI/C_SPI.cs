@@ -76,7 +76,8 @@ namespace EyeOut
             timeoutExceptionPeriod = 10; // according to datahseet.?.
             // spi
             //spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
-            spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
+            //spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
+            spi = new SerialPort("COM6", 1000000, Parity.None, 8, StopBits.One);
 
             /*
             SPI.Handshake = System.IO.Ports.Handshake.None;
@@ -239,40 +240,6 @@ namespace EyeOut
             }
         }
 
-        private static void TRY_READ_packet(C_Packet instructionPacket)
-        {
-            int packetRead = 0;
-            readReturn.Restart();
-
-            // TODO: implement timeoutException
-            //try
-            //{
-
-            //}
-            //catch (TimeoutException ex)
-            //{
-
-            //}
-
-            while (readReturn.Decrement() != 0)
-            {
-                // read out echo
-                packetRead = READ_packet(instructionPacket);
-                if (packetRead >0)
-                {
-                    LOG_got("Read on ["+(readReturn.ValDef-readReturn.Val).ToString() + "] try");
-                    break;
-                }
-            }
-            if (packetRead == 0)
-            {
-                // didn't read anything
-                LOG_got(string.Format(
-                    "Cannot read the response status packet from serial port. Tried [{0}]-times", readReturn.ValDef
-                    ));
-            }
-        }
-
         private static void workerSEND_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             // catch if response was A-OK
@@ -337,7 +304,7 @@ namespace EyeOut
             {
                 if (packetBytes[q] != by)
                 {
-                    LOG_got(string.Format(
+                    LOG_err(string.Format(
                         "This packet does not start with PACKETSTART bytes: [{0}]",
                         C_CONV.byteArray2strHex_space(packetBytes.ToArray())
                         ));
@@ -410,10 +377,6 @@ namespace EyeOut
                                 // LENGTH_BYTE = N*[Params] + 1*[LEN] + 1*[INS/ERROR]
                                 // packetLength = [LENGTH_BYTE] + 1*[ID] + 1*[CheckSum] + 2*[PacketStart]
                                 packetLength = (int)receivedByte + 4;
-                                if (packetLength > 10)
-                                {
-                                    LOG_got("this bothers me");
-                                }
                             }
                             i_packetByte++;
                             if (i_packetByte == packetLength ) // last byte
@@ -431,7 +394,7 @@ namespace EyeOut
                             }
                             else if (i_packetByte > packetLength)
                             {
-                                LOG_got(String.Format(
+                                LOG_err(String.Format(
                                     "Strange thing happened, there were more bytes read from packet than should: {0} from {1}",
                                     i_packetByte, packetLength));
 
@@ -445,14 +408,14 @@ namespace EyeOut
                         }
 
 
-                        //if (numPacket == 1)
-                        //{
-                        //    break; // get only one packet
-                        //}
+                        if (numPacket == 1)
+                        {
+                            break; // get only one packet
+                        }
                     }
                     if (INCOMING_PACKET == true)
                     {
-                        LOG_got(string.Format(
+                        LOG_err(string.Format(
                             "There are no more [BytesToRead]! Packet bytes read [{0}/{1}] = [{2}]",
                             i_packetByte, packetLength, C_CONV.byteArray2strHex_space(packetBytes.ToArray())
                             ));
@@ -501,7 +464,7 @@ namespace EyeOut
         }
         public static void LOG_err(string _msg)
         {
-            C_Logger.Instance.LOG_err(e_LogMsgSource.spi, _msg);
+            C_Logger.Instance.LOG_err(e_LogMsgSource.spi_err, _msg);
         }
 
         public static string GET_exInfo(Exception ex)

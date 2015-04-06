@@ -35,7 +35,7 @@ namespace EyeOut
     public enum e_LogMsgSource
     {
         packet, packInstruct, packStatus, 
-        spi, spi_sent, spi_got, 
+        spi, spi_sent, spi_got, spi_err,
         gui, log, 
         mot, mot_yaw, mot_pitch, mot_roll,
         byteReg,

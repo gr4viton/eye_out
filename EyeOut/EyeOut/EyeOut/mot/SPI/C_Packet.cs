@@ -131,6 +131,12 @@ namespace EyeOut
             set { idByte = value; }
         }
 
+        public byte InstructionOrErrorByte
+        {
+            get { return instructionOrErrorByte; }
+            set { instructionOrErrorByte = value; }
+
+        }
         public e_packetType PacketType
         {
             get { return packetType; }

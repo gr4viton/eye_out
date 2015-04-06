@@ -182,6 +182,7 @@ namespace EyeOut
                     List<byte> insAndParams = new List<byte>();
                     //byte[] insAndParams = 
                     insAndParams.AddRange(C_CONV.strHex2byteArray(strHex_concantenated));
+
                     C_Motor.cmdPackets.Add(
                         new C_Packet(
                             this, insAndParams[0],
@@ -202,7 +203,7 @@ namespace EyeOut
         {
             C_Packet.SEND_packet(
                 new C_Packet(
-                    this, cmdPackets[num].IdByte, cmdPackets[num].Par
+                    this, cmdPackets[num].InstructionOrErrorByte, cmdPackets[num].Par
                     ));
         }
 
