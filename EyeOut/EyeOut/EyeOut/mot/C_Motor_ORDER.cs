@@ -162,13 +162,14 @@ namespace EyeOut
 
         public void READ_position()
         {
-            byte BYTE_LENGTH = 2;
-            C_Packet.SEND_packet( new C_Packet(
-                this, C_DynAdd.INS_READ, new List<object> {
-                C_DynAdd.PRESENT_POS_L, BYTE_LENGTH
-                }));
+            READ(C_DynAdd.PRESENT_POS_L, 2);
         }
 
+        public void READ_limitAngle()
+        {
+            READ(C_DynAdd.ANGLE_LIMIT_CW_L, 2);
+            READ(C_DynAdd.ANGLE_LIMIT_CW_H, 2);
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion GET position
     }

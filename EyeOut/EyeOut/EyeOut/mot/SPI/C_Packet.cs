@@ -653,14 +653,14 @@ namespace EyeOut
             //C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
             C_Packet received = new C_Packet(receivedBytes);
 
-            IS_error(received, receivedBytes); // just log it
+            //IS_error(received, receivedBytes); // just log it
 
             // it is echo or error - is it possible to get echo?
-            if (received == lastSent)
-            {
-                LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
-            }
-            else
+            //if (received == lastSent)
+            //{
+            //    LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
+            //}
+            if (IS_error(received, receivedBytes) == false)
             {
                 PROCESS_statusPacket(received, lastSent);
             }

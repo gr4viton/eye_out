@@ -37,7 +37,7 @@ namespace EyeOut
             {
                 lsBaudRate.Items.Add(Convert.ToString(br));
             }
-            lsBaudRate.SelectedIndex = 2;
+            lsBaudRate.SelectedIndex = 1;
         }
         private void SPI_rescanPorts()
         {

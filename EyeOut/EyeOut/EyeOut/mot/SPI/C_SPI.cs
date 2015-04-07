@@ -76,8 +76,8 @@ namespace EyeOut
             timeoutExceptionPeriod = 10; // according to datahseet.?.
             // spi
             //spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
-            //spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
-            spi = new SerialPort("COM6", 1000000, Parity.None, 8, StopBits.One);
+            spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
+            //spi = new SerialPort("COM6", 1000000, Parity.None, 8, StopBits.One);
 
             /*
             SPI.Handshake = System.IO.Ports.Handshake.None;
@@ -334,7 +334,11 @@ namespace EyeOut
                     bool INCOMING_PACKET = false;
 
                     byte receivedByte;
-                    while (0 != C_SPI.spi.BytesToRead)
+                    while (
+                        (0 != C_SPI.spi.BytesToRead)
+                        ||
+                        (INCOMING_PACKET == true)
+                        )
                     {
                         receivedByte = (byte)C_SPI.spi.ReadByte();
                         packetBytes.Add(receivedByte);
