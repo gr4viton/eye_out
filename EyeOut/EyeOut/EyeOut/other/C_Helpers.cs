@@ -434,6 +434,11 @@ namespace EyeOut
         public double DecMax { get { return decMax; } }
 
         public double DecLast { get { return decLast; } }
+
+        public string ToString()
+        {
+            return string.Format("{0:0.00}", Dec);
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -124,7 +124,6 @@ namespace EyeOut
 
 
 
-
         public void LOG_SETUP_moveSpeed(byte INSTRUCTION_BYTE, C_Value _angle, C_Value _speed)
         {
             string prefix = "ODD_MOVE";
@@ -161,23 +160,13 @@ namespace EyeOut
         #region GET position
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public void ORDER_getPosition()
-        {
-            SETUP_getPosition(C_DynAdd.INS_READ);
-        }
-
-        public void SETUP_getPosition(byte INSTRUCTION_BYTE)
+        public void READ_position()
         {
             byte BYTE_LENGTH = 2;
             C_Packet.SEND_packet( new C_Packet(
-                this, INSTRUCTION_BYTE, new List<object> {
+                this, C_DynAdd.INS_READ, new List<object> {
                 C_DynAdd.PRESENT_POS_L, BYTE_LENGTH
                 }));
-            //SEND_cmdInner(e_packetEcho.presentPosition,
-            //    CREATE_cmdInnerFromBytes(new List<object> { 
-            //        INSTRUCTION_BYTE, C_DynAdd.PRESENT_POS_L, BYTE_LENGTH
-                //}));
-            //LOG_SETUP_moveSpeed(INSTRUCTION_BYTE, angle, speed);
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

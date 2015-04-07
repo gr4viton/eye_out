@@ -6,6 +6,7 @@
 031900|LED OFF
 031801|TORQUE ENABLE
 031800|TORQUE DISABLE
+022402|Read Present Position
 022B01|Ex1: Read internal temeperature
 03180101|Ex16: Turns on the LED and enables Torque
 03180000|Ex16.2: Turns off the LED and disable Torque

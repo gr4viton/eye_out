@@ -11,6 +11,7 @@ using System.Collections.ObjectModel; // ObservableCollection
 using System.Windows; // Window
 using System.Windows.Data; //CollectionViewSource
 using System.Windows.Controls; // checkbox
+using System.Windows.Controls.Primitives; // ischedcked
 
 //using System.IO.Ports;
 using System.Windows.Input; // GUI eventArgs
@@ -53,7 +54,7 @@ namespace EyeOut
         {
             timMotorDataRefresh = new DispatcherTimer();
             timMotorDataRefresh.Tick += new EventHandler(timMotorDataRefresh_Tick);
-            timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 200);
+            timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 100);
             timMotorDataRefresh.Start();
         }
         
@@ -62,10 +63,15 @@ namespace EyeOut
         {
             if(C_State.FURTHER(e_stateProg.initialized))
             {
-                foreach (C_Motor mot in Ms)
+                if (tbtReadPresentPosition.IsChecked  == true)
                 {
-                    //mot.ORDER_getPosition();
-                    //mot.READ(C_DynAdd.LED_ENABLE, 1);
+                    //foreach (C_Motor mot in Ms)
+                    {
+                        //mot.ORDER_getPosition();
+                        //mot.READ(C_DynAdd.LED_ENABLE, 1);
+                    }
+                    //Ms.Yaw.READ_position
+                    Ms.Yaw.READ_position();
                 }
                 foreach (C_MotorDataRow row in motorData)
                 {

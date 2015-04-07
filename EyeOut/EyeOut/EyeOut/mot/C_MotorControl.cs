@@ -169,16 +169,9 @@ namespace EyeOut
 
 
         public static void ACTUALIZE_motorRegister(e_rot rot, e_regByteType type, List<byte> pars)
-        {
-            //lock()
-            //lock(lock_roll)
-            //C_Motor mot = ;
-            // BROADCAST??
-            
+        {            
             bool addGot = false;
             byte addressByte = 0;
-            //StringBuilder str = new StringBuilder();
-
             foreach(byte byteValue in pars)
             {
                 if(addGot == false)
@@ -188,58 +181,10 @@ namespace EyeOut
                 }
                 else
                 {
-                    //str = new StringBuilder();
-                    //str.AppendLine(string.Format(
-                    //    "Want to set = mot[{0}].add[{1}].type[{2}] = [{3}]",
-                    //    rot, addressByte, type, byteValue
-                    //    ));
-                    /*
-                    str.AppendLine(string.Format(
-                        "Current value = mot[{0}].add[{1}].type[{2}] = [{3}]",
-                        rot, addressByte, type, MainWindow.Ms[rot].Reg.GET(addressByte, type).Val
-                        ));*/
                     MainWindow.Ms[rot].ACTUALIZE_register(addressByte, byteValue, type);
                     addressByte++;
-                    
-                    //str.AppendLine(string.Format(
-                    //    "New value = mot[{0}].add[{1}].type[{2}] = [{3}]",
-                    //    rot, addressByte, type, MainWindow.Ms[rot].Reg.GET(addressByte, type).Val
-                    //    ));
-                    //System.Windows.Forms.MessageBox.Show(str.ToString());
                 }
             }
-            //type = GET_typeFromParams(parsSent, parsGot);
-
-            // _par = parameters
-            //List<byte> subset12 = pars.GetRange(1, 2);
-            //List<byte> subset34 = pars.GetRange(3, 2);
-
-           
-            //SET_valueFromAddress(
-            //switch (type)
-            //{
-            //    case (e_motorDataType.anglePresent):
-            //        //C_Value presentPosition = new C_Value(
-            //        C_Packet.LOG_statusPacket(string.Format("Motor position = \t[{0:X} {1:X}]", pars[1], pars[2]));
-
-            //        mot.anglePresent.Hex = subset12.ToArray();
-            //        break;
-            //}
         }
-
-        //public static e_motorDataType GET_typeFromParams(List<byte> parsSent, List<byte> parsGot)
-        //{
-        //    //switch (parsSent.Count)
-        //    //{
-        //    //    case(0):
-        //    //        //return e_motorDataType.ping;
-        //    //        break;
-
-        //    //    case(2): // writing 2 bytes on address
-        //    //    case(3): // writing 2 bytes on address
-        //    //        return e_motorDataType.ping;
-        //    //        break;
-        //    //}
-        //}
     }
 }

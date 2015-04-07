@@ -494,7 +494,7 @@ namespace EyeOut
                 C_Motor.ORDER_ActionToAll();
 
 
-                MainWindow.Ms.Yaw.ORDER_getPosition();
+                MainWindow.Ms.Yaw.READ_position();
                 
                 //foreach (C_Motor mot in MainWindow.Ms)
                 //{

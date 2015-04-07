@@ -191,7 +191,7 @@ namespace EyeOut
             string txt = Properties.Resources.ResourceManager.GetString("registerByteDefault");
 
             string[] lines = txt.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            char sep = ' ';
+            char sep = '|';
 
             foreach (string line in lines)
             {
@@ -243,7 +243,11 @@ namespace EyeOut
                 }
             }
         }
-        
+
+        public string GET_name(int _add)
+        {
+            return reg[_add].Name;
+        }
         public C_RegByteValue GET(int _add, e_regByteType _type)
         {
             lock (lock_reg)

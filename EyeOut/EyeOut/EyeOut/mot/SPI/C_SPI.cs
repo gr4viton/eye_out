@@ -84,7 +84,7 @@ namespace EyeOut
             SPI.ReadTimeout = 200;
             SPI.WriteTimeout = 50;*/
             spi.Handshake = System.IO.Ports.Handshake.None;
-            spi.ReadTimeout = 1000;
+            spi.ReadTimeout = 200;
 
             // NOT NEEDED as all the motors are just CLIENTS - only responding to my (SERVER) orders
             //spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
@@ -313,23 +313,6 @@ namespace EyeOut
                 }
             }
             return true;
-            //if (packetBytes[i_packetByte] == C_DynAdd.PACKETSTART[i_packetByte])
-            //{
-            //    i_packetByte++;
-            //    if (i_packetByte == i_packetStart_max)
-            //    {
-            //        // Start of new packet detected
-            //        INCOMING_PACKET = true;
-            //        packetBytes.Clear();
-            //        // another try
-            //        int q = 0;
-            //        for (q = 0; q < i_packetStart_max; q++)
-            //        {
-            //            packetBytes.Add(C_DynAdd.PACKETSTART[q]);
-            //        }
-            //    }
-            //}
-            //return false;
         }
         public static int READ_packet(C_Packet lastSent)
         {
@@ -337,8 +320,6 @@ namespace EyeOut
             {
                 System.Threading.Thread.CurrentThread.Abort();
             }
-
-            // this function tries to read echo / return message of the motor after sending [lastSentCmd]
             int numPacket = 0;
             try
             {
@@ -409,10 +390,10 @@ namespace EyeOut
                         }
 
 
-                        if (numPacket == 1)
-                        {
-                            break; // get only one packet
-                        }
+                        //if (numPacket == 1)
+                        //{
+                        //    break; // get only one packet
+                        //}
                     }
                     if (INCOMING_PACKET == true)
                     {

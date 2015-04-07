@@ -110,7 +110,15 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static bool operator ==(C_Packet x, C_Packet y) 
         {
-            return x.PacketBytes.SequenceEqual(y.PacketBytes);
+            return (x.PacketBytes.SequenceEqual(y.PacketBytes));
+                //&&
+                //(x.byteId == y.byteId)
+                //&&
+                //(x.byteInstructionOrError == y.byteInstructionOrError)
+                //&&
+                //(x.byteLength = y.byteLength)
+                //&& 
+                //(x.byteCheckSum
         }
 
         public static bool operator !=(C_Packet x, C_Packet y)
@@ -642,11 +650,12 @@ namespace EyeOut
         public static void PROCESS_receivedPacket(C_Packet lastSent, List<byte> receivedBytes, int numPacket)
         {
             // we have received one whole packet
-            C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
+            //C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
+            C_Packet received = new C_Packet(receivedBytes);
 
             IS_error(received, receivedBytes); // just log it
 
-            // it is echo or error
+            // it is echo or error - is it possible to get echo?
             if (received == lastSent)
             {
                 LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
@@ -686,26 +695,36 @@ namespace EyeOut
         }
         public static void PROCESS_statusPacket(C_Packet received, C_Packet lastSent)
         {
-            // we have no error in statusPacket
-            if (lastSent.byteInstructionOrError == C_DynAdd.INS_WRITE)
+            if (received.byteId == lastSent.byteId)
             {
-                // actualize the parameters which were written into motors - and we know they were written good
-                C_MotorControl.ACTUALIZE_motorRegister(
-                    lastSent.rotMotor, 
-                    e_regByteType.seenValue, // as we received statusMessage after we written the value
-                    lastSent.Par);
-                LOG_statusPacket(GET_statusOkInfo(lastSent, "seenValue"));
+                // we have no error in statusPacket
+                if (lastSent.byteInstructionOrError == C_DynAdd.INS_WRITE)
+                {
+                    // actualize the parameters which were written into motors - and we know they were written good
+                    C_MotorControl.ACTUALIZE_motorRegister(
+                        lastSent.rotMotor,
+                        e_regByteType.seenValue, // as we received statusMessage after we written the value
+                        lastSent.Par);
+                    LOG_statusPacket(GET_statusOkInfo(lastSent, "seenValue"));
+                }
+                else
+                {
+                    // actualize the parameters which were read from motors
+                    received.Par.Insert(0, lastSent.Par[0]);
+                    C_MotorControl.ACTUALIZE_motorRegister(
+                        received.rotMotor,
+                        e_regByteType.seenValue,
+                        received.Par
+                        );
+                    LOG_statusPacket(GET_statusOkInfo(received, "seenValue"));
+                }
             }
             else
             {
-                // actualize the parameters which were read from motors
-                received.Par.Insert(0,lastSent.Par[0]);
-                C_MotorControl.ACTUALIZE_motorRegister(
-                    received.rotMotor, 
-                    e_regByteType.seenValue, 
-                    received.Par
-                    );
-                LOG_statusPacket(GET_statusOkInfo(received, "seenValue"));
+                LOG_statusPacket(string.Format(
+                    "The received status packet :\t{0}\nDoes not belong to the lastSent: \t{1}",
+                        received.PacketBytes_toString, lastSent.PacketBytes_toString
+                        ));
             }
         }
 

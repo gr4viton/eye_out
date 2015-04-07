@@ -225,8 +225,8 @@
                                         </StackPanel>
                                     </GroupBox>
 
-                                    <Button x:Name="btnDontTry" Content="DO TRY IT!" Click="btnDontTry_Click"/>
-                                    <Button x:Name="btnTry" Content="TRY IT I DARE YOU!" Click="btnTry_Click"/>
+                                    <Button Visibility="Collapsed" x:Name="btnDontTry" Content="DO TRY IT!" Click="btnDontTry_Click"/>
+                                    <Button Visibility="Collapsed" x:Name="btnTry" Content="TRY IT I DARE YOU!" Click="btnTry_Click"/>
                                     
                                 </StackPanel>
 
@@ -377,6 +377,7 @@
                                             <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
                                         </DataGrid.Columns>
                                     </DataGrid>
+                                        <ToggleButton x:Name="tbtReadPresentPosition" Content="Read present position" IsChecked="False"/>
                                     </StackPanel>
                                 </GroupBox>
                             </Grid>
