@@ -125,8 +125,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="cam\C_Camera.cs" />
-    <Compile Include="cam\Main_Camera.cs" />
+    <Compile Include="ocu_and_TP\cam\C_Camera.cs" />
+    <Compile Include="ocu_and_TP\cam\C_CameraCapture.cs" />
+    <Compile Include="ocu_and_TP\cam\Main_Camera.cs" />
     <Compile Include="about\Main_About.cs" />
     <Compile Include="log\C_Packet_LOG.cs" />
     <Compile Include="mot\C_ByteRegister.cs" />

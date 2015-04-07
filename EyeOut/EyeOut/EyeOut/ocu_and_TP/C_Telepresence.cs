@@ -25,6 +25,10 @@ using System.Windows.Threading; // dispatcherTimer
 //using SharpDX.DirectWrite; // text d3d10
 using SharpDX.Direct3D9; // text d3d9
 
+using Buffer = SharpDX.Direct3D10.Buffer;
+using Device = SharpDX.Direct3D10.Device;
+using DriverType = SharpDX.Direct3D10.DriverType;
+
 namespace EyeOut
 {
     // Use these namespaces here to override SharpDX.Direct3D11
@@ -32,174 +36,6 @@ namespace EyeOut
     using SharpDX.Toolkit.Graphics;
     using SharpDX.DXGI;
 
-    public class C_CaptureData
-    {
-        //cv::Mat image;
-        BitmapSource image;
-        //OVR.posef pose;
-        public C_CaptureData(BitmapSource _image)
-        {
-            image = _image;
-        }
-
-        public BitmapSource Image
-        {
-            get { return image; }
-        }
-    }
-    
-    public class C_CameraCaptureHandler
-    {
-        // instance of class interacting with camera
-        private C_Camera cam;  // resp in fact I can use Capture & all the conversion would be defined here..
-        //private Capture capture;        //takes images from camera as image frames
-        //public static int actualId;
-
-        private C_CaptureData captureData;
-
-        private object captureData_locker = new object();
-
-        private SharpOVR.HMD hmd; // for fetching the headpose
-        bool isStopped;
-
-        public C_CameraCaptureHandler(SharpOVR.HMD _hmd, int _camId)
-        {
-            // open the camera and set it up
-            cam = new C_Camera(_camId);
-            hmd = _hmd;
-            isStopped = true;
-        }
-
-        public void startCapture()
-        {
-            isStopped = false;
-            startCaptureLoop();
-        }
-
-        private void startCaptureLoop()
-        {
-            // better to create [Backgroundworker with the loop] inside C_CaptureDataHandler then in upper
-            // because if I would have more cameras each would create its loop separately :)
-
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.RunWorkerCompleted += captureLoop_RunWorkerCompleted;
-            worker.DoWork += captureLoop_DoWork;
-            //worker.RunWorkerAsync((object)cmd);
-            worker.RunWorkerAsync();
-        }
-
-        public void stopCapture()
-        {
-            isStopped = true;
-        }
-
-        bool newImgReady = true;
-
-        // with a locker
-        public C_CaptureData CaptureData // nullable
-        {
-            get
-            {
-                lock(captureData_locker)
-                {
-                    if (newImgReady)
-                    {
-                        // with act MOTOR pose
-                        // act Cam img
-                        return captureData;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-            set
-            {
-                lock (captureData_locker)
-                {
-                    captureData = value;
-                }
-            }
-        }
-
-
-        private void captureLoop_DoWork(object sender, DoWorkEventArgs e)
-        {
-
-            while (isStopped == false)
-            {
-                captureData = new C_CaptureData(
-                    cam.GET_txu()
-                    //,MOT.GET_position();
-                        );
-
-                
-            //// capture the headpose
-            //S_CaptureData captured;
-            //double captureTime = OVR.GetTimeInSeconds() - cam.CamLatency; // subtract a camera lag from pose
-                
-                // SDK can not predict in back time 
-                // -> so tweak the sdk 
-                // -> or make a abstract layer to store older positions
-                // looks like this SDK through SharpDX cannot predict at all
-                // so make predictions?
-
-                //SharpOVR.TrackingState tracking = SharpOVR.TrackingCapabilities.Orientation(hmd, captureTime);
-
-                //var pose = SharpOVR.TrackingCapabilities.Orientation;
-
-                //captured.pose = SharpOVR.TrackingCapabilities.Position;
-
-                //// capture the image
-                //if(!videoCapture.grab() || !videoCapture.retrieve(captured.image))
-                //{
-                //    //Failed video capture
-                //    LOG_err("Failed video capture");
-                //}
-
-                //cv::flip(captured.image.clone(), captured.image, 0); // opencv vs opengl ? vs directX
-                //setResult(captured);
-
-            }
-            //e.Result = C_SPI.WriteData(e.Argument as byte[]);
-        }
-
-        private void captureLoop_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            // catch if response was A-OK
-            if (e.Error != null)
-            {
-                LOG_err(String.Format("Camera id#{2} had an error:\n{0}\n{1}", e.Error.Data, e.Error.Message, cam.id));
-                //ie Helpers.HandleCOMException(e.Error);
-            }
-            else
-            {
-                //e.Result = "tocovrati writeData";
-                //MyResultObject result = (MyResultObject)e.Result;
-
-                //LOG("DATA SENT");
-                //var results = e.Result as List<object>;
-            }
-        }
-
-
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #region LOG
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public static void LOG(string _msg)
-        {
-            C_Logger.Instance.LOG(e_LogMsgSource.EyeOut_cam, _msg);
-        }
-
-        public static void LOG_err(string _msg)
-        {
-            C_Logger.Instance.LOG_err(e_LogMsgSource.EyeOut_cam, _msg);
-        }
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #endregion LOG
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    }
      
 /*
 // takes internation between Oculus VR and 
@@ -336,11 +172,23 @@ namespace EyeOut
         private Vector3 headPos = new Vector3(0f, 0f, -5f);
         private float bodyYaw = 3.141592f;
 
+
+
+
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region drawable objects
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         private Model model;
         private SharpDX.Toolkit.Graphics.Texture2D txuCam;
+
+        // Instantiate Vertex buiffer from vertex data
+        var vertices = Buffer.Create(device, BindFlags.VertexBuffer, new[]
+                                  {
+                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                                  });
+
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion drawable objects
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -395,6 +243,7 @@ namespace EyeOut
             hmd.BeginFrame(0);
             return true;
         }
+
         static int maxRepeats = 10;
         protected override void Draw(GameTime gameTime)
         {
@@ -494,7 +343,7 @@ namespace EyeOut
                 C_Motor.ORDER_ActionToAll();
 
 
-                MainWindow.Ms.Yaw.READ_position();
+                //MainWindow.Ms.Yaw.READ_position();
                 
                 //foreach (C_Motor mot in MainWindow.Ms)
                 //{

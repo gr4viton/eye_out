@@ -81,23 +81,30 @@ namespace EyeOut
         {
             // creates byte array out of list of byte / byte arrays - concatenates them
             List<byte> liby = new List<byte>();
-            foreach (object o in L)
+            if (L != null)
             {
-                if (o is byte)
+                foreach (object o in L)
                 {
-                    liby.Add((byte)o);
-                }
-                else if (o is byte[])
-                {
-                    if (((byte[])o).Length > 0)
+                    if (o is byte)
                     {
-                        liby.AddRange((byte[])o);
+                        liby.Add((byte)o);
+                    }
+                    else if (o is byte[])
+                    {
+                        if (((byte[])o).Length > 0)
+                        {
+                            liby.AddRange((byte[])o);
+                        }
+                    }
+                    else if (o is UInt16)
+                    {
+                        liby.AddRange(BitConverter.GetBytes((UInt16)o));
                     }
                 }
-                else if (o is UInt16)
-                {
-                    liby.AddRange(BitConverter.GetBytes((UInt16)o));
-                }
+            }
+            else
+            {
+                return liby;
             }
             return liby;
         }
