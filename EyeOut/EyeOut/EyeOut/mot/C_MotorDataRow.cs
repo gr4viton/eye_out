@@ -16,18 +16,15 @@ namespace EyeOut
         // Actual = Present - received as actual Dynamixel Motor position
 
         // if not said otherwise the unit is degree for angle and RPM for speed
-        [Description("Wanted angle")]
-        angleWanted = 0,
-        [Description("Sent angle")]
-        angleSent,
-        [Description("Actual angle")]
-        angleSeen,
-        [Description("Wanted speed")] 
-        speedWanted,
-        [Description("Goal speed")]
-        speedSent,
-        [Description("Actual speed")]
-        speedSeen,
+        [Description("Wanted angle")] angleWanted = 0,
+        [Description("Sent angle")] angleSent,
+        [Description("Actual angle")] angleSeen,
+        [Description("Wanted speed")] speedWanted,
+        [Description("Goal speed")] speedSent,
+        [Description("Actual speed")] speedSeen,
+        [Description("Status Level")] statusReturnLevel,
+        [Description("LED value")] LED,
+        [Description("Torque enable")] torqueEnable
     }
 
     public class C_MotorDataRow
@@ -88,13 +85,15 @@ namespace EyeOut
         public void REFRESH()
         {
             GET_data(type);
-            
         }
 
         static string form_2dec = "{0:0.00}";
 
         public void GET_data(e_motorDataType _type)
         {
+
+            //SystMessageBox.Show(str.ToString());
+
             foreach (C_Motor mot in MainWindow.Ms)
             {
                 switch (_type)
@@ -117,6 +116,17 @@ namespace EyeOut
                     case (e_motorDataType.speedSeen):
                         SET_ypr(mot.rotMotor, string.Format(form_2dec + "RPM", mot.speedSeen.Dec_inRPM));
                         break;
+                    case (e_motorDataType.LED):
+                        SET_ypr(mot.rotMotor, mot.LedValue.ToString());
+                        break;
+                    case (e_motorDataType.statusReturnLevel):
+                        SET_ypr(mot.rotMotor, mot.StatusReturnLevel.ToString());
+                        break;
+                    case (e_motorDataType.torqueEnable):
+                        SET_ypr(mot.rotMotor, mot.torqueEnable.ToString());
+                        break;
+
+                        
                 }
             }
         }

@@ -21,6 +21,34 @@ namespace EyeOut
         yaw = 0
     }
 
+    public enum e_ledValue
+    {
+        Off = 0,
+        Shining = 1
+    }
+    public enum e_bool
+    {
+        disabled = 0,
+        enabled = 1
+    }
+
+    public enum e_statusReturnLevel // address 16
+    {
+        never = 0,
+        onRead = 1,
+        allways = 2
+    }
+
+    //public enum e_statusReturnLevel // address 16
+    //{
+    //    [Description("0 No return against all instructions")]
+    //    never = 0,
+    //    [Description("1 Retrun only for the READ_DATA command")]
+    //    onRead = 1,
+    //    [Description("2 Return for all Instructions")]
+    //    allways = 2,
+    //}
+
     public partial class C_Motor
     {
         public e_rot rotMotor;
@@ -43,17 +71,17 @@ namespace EyeOut
         protected e_statusReturnLevel statusReturnLevel = e_statusReturnLevel.never; // befor we set it we will ignore the statusPackets
 
         // only manageable by functions REG_write REG_read
-        private C_ByteRegister reg;
+        private C_ByteRegister reg = new C_ByteRegister();
 
         public C_ByteRegister Reg
         {
             get
             {
                 return reg;
-                //Actualize reg binding
             }
+            // set not allowed - use ACUTALIZE_register() we need to knwo the byte changing on C_motor level
         }
-
+        public e_ledValue LedValue;
 
         public e_statusReturnLevel StatusReturnLevel
         {
@@ -62,6 +90,9 @@ namespace EyeOut
                 statusReturnLevel = value; 
             }
         }
+
+        public e_bool torqueEnable;
+
 
         // cmd examples
         //public static List<C_cmdin> cmdinEx;
@@ -132,15 +163,7 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public void INIT_cmdinEx()
         {
-            //string fname_cmdEx = @"B:\__DIP\dev\_main_dev\EyeOut\EyeOut\EyeOut\Content\mot\cmdInEx.txt";
             string fname_cmdEx = @".\Content\mot\cmdInEx.txt";
-
-            //string bar;
-            
-
-            //assembly.GetExecutingAssembly().GetManifestResourceStream(name);
-
-            //string fname_cmdEx = @"..\..\..\..\cmdInEx\cmdInEx.txt";
 
             char del = '|';
             LOAD_examples(fname_cmdEx, del);
@@ -203,7 +226,7 @@ namespace EyeOut
         {
             C_Packet.SEND_packet(
                 new C_Packet(
-                    this, cmdPackets[num].InstructionOrErrorByte, cmdPackets[num].Par
+                    this, cmdPackets[num].ByteInstructionOrError, cmdPackets[num].Par
                     ));
         }
 
@@ -240,33 +263,47 @@ namespace EyeOut
         #endregion LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public void ACTUALIZE_registerBinding(byte add)
+        public void ACTUALIZE_register(byte addressByte, byte byteValue, e_regByteType type)
+        {
+            Reg.SET(addressByte, byteValue, type);
+            ACTUALIZE_registerBinding(addressByte);
+        }
+
+        public void ACTUALIZE_registerBinding(byte addressByte)
         {
             // after change in register this is called
             // react only on high bytes 
             // -> as I always send command to actualize both L and H 
             // -> I only need to react on the second one written to register (H)
-            switch (add)
+            switch (addressByte)
             {
                 case(C_DynAdd.PRESENT_POS_H):
-                    angleSeen.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_POS_L, C_DynAdd.PRESENT_POS_H, e_regByteType.lastReceived);
+                    angleSeen.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_POS_L, C_DynAdd.PRESENT_POS_H, e_regByteType.seenValue);
                     LOG_reg("[Present Position] actualized form motor!");
                     break;
                 case (C_DynAdd.GOAL_POS_H):
-                    angleSent.Hex = GET_2bytesFromReg(C_DynAdd.GOAL_POS_L, C_DynAdd.GOAL_POS_H, e_regByteType.lastReceived);
+                    angleSent.Hex = GET_2bytesFromReg(C_DynAdd.GOAL_POS_L, C_DynAdd.GOAL_POS_H, e_regByteType.seenValue);
                     LOG_reg("[Goal Position] actualized form motor!");
                     break;
                 case (C_DynAdd.PRESENT_SPEED_H):
-                    speedSeen.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_SPEED_L, C_DynAdd.PRESENT_SPEED_H, e_regByteType.lastReceived);
+                    speedSeen.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_SPEED_L, C_DynAdd.PRESENT_SPEED_H, e_regByteType.seenValue);
                     LOG_reg("[Present Speed] actualized form motor!");
                     break;
                 case (C_DynAdd.MOV_SPEED_H):
-                    speedSent.Hex = GET_2bytesFromReg(C_DynAdd.MOV_SPEED_L, C_DynAdd.MOV_SPEED_H, e_regByteType.lastReceived);
+                    speedSent.Hex = GET_2bytesFromReg(C_DynAdd.MOV_SPEED_L, C_DynAdd.MOV_SPEED_H, e_regByteType.seenValue);
                     LOG_reg("[Moving Speed] actualized form motor!");
+                    break;
+                case (C_DynAdd.LED_ENABLE):
+                    LedValue = (e_ledValue)(reg.GET(C_DynAdd.LED_ENABLE, e_regByteType.sentValue).Val);
+                    LOG_reg("[LED] actualized form motor!");
                     break;
                 case (C_DynAdd.STATUS_RETURN_LEVEL):
                     statusReturnLevel = (e_statusReturnLevel)(reg.GET(C_DynAdd.STATUS_RETURN_LEVEL, e_regByteType.sentValue).Val);
                     LOG_reg("[Status Return Level] actualized form motor!");
+                    break;
+                case (C_DynAdd.TORQUE_ENABLE):
+                    torqueEnable = (e_bool)(reg.GET(C_DynAdd.TORQUE_ENABLE, e_regByteType.sentValue).Val);
+                    LOG_reg("[TORQUE ENABLE] actualized form motor!");
                     break;
             }
         }

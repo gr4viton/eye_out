@@ -201,8 +201,8 @@ namespace EyeOut
         {
             foreach (e_rot rot in Enum.GetValues(typeof(e_rot)))
             {
-                SET_sliderLimits(GET_slSpeed(rot), Ms.GET_M(rot).speedWanted);
-                SET_sliderLimits(GET_slAngle(rot), Ms.GET_M(rot).angleWanted);
+                SET_sliderLimits(GET_slSpeed(rot), Ms[rot].speedWanted);
+                SET_sliderLimits(GET_slAngle(rot), Ms[rot].angleWanted);
             }
         }
         //private void UPDATE_motorsFromSliders()
@@ -213,8 +213,8 @@ namespace EyeOut
         {
             if (C_State.FURTHER(e_stateMotor.ready))
             {
-                Ms.GET_M(rot).angleWanted.Dec = GET_slAngle(rot).Value;
-                Ms.GET_M(rot).speedWanted.Dec = GET_slSpeed(rot).Value;
+                Ms[rot].angleWanted.Dec = GET_slAngle(rot).Value;
+                Ms[rot].speedWanted.Dec = GET_slSpeed(rot).Value;
             }
         }
 
@@ -230,8 +230,8 @@ namespace EyeOut
         {
             if (C_State.FURTHER(e_stateMotor.ready))
             { 
-                GET_slSpeed(rot).Value = Ms.GET_M(rot).speedWanted.Dec;
-                GET_slAngle(rot).Value = Ms.GET_M(rot).angleWanted.Dec;
+                GET_slSpeed(rot).Value = Ms[rot].speedWanted.Dec;
+                GET_slAngle(rot).Value = Ms[rot].angleWanted.Dec;
                 //LOG_logger(string.Format("{0} = angle[{1}], speed[{2}]", rot, M(rot).angle.Dec, M(rot).speed.Dec));
             }
         }
@@ -240,7 +240,7 @@ namespace EyeOut
         {
             if (GET_cbSendValuesToMotor(rot).IsChecked == true)
             {
-                Ms.GET_M(rot).ORDER_move();
+                Ms[rot].ORDER_move();
             }
         }
 

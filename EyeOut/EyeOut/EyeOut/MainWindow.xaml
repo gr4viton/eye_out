@@ -224,6 +224,10 @@
                                             <Button x:Name="btnSendRawBytes" Content="Send raw bytes" Click="btnSendRawBytes_Click"/>
                                         </StackPanel>
                                     </GroupBox>
+
+                                    <Button x:Name="btnDontTry" Content="DO TRY IT!" Click="btnDontTry_Click"/>
+                                    <Button x:Name="btnTry" Content="TRY IT I DARE YOU!" Click="btnTry_Click"/>
+                                    
                                 </StackPanel>
 
                                 <GroupBox Header="Individual motor Position &amp; Speed gui control" Grid.Column="2">

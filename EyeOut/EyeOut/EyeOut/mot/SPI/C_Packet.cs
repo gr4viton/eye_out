@@ -26,12 +26,6 @@ namespace EyeOut
         echoOfInstructionPacket, statusPacket, instructionPacket
     }
 
-    public enum e_statusReturnLevel // address 16
-    {
-        [Description("0 No return against all instructions")] never = 0,
-        [Description("1 Retrun only for the READ_DATA command")] onRead = 1,
-        [Description("2 Return for all Instructions")] allways = 2,
-    }
 
     public class C_InstructionPacket : C_Packet
     {
@@ -95,24 +89,25 @@ namespace EyeOut
     public partial class C_Packet
     {
         public e_rot rotMotor;
-        protected byte idByte;
-        protected byte lengthByte; //  The length is calculated as “the number of Parameters (N) + 2”
-        protected e_statusReturnLevel returnStatusLevel = e_statusReturnLevel.never;
-            
-        //protected e_packetEcho packetEcho = e_packetEcho.echoLast;
-        protected e_motorDataType motorDataType = e_motorDataType.angleSeen;
-        protected e_packetType packetType = e_packetType.instructionPacket;
-        
-        protected byte instructionOrErrorByte; // instruction
+        protected byte byteId;
+        protected byte byteLength; //  The length is calculated as “the number of Parameters (N) + 2”
+        protected byte byteInstructionOrError; // instruction
+        protected byte byteCheckSum;
+
         protected List<byte> par; // parameters
-        protected byte checkSumByte;
 
+        public bool IsConsistent = true;
         protected int packetNumOfBytes;
-
         protected const int maxParameters = C_DynAdd.MAX_PARAMETERS;
 
-        public bool IsConsistent=true;
+        protected e_packetType packetType = e_packetType.instructionPacket;
 
+        protected e_statusReturnLevel returnStatusLevel = e_statusReturnLevel.never;
+        protected e_motorDataType motorDataType = e_motorDataType.angleSeen;
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region operators
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static bool operator ==(C_Packet x, C_Packet y) 
         {
             return x.PacketBytes.SequenceEqual(y.PacketBytes);
@@ -123,33 +118,31 @@ namespace EyeOut
             return !(x.PacketBytes.SequenceEqual(y.PacketBytes));
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion operators
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        public byte IdByte
+        // ____________________________________________________ BYTES
+        public byte ByteId
         {
-            get { return idByte; }
-            set { idByte = value; }
+            get { return byteId; }
+            set { byteId = value; }
         }
+        public byte ByteLength
+        {
+            get { return byteLength; }
+        }
+        public byte ByteInstructionOrError
+        {
+            get { return byteInstructionOrError; }
+            set { byteInstructionOrError = value; }
 
-        public byte InstructionOrErrorByte
-        {
-            get { return instructionOrErrorByte; }
-            set { instructionOrErrorByte = value; }
-
         }
-        public e_packetType PacketType
+        public byte ByteCheckSum
         {
-            get { return packetType; }
+            get { return byteCheckSum; }
         }
-        //public e_statusType StatusType
-        //{
-        //    get { return motorDataType; }
-        //}
-        public byte CheckSumByte
-        {
-            get { return checkSumByte; }
-        }
-
+        // ____________________________________________________ PARAMETERS
         public List<byte> Par
         {
             get { return par; }
@@ -179,7 +172,13 @@ namespace EyeOut
                 Par = C_CONV.listOfByteAndByteArrays2listOfbytes(value);
             }
         }
-        
+
+        public e_packetType PacketType
+        {
+            get { return packetType; }
+        }
+
+        // ____________________________________________________ PACKET BYTES
         public List<byte> lsPacketBytes // returns whole cmd
         {
             get
@@ -282,7 +281,7 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public C_Packet()
         {
-            idByte = 0;
+            byteId = 0;
             par = new List<byte>();
         }
         
@@ -295,8 +294,8 @@ namespace EyeOut
 
             int IndexOfCheckSum = receivedBytes.Length - 1;
 
-            idByte = receivedBytes[IndexOfId];
-            instructionOrErrorByte = receivedBytes[IndexOfInstructionOrError];
+            byteId = receivedBytes[IndexOfId];
+            byteInstructionOrError = receivedBytes[IndexOfInstructionOrError];
             // fill in params (from const to length (checksum))
             List<byte> _par = new List<byte>();
             for (int q = IndexOfFirstParam; q < IndexOfCheckSum; q++)
@@ -311,19 +310,19 @@ namespace EyeOut
                 //    RESET_from_packetBytes(receivedBytes);
                 IS_consistent();
 
-                if (lengthByte != receivedBytes[IndexOfLength])
+                if (byteLength != receivedBytes[IndexOfLength])
                 {
                     IsConsistent = false;
                     // bad - but should never happen 
                     // as the length byte directly creates the length of the byte array 
                     // in the serial read function
-                    throw new Exception(GET_ByteFailInfo("LENGTH_BYTE", lengthByte, receivedBytes[IndexOfLength]));
+                    throw new Exception(GET_ByteFailInfo("LENGTH_BYTE", byteLength, receivedBytes[IndexOfLength]));
                 }
 
-                if (CheckSumByte != receivedBytes[IndexOfCheckSum])
+                if (ByteCheckSum != receivedBytes[IndexOfCheckSum])
                 {
                     IsConsistent = false;
-                    throw new Exception(GET_ByteFailInfo("CHECKSUM_BYTE", CheckSumByte, receivedBytes[IndexOfCheckSum]));
+                    throw new Exception(GET_ByteFailInfo("CHECKSUM_BYTE", ByteCheckSum, receivedBytes[IndexOfCheckSum]));
                 }
             }
             catch (Exception e)
@@ -351,12 +350,12 @@ namespace EyeOut
         public void REFRESH_checkSum()
         {
             // count checksum from whole cmd
-            checkSumByte = C_CheckSum.GET_checkSum_fromWholePacket(PacketBytes);
+            byteCheckSum = C_CheckSum.GET_checkSum_fromWholePacket(PacketBytes);
         }
         public void REFRESH_length()
         {
             int parCount = par.Count;
-            lengthByte = (byte)(par.Count + 2); // as defined
+            byteLength = (byte)(par.Count + 2); // as defined
             packetNumOfBytes = parCount + PacketLengthAddition;
         }
         
@@ -422,11 +421,11 @@ namespace EyeOut
 
             int q = 0;
             // id
-            _packetBytes[IndexOfId] = idByte;
+            _packetBytes[IndexOfId] = byteId;
             // length byte
-            _packetBytes[IndexOfLength] = lengthByte;
+            _packetBytes[IndexOfLength] = byteLength;
             // instruction
-            _packetBytes[IndexOfInstructionOrError] = instructionOrErrorByte;
+            _packetBytes[IndexOfInstructionOrError] = byteInstructionOrError;
 
             // parameters
             q = IndexOfFirstParam;
@@ -563,33 +562,33 @@ namespace EyeOut
         // Optional parameters - i.e. INS_ACTION don't need any parameters
         public C_Packet(C_Motor _mot, byte _instructionByte, List<object> _lsParameters)
         {
-            idByte = _mot.id;
+            byteId = _mot.id;
             rotMotor = _mot.rotMotor;
             returnStatusLevel = _mot.StatusReturnLevel;
-            instructionOrErrorByte = _instructionByte;
+            byteInstructionOrError = _instructionByte;
             Par_obj = _lsParameters;
         }
 
         public C_Packet(C_Motor _mot, byte _instructionByte, List<byte> _lsParameters = null)
         {
-            idByte = _mot.id;
+            byteId = _mot.id;
             rotMotor = _mot.rotMotor;
             returnStatusLevel = _mot.StatusReturnLevel;
-            instructionOrErrorByte = _instructionByte;
+            byteInstructionOrError = _instructionByte;
             Par = _lsParameters;
         }
 
         public C_Packet(byte _instructionByte, List<object> _lsParameters)
         {
-            idByte = C_DynAdd.ID_BROADCAST;
-            instructionOrErrorByte = _instructionByte;
+            byteId = C_DynAdd.ID_BROADCAST;
+            byteInstructionOrError = _instructionByte;
             Par_obj = _lsParameters;
         }
 
         public C_Packet(byte _instructionByte, List<byte> _lsParameters = null)
         {
-            idByte = C_DynAdd.ID_BROADCAST;
-            instructionOrErrorByte = _instructionByte;
+            byteId = C_DynAdd.ID_BROADCAST;
+            byteInstructionOrError = _instructionByte;
             Par = _lsParameters;
         }
 
@@ -611,7 +610,7 @@ namespace EyeOut
         public static bool IS_statusPacketFollowing(C_Packet lastSent)
         {
             if(
-                (lastSent.idByte == C_DynAdd.ID_BROADCAST) // never no matter of returnStatusLevel
+                (lastSent.byteId == C_DynAdd.ID_BROADCAST) // never no matter of returnStatusLevel
                 ||
                 (lastSent.returnStatusLevel == e_statusReturnLevel.never) 
                 )
@@ -619,7 +618,7 @@ namespace EyeOut
                 return false;
             }
             else if (
-                (lastSent.instructionOrErrorByte == C_DynAdd.INS_PING)
+                (lastSent.byteInstructionOrError == C_DynAdd.INS_PING)
                 ||
                 (lastSent.returnStatusLevel == e_statusReturnLevel.allways) // always no matter of returnStatusLevel
                 )
@@ -629,7 +628,7 @@ namespace EyeOut
             else 
             {
                 // (lastSent.returnStatusLevel == e_returnStatusLevel.onRead)
-                if(lastSent.instructionOrErrorByte == C_DynAdd.INS_READ)
+                if(lastSent.byteInstructionOrError == C_DynAdd.INS_READ)
                 {
                     return true;
                 }
@@ -639,55 +638,81 @@ namespace EyeOut
                 }
             }
         }
-        // returns false when you dont have to continue
+
         public static void PROCESS_receivedPacket(C_Packet lastSent, List<byte> receivedBytes, int numPacket)
         {
             // we have received one whole packet
             C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
 
-            //if (numPacket == 0)
-            { 
-                // it is echo or error
-                if (received == lastSent)
-                {
-                    LOG_echo(lastSent);
-                }
-                else if (IS_error(received, receivedBytes) == true)
-                {
-                    return;
-                }
-                else
-                {
-                    PROCESS_statusPacket(received, lastSent);
-                }
-            }
-        }
+            IS_error(received, receivedBytes); // just log it
 
-        public static void PROCESS_statusPacket(C_Packet received, C_Packet lastSent)
-        {
-            // we have no error in statusPacket
-            if (lastSent.instructionOrErrorByte == C_DynAdd.INS_WRITE)
+            // it is echo or error
+            if (received == lastSent)
             {
-                // probably just normal status packet with no parameters 
-                //LOG_statusPacket(string.Format("Status OK after INS_WRITE:\t{0}", received.PacketBytes_toString));
-                // actualize the parameters which were written into motors
-
-                //switch (lastSent.statusType)
-                //{
-
-                //}
-                C_MotorControl.ACTUALIZE_motorRegister(lastSent.rotMotor, e_regByteType.sentValue, lastSent.Par);
-                LOG_statusPacket(string.Format("Status OK - actualizing motor register SentValues: \t{0}", lastSent.PacketBytes_toString));
-                //C_MotorControl.ACTUALIZE_motorStatus(lastSent.rotMotor, lastSent.motorDataType, lastSent.Par);
+                LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
             }
             else
             {
-                C_MotorControl.ACTUALIZE_motorRegister(received.rotMotor, e_regByteType.lastReceived, received.Par);
-                LOG_statusPacket(string.Format("Status OK - actualizing motor register LastReceived: \t{0}", received.PacketBytes_toString));
-                //C_MotorControl.ACTUALIZE_motorStatus(lastSent.rotMotor, lastSent.motorDataType, received.Par);
+                PROCESS_statusPacket(received, lastSent);
             }
-            //LOG_statusPacket(string.Format("Status OK:\t{0}", received.PacketBytes_toString));
+        }
 
+        public static void PROCESS_instructionPacket(C_Packet lastSent)
+        {
+            if (IS_packetChanginValue(lastSent) == true)
+            {
+                C_MotorControl.ACTUALIZE_motorRegister(
+                    lastSent.rotMotor,
+                    e_regByteType.sentValue, // as we written them just now
+                    lastSent.Par);
+                LOG_instruPacket(string.Format(
+                    "Written OK (blind) - actualizing motor register sentValue: \t{0}",
+                    lastSent.PacketBytes_toString));
+            }
+        }
+        public static bool IS_packetChanginValue(C_Packet packet)
+        {
+            switch (packet.byteInstructionOrError)
+            {
+                case (C_DynAdd.INS_ACTION): return true; // i think so - at least registered byte
+                case (C_DynAdd.INS_REG_WRITE): return true;
+                case (C_DynAdd.INS_SYNC_WRITE): return true;
+                case (C_DynAdd.INS_PING): return true;
+                case (C_DynAdd.INS_WRITE): return true;
+                case (C_DynAdd.INS_READ): return false;
+            }
+            return false;
+            //if(packet.byteId == C_DynAdd.ID_BROADCAST)
+        }
+        public static void PROCESS_statusPacket(C_Packet received, C_Packet lastSent)
+        {
+            // we have no error in statusPacket
+            if (lastSent.byteInstructionOrError == C_DynAdd.INS_WRITE)
+            {
+                // actualize the parameters which were written into motors - and we know they were written good
+                C_MotorControl.ACTUALIZE_motorRegister(
+                    lastSent.rotMotor, 
+                    e_regByteType.seenValue, // as we received statusMessage after we written the value
+                    lastSent.Par);
+                LOG_statusPacket(GET_statusOkInfo(lastSent, "seenValue"));
+            }
+            else
+            {
+                // actualize the parameters which were read from motors
+                received.Par.Insert(0,lastSent.Par[0]);
+                C_MotorControl.ACTUALIZE_motorRegister(
+                    received.rotMotor, 
+                    e_regByteType.seenValue, 
+                    received.Par
+                    );
+                LOG_statusPacket(GET_statusOkInfo(received, "seenValue"));
+            }
+        }
+
+        public static string GET_statusOkInfo(C_Packet packet, string packetType)
+        {
+            return string.Format("Status OK - actualizing motor register {1}: \t{0}",
+                packet.PacketBytes_toString, packetType);
         }
 
     }

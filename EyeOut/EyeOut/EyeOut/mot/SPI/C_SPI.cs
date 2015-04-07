@@ -200,8 +200,8 @@ namespace EyeOut
             {
                 if (spi.IsOpen == true)
                 {
-                    //spi.DiscardInBuffer();
-                    //spi.DiscardOutBuffer();
+                    spi.DiscardInBuffer();
+                    spi.DiscardOutBuffer();
                 }
                 
                 lock (queue_locker)
@@ -237,6 +237,7 @@ namespace EyeOut
                     //TRY_READ_packet(thisInstructionPacket); 
                     //spi.DiscardInBuffer();
                 }
+
             }
         }
 
@@ -262,9 +263,9 @@ namespace EyeOut
                 {
                     byte[] data = instructionPacket.PacketBytes;
                     WRITE_byteArray(data);
-                    C_Packet.LOG_sent(instructionPacket);
                     LOG_cmd(data, e_cmd.sent);
-                    //packetSent = instructionPacket;
+                   
+                    C_Packet.PROCESS_instructionPacket(instructionPacket);
 
                     return true;
                 }
@@ -385,7 +386,7 @@ namespace EyeOut
                                 numPacket++;
 
                                 LOG_cmd(packetBytes.ToArray(), e_cmd.received);
-                                //C_Packet.PROCESS_receivedPacket(lastSent, packetBytes, numPacket);
+                                C_Packet.PROCESS_receivedPacket(lastSent, packetBytes, numPacket);
 
                                 packetBytes.Clear();
                                 i_packetByte = 0;

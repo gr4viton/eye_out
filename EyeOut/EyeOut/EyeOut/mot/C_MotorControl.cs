@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace EyeOut
 {
-    public class C_MotorControl : List<C_Motor>
+    public class C_MotorControl 
     {
+        private List<C_Motor> M;
         public e_rot actMrot;
         private object lock_yaw;
         private object lock_pitch;
@@ -21,11 +22,12 @@ namespace EyeOut
             get
             {
                 //return GET_M(e_rot.yaw);
-                return this[(int)e_rot.yaw];
+                return this[e_rot.yaw];
             }
             set
             {
-                SET_M(e_rot.yaw, value);
+                this[e_rot.yaw] = value;
+                //SET_M(e_rot.yaw, value);
             }
         }
         public C_Motor Pitch
@@ -33,11 +35,12 @@ namespace EyeOut
             get
             {
                 //return GET_M(e_rot.pitch);
-                return this[(int)e_rot.pitch];
+                return this[e_rot.pitch];
             }
             set
             {
-                SET_M(e_rot.pitch, value);
+                this[e_rot.pitch] = value;
+                //SET_M(e_rot.pitch, value);
             }
         }
         public C_Motor Roll
@@ -45,38 +48,57 @@ namespace EyeOut
             get
             {
                 //return GET_M(e_rot.roll);
-                return this[(int)e_rot.roll];
+                return this[e_rot.roll];
             }
             set
             {
-                SET_M(e_rot.roll, value);
+                this[e_rot.roll] = value;
+                //SET_M(e_rot.roll, value);
             }
         }
         public C_Motor ActualMotor
         {
             get
             {
-                return GET_M(actMrot);
+                return this[actMrot];
             }
             set
             {
-                SET_M(actMrot, value);
+                this[actMrot] = value;
+                //SET_M(actMrot, value);
             }
         }
-        public C_Motor GET_M(e_rot rot)
+        //public C_Motor GET_M(e_rot rot)
+        //{
+        //    return M[(int)rot];
+        //}
+        //public void SET_M(e_rot rot, C_Motor _mot)
+        //{
+        //    if (GET_M(rot) != null) // is already initialized
+        //    {
+        //        M[(int)rot] = _mot;
+        //    }
+        //    //else
+        //    //{
+        //    //    INIT_listElementsOfAllMotors();
+        //    //}
+        //}
+
+
+        public IEnumerator<C_Motor> GetEnumerator()
         {
-            return (this[(int)rot] as C_Motor);
+            return M.GetEnumerator();
         }
-        public void SET_M(e_rot rot, C_Motor _mot)
+        public C_Motor this[int i]
         {
-            if (GET_M(rot) != null) // is already initialized
-            {
-                this[(int)rot] = _mot;
-            }
-            //else
-            //{
-            //    INIT_listElementsOfAllMotors();
-            //}
+            get { return M[i]; }
+            set { M[i] = value; }
+        }
+
+        public C_Motor this[e_rot rot]
+        {
+            get { return M[(int)rot]; }
+            set { M[(int)rot] = value; }
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properties
@@ -87,6 +109,8 @@ namespace EyeOut
             lock_yaw = new object();
             lock_pitch = new object();
             lock_roll = new object();
+            M = new List<C_Motor>();
+
             INIT_individualMotors();
             INIT_groupSettings();
             actMrot = e_rot.yaw;
@@ -102,20 +126,20 @@ namespace EyeOut
             int numOfMot = Enum.GetValues(typeof(e_rot)).Length;
             for (int imot = 0; imot < numOfMot; imot++)
             {
-                Add(new C_Motor((byte)imot));
+                M.Add(new C_Motor((byte)imot));
             }
         }
         public void INIT_groupSettings()
         {
-            foreach (C_Motor mot in this)
+            foreach (C_Motor mot in M)
             {
                 // call it twice
                 // 1) to set it 
                 // 2) we must set the StatusReturnLevel value in register to always (because default is never)
                 // 2) to actualize motorRegister stored in pc and to know that it is set to always
-                mot.ORDER_SET(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ONREAD);
+                mot.WRITE(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ONREAD);
                 mot.StatusReturnLevel = e_statusReturnLevel.onRead;
-                mot.ORDER_SET(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ONREAD); 
+                mot.WRITE(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ONREAD); 
             }
         }
         public void INIT_individualMotors()
@@ -148,25 +172,42 @@ namespace EyeOut
         {
             //lock()
             //lock(lock_roll)
-            C_Motor mot = MainWindow.Ms.GET_M(rot);
+            //C_Motor mot = ;
             // BROADCAST??
             
             bool addGot = false;
             byte addressByte = 0;
-            foreach(byte by in pars)
+            //StringBuilder str = new StringBuilder();
+
+            foreach(byte byteValue in pars)
             {
                 if(addGot == false)
                 {
-                    addressByte = by;
+                    addressByte = byteValue;
+                    addGot = true;
                 }
                 else
                 {
-                    mot.Reg.SET(addressByte, by, type);
-                    mot.ACTUALIZE_registerBinding(addressByte);
+                    //str = new StringBuilder();
+                    //str.AppendLine(string.Format(
+                    //    "Want to set = mot[{0}].add[{1}].type[{2}] = [{3}]",
+                    //    rot, addressByte, type, byteValue
+                    //    ));
+                    /*
+                    str.AppendLine(string.Format(
+                        "Current value = mot[{0}].add[{1}].type[{2}] = [{3}]",
+                        rot, addressByte, type, MainWindow.Ms[rot].Reg.GET(addressByte, type).Val
+                        ));*/
+                    MainWindow.Ms[rot].ACTUALIZE_register(addressByte, byteValue, type);
                     addressByte++;
+                    
+                    //str.AppendLine(string.Format(
+                    //    "New value = mot[{0}].add[{1}].type[{2}] = [{3}]",
+                    //    rot, addressByte, type, MainWindow.Ms[rot].Reg.GET(addressByte, type).Val
+                    //    ));
+                    //System.Windows.Forms.MessageBox.Show(str.ToString());
                 }
             }
-
             //type = GET_typeFromParams(parsSent, parsGot);
 
             // _par = parameters

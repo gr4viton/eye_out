@@ -23,19 +23,19 @@ namespace EyeOut
         #region LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public static void LOG_sent(C_Packet packet)
-        {
-            LOG_instruPacket(string.Format(
-                "Sent Instruction packet!\n{0}", GET_packetInfo(packet)
-                ));
-        }
+        //public static void LOG_sent(C_Packet packet)
+        //{
+        //    LOG_instruPacket(string.Format(
+        //        "Sent Instruction packet!\n{0}", GET_packetInfo(packet)
+        //        ));
+        //}
 
-        public static void LOG_echo(C_Packet packet)
-        {
-            LOG_statusPacket(string.Format(
-                "Got Status packet!\n{0}", GET_packetInfo(packet)
-                ));
-        }
+        //public static void LOG_echo(C_Packet packet)
+        //{
+        //    LOG_statusPacket(string.Format(
+        //        "Got Status packet!\n{0}", GET_packetInfo(packet)
+        //        ));
+        //}
 
         public static void LOG_ex(C_Packet packet, Exception ex)
         {
@@ -90,7 +90,7 @@ namespace EyeOut
         {
             return string.Format(
                 "MotId[{0}] rot[{1}] returnStatusLevel[{2}]\ttype[{3}]\tBytes[{4}]",
-                packet.IdByte, GET_rotMotorInfo(packet),
+                packet.ByteId, GET_rotMotorInfo(packet),
                 packet.returnStatusLevel, GET_motorDataTypeInfo(packet),
                 packet.PacketBytes_toString
                     );
@@ -105,16 +105,16 @@ namespace EyeOut
             StringBuilder str = new StringBuilder();
 
             for (int b = 0; b < 7; b++)
-                if (C_CONV.GET_bit(packet.instructionOrErrorByte, b) == true)
+                if (C_CONV.GET_bit(packet.byteInstructionOrError, b) == true)
                 {
-                    str.AppendLine(string.Format("ID[{0}] error: {1}", packet.idByte, errStr[b]));
+                    str.AppendLine(string.Format("ID[{0}] error: {1}", packet.byteId, errStr[b]));
                 }
             return str.ToString();
         }
 
         public static string GET_rotMotorInfo(C_Packet packet)
         {
-            if (packet.idByte == C_DynAdd.ID_BROADCAST)
+            if (packet.byteId == C_DynAdd.ID_BROADCAST)
             {
                 return "Broadcast";
             }

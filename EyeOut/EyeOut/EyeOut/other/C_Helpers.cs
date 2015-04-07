@@ -149,8 +149,7 @@ namespace EyeOut
         // so these values should be recalculated whenever decLimit changes
         private const double dec2RPM = 0.111 / 100 * C_DynVal.SET_MOV_SPEED_MAX;
         private const double RPM2dec = 1 / dec2RPM;
-        
-        private double dec;
+
         private double decMin;
         private double decMax;
         private double decDefault;
@@ -158,11 +157,40 @@ namespace EyeOut
         private double decLimitMin;
         private double decLimitMax;
 
-        private byte[] hex;
         private UInt16 hexMin;
         private UInt16 hexMax;
+        
+        private double decLast; //?
 
-        private double decLast;
+
+        private object lock_dec = new object();
+        private object lock_hex = new object();
+        
+        private double dec_treasure;
+        private byte[] hex_treasure;
+
+        private byte[] hex
+        {
+            get { return hex_treasure; }
+            set
+            {
+                lock (lock_hex)
+                {
+                    hex_treasure = value;
+                }
+            }
+        }
+        private double dec
+        {
+            get { return dec_treasure; }
+            set
+            {
+                lock (lock_dec)
+                {
+                    dec_treasure = value;
+                }
+            }
+        }
         
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region constructors

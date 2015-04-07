@@ -10,7 +10,7 @@ namespace EyeOut
     {
         registerDefault = 0,
         sentValue = 1,
-        lastReceived = 2
+        seenValue = 2
     }
     public enum e_readWrite
     {
@@ -137,7 +137,7 @@ namespace EyeOut
             {
                 case (e_regByteType.registerDefault): def.Val = _value; break;
                 case (e_regByteType.sentValue): sent.Val = _value; break;
-                case (e_regByteType.lastReceived): seen.Val = _value; break;
+                case (e_regByteType.seenValue): seen.Val = _value; break;
             }
         }
 
@@ -147,7 +147,7 @@ namespace EyeOut
             {
                 case (e_regByteType.registerDefault): return def;   
                 case (e_regByteType.sentValue): return sent; 
-                case (e_regByteType.lastReceived): return seen; 
+                case (e_regByteType.seenValue): return seen; 
             }
             throw new Exception(string.Format(
                 "[{0}] is not a valid type of register byte!", _type));
@@ -205,10 +205,14 @@ namespace EyeOut
                     e_readWrite rw = e_readWrite.registered;
                     switch (splited[1])
                     {
+                        //case ("X"): rw = e_readWrite.registered; break;
+                        //case ("B"): rw = e_readWrite.readWrite; break;
+                        //case ("R"): rw = e_readWrite.readOnly; break;
+                        //case ("W"): rw = e_readWrite.writeOnly; break;
                         case ("X"): rw = e_readWrite.registered; break;
                         case ("B"): rw = e_readWrite.readWrite; break;
-                        case ("R"): rw = e_readWrite.readOnly; break;
-                        case ("W"): rw = e_readWrite.writeOnly; break;
+                        case ("R"): rw = e_readWrite.readWrite; break;
+                        case ("W"): rw = e_readWrite.readWrite; break;
                     }
 
                     reg.Add(new C_RegByte(

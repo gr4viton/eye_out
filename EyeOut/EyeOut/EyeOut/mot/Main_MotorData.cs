@@ -64,7 +64,8 @@ namespace EyeOut
             {
                 foreach (C_Motor mot in Ms)
                 {
-                    mot.ORDER_getPosition();
+                    //mot.ORDER_getPosition();
+                    //mot.READ(C_DynAdd.LED_ENABLE, 1);
                 }
                 foreach (C_MotorDataRow row in motorData)
                 {
@@ -72,19 +73,12 @@ namespace EyeOut
                 }
 
                 // it does not change the datagrid if the motorData is not recreated
-                //motorData.
                 ItemCollectionViewSource_motorData.Source = new ObservableCollection<C_MotorDataRow>(motorData);
                 
-                // when binding is changing inner guts of dataGrid from different thread
-                //dgMotorData_lock = new object(); // lock for datagrid
-                //BindingOperations.EnableCollectionSynchronization(motorData, dgMotorData_lock); // for multi-thread updating 
-
-                //motorData = new ObservableCollection<C_MotorDataRow>();
-                //INIT_dgMotorData_binding();
-                /*
-                EventHandler handler = motorDataChanged;
-                if (handler != null)
-                    handler(null, EventArgs.Empty);*/
+                
+                //EventHandler handler = motorDataChanged;
+                //if (handler != null)
+                //    handler(null, EventArgs.Empty);
             }
         }
         private void INIT_dgMotorData_binding()

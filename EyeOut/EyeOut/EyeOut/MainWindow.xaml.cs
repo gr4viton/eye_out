@@ -172,6 +172,25 @@ namespace EyeOut
             }
         }
 
+        private void btnDontTry_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Ms[e_rot.yaw].ACTUALIZE_register(36, 20, e_regByteType.sentValue);
+        }
+        private void btnTry_Click(object sender, RoutedEventArgs e)
+        {
+            StringBuilder str = new StringBuilder();
+            str.AppendLine(
+                MainWindow.Ms[e_rot.yaw].Reg.GET(36, e_regByteType.sentValue).Val.ToString()
+            );
+            MainWindow.Ms[e_rot.yaw].ACTUALIZE_register(36, 10, e_regByteType.sentValue);
+            
+            str.AppendLine(
+                MainWindow.Ms[e_rot.yaw].Reg.GET(36, e_regByteType.sentValue).Val.ToString()
+                );
+
+            MessageBox.Show(str.ToString());
+        }
+
 
 
 

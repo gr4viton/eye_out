@@ -97,17 +97,33 @@ namespace EyeOut
             //}));
         }
 
-        public void ORDER_SET(byte add, byte val)
+        public void WRITE(byte add, byte par)
         {
-            SETUP_SET(C_DynAdd.INS_WRITE, add, val);
+            SETUP(C_DynAdd.INS_WRITE, add, par);
         }
 
-        public void SETUP_SET(byte INSTRUCTION_BYTE, byte add, byte val)
+        public void WRITE(byte add, List<byte> pars)
         {
-            SEND_packet(INSTRUCTION_BYTE, new List<object> {
-                    val
-                    });
+            SETUP(C_DynAdd.INS_WRITE, add, pars);
         }
+
+        public void READ(byte add, byte len)
+        {
+            SETUP(C_DynAdd.INS_READ, add, len);
+        }
+
+        public void SETUP(byte INSTRUCTION_BYTE, byte add, byte par)
+        {
+            SEND_packet(INSTRUCTION_BYTE, new List<object> { add, par });
+        }
+
+        public void SETUP(byte INSTRUCTION_BYTE, byte add, List<byte> pars)
+        {
+            SEND_packet(INSTRUCTION_BYTE, new List<object> { add, pars });
+        }
+
+
+
 
         public void LOG_SETUP_moveSpeed(byte INSTRUCTION_BYTE, C_Value _angle, C_Value _speed)
         {
