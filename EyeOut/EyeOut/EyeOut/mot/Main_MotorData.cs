@@ -54,7 +54,7 @@ namespace EyeOut
         {
             timMotorDataRefresh = new DispatcherTimer();
             timMotorDataRefresh.Tick += new EventHandler(timMotorDataRefresh_Tick);
-            timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 200);
             timMotorDataRefresh.Start();
         }
         

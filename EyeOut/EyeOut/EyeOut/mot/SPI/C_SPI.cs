@@ -76,15 +76,15 @@ namespace EyeOut
             timeoutExceptionPeriod = 10; // according to datahseet.?.
             // spi
             //spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
-            spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
-            //spi = new SerialPort("COM6", 1000000, Parity.None, 8, StopBits.One);
+            //spi = new SerialPort("COM6", 57600, Parity.None, 8, StopBits.One);
+            spi = new SerialPort("COM6", 1000000, Parity.None, 8, StopBits.One);
 
             /*
             SPI.Handshake = System.IO.Ports.Handshake.None;
             SPI.ReadTimeout = 200;
             SPI.WriteTimeout = 50;*/
             spi.Handshake = System.IO.Ports.Handshake.None;
-            spi.ReadTimeout = 200;
+            spi.ReadTimeout = 1000;
 
             // NOT NEEDED as all the motors are just CLIENTS - only responding to my (SERVER) orders
             //spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
@@ -198,11 +198,11 @@ namespace EyeOut
             C_Packet thisInstructionPacket;
             lock (spi_locker)
             {
-                if (spi.IsOpen == true)
-                {
-                    spi.DiscardInBuffer();
-                    spi.DiscardOutBuffer();
-                }
+                //if (spi.IsOpen == true)
+                //{
+                //    spi.DiscardInBuffer();
+                //    spi.DiscardOutBuffer();
+                //}
                 
                 lock (queue_locker)
                 {
@@ -394,10 +394,10 @@ namespace EyeOut
                         }
 
 
-                        //if (numPacket == 1)
-                        //{
-                        //    break; // get only one packet
-                        //}
+                        if (numPacket == 1)
+                        {
+                            break; // get only one packet
+                        }
                     }
                     if (INCOMING_PACKET == true)
                     {
