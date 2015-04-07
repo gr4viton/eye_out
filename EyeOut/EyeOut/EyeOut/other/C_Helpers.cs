@@ -453,10 +453,10 @@ namespace EyeOut
 
         public double hex2dec(byte[] hex) // hex[0] = LOW, hex[1] = HIGH
         {
-            UInt32 hexUInt32 = ((UInt32)hex[1] >> 8) + (UInt32)hex[0];
+            UInt32 hexUInt32 = ((UInt32)hex[1] << 8) + (UInt32)hex[0];
             UInt16 hexOne = (UInt16)GET_bounded(hexUInt32, hexMin, hexMax); // number in interval <hexMin, hexMax>
             double dec = (double)CONV_intervalMinMax_to_interval01(hexOne, hexMin, hexMax); // number in interval <0,1>
-            dec = (UInt16)CONV_interval01_to_intervalMinMax(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
+            dec = CONV_interval01_to_intervalMinMax(dec, decMin, decMax); // get number in interval <0,1> ~ in scale of <decMin,decMax>
             dec = GET_bounded_decLimits(dec); // number in interval <decLimitMin, decLimitMax>
             return dec;
         }

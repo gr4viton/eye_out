@@ -131,10 +131,10 @@ namespace EyeOut
 
             angleWanted = _angle;
             speedWanted = _speed;
-            angleSeen = new C_Value();
-            speedSeen = new C_Value();
-            angleSent = new C_Value();
-            speedSent = new C_Value();
+            angleSeen = angleWanted;
+            speedSeen = speedWanted;
+            angleSent = angleWanted;
+            speedSent = speedWanted;
 
             rotMotor = _rot;
             switch(rotMotor)
@@ -278,20 +278,21 @@ namespace EyeOut
             switch (addressByte)
             {
                 case(C_DynAdd.PRESENT_POS_H):
+                    ACTUALIZE_valueAndLogIt();
                     angleSeen.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_POS_L, C_DynAdd.PRESENT_POS_H, e_regByteType.seenValue);
                     LOG_reg("[Present Position] actualized form motor!");
                     break;
                 case (C_DynAdd.GOAL_POS_H):
-                    angleSent.Hex = GET_2bytesFromReg(C_DynAdd.GOAL_POS_L, C_DynAdd.GOAL_POS_H, e_regByteType.seenValue);
-                    LOG_reg("[Goal Position] actualized form motor!");
+                    angleSent.Hex = GET_2bytesFromReg(C_DynAdd.GOAL_POS_L, C_DynAdd.GOAL_POS_H, e_regByteType.sentValue);
+                    LOG_reg("[Goal Position] actualized form motor! " + angleSent.Dec.ToString());
                     break;
                 case (C_DynAdd.PRESENT_SPEED_H):
                     speedSeen.Hex = GET_2bytesFromReg(C_DynAdd.PRESENT_SPEED_L, C_DynAdd.PRESENT_SPEED_H, e_regByteType.seenValue);
                     LOG_reg("[Present Speed] actualized form motor!");
                     break;
                 case (C_DynAdd.MOV_SPEED_H):
-                    speedSent.Hex = GET_2bytesFromReg(C_DynAdd.MOV_SPEED_L, C_DynAdd.MOV_SPEED_H, e_regByteType.seenValue);
-                    LOG_reg("[Moving Speed] actualized form motor!");
+                    speedSent.Hex = GET_2bytesFromReg(C_DynAdd.MOV_SPEED_L, C_DynAdd.MOV_SPEED_H, e_regByteType.sentValue);
+                    LOG_reg("[Moving Speed] actualized form motor! " + speedSent.Dec.ToString());
                     break;
                 case (C_DynAdd.LED_ENABLE):
                     LedValue = (e_ledValue)(reg.GET(C_DynAdd.LED_ENABLE, e_regByteType.sentValue).Val);
@@ -306,6 +307,11 @@ namespace EyeOut
                     LOG_reg("[TORQUE ENABLE] actualized form motor!");
                     break;
             }
+        }
+
+        public void ACTUALIZE_valueAndLogIt()
+        {
+            ///..asd.as.d
         }
 
         public byte[] GET_2bytesFromReg(byte add_L, byte add_H, e_regByteType type)

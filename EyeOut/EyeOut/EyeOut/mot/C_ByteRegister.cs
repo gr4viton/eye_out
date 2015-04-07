@@ -26,6 +26,10 @@ namespace EyeOut
         private DateTime actualized;
         private e_readWrite rw;
 
+        public bool Touched
+        {
+            get { return touched; }
+        }
         public DateTime Actualized
         {
             get
@@ -40,14 +44,15 @@ namespace EyeOut
             {
                 if (C_RegByteValue.CAN_read(rw) == true)
                 {
-                    if (touched == true)
-                    {
-                        return val;
-                    }
-                    else
-                    {
-                        throw new Exception("Tried to get data from register byte which wasn't touched yet!");
-                    }
+                    return val;
+                    //if (touched == true)
+                    //{
+                    //    return val;
+                    //}
+                    //else
+                    //{
+                    //    throw new Exception("Tried to get data from register byte which wasn't touched yet!");
+                    //}
                 }
                 else
                 {
