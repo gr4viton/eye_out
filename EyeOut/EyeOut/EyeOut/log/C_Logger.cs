@@ -41,8 +41,8 @@ namespace EyeOut
         byteReg,
         cam, 
         Demo_TP, EyeOut, 
-        EyeOut_cam, 
-        valConv, debug
+        EyeOut_cam,
+        valConv, debug, unimportant
     }
     public enum e_LogMsgType
     {
@@ -130,6 +130,15 @@ namespace EyeOut
 
         public void ADD_toList(C_LogMsg _logMsg)
         {
+#if (!DEBUG)
+            // don't log unimportant and log msgs when not debugging
+            if ((_logMsg.src == e_LogMsgSource.unimportant)
+                ||
+                (_logMsg.src == e_LogMsgSource.debug))
+            {
+                return;
+            }
+#endif
             lock (itemList_locker)
             {
                 try

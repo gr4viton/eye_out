@@ -369,27 +369,34 @@
 
                                 <GroupBox Header="Individual motor data" Grid.Column="4">
                                     <StackPanel>
-                                        <ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
+                                        <ToggleButton x:Name="tbtReadPresentPosition" Content="Read present position" IsChecked="False"/>
+                                        <Button x:Name="btnReadLEDvalue" Content="Read LED value" Click="btnReadLEDvalue_Click"/>
+
+                                        <GroupBox Header="Motors' pc shadow register view:">
+
+                                            <StackPanel>
+
+                                                <ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
                                                       IsChecked="True"
                                                       Checked="tbtMotorDataRefresh_CheckedChanged"
                                                       Unchecked="tbtMotorDataRefresh_CheckedChanged"/>
-                                                      <!--Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>-->
-                                        <DataGrid
+                                                <!--Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>-->
+                                                <DataGrid
                                         x:Name="dgMotorData"
                                           DataContext="{StaticResource ItemCollectionViewSource_motorData}"
                                           ItemsSource="{Binding}"
                                           AutoGenerateColumns = "False" 
                                           CanUserAddRows="False"
                                         >
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="90" />
-                                            <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw}" Width="2*" />
-                                            <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
-                                            <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                        <ToggleButton x:Name="tbtReadPresentPosition" Content="Read present position" IsChecked="False"/>
-                                        <Button x:Name="btnReadLEDvalue" Content="Read LED value" Click="btnReadLEDvalue_Click"/>
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="90" />
+                                                        <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw}" Width="2*" />
+                                                        <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
+                                                        <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </StackPanel>
+                                        </GroupBox>
                                     </StackPanel>
                                 </GroupBox>
                             </Grid>

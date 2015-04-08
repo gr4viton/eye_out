@@ -8,7 +8,7 @@ namespace EyeOut
 {
     public class C_MotorControl 
     {
-        private List<C_Motor> M;
+        private static List<C_Motor> M;
         public e_rot actMrot;
         private object lock_yaw;
         private object lock_pitch;
@@ -184,6 +184,29 @@ namespace EyeOut
                     MainWindow.Ms[rot].ACTUALIZE_register(addressByte, byteValue, type);
                     addressByte++;
                 }
+            }
+        }
+
+        
+        public static bool GET_motorRotFromId(int id, out e_rot rot)
+        {
+            if (id == C_DynAdd.ID_BROADCAST)
+            {
+                rot = e_rot.yaw;
+                return false;
+            }
+            else
+            {
+                foreach (C_Motor mot in M)
+                {
+                    if (mot.id == id)
+                    {
+                        rot = mot.rotMotor;
+                        return true;
+                    }
+                }
+                rot = e_rot.yaw;
+                return false;
             }
         }
     }

@@ -22,20 +22,16 @@ namespace EyeOut
     };
 
 
-    internal class C_SPI
+    internal partial class C_SPI
     {
         private static object spi_locker = new object();
         private static object queueToSent_locker = new object();
-        private static object queueSent_locker = new object();
         
         public static SerialPort spi;
         private static Queue<C_Packet> queueToSent; // packets which are going to be sent
-        private static List<Queue<C_Packet>> queueSent; // packets which was written and are waiting for getting some return status packet
 
         static C_CounterDown openConnection = new C_CounterDown(10); // try to open connection x-times
-        static C_CounterDown readReturn = new C_CounterDown(10); // try to read return status packet x-times
         public static int timeoutExceptionPeriod = 10;
-        
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // SPI hang - thread: http://www.codeproject.com/Questions/179614/Serial-Port-in-WPF-Application
@@ -64,15 +60,19 @@ namespace EyeOut
             spi.ReadTimeout = 1000;
 
             // NOT NEEDED as all the motors are just CLIENTS - only responding to my (SERVER) orders
-            //spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
+            spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
+
+            //worker_READ.DoWork += worker_READ_DoWork;
 
             queueToSent = new Queue<C_Packet>();
             queueSent = new List<Queue<C_Packet>>()
             {
                 new Queue<C_Packet>(),
                 new Queue<C_Packet>(),
-                new Queue<C_Packet>(),
+                new Queue<C_Packet>()
             };
+
+
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Initialization
@@ -81,40 +81,47 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static bool OPEN_connection()
         {
-            //UPDATE_SPI_Settings();
-            //SPI_UPDATE_baudRate();
-            //SPI_UPDATE_portName();
-            /*
-            if (C_State.FURTHER(e_stateSPI.notConnected))
-            else
-            */
-            if (C_State.FURTHER(e_stateSPI.connected))
+            lock (spi_locker)
             {
-                // we need to close it first
-                CLOSE_connection();
+                //UPDATE_SPI_Settings();
+                //SPI_UPDATE_baudRate();
+                //SPI_UPDATE_portName();
+                /*
+                if (C_State.FURTHER(e_stateSPI.notConnected))
+                else
+                */
+                if (C_State.FURTHER(e_stateSPI.connected))
+                {
+                    // we need to close it first
+                    CLOSE_connection();
+                }
+
+                C_State.Spi = e_stateSPI.connecting;
+
+                try
+                {
+                    spi.Open();
+                    //SET_state(E_GUI_MainState.error);
+                }
+                catch (Exception ex)
+                {
+                    LOG("Port could not be opened");
+                    LOG(GET_exInfo(ex));
+                    //SET_state(E_GUI_MainState.error);
+                    C_State.Spi = e_stateSPI.disconnected;
+                    return false;
+                }
+
+                C_State.Spi = e_stateSPI.connected;
+                LOG(String.Format("Port {0} opened successfuly with {1} bps",
+                            spi.PortName, spi.BaudRate.ToString())
+                            );
+                if (spi.IsOpen == true)
+                {
+                    spi.DiscardInBuffer();
+                    spi.DiscardOutBuffer();
+                }
             }
-
-            C_State.Spi = e_stateSPI.connecting;
-
-            try
-            {
-                spi.Open();
-                //SET_state(E_GUI_MainState.error);
-            }
-            catch (Exception ex)
-            {
-                LOG("Port could not be opened");
-                LOG(GET_exInfo(ex)); 
-                //SET_state(E_GUI_MainState.error);
-                C_State.Spi = e_stateSPI.disconnected;
-                return false;
-            }
-
-            C_State.Spi = e_stateSPI.connected;
-            LOG(String.Format("Port {0} opened successfuly with {1} bps",
-                        spi.PortName, spi.BaudRate.ToString())
-                        );
-
             return spi.IsOpen;
         }
 
@@ -157,7 +164,7 @@ namespace EyeOut
        
         public static void SEND_data(C_Packet instructionPacket)
         {
-            QUEUE_data(instructionPacket);
+            QUEUE_PacketToSent(instructionPacket);
 
             BackgroundWorker worker_SEND = new BackgroundWorker();
             worker_SEND.DoWork += workerSEND_DoWork;
@@ -167,7 +174,7 @@ namespace EyeOut
         }
 
 
-        private static void QUEUE_data(C_Packet instructionPacket)
+        private static void QUEUE_PacketToSent(C_Packet instructionPacket)
         {
             // adds data to sending queue
             lock (queueToSent_locker)
@@ -213,19 +220,6 @@ namespace EyeOut
                     spi.DiscardOutBuffer();
                 }
 
-                if (C_Packet.IS_statusPacketFollowing(thisInstructionPacket) == true)
-                {
-                    lock (queueSent_locker)
-                    {
-                        queueSent[(int)thisInstructionPacket.rotMotor].Enqueue(thisInstructionPacket);
-                    }
-                    int packetRead = 0;
-                    packetRead = READ_packet(thisInstructionPacket);
-                    LOG_got("["+packetRead.ToString()+"] successfully read");
-
-                    //TRY_READ_packet(thisInstructionPacket); 
-                    //spi.DiscardInBuffer();
-                }
 
             }
         }
@@ -250,6 +244,13 @@ namespace EyeOut
             {
                 if (spi.IsOpen)
                 {
+                    if (C_Packet.IS_statusPacketFollowing(instructionPacket) == true)
+                    {
+                        lock (queueSent_locker)
+                        {
+                            queueSent[(int)instructionPacket.rotMotor].Enqueue(instructionPacket);
+                        }
+                    }
                     byte[] data = instructionPacket.PacketBytes;
                     WRITE_byteArray(data);
                     LOG_cmd(data, e_cmd.sent);
@@ -286,15 +287,14 @@ namespace EyeOut
         #region Reading
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public static bool IS_withStartPacketBytes(List<byte> packetBytes)
+        public static bool START_withPacketStartBytes(List<byte> packetBytes)
         {
-
             int q = 0;
             foreach (byte by in C_DynAdd.PACKETSTART)
             {
                 if (packetBytes[q] != by)
                 {
-                    LOG_err(string.Format(
+                    LOG_unimportant(string.Format(
                         "This packet does not start with PACKETSTART bytes: [{0}]",
                         C_CONV.byteArray2strHex_space(packetBytes.ToArray())
                         ));
@@ -303,108 +303,7 @@ namespace EyeOut
             }
             return true;
         }
-        public static int READ_packet(C_Packet lastSent)
-        {
-            if (C_State.prog == e_stateProg.closing)
-            {
-                System.Threading.Thread.CurrentThread.Abort();
-            }
-            int numPacket = 0;
-            LOG_debug("Start to read packet");
-            try
-            {
-                LOG_debug("locked spi");
-                //lock (spi_locker)
-                {
-                    const int packetLength_min = 6; // shortest packet consists of 6bytes
-                    const int IndexOfLength = C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET;
 
-                    List<byte> packetBytes = new List<byte>();
-                    int i_packetByte = 0;
-                    int packetLength = packetLength_min;
-                    bool INCOMING_PACKET = false;
-
-                    byte receivedByte;
-                    while (
-                        (0 != C_SPI.spi.BytesToRead)
-                        ||
-                        (INCOMING_PACKET == true)
-                        )
-                    {
-                        receivedByte = (byte)C_SPI.spi.ReadByte();
-                        packetBytes.Add(receivedByte);
-
-                        if (INCOMING_PACKET == false) // PACKETSTART DETECTION
-                        {
-                            if (IS_withStartPacketBytes(packetBytes) == true)
-                            {
-                                INCOMING_PACKET = true;
-                            }
-                            else
-                            {
-                                packetBytes.Clear(); 
-                                return numPacket;
-                            }
-                        }
-                        else if (INCOMING_PACKET == true)
-                        {
-                            i_packetByte = packetBytes.Count-1;
-                            if (i_packetByte == IndexOfLength) // get the LENGTH_BYTE 
-                            {
-                                // LENGTH_BYTE = N*[Params] + 1*[LEN] + 1*[INS/ERROR]
-                                // packetLength = [LENGTH_BYTE] + 1*[ID] + 1*[CheckSum] + 2*[PacketStart]
-                                packetLength = (int)receivedByte + 4;
-                            }
-                            i_packetByte++;
-                            if (i_packetByte == packetLength ) // last byte
-                            {
-                                INCOMING_PACKET = false;
-                                numPacket++;
-
-                                LOG_cmd(packetBytes.ToArray(), e_cmd.received);
-                                C_Packet.PROCESS_receivedPacket(lastSent, packetBytes, numPacket);
-
-                                packetBytes.Clear();
-                                i_packetByte = 0;
-                                packetLength = packetLength_min;
-                                //continue;
-                            }
-                            else if (i_packetByte > packetLength)
-                            {
-                                LOG_err(String.Format(
-                                    "Strange thing happened, there were more bytes read from packet than should: {0} from {1}",
-                                    i_packetByte, packetLength));
-
-                                    
-                                INCOMING_PACKET = false;
-                                packetBytes.Clear();
-                                i_packetByte = 0;
-                                packetLength = packetLength_min;
-                            }
-
-                        }
-
-
-                        if (numPacket == 2)
-                        {
-                            break; // get only one packet
-                        }
-                    }
-                    if (INCOMING_PACKET == true)
-                    {
-                        LOG_err(string.Format(
-                            "There are no more [BytesToRead]! Packet bytes read [{0}/{1}] = [{2}]",
-                            i_packetByte, packetLength, C_CONV.byteArray2strHex_space(packetBytes.ToArray())
-                            ));
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LOG_got(GET_exInfo(ex));
-            }
-            return numPacket;
-        }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Reading
@@ -454,6 +353,10 @@ namespace EyeOut
             C_Logger.Instance.LOG(e_LogMsgSource.debug, _msg);
         }
 
+        public static void LOG_unimportant(string _msg)
+        {
+            C_Logger.Instance.LOG(e_LogMsgSource.unimportant, _msg);
+        }
 
 
         public static void LOG_cmd(byte[] cmd, e_cmd type)
@@ -491,37 +394,9 @@ namespace EyeOut
             }
             LOG(prefix + hex);
         }
-
-
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion LOG
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        //// not used
-        //private static void SPI_CHECK_receivedCmd(byte[] cmdWithoutChecksumByte, byte rec_checkSum)
-        //{
-        //    // check for [checksum error] and cmd [error byte] sub-bites disambiguation
-        //    byte calc_checkSum = C_CheckSum.GET_checkSum(cmdWithoutChecksumByte);
-
-        //    if (C_CheckSum.CHECK_checkSum(calc_checkSum, rec_checkSum))
-        //    //if( calc_check == 0 )
-        //    {
-        //        if (cmdWithoutChecksumByte[i_cmdError] == 0)
-        //            // no error
-        //            LOG_cmd(cmdWithoutChecksumByte, e_cmd.received);
-        //        else
-        //        {
-        //            LOG_cmd(cmdWithoutChecksumByte, e_cmd.receivedWithError);
-        //            LOG_cmdError(cmdWithoutChecksumByte[i_cmdId], cmdWithoutChecksumByte[i_cmdError]);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        LOG_cmd(cmdWithoutChecksumByte, e_cmd.receivedCheckNot);
-        //        LOG(String.Format("CheckSumGot != CheckSumCounted :: {0} != {1}", (byte)rec_checkSum, (byte)calc_checkSum));
-        //        //LOG_msgAppendLine(String.Format("CheckSumGot = {0} ", (byte)calc_check));
-        //    }
-        //}
     }
 
 }

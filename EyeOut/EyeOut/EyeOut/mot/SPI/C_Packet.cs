@@ -309,7 +309,17 @@ namespace EyeOut
             byteId = 0;
             par = new List<byte>();
         }
-        
+
+        public C_Packet(C_Packet packet)
+        {
+            byteId = packet.byteId;
+            byteInstructionOrError = packet.ByteInstructionOrError;
+            par = packet.Par;
+            byteLength = packet.byteLength;
+            byteCheckSum = packet.byteCheckSum;
+            returnStatusLevel = packet.returnStatusLevel;
+            motorDataType = packet.motorDataType;
+        }
 
         public C_Packet(byte[] receivedBytes)
         {
@@ -588,8 +598,9 @@ namespace EyeOut
             }
         }
 
-        public static void PROCESS_receivedPacket(C_Packet lastSent, List<byte> receivedBytes, int numPacket)
+        public static bool PROCESS_receivedPacket(C_Packet lastSent, List<byte> receivedBytes)
         {
+            
             // we have received one whole packet
             //C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
             C_Packet received = new C_Packet(receivedBytes);
@@ -597,14 +608,18 @@ namespace EyeOut
             //IS_error(received, receivedBytes); // just log it
 
             // it is echo or error - is it possible to get echo?
-            //if (received == lastSent)
-            //{
-            //    LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
-            //}
+            if (received == lastSent)
+            {
+                LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
+                return false;
+            }
             if (IS_error(received, receivedBytes) == false)
             {
                 PROCESS_statusPacket(received, lastSent);
+                return true; 
             }
+            return false;
+            // return true if "processed" this status with this lastSent and want to load another lastSent
         }
 
         public static void PROCESS_instructionPacket(C_Packet lastSent)

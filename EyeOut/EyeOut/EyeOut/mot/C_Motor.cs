@@ -337,7 +337,6 @@ namespace EyeOut
             return new byte[] { reg.GET((int)add_L, type).Val, reg.GET((int)add_H, type).Val };
         }
 
-
     }
 }
 

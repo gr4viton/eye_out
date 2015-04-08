@@ -41,14 +41,33 @@ namespace EyeOut
 
             // init filter
             lsLogSrcSelction.SelectAll();
-            
-            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.spi);
-            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.spi_got);
-            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.spi_sent);
-            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.mot);
-            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.mot_yaw);
-            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.mot_pitch);
-            lsLogSrcSelction.SelectedItems.Remove(e_LogMsgSource.mot_roll);
+
+            LOG_filterOut(e_LogMsgSource.spi);
+            LOG_filterOut(e_LogMsgSource.spi_got);
+            LOG_filterOut(e_LogMsgSource.spi_sent);
+            LOG_filterOut(e_LogMsgSource.mot);
+            LOG_filterOut(e_LogMsgSource.mot_yaw);
+            LOG_filterOut(e_LogMsgSource.mot_pitch);
+            LOG_filterOut(e_LogMsgSource.mot_roll);
+
+            LOG_filterOut(e_LogMsgSource.unimportant);
+
+        }
+        public void LOG_filter(e_LogMsgSource src, bool visible)
+        {
+            if (visible == true)
+                LOG_filterIn(src);
+            else
+                LOG_filterOut(src);
+        }
+
+        public void LOG_filterOut(e_LogMsgSource src)
+        {
+            lsLogSrcSelction.SelectedItems.Remove(src);
+        }
+        public void LOG_filterIn(e_LogMsgSource src)
+        {
+            lsLogSrcSelction.SelectedItems.Add(src);
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

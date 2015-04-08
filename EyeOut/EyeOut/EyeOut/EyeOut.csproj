@@ -125,6 +125,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="mot\SPI\C_SPI_READ.cs" />
     <Compile Include="oculus\cam\C_Camera.cs" />
     <Compile Include="oculus\cam\C_CameraCapture.cs" />
     <Compile Include="oculus\cam\Main_Camera.cs" />
