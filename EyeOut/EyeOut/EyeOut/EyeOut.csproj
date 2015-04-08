@@ -125,9 +125,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ocu_and_TP\cam\C_Camera.cs" />
-    <Compile Include="ocu_and_TP\cam\C_CameraCapture.cs" />
-    <Compile Include="ocu_and_TP\cam\Main_Camera.cs" />
+    <Compile Include="oculus\cam\C_Camera.cs" />
+    <Compile Include="oculus\cam\C_CameraCapture.cs" />
+    <Compile Include="oculus\cam\Main_Camera.cs" />
     <Compile Include="about\Main_About.cs" />
     <Compile Include="log\C_Packet_LOG.cs" />
     <Compile Include="mot\C_ByteRegister.cs" />
@@ -137,12 +137,12 @@
     <Compile Include="mot\C_EulerAngles.cs" />
     <Compile Include="mot\SPI\C_Packet.cs" />
     <Compile Include="mot\Main_MotorData.cs" />
-    <Compile Include="ocu_and_TP\C_Telepresence_TEXT_d3d9.cs" />
-    <Compile Include="ocu_and_TP\C_Telepresence_TEXT_d3d10.cs" />
-    <Compile Include="ocu_and_TP\C_Telepresence_INIT.cs" />
-    <Compile Include="ocu_and_TP\C_Telepresence.cs" />
-    <Compile Include="ocu_and_TP\Main_Oculus.cs" />
-    <Compile Include="Main\C_State.cs" />
+    <Compile Include="oculus\C_Telepresence_TEXT_d3d9.cs" />
+    <Compile Include="oculus\C_Telepresence_TEXT_d3d10.cs" />
+    <Compile Include="oculus\C_Telepresence_INIT.cs" />
+    <Compile Include="oculus\C_Telepresence.cs" />
+    <Compile Include="oculus\Main_Telepresence.cs" />
+    <Compile Include="other\C_State.cs" />
     <Compile Include="mot\SPI\Main_SPI.cs" />
     <Compile Include="log\C_Logger.cs" />
     <Compile Include="mot\Main_Motor.cs" />
@@ -158,7 +158,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ocu_and_TP\RiftGame.cs" />
+    <Compile Include="oculus\Demo_RiftGame.cs" />
     <Compile Include="other\Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -192,9 +192,17 @@
   <ItemGroup>
     <Resource Include="Content\pic\eyeout.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="oculus\Graphics\" />
+    <Folder Include="oculus\Inputs\" />
+    <Folder Include="oculus\Shaders\" />
+    <Folder Include="oculus\System\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Content\about\aboutLibraries.txt" />
+    <Resource Include="Content\Demo\GeneticaMortarlessBlocks.jpg" />
+    <Content Include="Content\Demo\MiniCubeTexture.fx" />
+    <Content Include="Content\Demo\MiniTri.fx" />
     <Content Include="Content\mot\registerByteDefault.txt" />
     <Resource Include="Content\about\notUsedAfterall.txt" />
     <Content Include="Content\mot\cmdInEx.txt">

@@ -16,6 +16,17 @@
     <!--Closed="Window_Closed"-->
 
 
+    <Window.CommandBindings>
+        <CommandBinding Command="Help" 
+        CanExecute="CanExecute"
+        Executed="StartTelepresence" />
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+        <KeyBinding Command="Help" Key="T" Modifiers="Ctrl"/>
+    </Window.InputBindings>
+
+
     <!--instances of binding classes, styles definitions-->
     <Window.Resources>
         <!--new instance of C_controlMot named controlMot-->
@@ -378,6 +389,7 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
                                         <ToggleButton x:Name="tbtReadPresentPosition" Content="Read present position" IsChecked="False"/>
+                                        <Button x:Name="btnReadLEDvalue" Content="Read LED value" Click="btnReadLEDvalue_Click"/>
                                     </StackPanel>
                                 </GroupBox>
                             </Grid>
@@ -540,19 +552,33 @@
                             <Style TargetType="CheckBox">
                                 <!--<Setter Property="FontSize" Value="8" />-->
                                 <!--<Setter Property="FontWeight" Value="Normal" />-->
-                                <Setter Property="Foreground" Value="Wheat"/>
+                                <Setter Property="Foreground" Value="LimeGreen"/>
                             </Style>
                         </GroupBox.Resources>
 
                         <StackPanel>
                             <GroupBox Header="HUD">
                                 <StackPanel>
-                                    <CheckBox Content="Time" IsEnabled="False"/>
-                                    <CheckBox Content="Radar" IsEnabled="False"/>
-                                    <CheckBox Content="Motor pose" IsEnabled="False"/>
+                                    <CheckBox x:Name="cbHudTime" Content="Time" IsEnabled="False"/>
+                                    <CheckBox x:Name="cbHudCompas" Content="Radar" IsEnabled="False"/>
+                                    <CheckBox x:Name="cbHudMotorPosture" Content="Motor posture" IsEnabled="False"/>
                                 </StackPanel>
                             </GroupBox>
 
+                            <GroupBox Header="Motor Control">
+                                <StackPanel>
+                                    <CheckBox x:Name="cbWriteMotorData" Content="Send accelerometer data from oculus to position motors" IsChecked="False"/>
+                                    <CheckBox x:Name="cbReadMotorData" Content="Read position motor data from motors" IsChecked="False"/>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="Gaze and Posture mark visibility">
+                                <StackPanel>
+                                    <CheckBox x:Name="cbDrawOculusGaze" Content="Oculus gaze" IsChecked="True"/>
+                                    <CheckBox x:Name="cbDrawMotorPostureSent" Content="Posture sent to motors" IsChecked="True"/>
+                                    <CheckBox x:Name="cbDrawMotorPostureSeen" Content="Motor posture read-out" IsChecked="True"/>
+                                </StackPanel>
+                            </GroupBox>
                             <GroupBox Header="Anti-sickness">
                                 <StackPanel>
                                     <CheckBox Content="Skybox" IsEnabled="False"/>

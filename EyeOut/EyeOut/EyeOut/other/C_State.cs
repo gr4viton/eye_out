@@ -41,6 +41,7 @@ namespace EyeOut
         public static e_stateProg prog;
         public static e_stateMotor mot;
         private static e_stateSPI spi;
+        //public bool spi_tryToConnect = true;
 
         public static event EventHandler SpiChanged;
 

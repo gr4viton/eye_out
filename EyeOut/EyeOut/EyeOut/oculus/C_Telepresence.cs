@@ -23,11 +23,14 @@ using System.Windows.Threading; // dispatcherTimer
 
 //using SharpDX.Direct2D1; // text d3d10
 //using SharpDX.DirectWrite; // text d3d10
-using SharpDX.Direct3D9; // text d3d9
+//using SharpDX.Direct3D9; // text d3d9
 
-using Buffer = SharpDX.Direct3D10.Buffer;
-using Device = SharpDX.Direct3D10.Device;
-using DriverType = SharpDX.Direct3D10.DriverType;
+// minitri
+using SharpDX.D3DCompiler;
+using SharpDX.Direct3D;
+using SharpDX.DXGI;
+using SharpDX.Windows;
+
 
 namespace EyeOut
 {
@@ -35,6 +38,12 @@ namespace EyeOut
     using SharpDX.Toolkit;
     using SharpDX.Toolkit.Graphics;
     using SharpDX.DXGI;
+    // minitri
+    using Buffer = SharpDX.Direct3D11.Buffer;
+    using Device = SharpDX.Direct3D11.Device;
+    using MapFlags = SharpDX.Direct3D11.MapFlags;
+    using Texture2D = SharpDX.Direct3D11.Texture2D;
+    using SamplerState = SharpDX.Direct3D11.SamplerState;
 
      
 /*
@@ -173,8 +182,6 @@ namespace EyeOut
         private float bodyYaw = 3.141592f;
 
 
-
-
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region drawable objects
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -182,12 +189,6 @@ namespace EyeOut
         private SharpDX.Toolkit.Graphics.Texture2D txuCam;
 
         // Instantiate Vertex buiffer from vertex data
-        var vertices = Buffer.Create(device, BindFlags.VertexBuffer, new[]
-                                  {
-                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
-                                  });
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion drawable objects
@@ -244,7 +245,8 @@ namespace EyeOut
             return true;
         }
 
-        static int maxRepeats = 10;
+        //static int maxRepeats = 10;
+
         protected override void Draw(GameTime gameTime)
         {
             // Clear the screen
@@ -286,8 +288,8 @@ namespace EyeOut
                 // Perform the actual drawing
                 InternalDraw(gameTime);
             }
-            ORDER_motors();
 
+            CONTROL_motors();
             /*
             RenderTarget2D.Clear(Color.White);
             RenderTarget2D.DrawText("Hello World using DirectWrite!", TextFormat, ClientRectangle, SceneColorBrush);
@@ -295,6 +297,22 @@ namespace EyeOut
 
         }
 
+        public void CONTROL_motors()
+        {
+            if (config.WRITE_dataToMotors == true)
+            {
+                ORDER_motors();
+            }
+            if (config.READ_dataFromMotors == true)
+            {
+                //MainWindow.Ms.Yaw.READ_position();
+
+                //foreach (C_Motor mot in MainWindow.Ms)
+                //{
+                //    mot.ORDER_getPosition();
+                //}
+            }
+        }
         public void ORDER_motors()
         {
             // background worker - if it takes too long
@@ -343,12 +361,6 @@ namespace EyeOut
                 C_Motor.ORDER_ActionToAll();
 
 
-                //MainWindow.Ms.Yaw.READ_position();
-                
-                //foreach (C_Motor mot in MainWindow.Ms)
-                //{
-                //    mot.ORDER_getPosition();
-                //}
             }
         }
 
@@ -372,7 +384,7 @@ namespace EyeOut
                         Matrix.Translation(0, -1.5f, 2.0f);
             model.Draw(GraphicsDevice, world, view, projection);
 
-
+            
             //txuCam.draw
             //captureHandler.CaptureData.Image;
             DRAW_txu();
@@ -398,13 +410,195 @@ namespace EyeOut
             fontDimension.Right += (int)xDir;
 
             // Draw the text
-            font.DrawText(null, displayText, fontDimension, FontDrawFlags.Center | FontDrawFlags.VerticalCenter, Color.White);
+            //font.DrawText(null, displayText, fontDimension, FontDrawFlags.Center | FontDrawFlags.VerticalCenter, Color.White);
 
         }
         protected void DRAW_txu()
         {
+            //DRAW_cube();
+            
+            DRAW_triangle();
             GET_txu();
         }
+
+        protected void DRAW_cube()
+        {
+
+            string fname;
+            string path = @"B:\__DIP\dev\_main_dev\EyeOut\EyeOut\EyeOut\Content\Demo\";
+            fname = path + "MiniCubeTexture.fx";
+
+            // Compile Vertex and Pixel shaders
+            var vertexShaderByteCode = ShaderBytecode.CompileFromFile(fname, "VS", "vs_4_0");
+            var vertexShader = new VertexShader(device, vertexShaderByteCode);
+
+            var pixelShaderByteCode = ShaderBytecode.CompileFromFile(fname, "PS", "ps_4_0");
+            var pixelShader = new PixelShader(device, pixelShaderByteCode);
+
+            // Layout from VertexShader input signature
+            var layout = new InputLayout(device, ShaderSignature.GetInputSignature(vertexShaderByteCode), new[]
+                    {
+                        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 16, 0)
+                    });
+
+
+
+            // Instantiate Vertex buiffer from vertex data
+            var vertices = Buffer.Create(device, BindFlags.VertexBuffer, new[]
+                                  {
+                                      // 3D coordinates              UV Texture coordinates
+                                      -1.0f, -1.0f, -1.0f, 1.0f,     0.0f, 1.0f, // Front
+                                      -1.0f,  1.0f, -1.0f, 1.0f,     0.0f, 0.0f,
+                                       1.0f,  1.0f, -1.0f, 1.0f,     1.0f, 0.0f,
+                                      -1.0f, -1.0f, -1.0f, 1.0f,     0.0f, 1.0f,
+                                       1.0f,  1.0f, -1.0f, 1.0f,     1.0f, 0.0f,
+                                       1.0f, -1.0f, -1.0f, 1.0f,     1.0f, 1.0f,
+
+                                      -1.0f, -1.0f,  1.0f, 1.0f,     1.0f, 0.0f, // BACK
+                                       1.0f,  1.0f,  1.0f, 1.0f,     0.0f, 1.0f,
+                                      -1.0f,  1.0f,  1.0f, 1.0f,     1.0f, 1.0f,
+                                      -1.0f, -1.0f,  1.0f, 1.0f,     1.0f, 0.0f,
+                                       1.0f, -1.0f,  1.0f, 1.0f,     0.0f, 0.0f,
+                                       1.0f,  1.0f,  1.0f, 1.0f,     0.0f, 1.0f,
+
+                                      -1.0f, 1.0f, -1.0f,  1.0f,     0.0f, 1.0f, // Top
+                                      -1.0f, 1.0f,  1.0f,  1.0f,     0.0f, 0.0f,
+                                       1.0f, 1.0f,  1.0f,  1.0f,     1.0f, 0.0f,
+                                      -1.0f, 1.0f, -1.0f,  1.0f,     0.0f, 1.0f,
+                                       1.0f, 1.0f,  1.0f,  1.0f,     1.0f, 0.0f,
+                                       1.0f, 1.0f, -1.0f,  1.0f,     1.0f, 1.0f,
+
+                                      -1.0f,-1.0f, -1.0f,  1.0f,     1.0f, 0.0f, // Bottom
+                                       1.0f,-1.0f,  1.0f,  1.0f,     0.0f, 1.0f,
+                                      -1.0f,-1.0f,  1.0f,  1.0f,     1.0f, 1.0f,
+                                      -1.0f,-1.0f, -1.0f,  1.0f,     1.0f, 0.0f,
+                                       1.0f,-1.0f, -1.0f,  1.0f,     0.0f, 0.0f,
+                                       1.0f,-1.0f,  1.0f,  1.0f,     0.0f, 1.0f,
+
+                                      -1.0f, -1.0f, -1.0f, 1.0f,     0.0f, 1.0f, // Left
+                                      -1.0f, -1.0f,  1.0f, 1.0f,     0.0f, 0.0f,
+                                      -1.0f,  1.0f,  1.0f, 1.0f,     1.0f, 0.0f,
+                                      -1.0f, -1.0f, -1.0f, 1.0f,     0.0f, 1.0f,
+                                      -1.0f,  1.0f,  1.0f, 1.0f,     1.0f, 0.0f,
+                                      -1.0f,  1.0f, -1.0f, 1.0f,     1.0f, 1.0f,
+
+                                       1.0f, -1.0f, -1.0f, 1.0f,     1.0f, 0.0f, // Right
+                                       1.0f,  1.0f,  1.0f, 1.0f,     0.0f, 1.0f,
+                                       1.0f, -1.0f,  1.0f, 1.0f,     1.0f, 1.0f,
+                                       1.0f, -1.0f, -1.0f, 1.0f,     1.0f, 0.0f,
+                                       1.0f,  1.0f, -1.0f, 1.0f,     0.0f, 0.0f,
+                                       1.0f,  1.0f,  1.0f, 1.0f,     0.0f, 1.0f,
+                            });
+
+            // Create Constant Buffer
+            var contantBuffer = new Buffer(device, Utilities.SizeOf<Matrix>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+
+
+            // Create Depth Buffer & View
+            var depthBuffer = new Texture2D(device, new Texture2DDescription()
+            {
+                Format = Format.D32_Float_S8X24_UInt,
+                ArraySize = 1,
+                MipLevels = 1,
+                Width = Window.ClientBounds.Width,
+                Height = Window.ClientBounds.Height,
+                SampleDescription = new SampleDescription(1, 0),
+                Usage = ResourceUsage.Default,
+                BindFlags = BindFlags.DepthStencil,
+                CpuAccessFlags = CpuAccessFlags.None,
+                OptionFlags = ResourceOptionFlags.None
+            });
+
+            var depthView = new DepthStencilView(device, depthBuffer);
+
+            fname = path + "GeneticaMortarlessBlocks.jpg";
+            // Load texture and create sampler
+            var texture = Texture2D.FromFile<Texture2D>(device, fname);
+            var textureView = new ShaderResourceView(device, texture);
+
+            var sampler = new SamplerState(device, new SamplerStateDescription()
+            {
+                Filter = Filter.MinMagMipLinear,
+                AddressU = TextureAddressMode.Wrap,
+                AddressV = TextureAddressMode.Wrap,
+                AddressW = TextureAddressMode.Wrap,
+                BorderColor = Color.Black,
+                ComparisonFunction = Comparison.Never,
+                MaximumAnisotropy = 16,
+                MipLodBias = 0,
+                MinimumLod = 0,
+                MaximumLod = 16,
+            });
+
+            var context = device.ImmediateContext;
+
+            // Prepare All the stages
+            context.InputAssembler.InputLayout = layout;
+            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            context.InputAssembler.SetVertexBuffers(0, new SharpDX.Direct3D11.VertexBufferBinding(vertices, Utilities.SizeOf<Vector4>() + Utilities.SizeOf<Vector2>(), 0));
+            context.VertexShader.SetConstantBuffer(0, contantBuffer);
+            context.VertexShader.Set(vertexShader);
+            //context.Rasterizer.SetViewport(new Viewport(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height, 0.0f, 1.0f));
+            context.PixelShader.Set(pixelShader);
+            context.PixelShader.SetSampler(0, sampler);
+            context.PixelShader.SetShaderResource(0, textureView);
+            //context.OutputMerger.SetTargets(depthView, renderView);
+
+            // Prepare matrices
+            var view = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
+            var proj = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, Window.ClientBounds.Width / (float)Window.ClientBounds.Height, 0.1f, 100.0f);
+            var viewProj = Matrix.Multiply(view, proj);
+
+        }
+
+        protected void DRAW_triangle()
+        {
+            string fname;
+            //fname = @"Content\Demo\MiniTri.fx";
+            //fname = "MiniTri.fx";
+            string path = @"B:\__DIP\dev\_main_dev\EyeOut\EyeOut\EyeOut\Content\Demo\";
+            fname = path+"MiniTri.fx";
+            // Compile Vertex and Pixel shaders
+            var vertexShaderByteCode = ShaderBytecode.CompileFromFile(fname, "VS", "vs_4_0", ShaderFlags.None, EffectFlags.None);
+            var vertexShader = new VertexShader(device, vertexShaderByteCode);
+
+            var pixelShaderByteCode = ShaderBytecode.CompileFromFile(fname, "PS", "ps_4_0", ShaderFlags.None, EffectFlags.None);
+            var pixelShader = new PixelShader(device, pixelShaderByteCode);
+
+            // Layout from VertexShader input signature
+            var layout = new InputLayout(
+                device,
+                ShaderSignature.GetInputSignature(vertexShaderByteCode),
+                new[]
+                    {
+                        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 16, 0)
+                    });
+
+            // Instantiate Vertex buiffer from vertex data
+            var vertices = Buffer.Create(device, BindFlags.VertexBuffer, new[]
+                                  {
+                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                                  });
+
+
+
+
+            var context = device.ImmediateContext;
+            // Prepare All the stages
+            context.InputAssembler.InputLayout = layout;
+            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            context.InputAssembler.SetVertexBuffers(0, new SharpDX.Direct3D11.VertexBufferBinding(vertices, 32, 0));
+            context.VertexShader.Set(vertexShader);
+            //context.Rasterizer.SetViewport(new Viewport(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height, 0.0f, 1.0f));
+            context.PixelShader.Set(pixelShader);
+            //context.OutputMerger.SetTargets(renderView);
+            context.Draw(3, 0);
+        }
+
         protected void GET_txu()
         {
 

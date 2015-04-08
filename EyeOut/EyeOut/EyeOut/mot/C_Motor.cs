@@ -26,10 +26,15 @@ namespace EyeOut
         Off = 0,
         Shining = 1
     }
+    public enum e_enabled
+    {
+        Disabled = 0,
+        Enabled = 1
+    }
     public enum e_bool
     {
-        disabled = 0,
-        enabled = 1
+        False = 0,
+        True = 1
     }
 
     public enum e_statusReturnLevel // address 16
@@ -82,6 +87,10 @@ namespace EyeOut
             // set not allowed - use ACUTALIZE_register() we need to knwo the byte changing on C_motor level
         }
         public e_ledValue LedValue;
+        public e_ledValue LedValueSeen;
+        public e_enabled torqueEnable;
+        public e_bool isMoving;
+        
 
         public e_statusReturnLevel StatusReturnLevel
         {
@@ -91,8 +100,8 @@ namespace EyeOut
             }
         }
 
-        public e_bool torqueEnable;
-
+        
+                        
 
         // cmd examples
         //public static List<C_cmdin> cmdinEx;
@@ -295,16 +304,23 @@ namespace EyeOut
 
                 case (C_DynAdd.LED_ENABLE):
                     LedValue = (e_ledValue)(reg.GET(C_DynAdd.LED_ENABLE, e_regByteType.sentValue).Val);
-                    LOG_reg("[LED] actualized form motor!");
+                    LOG_reg("[LED sent] actualized form motor!");
+                    LedValueSeen = (e_ledValue)(reg.GET(C_DynAdd.LED_ENABLE, e_regByteType.seenValue).Val);
+                    LOG_reg("[LED seen] actualized form motor!");
                     break;
                 case (C_DynAdd.STATUS_RETURN_LEVEL):
                     statusReturnLevel = (e_statusReturnLevel)(reg.GET(C_DynAdd.STATUS_RETURN_LEVEL, e_regByteType.sentValue).Val);
                     LOG_reg("[Status Return Level] actualized form motor!");
                     break;
                 case (C_DynAdd.TORQUE_ENABLE):
-                    torqueEnable = (e_bool)(reg.GET(C_DynAdd.TORQUE_ENABLE, e_regByteType.sentValue).Val);
+                    torqueEnable = (e_enabled)(reg.GET(C_DynAdd.TORQUE_ENABLE, e_regByteType.sentValue).Val);
                     LOG_reg("[TORQUE ENABLE] actualized form motor!");
                     break;
+                case (C_DynAdd.IS_MOVING):
+                    isMoving = (e_bool)(reg.GET(C_DynAdd.TORQUE_ENABLE, e_regByteType.sentValue).Val);
+                    LOG_reg("[IN MOTION] actualized form motor!");
+                    break;
+                    
             }
         }
 

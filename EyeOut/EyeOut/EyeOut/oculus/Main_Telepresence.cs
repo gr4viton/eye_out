@@ -34,22 +34,26 @@ namespace EyeOut
     {
         public bool time;
         public bool compas;
-        public C_HUD()
-        {
-            time = false;
-            compas = false;
-        }
+        public bool motorPosture;
+        public C_HUD() {}
+    }
+
+    public class C_DrawGazeMark
+    {
+        public bool Oculus = true;
+        public bool MotorPostureSent = true;
+        public bool MotorPostureSeen = true;
     }
 
     // telepresence configurations
     public class C_TP_config
     {
         public C_HUD hud;
+        public bool WRITE_dataToMotors = false;
+        public bool READ_dataFromMotors = false;
+        public C_DrawGazeMark gazeMark;
 
-        public C_TP_config()
-        {
-            hud = new C_HUD();
-        }
+        public C_TP_config() {}
     }
 
 
@@ -60,7 +64,23 @@ namespace EyeOut
 
         public void INIT_TP()
         {
-            TP_config = new C_TP_config();
+            TP_config = new C_TP_config()
+            {
+                WRITE_dataToMotors = (bool)cbWriteMotorData.IsChecked,
+                READ_dataFromMotors = (bool)cbReadMotorData.IsChecked,
+                gazeMark = new C_DrawGazeMark()
+                {
+                    Oculus = (bool)cbDrawOculusGaze.IsChecked,
+                    MotorPostureSent = (bool)cbDrawMotorPostureSent.IsChecked,
+                    MotorPostureSeen = (bool)cbDrawMotorPostureSeen.IsChecked,
+                },
+                hud = new C_HUD()
+                {
+                    time = (bool)cbHudTime.IsChecked,
+                    compas = (bool)cbHudCompas.IsChecked,
+                    motorPosture = (bool)cbHudMotorPosture.IsChecked
+                }
+            };
             TP_config.hud.time = true;
         }
 
@@ -80,21 +100,22 @@ namespace EyeOut
                 }
                 else
                 {
-                    START_TP();
+                    START_TP(TP_config);
                 }
             }
             else
             {
-                START_TP();
+                START_TP(TP_config);
             }
         }
 
-        public void START_TP()
+        public void START_TP(C_TP_config TP_config)
         {
             HMDType hmdType = HMDType.DK1;
             // send active config
             using (TP_program = new C_Telepresence(C_Camera.actualId, hmdType))
             {
+                TP_program.config = TP_config;
                 TP_program.Run();
             }
         }

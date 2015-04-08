@@ -42,7 +42,7 @@ namespace EyeOut
         cam, 
         Demo_TP, EyeOut, 
         EyeOut_cam, 
-        valConv
+        valConv, debug
     }
     public enum e_LogMsgType
     {

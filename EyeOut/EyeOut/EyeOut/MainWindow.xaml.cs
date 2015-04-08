@@ -34,6 +34,8 @@ namespace EyeOut
         public DispatcherTimer timSim;
         public static C_Packet raw;
 
+        //public Keyboard Keyboard { get; }
+
         public MainWindow()
         {
             C_State.prog = e_stateProg.initializing;
@@ -50,8 +52,42 @@ namespace EyeOut
             INIT_cam();
             INIT_TP();
             INIT_about();
+            INIT_keyMapping();
             C_State.prog = e_stateProg.initialized;
         }
+
+        public void HOTKEY_StartTelepresence()
+        {
+            START_TP_withCaution();
+        }
+        private void CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+            e.Handled = true;
+        }
+
+        private void StartTelepresence(object sender, ExecutedRoutedEventArgs e)
+        {
+            HOTKEY_StartTelepresence();
+            e.Handled = true;
+        }
+
+
+        private void INIT_keyMapping()
+        {
+        }
+        //private void OnWindowKeyUp(object source, KeyEventArgs e)
+        //{
+
+        //    if (e.Key == Key.T && (Keyboard.Modifiers & Key.LeftCtrl) == Key.LeftCtrl)
+        //    {
+
+        //    }
+
+        //    //Do whatever you like with e.Key and Keyboard.Modifiers
+        //}
+
+
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region prog status
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,6 +226,7 @@ namespace EyeOut
 
             MessageBox.Show(str.ToString());
         }
+
 
 
 

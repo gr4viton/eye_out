@@ -27,6 +27,22 @@ namespace EyeOut
     }
 
 
+    //// queue of last sent packets to one motor 
+    //public class C_queueOfLastSentPacketToMotor
+    //{
+    //    private Queue<C_Packet> queue;
+    //    public Queue<C_Packet> Queue
+    //    {
+
+    //    }
+
+    //    public C_queueOfLastSentPacketToMotor()
+    //    {
+    //        queue_lock = new object();
+    //        queue = new Queue<C_Packet>();
+    //    }
+    //}
+    
     public class C_InstructionPacket : C_Packet
     {
         // new for hiding inherited acceptance
@@ -105,6 +121,7 @@ namespace EyeOut
         protected e_statusReturnLevel returnStatusLevel = e_statusReturnLevel.never;
         protected e_motorDataType motorDataType = e_motorDataType.angleSeen;
 
+        
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region operators
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -386,16 +403,18 @@ namespace EyeOut
 
         public bool IS_consistentLengthByte()
         {
-            // make sure that all of these are correct
-            // checkSumByteReceived
-            return true;
+            if (byteLength == Par.Count+2)
+                return true;
+            else
+                return false;
         }
 
         public bool IS_consistentCheckSumByte()
         {
-            // make sure that all of these are correct
-            // lengthByteReceived
-            return true;
+            if (C_CheckSum.GET_checkSum_fromWholePacket(PacketBytes) == 0)
+                return true;
+            else
+                return false;
         }
         
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -470,52 +489,6 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region RESET
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        //public void RESET_from_lsPack(List<byte> _lsPack)
-        //{
-        //    RESET_from_packetBytes(_lsPack.ToArray());
-        //}
-    
-        //public void RESET_from_packetBytes(byte[] _packetBytes)
-        //{
-        //    // fill in the new instructionPacket:
-        //    //      id | instruction/error | params  | 
-        //    // -> it'll compute automatically: 
-        //    //      LengthByte, ChecksumByte
-        //    // get PacketBytes 
-        //    // compare:
-        //    //      LengthByte ?= LengthByteReceived
-        //    //      ChecksumByte ?= ChecksumByteReceived
-        //    // if anything goes wrong throw an exception
-
-        //    int IndexOfCheckSum = _packetBytes.Length - 1;
-
-        //    // fill in instructionByte
-        //    instructionOrErrorByte = _packetBytes[IndexOfInstructionOrError];
-        //    // fill in id
-        //    idByte = _packetBytes[IndexOfId];
-        //    // fill in params (from const to length (checksum))
-        //    List<byte> _par = new List<byte>();
-        //    for (int q = IndexOfFirstParam; q < IndexOfCheckSum; q++)
-        //    {
-        //        _par.Add(_packetBytes[q]);
-        //    }
-        //    Par = _par;
-            
-        //    if(lengthByte != _packetBytes[IndexOfLength])
-        //    {
-        //        IsConsistent = false;
-        //        // bad - but should never happen 
-        //        // as the length byte directly creates the length of the byte array 
-        //        // in the serial read function
-        //        throw new Exception(GET_ByteFailInfo("LENGTH_BYTE", lengthByte, _packetBytes[IndexOfLength]));
-        //    }
-            
-        //    if(CheckSumByte != _packetBytes[IndexOfCheckSum])
-        //    {
-        //        IsConsistent = false;
-        //        throw new Exception(GET_ByteFailInfo("CHECKSUM_BYTE", CheckSumByte, _packetBytes[IndexOfCheckSum]));
-        //    }
-        //}
 
         public string GET_ByteFailInfo(string byteName, byte csCounted, byte csReceived)
         {
@@ -529,43 +502,11 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region static functions
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        //public static byte[] CREATE_cmdFromCmdInner(byte[] byCmdin, byte id)
-        //{
-        //    // Instruction Packet = from pc to servo
-        //    // OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 …PARAMETER N CHECK SUM 
-        //    // inner contains only these bytes:
-        //    // INSTRUCTION, PARAMETER_1, ..., PARAMETER_N
-
-        //    // this function adds first two startBytes [0xFF,0xFF], its id byte, length byte and Checksum byte
-
-        //    // make it into ArrayList
-        //    byte[] cmd = new byte[5 + byCmdin.Length];
-        //    //ArrayList a_cmd = new ArrayList();
-        //    //a_cmd.Add({0xFF, 0xFF})
-        //    //{ 0xFF, 0xFF, id, len, inner, 0x00 };
-        //    //{ 0   , 1   , 2 , 3  , 4...., last };
-        //    cmd[2] = id;
-        //    int q = 4;
-        //    foreach (byte by in byCmdin)
-        //    {
-        //        cmd[q] = by;
-        //        q++;
-        //    }
-        //    cmd[3] = (byte)(byCmdin.Length + 1); // = paramN+Instruction + 1 = paramN + 2 = len
-        //    cmd[q] = C_CheckSum.GET_checkSum(cmd);
-        //    cmd[0] = cmd[1] = 0xFF;
-        //    return cmd;
-        //}
-
-
-
+        
         public static void SEND_packet(C_Packet packet)
         {
             C_SPI.SEND_data(packet);
         }
-
-        
 
         // Optional parameters - i.e. INS_ACTION don't need any parameters
         public C_Packet(C_Motor _mot, byte _instructionByte, List<object> _lsParameters)

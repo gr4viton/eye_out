@@ -57,7 +57,11 @@ namespace EyeOut
             timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 200);
             timMotorDataRefresh.Start();
         }
-        
+
+        private void btnReadLEDvalue_Click(object sender, RoutedEventArgs e)
+        {
+            Ms.Yaw.READ(C_DynAdd.LED_ENABLE, 1);
+        }
         CollectionViewSource ItemCollectionViewSource_motorData;
         private void timMotorDataRefresh_Tick(object sender, EventArgs e)
         {
@@ -65,13 +69,16 @@ namespace EyeOut
             {
                 if (tbtReadPresentPosition.IsChecked  == true)
                 {
-                    //foreach (C_Motor mot in Ms)
+                    foreach (C_Motor mot in Ms)
                     {
                         //mot.ORDER_getPosition();
                         //mot.READ(C_DynAdd.LED_ENABLE, 1);
+                        mot.READ_position();
+                        mot.READ_movingByte();
+                        mot.READ(C_DynAdd.LED_ENABLE, 1);
                     }
                     //Ms.Yaw.READ_position
-                    Ms.Yaw.READ_position();
+                    //Ms.Yaw.READ_position();
                 }
                 foreach (C_MotorDataRow row in motorData)
                 {

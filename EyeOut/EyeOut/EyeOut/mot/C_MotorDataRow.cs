@@ -23,8 +23,10 @@ namespace EyeOut
         [Description("Goal speed")] speedSent,
         [Description("Actual speed")] speedSeen,
         [Description("Status Level")] statusReturnLevel,
-        [Description("LED value")] LED,
-        [Description("Torque enable")] torqueEnable
+        [Description("LED wanted")] LED,
+        [Description("LED seen")]        LED_seen,
+        [Description("Torque enable")] torqueEnable,
+        [Description("In motion")] isMoving
     }
 
     public class C_MotorDataRow
@@ -119,13 +121,18 @@ namespace EyeOut
                     case (e_motorDataType.LED):
                         SET_ypr(mot.rotMotor, mot.LedValue.ToString());
                         break;
+                    case (e_motorDataType.LED_seen):
+                        SET_ypr(mot.rotMotor, mot.LedValueSeen.ToString());
+                        break;
                     case (e_motorDataType.statusReturnLevel):
                         SET_ypr(mot.rotMotor, mot.StatusReturnLevel.ToString());
                         break;
                     case (e_motorDataType.torqueEnable):
                         SET_ypr(mot.rotMotor, mot.torqueEnable.ToString());
                         break;
-
+                    case (e_motorDataType.isMoving):
+                        SET_ypr(mot.rotMotor, mot.isMoving.ToString());
+                        break;
                         
                 }
             }

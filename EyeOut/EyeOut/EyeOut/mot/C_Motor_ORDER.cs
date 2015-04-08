@@ -164,7 +164,11 @@ namespace EyeOut
         {
             READ(C_DynAdd.PRESENT_POS_L, 2);
         }
-
+        public void READ_movingByte()
+        {
+            READ(C_DynAdd.IS_MOVING, 1);
+        }
+        
         public void READ_limitAngle()
         {
             READ(C_DynAdd.ANGLE_LIMIT_CW_L, 2);

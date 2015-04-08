@@ -25,40 +25,17 @@ namespace EyeOut
     internal class C_SPI
     {
         private static object spi_locker = new object();
-        private static object queue_locker = new object();
+        private static object queueToSent_locker = new object();
+        private static object queueSent_locker = new object();
         
         public static SerialPort spi;
-        //private static BackgroundWorker worker_SEND;
-        private static Queue<C_Packet> packetQueue;
-
-        //public static byte[] readBuff;
-        //public static int i_readBuff = 0;
-        //public static byte this_byte;
-        
-        //public static C_Packet packetSent;
-        //public static C_Packet packetReceived;
-
-        //public static List<byte> receivedPacketBytes;
-        //public static int i_packetByte;
-
-        //public static byte[] curCmd;
-        //public static int i_curCmd;
-        //public static byte[] lastCmd;
+        private static Queue<C_Packet> queueToSent; // packets which are going to be sent
+        private static List<Queue<C_Packet>> queueSent; // packets which was written and are waiting for getting some return status packet
 
         static C_CounterDown openConnection = new C_CounterDown(10); // try to open connection x-times
         static C_CounterDown readReturn = new C_CounterDown(10); // try to read return status packet x-times
         public static int timeoutExceptionPeriod = 10;
-
-        // const!?
-        //public static int packetLength; // number of bytes in received packet - including PACKETSTART bytes
-        //public static int i_cmdId = 0;     // = first byte in status packet (not counting 0xff 0xff)
-        //public static int i_cmdError = 2;  // = third byte in status packet (not counting 0xff 0xff)
-
-        //public static byte curCmd_id;
-        //public static byte curCmd_len;
-
-        //public static bool INCOMING_PACKET = false;
-
+        
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // SPI hang - thread: http://www.codeproject.com/Questions/179614/Serial-Port-in-WPF-Application
@@ -89,7 +66,13 @@ namespace EyeOut
             // NOT NEEDED as all the motors are just CLIENTS - only responding to my (SERVER) orders
             //spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
 
-            packetQueue = new Queue<C_Packet>();
+            queueToSent = new Queue<C_Packet>();
+            queueSent = new List<Queue<C_Packet>>()
+            {
+                new Queue<C_Packet>(),
+                new Queue<C_Packet>(),
+                new Queue<C_Packet>(),
+            };
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Initialization
@@ -187,33 +170,35 @@ namespace EyeOut
         private static void QUEUE_data(C_Packet instructionPacket)
         {
             // adds data to sending queue
-            lock (queue_locker)
+            lock (queueToSent_locker)
             {
-                packetQueue.Enqueue(instructionPacket);
+                queueToSent.Enqueue(instructionPacket);
             }
         }
 
         private static void workerSEND_DoWork(object sender, DoWorkEventArgs e)
         {
             C_Packet thisInstructionPacket;
+            LOG_debug("Start to read packet");
             lock (spi_locker)
             {
-                //if (spi.IsOpen == true)
-                //{
-                //    spi.DiscardInBuffer();
-                //    spi.DiscardOutBuffer();
-                //}
-                
-                lock (queue_locker)
+                if (spi.IsOpen == true)
                 {
-                    if (packetQueue.Count != 0)
+                    spi.DiscardInBuffer();
+                //    spi.DiscardOutBuffer();
+                }
+                
+                lock (queueToSent_locker)
+                {
+                    if (queueToSent.Count != 0)
                     {
-                        thisInstructionPacket = packetQueue.Dequeue();
+                        thisInstructionPacket = queueToSent.Dequeue();
                         if (C_SPI.WRITE_instructionPacket(thisInstructionPacket) == false)
                         {
                             LOG_err(string.Format(
                                 "Cannot open the serial port. Tried [{0}]-times", openConnection.ValDef
                                 ));
+                            return;
                         }
                     }
                     else
@@ -230,6 +215,10 @@ namespace EyeOut
 
                 if (C_Packet.IS_statusPacketFollowing(thisInstructionPacket) == true)
                 {
+                    lock (queueSent_locker)
+                    {
+                        queueSent[(int)thisInstructionPacket.rotMotor].Enqueue(thisInstructionPacket);
+                    }
                     int packetRead = 0;
                     packetRead = READ_packet(thisInstructionPacket);
                     LOG_got("["+packetRead.ToString()+"] successfully read");
@@ -321,9 +310,11 @@ namespace EyeOut
                 System.Threading.Thread.CurrentThread.Abort();
             }
             int numPacket = 0;
+            LOG_debug("Start to read packet");
             try
             {
-                lock (spi_locker)
+                LOG_debug("locked spi");
+                //lock (spi_locker)
                 {
                     const int packetLength_min = 6; // shortest packet consists of 6bytes
                     const int IndexOfLength = C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET;
@@ -394,7 +385,7 @@ namespace EyeOut
                         }
 
 
-                        if (numPacket == 1)
+                        if (numPacket == 2)
                         {
                             break; // get only one packet
                         }
@@ -458,6 +449,10 @@ namespace EyeOut
             return "Catched exception: " + ex.Message; 
         }
 
+        public static void LOG_debug(string _msg)
+        {
+            C_Logger.Instance.LOG(e_LogMsgSource.debug, _msg);
+        }
 
 
 

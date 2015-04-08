@@ -18,19 +18,29 @@ using System.Windows.Media.Imaging; // BitmapSource
 using System.Runtime.InteropServices;
 using System.Windows.Threading; // dispatcherTimer
 
-
+// minitri
+using SharpDX.D3DCompiler;
+using SharpDX.Direct3D;
+using SharpDX.DXGI;
+using SharpDX.Windows;
 namespace EyeOut
 {
     // Use these namespaces here to override SharpDX.Direct3D11
     using SharpDX.Toolkit;
     using SharpDX.Toolkit.Graphics;
     using SharpDX.DXGI;
+    // minitri
+    using Buffer = SharpDX.Direct3D11.Buffer;
+    using Device = SharpDX.Direct3D11.Device;
+
 
     /// <summary>
     /// EyeOut telepresence using SharpDX.Toolkit - the init part
     /// </summary>
     public partial class C_Telepresence : Game
     {
+
+        public C_TP_config config;
 
         public void INIT_toolkit(HMDType _hmdType) // called from constructor of class C_Telepresence
         {
@@ -163,7 +173,40 @@ namespace EyeOut
 
             base.Initialize();
 
+            INIT_txu();
             INIT_TP_text();
+        }
+
+        protected void INIT_txu()
+        {
+            string fname;
+            //fname = @"Content\Demo\MiniTri.fx";
+            //fname = "MiniTri.fx";
+            fname = @"B:\__DIP\dev\_main_dev\EyeOut\EyeOut\EyeOut\Content\Demo\MiniTri.fx";
+            // Compile Vertex and Pixel shaders
+            var vertexShaderByteCode = ShaderBytecode.CompileFromFile(fname, "VS", "vs_4_0", ShaderFlags.None, EffectFlags.None);
+            var vertexShader = new VertexShader(device, vertexShaderByteCode);
+
+            var pixelShaderByteCode = ShaderBytecode.CompileFromFile(fname, "PS", "ps_4_0", ShaderFlags.None, EffectFlags.None);
+            var pixelShader = new PixelShader(device, pixelShaderByteCode);
+
+            // Layout from VertexShader input signature
+            var layout = new InputLayout(
+                device,
+                ShaderSignature.GetInputSignature(vertexShaderByteCode),
+                new[]
+                    {
+                        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 16, 0)
+                    });
+
+            // Instantiate Vertex buiffer from vertex data
+            var vertices = Buffer.Create(device, BindFlags.VertexBuffer, new[]
+                                  {
+                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                                  });
         }
 
         protected override void LoadContent()
