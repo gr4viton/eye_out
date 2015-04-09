@@ -183,6 +183,17 @@ namespace EyeOut
             }
         }
 
+        public static void QUEUE_PacketSent(C_Packet instructionPacket)
+        {
+            if (C_Packet.IS_statusPacketFollowing(instructionPacket) == true)
+            {
+                lock (queueSent_locker)
+                {
+                    queueSent[(int)instructionPacket.rotMotor].Enqueue(instructionPacket);
+                }
+            }
+        }
+
         private static void workerSEND_DoWork(object sender, DoWorkEventArgs e)
         {
             C_Packet thisInstructionPacket;
@@ -244,13 +255,7 @@ namespace EyeOut
             {
                 if (spi.IsOpen)
                 {
-                    if (C_Packet.IS_statusPacketFollowing(instructionPacket) == true)
-                    {
-                        lock (queueSent_locker)
-                        {
-                            queueSent[(int)instructionPacket.rotMotor].Enqueue(instructionPacket);
-                        }
-                    }
+                    QUEUE_PacketSent(instructionPacket);
                     byte[] data = instructionPacket.PacketBytes;
                     WRITE_byteArray(data);
                     LOG_cmd(data, e_cmd.sent);

@@ -314,9 +314,9 @@ namespace EyeOut
         {
             byteId = packet.byteId;
             byteInstructionOrError = packet.ByteInstructionOrError;
-            par = packet.Par;
             byteLength = packet.byteLength;
             byteCheckSum = packet.byteCheckSum;
+            Par = packet.Par;
             returnStatusLevel = packet.returnStatusLevel;
             motorDataType = packet.motorDataType;
         }
@@ -454,8 +454,10 @@ namespace EyeOut
             // this function adds first two startBytes [0xFF,0xFF], its id byte, length byte, instruction byte and Checksum byte 
             // around parameters and returns the byte array of it
 
+            //packetNumOfBytes = par.Count + 4;
             byte[] _packetBytes = new byte[packetNumOfBytes];
 
+            //List<byte> _lsPacketBytes = new List<byte>(5);
             int q = 0;
             // id
             _packetBytes[IndexOfId] = byteId;
@@ -611,11 +613,22 @@ namespace EyeOut
             if (received == lastSent)
             {
                 LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
-                return false;
+                C_SPI.QUEUE_PacketSent(lastSent);
+                return true;
             }
-            if (IS_error(received, receivedBytes) == false)
+            else
             {
-                PROCESS_statusPacket(received, lastSent);
+                if (IS_error(received, receivedBytes) == true)
+                {
+                    C_SPI.LOG_debug("The processed package has an error! : "
+                        + received.PacketBytes_toString);
+                }
+                else
+                {
+                    C_SPI.LOG_debug("The processed package does not contain any error, going to process statusPacket");
+                    PROCESS_statusPacket(received, lastSent);
+                    C_SPI.LOG_debug("Status packet processing ended");
+                }
                 return true; 
             }
             return false;

@@ -84,6 +84,7 @@ namespace EyeOut
         public const int RECEIVING_BUFFER_VOLUME = 143; // the volume of receiving buffer of RX-64 
         public const int MAX_BYTES_OF_PACKET = RECEIVING_BUFFER_VOLUME;
         public const int MAX_PARAMETERS = MAX_BYTES_OF_PACKET - 6; // 6 = PACKETSTART, ID, LENGTH, INSTRUCTION, CHECKSUM
+        public const int MIN_BYTES_OF_PACKET = 6; // FF|FF|ID|LEN|INS|CHS
         // ____________________________________________________ Goal position
         public const byte GOAL_POS_L = 30;
         public const byte GOAL_POS_H = 31;
