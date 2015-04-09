@@ -292,53 +292,68 @@ namespace EyeOut
         {
             lock (queueSent_locker)
             {
-                    int thisStatusId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
-                    e_rot rot;
-                    bool foundMotor = C_MotorControl.GET_motorRotFromId(thisStatusId, out rot);
-                    if (foundMotor == true)
-                    {
-                        int index = (int)rot;
-                        //LOG_debug("index = " + index.ToString());
+                DateTime receivedTime = DateTime.UtcNow;
+                int thisStatusId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
+                e_rot rot;
+                bool foundMotor = C_MotorControl.GET_motorRotFromId(thisStatusId, out rot);
+                if (foundMotor == true)
+                {
+                    int rotMot = (int)rot;
+                    //LOG_debug("index = " + index.ToString());
 
-                        // acquire the unprocessed lastSent package from queue if needed
-                        if (lastSent_returnStatusPacketProcessed[index] == true)
+                    // acquire the unprocessed lastSent package from queue if needed
+                    if (lastSent_returnStatusPacketProcessed[rotMot] == true)
+                    {
+                        bool LOAD_anotherLastSent = true;
+                        while(LOAD_anotherLastSent == true) // dequeue lastSent packets until fresh one is found
                         {
-                            if (queueSent[index].Count > 0)
+                            if (queueSent[rotMot].Count > 0)
                             {
-                                lastSent[index] = (queueSent[index]).Dequeue();
+                                lastSent[rotMot] = (queueSent[rotMot]).Dequeue();
+                                if (lastSent[rotMot].IS_fresh(receivedTime) == true)
+                                {
+                                    LOAD_anotherLastSent = false;
+                                }
+                                else
+                                {
+                                    LOG_debug(string.Format("This lastSent package was too old: [{0}]ms",
+                                        receivedTime - lastSent[rotMot].sentTime
+                                        ));
+                                }
                             }
                             else
                             {
                                 return false;
                             }
                         }
+                    }
 
-                        if (lastSent.Count >= index + 1)
+                    if (lastSent.Count >= rotMot + 1)
+                    {
+                        LOG_debug(string.Format(
+                        "Paired status package: {0}\n with this sentPackage: {1}",
+                        C_CONV.byteArray2strHex_space(packetBytes.ToArray()),
+                        lastSent[rotMot].PacketBytes_toString
+                        ));
+
+                        LOG_debug("now processing packet");
+
+                        // process paired lastSent and this statusPacket
+                        try
                         {
-                            LOG_debug(string.Format(
-                            "Paired status package: {0}\n with this sentPackage: {1}",
-                            C_CONV.byteArray2strHex_space(packetBytes.ToArray()),
-                            lastSent[index].PacketBytes_toString
-                            ));
-
-                            LOG_debug("now processing packet");
-
-                            // process paired lastSent and this statusPacket
-                            try
-                            {
-                                lastSent_returnStatusPacketProcessed[index] =
-                                    C_Packet.PROCESS_receivedPacket(lastSent[index], packetBytes);
-                            }
-                            catch (Exception ex)
-                            {
-                                LOG_err("Exception in processing received packet :"+GET_exInfo(ex));
-                                lastSent_returnStatusPacketProcessed[index] = true;
-                            }
-
-                            return lastSent_returnStatusPacketProcessed[index];
+                            lastSent_returnStatusPacketProcessed[rotMot] =
+                                C_Packet.PROCESS_receivedPacket(lastSent[rotMot], packetBytes);
+                        }
+                        catch (Exception ex)
+                        {
+                            LOG_err("Exception in processing received packet :"+GET_exInfo(ex));
+                            lastSent_returnStatusPacketProcessed[rotMot] = true;
                         }
 
+                        return lastSent_returnStatusPacketProcessed[rotMot];
                     }
+
+                }
                 return false;
             }
         }

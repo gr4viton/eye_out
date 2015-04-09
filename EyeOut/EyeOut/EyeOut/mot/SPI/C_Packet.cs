@@ -121,7 +121,11 @@ namespace EyeOut
         protected e_statusReturnLevel returnStatusLevel = e_statusReturnLevel.never;
         protected e_motorDataType motorDataType = e_motorDataType.angleSeen;
 
-        
+        public DateTime sentTime;
+        //public DateTime receivedTime;
+
+        // how long can the instructionPacket be waiting for its return packet
+        public TimeSpan allowedReturnTimeDelay = new TimeSpan(0, 0, 0, 0, 30); // ms
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region operators
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -426,7 +430,14 @@ namespace EyeOut
             else
                 return false;
         }
-        
+
+        public bool IS_fresh(DateTime receivedTime)
+        {
+            if ((receivedTime - sentTime) > allowedReturnTimeDelay)
+                return false;
+            else
+                return true;
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion IS consistent
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

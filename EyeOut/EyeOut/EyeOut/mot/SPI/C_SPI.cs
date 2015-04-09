@@ -208,6 +208,7 @@ namespace EyeOut
             {
                 lock (queueSent_locker)
                 {
+                    instructionPacket.sentTime = DateTime.UtcNow;
                     queueSent[(int)instructionPacket.rotMotor].Enqueue(instructionPacket);
                 }
             }

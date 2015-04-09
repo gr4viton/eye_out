@@ -174,7 +174,7 @@ namespace EyeOut
             byte[] parValues = pars.Skip(1).ToArray();
 
             C_Packet.LOG_statusPacket(string.Format(
-                "Status OK - actualizing [{0}] motor register [{1}]: From address[{2}], these values[{3}]",
+                "Status OK - actualizing mot[{0}] register type[{1}]: From address[{2}], these values[{3}]",
                 rot, type, addressByte, C_CONV.byteArray2strHex_space( parValues ) ));
             foreach (byte byteValue in parValues)
             {
