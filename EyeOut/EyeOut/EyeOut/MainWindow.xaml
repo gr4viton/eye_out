@@ -371,7 +371,8 @@
                                     <StackPanel>
                                         <ToggleButton x:Name="tbtReadPresentPosition" Content="Read present position" IsChecked="False"/>
                                         <Button x:Name="btnReadLEDvalue" Content="Read LED value" Click="btnReadLEDvalue_Click"/>
-
+                                        <Button x:Name="btnReadPresentPostionYaw" Content="Read Yaw present position" Click="btnReadPresentPostionYaw_Click"/>
+                                        <Button x:Name="btnReadPresentPostionPitch" Content="Read Pitch present position" Click="btnReadPresentPostionPitch_Click"/>
                                         <GroupBox Header="Motors' pc shadow register view:">
 
                                             <StackPanel>

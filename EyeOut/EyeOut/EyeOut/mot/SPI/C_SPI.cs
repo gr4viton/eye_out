@@ -33,6 +33,7 @@ namespace EyeOut
         static C_CounterDown openConnection = new C_CounterDown(10); // try to open connection x-times
         public static int timeoutExceptionPeriod = 10;
 
+        private static int timeWaitBeforeRtsEnable_ms = 15; // 15 on 9600
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         // SPI hang - thread: http://www.codeproject.com/Questions/179614/Serial-Port-in-WPF-Application
 
@@ -53,13 +54,14 @@ namespace EyeOut
             spi = new SerialPort("COM6", 1000000, Parity.None, 8, StopBits.One);
 
             /*
-            SPI.Handshake = System.IO.Ports.Handshake.None;
-            SPI.ReadTimeout = 200;
-            SPI.WriteTimeout = 50;*/
             spi.Handshake = System.IO.Ports.Handshake.None;
-            spi.ReadTimeout = 1000;
-            //spi.DtrEnable = true;
-            //spi.RtsEnable = true;
+            spi.ReadTimeout = 200;
+            spi.WriteTimeout = 50;*/
+            spi.Handshake = System.IO.Ports.Handshake.None;
+            spi.ReadTimeout = 500;
+            spi.WriteTimeout = 500;
+            spi.DtrEnable = true;
+            spi.RtsEnable = true;
 
             // NOT NEEDED as all the motors are just CLIENTS - only responding to my (SERVER) orders
             spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
@@ -102,6 +104,7 @@ namespace EyeOut
 
                 try
                 {
+                    timeWaitBeforeRtsEnable_ms = REFRESH_timeWaitBeforeRtsEnable_ms();
                     spi.Open();
                     //SET_state(E_GUI_MainState.error);
                 }
@@ -127,6 +130,20 @@ namespace EyeOut
             return spi.IsOpen;
         }
 
+        public static int REFRESH_timeWaitBeforeRtsEnable_ms()
+        {
+            double numOfBytesInMessage = 1 + spi.DataBits;
+            if (spi.StopBits == StopBits.None)
+                numOfBytesInMessage += 0;
+            else if (spi.StopBits == StopBits.One)
+                numOfBytesInMessage += 1;
+            else if ((spi.StopBits == StopBits.OnePointFive) || (spi.StopBits == StopBits.Two))
+                numOfBytesInMessage += 2;
+            else
+                numOfBytesInMessage += 3; // should not happen
+
+            return (int)((numOfBytesInMessage/(double)(spi.BaudRate)) + 2); // two more for safety
+        }
         public static void CLOSE_connection()
         {
             if (spi.IsOpen)
@@ -274,19 +291,13 @@ namespace EyeOut
             return false; 
         }
 
-        private static void WRITE_byteArray(byte[] data)
+        private static void WRITE_byteArray(byte[] byteArray)
         {
-            spi.Write(data, 0, data.Length);
-            //lastCmd = data;
-
-            // IS NEEDED another zeros for slowing down serial commands
-            // can be deleted if the Resets Return Delay Time is set greater - as in Example 9 from RX-64 Manual
-            //byte[] zeros = new byte[20];
-            //for (int q = 0; q < 20; q++)
-            //{
-            //    zeros[q] = 0;
-            //}
-            //spi.Write(zeros, 0, zeros.Length);
+            spi.RtsEnable = false;
+            spi.Write(byteArray, 0, byteArray.Length);
+            // Wait for the dispatch of bytes and enable response mode afterward
+            Thread.Sleep(timeWaitBeforeRtsEnable_ms); 
+            spi.RtsEnable = true;
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Writing

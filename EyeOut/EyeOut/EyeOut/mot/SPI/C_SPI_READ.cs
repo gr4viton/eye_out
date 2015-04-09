@@ -219,7 +219,8 @@ namespace EyeOut
                                     // chose lastSent by receivedPacketBytes idByte
                                     List<byte> statusBytes = new List<byte>(packetBytes);
                                     packetBytes.Clear();
-                                    LOG_debug("Cleared packetBytes and sent to process");
+                                    LOG_debug("Sent packetBytes to process and 'cleared from readBuffer' :" +
+                                        C_CONV.byteArray2strHex_space(statusBytes.ToArray()));
                                     PAIR_andProcessStatusPacket(statusBytes);
                                 }
                                 if (packetBytes.Count > packetLength)
@@ -255,7 +256,7 @@ namespace EyeOut
                 }
                 catch (Exception ex)
                 {
-                    LOG_err(GET_exInfo(ex));
+                    LOG_err("Exception in packet read algorithm :" + GET_exInfo(ex));
                     //FLUSH_forNextIncomingPackage("exception");
                 }
                 // try if there is not a full packet in the packetBytes
@@ -289,8 +290,6 @@ namespace EyeOut
         {
             lock (queueSent_locker)
             {
-                try
-                {
                     int thisStatusId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
                     e_rot rot;
                     bool foundMotor = C_MotorControl.GET_motorRotFromId(thisStatusId, out rot);
@@ -314,7 +313,7 @@ namespace EyeOut
 
                         if (lastSent.Count >= index + 1)
                         {
-                            LOG_sent(string.Format(
+                            LOG_debug(string.Format(
                             "Paired status package: {0}\n with this sentPackage: {1}",
                             C_CONV.byteArray2strHex_space(packetBytes.ToArray()),
                             lastSent[index].PacketBytes_toString
@@ -328,9 +327,9 @@ namespace EyeOut
                                 lastSent_returnStatusPacketProcessed[index] =
                                     C_Packet.PROCESS_receivedPacket(lastSent[index], packetBytes);
                             }
-                            catch (Exception e)
+                            catch (Exception ex)
                             {
-                                LOG_err("Exception in processing received packet");
+                                LOG_err("Exception in processing received packet :"+GET_exInfo(ex));
                                 lastSent_returnStatusPacketProcessed[index] = true;
                             }
 
@@ -338,12 +337,6 @@ namespace EyeOut
                         }
 
                     }
-                    
-                }
-                catch (Exception e)
-                {
-                    LOG_debug("tak tady to padá! " + e.Message);
-                }
                 return false;
             }
         }

@@ -170,20 +170,16 @@ namespace EyeOut
 
         public static void ACTUALIZE_motorRegister(e_rot rot, e_regByteType type, List<byte> pars)
         {            
-            bool addGot = false;
-            byte addressByte = 0;
-            foreach(byte byteValue in pars)
+            byte addressByte = pars[0];
+            byte[] parValues = pars.Skip(1).ToArray();
+
+            C_Packet.LOG_statusPacket(string.Format(
+                "Status OK - actualizing [{0}] motor register [{1}]: From address[{2}], these values[{3}]",
+                rot, type, addressByte, C_CONV.byteArray2strHex_space( parValues ) ));
+            foreach (byte byteValue in parValues)
             {
-                if(addGot == false)
-                {
-                    addressByte = byteValue;
-                    addGot = true;
-                }
-                else
-                {
-                    MainWindow.Ms[rot].ACTUALIZE_register(addressByte, byteValue, type);
-                    addressByte++;
-                }
+                MainWindow.Ms[rot].ACTUALIZE_register(addressByte, byteValue, type);
+                addressByte++;
             }
         }
 

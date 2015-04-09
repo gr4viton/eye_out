@@ -31,7 +31,7 @@ namespace EyeOut
         public DispatcherTimer timMotorDataRefresh;
         //public event
         public ObservableCollection<C_MotorDataRow> motorData;
-        
+
         //public static event EventHandler motorDataChanged;
 
         public object dgMotorData_lock;
@@ -65,9 +65,9 @@ namespace EyeOut
         CollectionViewSource ItemCollectionViewSource_motorData;
         private void timMotorDataRefresh_Tick(object sender, EventArgs e)
         {
-            if(C_State.FURTHER(e_stateProg.initialized))
+            if (C_State.FURTHER(e_stateProg.initialized))
             {
-                if (tbtReadPresentPosition.IsChecked  == true)
+                if (tbtReadPresentPosition.IsChecked == true)
                 {
                     foreach (C_Motor mot in Ms)
                     {
@@ -87,8 +87,8 @@ namespace EyeOut
 
                 // it does not change the datagrid if the motorData is not recreated
                 ItemCollectionViewSource_motorData.Source = new ObservableCollection<C_MotorDataRow>(motorData);
-                
-                
+
+
                 //EventHandler handler = motorDataChanged;
                 //if (handler != null)
                 //    handler(null, EventArgs.Empty);
@@ -101,7 +101,7 @@ namespace EyeOut
             ItemCollectionViewSource_motorData = (CollectionViewSource)(FindResource("ItemCollectionViewSource_motorData"));
             ItemCollectionViewSource_motorData.Source = motorData;
 
-            
+
             // when binding is changing inner guts of dataGrid from different thread
             dgMotorData_lock = new object(); // lock for datagrid
             BindingOperations.EnableCollectionSynchronization(motorData, dgMotorData_lock); // for multi-thread updating 
@@ -119,5 +119,15 @@ namespace EyeOut
         {
             timMotorDataRefresh.Stop();
         }
-}
+
+        private void btnReadPresentPostionYaw_Click(object sender, RoutedEventArgs e)
+        {
+            Ms.Yaw.READ_position();
+        }
+        private void btnReadPresentPostionPitch_Click(object sender, RoutedEventArgs e)
+        {
+            Ms.Pitch.READ_position();
+        }
+        
+    }
 }

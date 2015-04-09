@@ -77,7 +77,7 @@ namespace EyeOut
     }
     public partial class C_CONV
     {
-        public static List<byte> listOfByteAndByteArrays2listOfbytes(List<object> L)
+        public static List<byte> listOfObjects2listOfBytes(List<object> L)
         {
             // creates byte array out of list of byte / byte arrays - concatenates them
             List<byte> liby = new List<byte>();
@@ -99,6 +99,14 @@ namespace EyeOut
                     else if (o is UInt16)
                     {
                         liby.AddRange(BitConverter.GetBytes((UInt16)o));
+                    }
+                    else if (o is List<byte>)
+                    {
+                        //throw new Exception("Cannot convert from
+                        if ((o as List<byte>).Count() > 0)
+                        {
+                            liby.AddRange((o as List<byte>));
+                        }
                     }
                 }
             }

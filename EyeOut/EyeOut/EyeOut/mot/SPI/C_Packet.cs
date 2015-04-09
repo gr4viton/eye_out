@@ -43,62 +43,62 @@ namespace EyeOut
     //    }
     //}
     
-    public class C_InstructionPacket : C_Packet
-    {
-        // new for hiding inherited acceptance
-        /*
-        new public const int PacketLengthAddition = C_DynAdd.SIZEOF_PACKETSTART + C_DynAdd.SIZEOF_ID +
-             C_DynAdd.SIZEOF_LENGTH + C_DynAdd.SIZEOF_INSTRUCTION + C_DynAdd.SIZEOF_CHECKSUM;
+    //public class C_InstructionPacket : C_Packet
+    //{
+    //    // new for hiding inherited acceptance
+    //    /*
+    //    new public const int PacketLengthAddition = C_DynAdd.SIZEOF_PACKETSTART + C_DynAdd.SIZEOF_ID +
+    //         C_DynAdd.SIZEOF_LENGTH + C_DynAdd.SIZEOF_INSTRUCTION + C_DynAdd.SIZEOF_CHECKSUM;
 
-        new public const int IndexOfId = C_DynAdd.INDEXOF_ID_IN_INSTRUCTIONPACKET;
-        new public const int IndexOfLength = C_DynAdd.INDEXOF_LENGTH_IN_INSTRUCTIONPACKET;
-        new public const int IndexOfInstructionOrError = C_DynAdd.INDEXOF_INSTRUCTION_IN_INSTRUCTIONPACKET;
-        new public const int IndexOfFirstParam = C_DynAdd.INDEXOF_FIRSTPARAM_IN_INSTRUCTIONPACKET;
-        */
-        public C_InstructionPacket(byte[] receivedBytes) : base(receivedBytes) { }
-        public C_InstructionPacket(List<byte> lsReceivedBytes) : base(lsReceivedBytes) { }
-    }
+    //    new public const int IndexOfId = C_DynAdd.INDEXOF_ID_IN_INSTRUCTIONPACKET;
+    //    new public const int IndexOfLength = C_DynAdd.INDEXOF_LENGTH_IN_INSTRUCTIONPACKET;
+    //    new public const int IndexOfInstructionOrError = C_DynAdd.INDEXOF_INSTRUCTION_IN_INSTRUCTIONPACKET;
+    //    new public const int IndexOfFirstParam = C_DynAdd.INDEXOF_FIRSTPARAM_IN_INSTRUCTIONPACKET;
+    //    */
+    //    public C_InstructionPacket(byte[] receivedBytes) : base(receivedBytes) { }
+    //    public C_InstructionPacket(List<byte> lsReceivedBytes) : base(lsReceivedBytes) { }
+    //}
 
-    public class C_StatusPacket : C_Packet
-    {
-        // it still does not see them
-        public override int PacketLengthAddition
-        {
-            get
-            {
-                return C_DynAdd.SIZEOF_PACKETSTART + C_DynAdd.SIZEOF_ID +
-                    C_DynAdd.SIZEOF_LENGTH + C_DynAdd.SIZEOF_ERROR + C_DynAdd.SIZEOF_CHECKSUM ;
-            }
-        }
+    //public class C_StatusPacket : C_Packet
+    //{
+    //    // it still does not see them
+    //    public override int PacketLengthAddition
+    //    {
+    //        get
+    //        {
+    //            return C_DynAdd.SIZEOF_PACKETSTART + C_DynAdd.SIZEOF_ID +
+    //                C_DynAdd.SIZEOF_LENGTH + C_DynAdd.SIZEOF_ERROR + C_DynAdd.SIZEOF_CHECKSUM ;
+    //        }
+    //    }
 
-        public override int IndexOfId 
-        { 
-            get { return C_DynAdd.INDEXOF_ID_IN_STATUSPACKET; } 
-        }
-        public override int IndexOfLength 
-        { 
-            get { return C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET; } 
-        }
-        public override int IndexOfInstructionOrError 
-        { 
-            get { return C_DynAdd.INDEXOF_ID_IN_STATUSPACKET;}
-        }
-        public override int IndexOfFirstParam 
-        { 
-            get { return C_DynAdd.INDEXOF_FIRSTPARAM_IN_STATUSPACKET;}
-        }
+    //    public override int IndexOfId 
+    //    { 
+    //        get { return C_DynAdd.INDEXOF_ID_IN_STATUSPACKET; } 
+    //    }
+    //    public override int IndexOfLength 
+    //    { 
+    //        get { return C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET; } 
+    //    }
+    //    public override int IndexOfInstructionOrError 
+    //    { 
+    //        get { return C_DynAdd.INDEXOF_ID_IN_STATUSPACKET;}
+    //    }
+    //    public override int IndexOfFirstParam 
+    //    { 
+    //        get { return C_DynAdd.INDEXOF_FIRSTPARAM_IN_STATUSPACKET;}
+    //    }
 
-        public C_StatusPacket(byte[] receivedBytes)
-            : base(receivedBytes) 
-        {
-        }
-        public C_StatusPacket(List<byte> lsReceivedBytes) : base(lsReceivedBytes) 
-        { 
+    //    public C_StatusPacket(byte[] receivedBytes)
+    //        : base(receivedBytes) 
+    //    {
+    //    }
+    //    public C_StatusPacket(List<byte> lsReceivedBytes) : base(lsReceivedBytes) 
+    //    { 
             
-        }
+    //    }
 
 
-    }
+    //}
 
 
     //public abstract class C_Packet
@@ -194,7 +194,7 @@ namespace EyeOut
         {
             set
             {
-                Par = C_CONV.listOfByteAndByteArrays2listOfbytes(value);
+                Par = C_CONV.listOfObjects2listOfBytes(value);
             }
         }
 
@@ -609,14 +609,14 @@ namespace EyeOut
 
             //IS_error(received, receivedBytes); // just log it
 
-            // it is echo or error - is it possible to get echo?
-            //if (received == lastSent)
-            //{
-            //    LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
-            //    C_SPI.QUEUE_PacketSent(lastSent);
-            //    return true;
-            //}
-            //else
+            //it is echo or error - the echo may be of the res485 to usb origin
+            if (received == lastSent)
+            {
+                LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
+                //C_SPI.QUEUE_PacketSent(lastSent);
+                return false;
+            }
+            else
             {
                 if (IS_error(received, receivedBytes) == true)
                 {
@@ -624,13 +624,14 @@ namespace EyeOut
                         + received.PacketBytes_toString);
                 }
                 else
-                {   
+                {
                     C_SPI.LOG_debug("The processed package does not contain any error, going to process statusPacket");
                     PROCESS_statusPacket(received, lastSent);
                     C_SPI.LOG_debug("Status packet processing ended");
                 }
-                return true; 
             }
+                    return true;
+            //return true;
             //return false;
             // return true if "processed" this status with this lastSent and want to load another lastSent
         }
@@ -664,44 +665,56 @@ namespace EyeOut
         }
         public static void PROCESS_statusPacket(C_Packet received, C_Packet lastSent)
         {
-            if (received.byteId == lastSent.byteId)
+
+            try
             {
-                // we have no error in statusPacket
-                if (lastSent.byteInstructionOrError == C_DynAdd.INS_WRITE)
+                if (received.byteId == lastSent.byteId)
                 {
-                    // actualize the parameters which were written into motors - and we know they were written good
-                    C_MotorControl.ACTUALIZE_motorRegister(
-                        lastSent.rotMotor,
-                        e_regByteType.seenValue, // as we received statusMessage after we written the value
-                        lastSent.Par);
-                    LOG_statusPacket(GET_statusOkInfo(lastSent, "seenValue"));
+                    // we have no error in statusPacket
+                    if (lastSent.byteInstructionOrError == C_DynAdd.INS_WRITE)
+                    {
+                        // actualize the parameters which were written into motors - and we know they were written good
+                        C_MotorControl.ACTUALIZE_motorRegister(
+                            lastSent.rotMotor,
+                            e_regByteType.seenValue, // as we received statusMessage after we written the value
+                            lastSent.Par);
+                    }
+                    else if (lastSent.byteInstructionOrError == C_DynAdd.INS_READ)
+                    {
+                        // actualize the parameters which were read from motors
+                        
+                        C_MotorControl.ACTUALIZE_motorRegister(
+                            lastSent.rotMotor,
+                            e_regByteType.seenValue,
+                            C_CONV.listOfObjects2listOfBytes(new List<object>(){
+                                lastSent.Par[0], received.Par })
+                            );
+                    }
+                    else
+                    {
+                        C_SPI.LOG_debug(string.Format(
+                            "lastSent packet: {0}\nPaired with: {1}\n{2}",
+                            lastSent.PacketBytes_toString,
+                            received.PacketBytes_toString,
+                            "wasn't read neither write and yet still it was supposed to be processed as a statusPacket. Not processing!"
+                            ));                            
+                    }
+
                 }
                 else
                 {
-                    // actualize the parameters which were read from motors
-                    received.Par.Insert(0, lastSent.Par[0]);
-                    C_MotorControl.ACTUALIZE_motorRegister(
-                        received.rotMotor,
-                        e_regByteType.seenValue,
-                        received.Par
-                        );
-                    LOG_statusPacket(GET_statusOkInfo(received, "seenValue"));
+                    LOG_statusPacket(string.Format(
+                        "The received status packet :\t{0}\nDoes not belong to the lastSent: \t{1}",
+                            received.PacketBytes_toString, lastSent.PacketBytes_toString
+                            ));
                 }
             }
-            else
+            catch (Exception e)
             {
-                LOG_statusPacket(string.Format(
-                    "The received status packet :\t{0}\nDoes not belong to the lastSent: \t{1}",
-                        received.PacketBytes_toString, lastSent.PacketBytes_toString
-                        ));
+                C_SPI.LOG_debug("tak tady to padá! " + e.Message);
             }
         }
-
-        public static string GET_statusOkInfo(C_Packet packet, string packetType)
-        {
-            return string.Format("Status OK - actualizing motor register {1}: \t{0}",
-                packet.PacketBytes_toString, packetType);
-        }
+        
 
     }
 }
