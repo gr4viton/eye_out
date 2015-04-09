@@ -24,7 +24,7 @@ namespace EyeOut
 
     internal partial class C_SPI
     {
-        private static object spi_locker = new object();
+        private static object spiSent_locker = new object();
         private static object queueToSent_locker = new object();
         
         public static SerialPort spi;
@@ -58,6 +58,8 @@ namespace EyeOut
             SPI.WriteTimeout = 50;*/
             spi.Handshake = System.IO.Ports.Handshake.None;
             spi.ReadTimeout = 1000;
+            //spi.DtrEnable = true;
+            //spi.RtsEnable = true;
 
             // NOT NEEDED as all the motors are just CLIENTS - only responding to my (SERVER) orders
             spi.DataReceived += new SerialDataReceivedEventHandler(SPI_DataReceivedHandler);
@@ -81,7 +83,7 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static bool OPEN_connection()
         {
-            lock (spi_locker)
+            lock (spiSent_locker)
             {
                 //UPDATE_SPI_Settings();
                 //SPI_UPDATE_baudRate();
@@ -198,7 +200,7 @@ namespace EyeOut
         {
             C_Packet thisInstructionPacket;
             LOG_debug("Start to read packet");
-            lock (spi_locker)
+            lock (spiSent_locker)
             {
                 if (spi.IsOpen == true)
                 {

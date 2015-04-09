@@ -610,13 +610,13 @@ namespace EyeOut
             //IS_error(received, receivedBytes); // just log it
 
             // it is echo or error - is it possible to get echo?
-            if (received == lastSent)
-            {
-                LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
-                C_SPI.QUEUE_PacketSent(lastSent);
-                return true;
-            }
-            else
+            //if (received == lastSent)
+            //{
+            //    LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
+            //    C_SPI.QUEUE_PacketSent(lastSent);
+            //    return true;
+            //}
+            //else
             {
                 if (IS_error(received, receivedBytes) == true)
                 {
@@ -624,14 +624,14 @@ namespace EyeOut
                         + received.PacketBytes_toString);
                 }
                 else
-                {
+                {   
                     C_SPI.LOG_debug("The processed package does not contain any error, going to process statusPacket");
                     PROCESS_statusPacket(received, lastSent);
                     C_SPI.LOG_debug("Status packet processing ended");
                 }
                 return true; 
             }
-            return false;
+            //return false;
             // return true if "processed" this status with this lastSent and want to load another lastSent
         }
 

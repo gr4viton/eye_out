@@ -14,6 +14,7 @@ namespace EyeOut
     /// </summary>
     internal partial class C_SPI
     {
+        private static object spiGot_locker = new object();
         static C_CounterDown readReturn = new C_CounterDown(10); // try to read return status packet x-times
 
         private static object queueSent_locker = new object();
@@ -64,39 +65,41 @@ namespace EyeOut
             //  -1 if there is no PACKETSTART sequention detected
             // index of the first byte of the first PACKETSTART if its the only one (0 if its the first bytes)
             // index of the first byte of the second PACKETSTART sequention if there are more than one
-
-            List<int> i = new List<int>();
-            for(int q=0; q<packetBytes.Count()-1; q++)
+            if (packetBytes.Count >= 2)
             {
-                if(
-                    (packetBytes[q] == C_DynAdd.PACKETSTART[0])
-                    ||
-                    (packetBytes[q+1] == C_DynAdd.PACKETSTART[1])
-                    )
+                List<int> i = new List<int>();
+                for (int q = 0; q < packetBytes.Count() - 1; q++)
                 {
-                    // found the first one
-                    i.Add(q);
-                    if(searchFor2nd == true)
+                    if (
+                        (packetBytes[q] == C_DynAdd.PACKETSTART[0])
+                        ||
+                        (packetBytes[q + 1] == C_DynAdd.PACKETSTART[1])
+                        )
                     {
-                        // serch for second in subList
-                        int second = PACKETSTART_detector(new List<byte>(packetBytes.Skip(q + 1)), false);
-                        if (second == -1)
+                        // found the first one
+                        i.Add(q);
+                        if (searchFor2nd == true)
                         {
-                            return q;
-                        }
-                        else
-                        {
-                            return second;
+                            // serch for second in subList
+                            int second = PACKETSTART_detector(new List<byte>(packetBytes.Skip(q + 1)), false);
+                            if (second == -1)
+                            {
+                                return q;
+                            }
+                            else
+                            {
+                                return second;
+                            }
                         }
                     }
-                }
 
+                }
             }
             return -1;
         }
         private static void SPI_DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            lock (spi_locker)
+            lock (spiGot_locker)
             {
                 SerialPort sp = (SerialPort)sender;
                 Queue<byte> readBuffer = new Queue<byte>();
@@ -108,8 +111,15 @@ namespace EyeOut
                     // when item is true -> lastSent packet for this motor (index) was already processed
                     // load new lastSent packet to this index from queueSent[index]
                     //int cnt = 0;
-                    bool INCOMING_PACKET;//START_withPacketStartBytes(packetBytes);
-                    
+                    bool INCOMING_PACKET = false;//= START_withPacketStartBytes(packetBytes);
+
+                    if (packetBytes.Count <= GET_packetLength(packetBytes))
+                    {
+                        if (PACKETSTART_detector(packetBytes) == 0)
+                        {
+                            INCOMING_PACKET = true;
+                        }
+                    }
                     int packetLength = GET_packetLength(packetBytes);
 
                     // read all the bytes to read
@@ -207,8 +217,10 @@ namespace EyeOut
                                     LOG_debug("end of packet");
 
                                     // chose lastSent by receivedPacketBytes idByte
-                                    PAIR_andProcessStatusPacket(packetBytes);
+                                    List<byte> statusBytes = new List<byte>(packetBytes);
                                     packetBytes.Clear();
+                                    LOG_debug("Cleared packetBytes and sent to process");
+                                    PAIR_andProcessStatusPacket(statusBytes);
                                 }
                                 if (packetBytes.Count > packetLength)
                                 {
@@ -277,44 +289,60 @@ namespace EyeOut
         {
             lock (queueSent_locker)
             {
-                int thisStatusId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
-                e_rot rot;
-                bool foundMotor = C_MotorControl.GET_motorRotFromId(thisStatusId, out rot);
-                if (foundMotor == true)
+                try
                 {
-                    int index = (int)rot;
-                    LOG_debug("index = " + index.ToString());
-
-                    // acquire the unprocessed lastSent package from queue if needed
-                    if (lastSent_returnStatusPacketProcessed[index] == true)
+                    int thisStatusId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
+                    e_rot rot;
+                    bool foundMotor = C_MotorControl.GET_motorRotFromId(thisStatusId, out rot);
+                    if (foundMotor == true)
                     {
-                        if (queueSent[index].Count > 0)
+                        int index = (int)rot;
+                        //LOG_debug("index = " + index.ToString());
+
+                        // acquire the unprocessed lastSent package from queue if needed
+                        if (lastSent_returnStatusPacketProcessed[index] == true)
                         {
-                            lastSent[index] = (queueSent[index]).Dequeue();
+                            if (queueSent[index].Count > 0)
+                            {
+                                lastSent[index] = (queueSent[index]).Dequeue();
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
-                        else
-                        { 
-                            return false; 
+
+                        if (lastSent.Count >= index + 1)
+                        {
+                            LOG_sent(string.Format(
+                            "Paired status package: {0}\n with this sentPackage: {1}",
+                            C_CONV.byteArray2strHex_space(packetBytes.ToArray()),
+                            lastSent[index].PacketBytes_toString
+                            ));
+
+                            LOG_debug("now processing packet");
+
+                            // process paired lastSent and this statusPacket
+                            try
+                            {
+                                lastSent_returnStatusPacketProcessed[index] =
+                                    C_Packet.PROCESS_receivedPacket(lastSent[index], packetBytes);
+                            }
+                            catch (Exception e)
+                            {
+                                LOG_err("Exception in processing received packet");
+                                lastSent_returnStatusPacketProcessed[index] = true;
+                            }
+
+                            return lastSent_returnStatusPacketProcessed[index];
                         }
+
                     }
-
-                    if (lastSent.Count >= index + 1)
-                    {
-                        LOG_sent(string.Format(
-                        "Paired status package: {0}\n with this sentPackage: {1}",
-                        C_CONV.byteArray2strHex_space(packetBytes.ToArray()),
-                        lastSent[index].PacketBytes_toString
-                        ));
-
-                        LOG_debug("now processing packet");
-
-                        // process paired lastSent and this statusPacket
-                        lastSent_returnStatusPacketProcessed[index] =
-                            C_Packet.PROCESS_receivedPacket(lastSent[index], packetBytes);
-
-                        return lastSent_returnStatusPacketProcessed[index];
-                    }
-
+                    
+                }
+                catch (Exception e)
+                {
+                    LOG_debug("tak tady to padá! " + e.Message);
                 }
                 return false;
             }
