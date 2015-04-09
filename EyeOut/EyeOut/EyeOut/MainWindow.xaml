@@ -205,7 +205,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height= "3*" />
                             <RowDefinition Height="5" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="110" />
                         </Grid.RowDefinitions>
 
 
