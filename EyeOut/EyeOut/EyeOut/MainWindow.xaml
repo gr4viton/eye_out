@@ -182,6 +182,22 @@
                             </StackPanel>
                         </GroupBox>
 
+                        <GroupBox Header="Send raw bytes">
+
+                            <StackPanel>
+                                <ListBox IsEnabled="False">
+                                    <ListBoxItem>Syntax</ListBoxItem>
+                                    <ListBoxItem FontSize="8">FF FF ID LEN INS PAR CHS</ListBoxItem>
+                                </ListBox>
+                                <TextBox x:Name="txRawBytes" FontSize="8" TextChanged="txRawBytes_TextChanged">
+                                    FF FF 01 02 01 FB
+                                </TextBox>
+                                <Button x:Name="btnSendRawBytes" Content="Send raw bytes" Click="btnSendRawBytes_Click"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <Button Visibility="Collapsed" x:Name="btnDontTry" Content="DO TRY IT!" Click="btnDontTry_Click"/>
+                        <Button Visibility="Collapsed" x:Name="btnTry" Content="TRY IT I DARE YOU!" Click="btnTry_Click"/>
+
                     </StackPanel>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
@@ -222,37 +238,115 @@
                                             </ListBox>
                                         </StackPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Send raw bytes">
-                                       
+                                    <GroupBox Header="Read selected">
                                         <StackPanel>
-                                            <ListBox>
-                                                <ListBoxItem>Syntax</ListBoxItem>
-                                                <ListBoxItem FontSize="8">FF FF ID LEN INS PAR CHS</ListBoxItem>
-                                            </ListBox>
-                                            <TextBox x:Name="txRawBytes" FontSize="8" TextChanged="txRawBytes_TextChanged">
-                                                FF FF 01 02 01 FB
-                                            </TextBox>
-                                            <Button x:Name="btnSendRawBytes" Content="Send raw bytes" Click="btnSendRawBytes_Click"/>
+                                        <Button x:Name="btnReadLEDvalue" Content="Yaw LED value" Click="btnReadLEDvalue_Click"/>
+                                        <Button x:Name="btnReadPresentPostionYaw" Content="Yaw present position" Click="btnReadPresentPostionYaw_Click"/>
+                                        <Button x:Name="btnReadPresentPostionPitch" Content="Pitch present position" Click="btnReadPresentPostionPitch_Click"/>
+
+                                            <GroupBox Header="Present position">
+                                                <StackPanel >
+                                                    <ListBox x:Name="lsReadPresentPositionMotors" 
+                                                         ItemsSource="{Binding Source={StaticResource enumValues_rot}}"         
+                                                         SelectionMode="Multiple"
+                                                         MinWidth="160">
+                                                        <ListBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Converter={StaticResource conv_e_rot_ToString}}"/>
+                                                            </DataTemplate>
+                                                        </ListBox.ItemTemplate>
+                                                    </ListBox>
+                                                    <ToggleButton x:Name="tbtReadPresentPosition" Content="Active Reading " IsChecked="False"/>
+                                                </StackPanel>
+                                            </GroupBox>
                                         </StackPanel>
                                     </GroupBox>
-
-                                    <Button Visibility="Collapsed" x:Name="btnDontTry" Content="DO TRY IT!" Click="btnDontTry_Click"/>
-                                    <Button Visibility="Collapsed" x:Name="btnTry" Content="TRY IT I DARE YOU!" Click="btnTry_Click"/>
-                                    
                                 </StackPanel>
 
-                                <GroupBox Header="Individual motor Position &amp; Speed gui control" Grid.Column="2">
+                                <Grid Grid.Column="2" Background="#FFE5E5E5">
+                                    <GroupBox Header="Control of individual motors">
+                                        <DockPanel>
+                                            <StackPanel>
+                                                <GroupBox Header="Chosen motor:">
+                                                    <ListBox x:Name="lsChosenMotor" 
+                                                     ItemsSource="{Binding Source={StaticResource enumValues_rot}}"         
+                                                     SelectionMode="Single" SelectionChanged="lsChosenMotor_SelectionChanged"
+                                                     MinWidth="160">
+                                                        <ListBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Converter={StaticResource conv_e_rot_ToString}}"/>
+                                                            </DataTemplate>
+                                                        </ListBox.ItemTemplate>
+                                                    </ListBox>
+
+                                                    <!--Converter={StaticResource conv_e_rot_ToString}-->
+                                                </GroupBox>
+                                                <CheckBox x:Name="cbExampleDoubleClick" Content="Send by DoubleClick and Enter" 
+                                                      DockPanel.Dock="Top" IsChecked="True"/>
+                                                <Button Name="btnSendExample" Content="Send example to [Chosen motor]" 
+                                                            VerticalAlignment="Top" DockPanel.Dock="Top" MaxHeight="20" Click="btnSendExample_Click"/>
+                                            </StackPanel>
+                                            <GroupBox Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
+                                                <Grid>
+                                                    <DockPanel>
+                                                        <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" 
+                                                             MouseDoubleClick="lsCmdEx_MouseDoubleClick" KeyDown="lsCmdEx_KeyDown" />
+                                                    </DockPanel>
+                                                </Grid>
+                                            </GroupBox>
+                                        </DockPanel>
+                                    </GroupBox>
+                                    <!--</Grid>-->
+                                </Grid>
+
+                                <GroupBox Header="Individual motor data" Grid.Column="4">
+                                    <StackPanel>
+                                        <GroupBox Header="Motors' pc shadow register view:">
+
+                                            <StackPanel>
+
+                                                <ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
+                                                      IsChecked="True"
+                                                      Checked="tbtMotorDataRefresh_CheckedChanged"
+                                                      Unchecked="tbtMotorDataRefresh_CheckedChanged"/>
+                                                <!--Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>-->
+                                                <DataGrid
+                                        x:Name="dgMotorData"
+                                          DataContext="{StaticResource ItemCollectionViewSource_motorData}"
+                                          ItemsSource="{Binding}"
+                                          AutoGenerateColumns = "False" 
+                                          CanUserAddRows="False"
+                                        >
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="90" />
+                                                        <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw}" Width="2*" />
+                                                        <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
+                                                        <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </GroupBox>
+                            </Grid>
+                        </DockPanel>
+
+                        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
+
+                        <DockPanel Grid.Row="2" >
+                            <GroupBox Header="Individual motor Position &amp; Speed gui control" Grid.Column="2">
                                 <Grid x:Name="grAllMotors" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
                                     <!--YAW MOTOR-->
-                                    <GroupBox Header="Yaw Motor" Grid.Row="0">
+                                    <GroupBox Header="Yaw Motor" Grid.Column="0">
                                         <StackPanel>
-                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorYaw" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
-                                            <GroupBox Header="Position">
+                                            <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorYaw" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"
+                                                      LayoutTransform=""/>
+                                            <GroupBox Header="Position [0 to 360]°">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition />
@@ -289,10 +383,10 @@
                                         </StackPanel>
                                     </GroupBox>
                                     <!--PITCH MOTOR-->
-                                    <GroupBox Header="Pitch Motor" Grid.Row="1">
+                                    <GroupBox Header="Pitch Motor" Grid.Column="1">
                                         <StackPanel>
                                             <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorPitch" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
-                                            <GroupBox Header="Position">
+                                            <GroupBox Header="Position [0 to 360]°">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition />
@@ -327,10 +421,10 @@
                                         </StackPanel>
                                     </GroupBox>
                                     <!--ROLL MOTOR-->
-                                    <GroupBox Header="Roll Motor" Grid.Row="2">
+                                    <GroupBox Header="Roll Motor" Grid.Column="2">
                                         <StackPanel>
                                             <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorRoll" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
-                                            <GroupBox Header="Position">
+                                            <GroupBox Header="Position [0 to 360]°">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition />
@@ -365,82 +459,8 @@
                                         </StackPanel>
                                     </GroupBox>
                                 </Grid>
-                                </GroupBox>
+                            </GroupBox>
 
-                                <GroupBox Header="Individual motor data" Grid.Column="4">
-                                    <StackPanel>
-                                        <ToggleButton x:Name="tbtReadPresentPosition" Content="Read present position" IsChecked="False"/>
-                                        <Button x:Name="btnReadLEDvalue" Content="Read LED value" Click="btnReadLEDvalue_Click"/>
-                                        <Button x:Name="btnReadPresentPostionYaw" Content="Read Yaw present position" Click="btnReadPresentPostionYaw_Click"/>
-                                        <Button x:Name="btnReadPresentPostionPitch" Content="Read Pitch present position" Click="btnReadPresentPostionPitch_Click"/>
-                                        <GroupBox Header="Motors' pc shadow register view:">
-
-                                            <StackPanel>
-
-                                                <ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
-                                                      IsChecked="True"
-                                                      Checked="tbtMotorDataRefresh_CheckedChanged"
-                                                      Unchecked="tbtMotorDataRefresh_CheckedChanged"/>
-                                                <!--Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>-->
-                                                <DataGrid
-                                        x:Name="dgMotorData"
-                                          DataContext="{StaticResource ItemCollectionViewSource_motorData}"
-                                          ItemsSource="{Binding}"
-                                          AutoGenerateColumns = "False" 
-                                          CanUserAddRows="False"
-                                        >
-                                                    <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="90" />
-                                                        <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw}" Width="2*" />
-                                                        <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
-                                                        <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
-                                                    </DataGrid.Columns>
-                                                </DataGrid>
-                                            </StackPanel>
-                                        </GroupBox>
-                                    </StackPanel>
-                                </GroupBox>
-                            </Grid>
-                        </DockPanel>
-
-                        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
-
-                        <DockPanel Grid.Row="2" >
-                            <Grid Grid.Column="2" Background="#FFE5E5E5">
-                                <GroupBox Header="Control of individual motors">
-                                    <DockPanel>
-                                        <StackPanel>
-                                            <GroupBox Header="Chosen motor:">
-                                                <ListBox x:Name="lsChosenMotor" 
-                                                     ItemsSource="{Binding Source={StaticResource enumValues_rot}}"         
-                                                     SelectionMode="Single" SelectionChanged="lsChosenMotor_SelectionChanged"
-                                                     MinWidth="160">
-                                                    <ListBox.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Text="{Binding Converter={StaticResource conv_e_rot_ToString}}"/>
-                                                        </DataTemplate>
-                                                    </ListBox.ItemTemplate>
-                                                </ListBox>
-                                            
-                                            <!--Converter={StaticResource conv_e_rot_ToString}-->
-                                            </GroupBox>
-                                            <CheckBox x:Name="cbExampleDoubleClick" Content="Send by DoubleClick and Enter" 
-                                                      DockPanel.Dock="Top" IsChecked="True"/>
-                                            <Button Name="btnSendExample" Content="Send example to [Chosen motor]" 
-                                                            VerticalAlignment="Top" DockPanel.Dock="Top" MaxHeight="20" Click="btnSendExample_Click"/>
-                                        </StackPanel>
-                                        <GroupBox Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
-                                            <Grid>
-                                                <DockPanel>
-                                                    <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" 
-                                                             MouseDoubleClick="lsCmdEx_MouseDoubleClick" KeyDown="lsCmdEx_KeyDown" />
-                                                </DockPanel>
-                                            </Grid>
-                                        </GroupBox>
-                                    </DockPanel>
-                                </GroupBox>
-                                <!--</Grid>-->
-                            </Grid>
                         </DockPanel>
                     </Grid>
                 </Grid>

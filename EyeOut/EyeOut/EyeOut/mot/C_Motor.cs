@@ -90,7 +90,7 @@ namespace EyeOut
         public e_ledValue LedValueSeen;
         public e_enabled torqueEnable;
         public e_bool isMoving;
-        
+        public int returnDelayTime;
 
         public e_statusReturnLevel StatusReturnLevel
         {
@@ -309,26 +309,34 @@ namespace EyeOut
                     LOG_reg("[LED seen] actualized form motor!");
                     break;
                 case (C_DynAdd.STATUS_RETURN_LEVEL):
-                    statusReturnLevel = (e_statusReturnLevel)(reg.GET(C_DynAdd.STATUS_RETURN_LEVEL, e_regByteType.sentValue).Val);
-                    LOG_reg("[Status Return Level] actualized form motor!");
+                    statusReturnLevel = (e_statusReturnLevel)(ACTUALIZE_byteAndLogIt(C_DynAdd.STATUS_RETURN_LEVEL, e_regByteType.sentValue));
                     break;
                 case (C_DynAdd.TORQUE_ENABLE):
-                    torqueEnable = (e_enabled)(reg.GET(C_DynAdd.TORQUE_ENABLE, e_regByteType.sentValue).Val);
-                    LOG_reg("[TORQUE ENABLE] actualized form motor!");
+                    torqueEnable = (e_enabled)(ACTUALIZE_byteAndLogIt(C_DynAdd.TORQUE_ENABLE, e_regByteType.sentValue));
                     break;
                 case (C_DynAdd.IS_MOVING):
-                    isMoving = (e_bool)(reg.GET(C_DynAdd.TORQUE_ENABLE, e_regByteType.sentValue).Val);
-                    LOG_reg("[IN MOTION] actualized form motor!");
+                    isMoving = (e_bool)(ACTUALIZE_byteAndLogIt(C_DynAdd.TORQUE_ENABLE, e_regByteType.sentValue));
+                    break;
+                case(C_DynAdd.RETURN_DELAY_TIME ):
+                    returnDelayTime = ACTUALIZE_byteAndLogIt(C_DynAdd.RETURN_DELAY_TIME, e_regByteType.sentValue);
                     break;
                     
             }
         }
 
+        public byte ACTUALIZE_byteAndLogIt(byte add, e_regByteType type)
+        {
+            byte val = reg.GET(add, type).Val;
+            LOG_reg(string.Format(
+                "[{0}]-{1} actualized form motor! \t[{2}]", reg.GET_name(add), type, val.ToString()
+                ));
+            return val;
+        }
         public void ACTUALIZE_valueAndLogIt(ref C_Value val, byte add_L, byte add_H, e_regByteType type)
         {
             val.Hex = GET_2bytesFromReg(add_L, add_H, type);
             LOG_reg(string.Format(
-                "[{0}] actualized form motor! \t[{1}]", reg.GET_name(add_L), val.ToString()
+                "[{0}]-{1} actualized form motor! \t[{1}]", reg.GET_name(add_L), type, val.ToString()
                 ));
         }
 

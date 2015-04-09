@@ -26,7 +26,9 @@ namespace EyeOut
         [Description("LED wanted")] LED,
         [Description("LED seen")]        LED_seen,
         [Description("Torque enable")] torqueEnable,
-        [Description("In motion")] isMoving
+        [Description("In motion")] isMoving,
+        [Description("Return Delay")]returnDelayTime
+        
     }
 
     public class C_MotorDataRow
@@ -132,6 +134,9 @@ namespace EyeOut
                         break;
                     case (e_motorDataType.isMoving):
                         SET_ypr(mot.rotMotor, mot.isMoving.ToString());
+                        break;
+                    case (e_motorDataType.returnDelayTime):
+                        SET_ypr(mot.rotMotor, string.Format(form_2dec+"us",mot.returnDelayTime*2));
                         break;
                         
                 }

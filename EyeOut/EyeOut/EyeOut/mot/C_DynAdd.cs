@@ -107,6 +107,8 @@ namespace EyeOut
         public const byte TORQUE_ENABLE = 24;
         // ____________________________________________________ Status Return Level
         public const byte STATUS_RETURN_LEVEL = 16;
+        // ____________________________________________________ Return Delay Time
+        public const byte RETURN_DELAY_TIME = 5;
         // ____________________________________________________ LED
         public const byte LED_ENABLE = 25; // one = turned on
         // ____________________________________________________ Compliance - Margin & Slope

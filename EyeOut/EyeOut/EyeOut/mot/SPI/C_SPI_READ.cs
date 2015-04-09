@@ -191,6 +191,7 @@ namespace EyeOut
                                             "Packet length byte greater than allowed = {0} > {1}",
                                             packetLength, C_DynAdd.MAX_BYTES_OF_PACKET
                                             ));
+                                        packetBytes.RemoveAt(0); // remove the first byte as it disables the PACKETSTART detection with positioning the id byte as this
                                         INCOMING_PACKET = false;
                                         continue;
                                     }
@@ -201,6 +202,7 @@ namespace EyeOut
                                             "Packet length byte smaller than allowed = {0} < {1}",
                                             packetLength, C_DynAdd.MIN_BYTES_OF_PACKET
                                             ));
+                                        packetBytes.RemoveAt(0); // remove the first byte as it disables the PACKETSTART detection with positioning the id byte as this
                                         INCOMING_PACKET = false;
                                         continue;
                                     }

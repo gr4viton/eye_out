@@ -54,7 +54,7 @@ namespace EyeOut
         {
             timMotorDataRefresh = new DispatcherTimer();
             timMotorDataRefresh.Tick += new EventHandler(timMotorDataRefresh_Tick);
-            timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 200);
+            timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 300);
             timMotorDataRefresh.Start();
         }
 
@@ -69,13 +69,11 @@ namespace EyeOut
             {
                 if (tbtReadPresentPosition.IsChecked == true)
                 {
-                    foreach (C_Motor mot in Ms)
+                    foreach( int index in lsReadPresentPositionMotors.SelectedItems)
                     {
-                        //mot.ORDER_getPosition();
-                        //mot.READ(C_DynAdd.LED_ENABLE, 1);
-                        mot.READ_position();
-                        mot.READ_movingByte();
-                        mot.READ(C_DynAdd.LED_ENABLE, 1);
+                        Ms[index].READ_position();
+                        Ms[index].READ_movingByte();
+                        Ms[index].READ(C_DynAdd.LED_ENABLE, 1);
                     }
                     //Ms.Yaw.READ_position
                     //Ms.Yaw.READ_position();
@@ -128,6 +126,6 @@ namespace EyeOut
         {
             Ms.Pitch.READ_position();
         }
-        
+
     }
 }
