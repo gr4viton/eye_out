@@ -125,6 +125,7 @@ namespace EyeOut
         //public DateTime receivedTime;
 
         // how long can the instructionPacket be waiting for its return packet
+        //public TimeSpan allowedReturnTimeDelay = new TimeSpan(0, 0, 1, 0, 30); // ms
         public TimeSpan allowedReturnTimeDelay = new TimeSpan(0, 0, 0, 0, 30); // ms
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region operators
@@ -438,6 +439,10 @@ namespace EyeOut
             else
                 return true;
         }
+        public TimeSpan GET_freshness(DateTime receivedTime)
+        {
+            return receivedTime - sentTime;
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion IS consistent
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -611,7 +616,7 @@ namespace EyeOut
             }
         }
 
-        public static bool PROCESS_receivedPacket(C_Packet lastSent, List<byte> receivedBytes)
+        public static bool PROCESS_receivedPacket(C_Packet pairedLastSent, List<byte> receivedBytes)
         {
             
             // we have received one whole packet
@@ -621,13 +626,15 @@ namespace EyeOut
             //IS_error(received, receivedBytes); // just log it
 
             //it is echo or error - the echo may be of the res485 to usb origin
-            if (received == lastSent)
-            {
-                LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
-                //C_SPI.QUEUE_PacketSent(lastSent);
-                return false;
-            }
-            else
+            //if (received == lastSent)
+            //{
+            //    LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
+            //    //C_SPI.QUEUE_PacketSent(lastSent);
+            //    return false;
+            //}
+            //else
+
+            // no echo should get here (FIND_bestPairInQueue)
             {
                 if (IS_error(received, receivedBytes) == true)
                 {
@@ -637,7 +644,7 @@ namespace EyeOut
                 else
                 {
                     C_SPI.LOG_debug("The processed package does not contain any error, going to process statusPacket");
-                    PROCESS_statusPacket(received, lastSent);
+                    PROCESS_statusPacket(received, pairedLastSent);
                     C_SPI.LOG_debug("Status packet processing ended");
                 }
             }
@@ -649,7 +656,7 @@ namespace EyeOut
 
         public static void PROCESS_instructionPacket(C_Packet lastSent)
         {
-            if (IS_packetChanginValue(lastSent) == true)
+            if (IS_packetChangingValue(lastSent) == true)
             {
                 C_MotorControl.ACTUALIZE_motorRegister(
                     lastSent.rotMotor,
@@ -660,7 +667,7 @@ namespace EyeOut
                     lastSent.PacketBytes_toString));
             }
         }
-        public static bool IS_packetChanginValue(C_Packet packet)
+        public static bool IS_packetChangingValue(C_Packet packet)
         {
             switch (packet.byteInstructionOrError)
             {
@@ -674,38 +681,38 @@ namespace EyeOut
             return false;
             //if(packet.byteId == C_DynAdd.ID_BROADCAST)
         }
-        public static void PROCESS_statusPacket(C_Packet received, C_Packet lastSent)
+        public static void PROCESS_statusPacket(C_Packet received, C_Packet pairedLastSent)
         {
 
             try
             {
-                if (received.byteId == lastSent.byteId)
+                if (received.byteId == pairedLastSent.byteId)
                 {
                     // we have no error in statusPacket
-                    if (lastSent.byteInstructionOrError == C_DynAdd.INS_WRITE)
+                    if (pairedLastSent.byteInstructionOrError == C_DynAdd.INS_WRITE)
                     {
                         // actualize the parameters which were written into motors - and we know they were written good
                         C_MotorControl.ACTUALIZE_motorRegister(
-                            lastSent.rotMotor,
+                            pairedLastSent.rotMotor,
                             e_regByteType.seenValue, // as we received statusMessage after we written the value
-                            lastSent.Par);
+                            pairedLastSent.Par);
                     }
-                    else if (lastSent.byteInstructionOrError == C_DynAdd.INS_READ)
+                    else if (pairedLastSent.byteInstructionOrError == C_DynAdd.INS_READ)
                     {
                         // actualize the parameters which were read from motors
                         
                         C_MotorControl.ACTUALIZE_motorRegister(
-                            lastSent.rotMotor,
+                            pairedLastSent.rotMotor,
                             e_regByteType.seenValue,
                             C_CONV.listOfObjects2listOfBytes(new List<object>(){
-                                lastSent.Par[0], received.Par })
+                                pairedLastSent.Par[0], received.Par })
                             );
                     }
                     else
                     {
                         C_SPI.LOG_debug(string.Format(
                             "lastSent packet: {0}\nPaired with: {1}\n{2}",
-                            lastSent.PacketBytes_toString,
+                            pairedLastSent.PacketBytes_toString,
                             received.PacketBytes_toString,
                             "wasn't read neither write and yet still it was supposed to be processed as a statusPacket. Not processing!"
                             ));                            
@@ -716,7 +723,7 @@ namespace EyeOut
                 {
                     LOG_statusPacket(string.Format(
                         "The received status packet :\t{0}\nDoes not belong to the lastSent: \t{1}",
-                            received.PacketBytes_toString, lastSent.PacketBytes_toString
+                            received.PacketBytes_toString, pairedLastSent.PacketBytes_toString
                             ));
                 }
             }
@@ -726,6 +733,7 @@ namespace EyeOut
             }
         }
         
+
 
     }
 }

@@ -18,7 +18,7 @@ namespace EyeOut
     };
     enum e_cmd
     {
-        sent = 1, received, receivedEchoOf, receivedStatusPacket, receivedCheckNot, receivedWithError
+        sending = 1, received, receivedEchoOf, receivedStatusPacket, receivedCheckNot, receivedWithError
     };
 
 
@@ -277,8 +277,8 @@ namespace EyeOut
                 {
                     QUEUE_PacketSent(instructionPacket);
                     byte[] data = instructionPacket.PacketBytes;
+                    LOG_cmd(data, e_cmd.sending);
                     WRITE_byteArray(data);
-                    LOG_cmd(data, e_cmd.sent);
                    
                     C_Packet.PROCESS_instructionPacket(instructionPacket);
 
@@ -385,8 +385,8 @@ namespace EyeOut
 
             switch (type)
             {
-                case (e_cmd.sent):
-                    prefix = "Sent:\t";
+                case (e_cmd.sending):
+                    prefix = "Sending:\t";
                     LOG_sent(hex);
                     break;
                 case (e_cmd.received):

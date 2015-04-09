@@ -30,14 +30,14 @@ namespace EyeOut
         //static int packetLength = packetLength_min;
         //static bool INCOMING_PACKET = false;
         // for three motors
-        static List<C_Packet> lastSent = new List<C_Packet>()
-                    {
-                        new C_Packet(),
-                        new C_Packet(),
-                        new C_Packet()
-                    };
-        static List<bool> lastSent_returnStatusPacketProcessed 
-            = new List<bool> { true, true, true };
+        //static List<C_Packet> lastSent = new List<C_Packet>()
+        //            {
+        //                new C_Packet(),
+        //                new C_Packet(),
+        //                new C_Packet()
+        //            };
+        //static List<bool> lastSent_returnStatusPacketProcessed 
+        //    = new List<bool> { true, true, true };
         static byte receivedByte;
 
         private static int GET_packetLength(byte lengthByte)
@@ -104,7 +104,7 @@ namespace EyeOut
                 SerialPort sp = (SerialPort)sender;
                 Queue<byte> readBuffer = new Queue<byte>();
 
-                LOG_debug("Start to read packet");
+                LOG_unimportant("Start to read packet");
                 try
                 {
 
@@ -216,7 +216,7 @@ namespace EyeOut
                                     // the last added byte to packetBytes was the most likely last byte of this package
                                     INCOMING_PACKET = false;
                                     LOG_cmd(packetBytes.ToArray(), e_cmd.received);
-                                    LOG_debug("end of packet");
+                                    LOG_unimportant("end of packet");
 
                                     // chose lastSent by receivedPacketBytes idByte
                                     List<byte> statusBytes = new List<byte>(packetBytes);
@@ -290,71 +290,163 @@ namespace EyeOut
 
         public static bool PAIR_andProcessStatusPacket(List<byte> packetBytes)
         {
-            lock (queueSent_locker)
-            {
-                DateTime receivedTime = DateTime.UtcNow;
-                int thisStatusId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
-                e_rot rot;
-                bool foundMotor = C_MotorControl.GET_motorRotFromId(thisStatusId, out rot);
-                if (foundMotor == true)
-                {
-                    int rotMot = (int)rot;
-                    //LOG_debug("index = " + index.ToString());
+            DateTime receivedTime = DateTime.UtcNow;
 
-                    // acquire the unprocessed lastSent package from queue if needed
-                    if (lastSent_returnStatusPacketProcessed[rotMot] == true)
+            //LOG_debug("index = " + index.ToString());
+            C_Packet pairedLastSent = new C_Packet();
+            bool foundBestPair = DEQUEUE_bestPair(packetBytes, receivedTime, ref pairedLastSent);
+            // acquire the unprocessed lastSent package from queue if needed
+
+            if (foundBestPair == true)
+            {
+                LOG_debug(string.Format(
+                    "Paired status package: {0}\n with this sentPackage: {1}",
+                    C_CONV.byteArray2strHex_space(packetBytes.ToArray()),
+                    pairedLastSent.PacketBytes_toString
+                    ));
+
+                LOG_debug("now processing packet");
+
+                // process paired lastSent and this statusPacket
+                try
+                {
+                    C_Packet.PROCESS_receivedPacket(pairedLastSent, packetBytes);
+                }
+                catch (Exception ex)
+                {
+                    LOG_err("Exception in processing received packet :"+GET_exInfo(ex));
+                }
+            }
+
+            return false;
+        }
+
+        public static bool DEQUEUE_bestPair(List<byte> packetBytes, DateTime receivedTime, ref C_Packet pairedPacket)
+        {
+            // return through ref the best pairedPacket
+            int thisStatusId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
+            e_rot rot;
+            bool foundMotor = C_MotorControl.GET_motorRotFromId(thisStatusId, out rot);
+            int rotMot = (int)rot;
+
+            if (foundMotor == true)
+            {
+                lock (queueSent_locker)
+                {
+                    if (queueSent[rotMot].Count > 0)
                     {
-                        bool LOAD_anotherLastSent = true;
-                        while(LOAD_anotherLastSent == true) // dequeue lastSent packets until fresh one is found
+                        List<C_Packet> listSent = (queueSent[rotMot]).ToList();
+                        bool foundBestPair = FIND_bestPairInQueue(packetBytes, receivedTime, ref pairedPacket, ref listSent);
+                        queueSent[rotMot] = new Queue<C_Packet>(listSent);
+                        return foundBestPair;
+                    }   
+                    else
+                    {
+                        LOG_debug(string.Format("lastSent queue of this motor[{0}] was empty!", rot));
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                LOG_debug("Did not found any motor connected with this id from StatusPacket: "
+                    + thisStatusId.ToString());
+            }
+            return false;
+        }
+
+        public static bool FIND_bestPairInQueue(List<byte> packetBytes, DateTime receivedTime, ref C_Packet pairedPacket, ref List<C_Packet> listLastSent)
+        {
+            // go through whole queue
+            // find the best suitable pair for this packet in this queue
+            // remove it from his queue and return it
+
+            // if you found echo -> remove it from queue, log it, and continue withsearching
+
+            // decide upon:
+            // id
+            // read length wanted
+            // timeSpan freshness
+            byte byteId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
+            byte byteLength = packetBytes[C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET];
+            //int numPar = byteLength - 2; // it should be consistent packet - it went through detection algorithm
+
+            List<int> suitableIndexes = new List<int>();
+            List<TimeSpan> age = new List<TimeSpan>();
+
+            C_Packet received = new C_Packet(packetBytes);
+
+            for(int q = 0; q < listLastSent.Count(); q++)
+            {
+                if (received == listLastSent[q]) // echo
+                {
+                    C_Packet.LOG_statusPacket(string.Format(
+                        "Processed echo of : [{0}] which was sent at [{1}]",
+                        C_Packet.GET_packetInfo(listLastSent[q]),
+                        listLastSent[q].sentTime.ToString("HH:mm:ss.fff")
+                        ));
+                    if (C_Packet.IS_statusPacketFollowing(listLastSent[q]) == false)
+                    {
+                        // if there is not supposed to be more packets comming (not mentioning this echo)
+                        // for this lastSent packet - remove it from the listLastSent 
+                        // (why it was there in the first place then?) - to be removed here
+                        listLastSent.RemoveAt(q);
+                    }
+                    return false; // found that this is echo of last sent - best pair, 
+                    // but pairing is just deleting from listLastSent! - for now
+                }
+
+                if( listLastSent[q].ByteId == byteId)
+                {
+                    if (listLastSent[q].ByteInstructionOrError == C_DynAdd.INS_READ)
+                    {
+                        int numOfWantedParams = listLastSent[q].Par[1];
+                        if (received.Par.Count == numOfWantedParams)
                         {
-                            if (queueSent[rotMot].Count > 0)
+                            // this is probably the one - but may there be another with fresher time - on multiple sending.. maybe
+                            if (listLastSent[q].IS_fresh(receivedTime) == true)
                             {
-                                lastSent[rotMot] = (queueSent[rotMot]).Dequeue();
-                                if (lastSent[rotMot].IS_fresh(receivedTime) == true)
-                                {
-                                    LOAD_anotherLastSent = false;
-                                }
-                                else
-                                {
-                                    LOG_debug(string.Format("This lastSent package was too old: [{0}]ms",
-                                        receivedTime - lastSent[rotMot].sentTime
-                                        ));
-                                }
+                                suitableIndexes.Add(q);
+                                age.Add(listLastSent[q].GET_freshness(receivedTime));
                             }
                             else
                             {
-                                return false;
+                                // it is too old - remove it
+                                listLastSent.RemoveAt(q);
+                                q--; // and search from this index (now some other packet)
+                                continue;
                             }
                         }
-                    }
-
-                    if (lastSent.Count >= rotMot + 1)
-                    {
-                        LOG_debug(string.Format(
-                        "Paired status package: {0}\n with this sentPackage: {1}",
-                        C_CONV.byteArray2strHex_space(packetBytes.ToArray()),
-                        lastSent[rotMot].PacketBytes_toString
-                        ));
-
-                        LOG_debug("now processing packet");
-
-                        // process paired lastSent and this statusPacket
-                        try
+                        else
                         {
-                            lastSent_returnStatusPacketProcessed[rotMot] =
-                                C_Packet.PROCESS_receivedPacket(lastSent[rotMot], packetBytes);
+                            // not suitable number of parameters
                         }
-                        catch (Exception ex)
-                        {
-                            LOG_err("Exception in processing received packet :"+GET_exInfo(ex));
-                            lastSent_returnStatusPacketProcessed[rotMot] = true;
-                        }
-
-                        return lastSent_returnStatusPacketProcessed[rotMot];
                     }
-
                 }
-                return false;
+                
+                    
+            }
+
+            if( age.Count > 0)
+            {
+                // from the suitable ones get the most fresh one -
+                // - return it as through ref as Paired and leave the other one in the listSent (which is also ref)
+                int minimumValueIndex = age.IndexOf(age.Min());
+                pairedPacket = listLastSent[minimumValueIndex];
+                listLastSent.RemoveAt(minimumValueIndex);
+
+                if (age.Count > 1)
+                {
+                    LOG_debug(string.Format(
+                        "There were [{0}] more packets suitable in the listLastSent list for this motor, but only one was selceted. (age={1}ms)",
+                                  suitableIndexes.Count - 1, age[minimumValueIndex]
+                                ));
+                }
+                return true;
+            }
+            else
+            {
+                    return false;
             }
         }
 

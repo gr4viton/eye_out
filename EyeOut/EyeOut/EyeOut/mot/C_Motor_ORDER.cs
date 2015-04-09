@@ -164,6 +164,32 @@ namespace EyeOut
         {
             READ(C_DynAdd.PRESENT_POS_L, 2);
         }
+        public void READ_positionSpeed()
+        {
+            READ(C_DynAdd.PRESENT_POS_L, 4);
+        }
+        public void READ_positionSpeedLoad()
+        {
+            READ(C_DynAdd.PRESENT_POS_L, 6);
+        }
+        public void READ_positionSpeedLoadVoltage()
+        {
+            READ(C_DynAdd.PRESENT_POS_L, 7);
+        }
+
+        public void READ_positionSpeedLoadVoltageTemperature()
+        {
+            READ(C_DynAdd.PRESENT_POS_L, 8);
+        }
+        public void READ_positionSpeedLoadVoltageTemperatureRegisteredInstruction()
+        {
+            READ(C_DynAdd.PRESENT_POS_L, 9);
+        }
+        public void READ_positionSpeedLoadVoltageTemperatureRegisteredInstructionMoving()
+        {
+            READ(C_DynAdd.PRESENT_POS_L, 10);
+        }
+
         public void READ_movingByte()
         {
             READ(C_DynAdd.IS_MOVING, 1);

@@ -71,9 +71,10 @@ namespace EyeOut
                 {
                     foreach( int index in lsReadPresentPositionMotors.SelectedItems)
                     {
-                        Ms[index].READ_position();
-                        Ms[index].READ_movingByte();
-                        Ms[index].READ(C_DynAdd.LED_ENABLE, 1);
+                        //Ms[index].READ_position();
+                        Ms[index].READ_positionSpeedLoadVoltageTemperatureRegisteredInstructionMoving();
+                        //Ms[index].READ_movingByte();
+                        //Ms[index].READ(C_DynAdd.LED_ENABLE, 1);
                     }
                     //Ms.Yaw.READ_position
                     //Ms.Yaw.READ_position();
