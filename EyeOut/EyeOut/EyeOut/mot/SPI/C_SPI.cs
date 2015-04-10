@@ -204,12 +204,15 @@ namespace EyeOut
 
         public static void QUEUE_PacketSent(C_Packet instructionPacket)
         {
+            int rotMot = (int)instructionPacket.rotMotor;
             if (C_Packet.IS_statusPacketFollowing(instructionPacket) == true)
             {
                 lock (queueSent_locker)
                 {
                     instructionPacket.sentTime = DateTime.UtcNow;
-                    queueSent[(int)instructionPacket.rotMotor].Enqueue(instructionPacket);
+                    queueSent[rotMot].Enqueue(instructionPacket);
+                    queueSent_Count[rotMot] = queueSent[rotMot].Count;
+                    C_MotorControl.ACTUALIZE_queueCounts(queueSent);
                 }
             }
         }

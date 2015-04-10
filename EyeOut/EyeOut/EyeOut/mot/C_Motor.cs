@@ -72,6 +72,9 @@ namespace EyeOut
         // values from motor
         public C_Value angleSeen;
         public C_Value speedSeen;
+
+        public int packetsInLastSent = 0;
+        public int packetsDiedOfOldAge = 0;
         
         //public e_packetEcho motorEcho;
         protected e_statusReturnLevel statusReturnLevel = e_statusReturnLevel.never; // befor we set it we will ignore the statusPackets

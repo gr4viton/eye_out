@@ -100,6 +100,11 @@ namespace EyeOut
             get { return M[(int)rot]; }
             set { M[(int)rot] = value; }
         }
+
+        public static C_Motor GET_M(e_rot rot)
+        {
+            return M[(int)rot];
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion properties
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,6 +150,24 @@ namespace EyeOut
                 mot.READ_wholeRegister();
             }
         }
+
+        public static void ACTUALIZE_queueCounts(List<Queue<C_Packet>> queueSent)
+        {
+
+            foreach (C_Motor mot in M)
+            {
+                //queueSent_Count[rotMot] = listSent.Count;
+                mot.packetsInLastSent = C_SPI.queueSent_Count[(int)mot.rotMotor];
+            }
+            C_SPI.LOG_debug(string.Format(
+                    "queueSent[ yaw=[{0}]; pitch=[{1}]; roll=[{2}] ]",
+                    GET_M(e_rot.yaw).packetsInLastSent, 
+                    GET_M(e_rot.pitch).packetsInLastSent, 
+                    GET_M(e_rot.roll).packetsInLastSent
+                    ));
+            MainWindow.REFRESH_motorData();
+        }
+
         public void INIT_individualMotors()
         {
             INIT_listElementsOfAllMotors();

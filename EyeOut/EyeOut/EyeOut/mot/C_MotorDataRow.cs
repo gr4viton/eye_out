@@ -28,7 +28,11 @@ namespace EyeOut
         [Description("Torque enable")] torqueEnable,
         [Description("In motion")] isMoving,
         [Description("Return Delay")]returnDelayTime,
-        [Description("Register byte value")] regByteValue,
+        [Description("Register byte value")]regByteValue,
+        [Description("Packets in LastSent queue")]
+        packetsInLastSent,
+        [Description("packetsDiedOfOldAge")]
+        packetsDiedOfOldAge
         
     }
 
@@ -189,6 +193,14 @@ namespace EyeOut
                     case (e_motorDataType.speedSeen):
                         SET_motStrings(rot, string.Format(form_2dec + "RPM", mot.speedSeen.Dec_inRPM));
                         break;
+
+                    case (e_motorDataType.packetsDiedOfOldAge):
+                        SET_motStrings(rot, mot.packetsDiedOfOldAge.ToString());
+                        break;
+                    case (e_motorDataType.packetsInLastSent):
+                        SET_motStrings(rot,  mot.packetsDiedOfOldAge.ToString());
+                        break;
+
                     case (e_motorDataType.LED):
                         SET_motStrings(rot, mot.LedValue.ToString());
                         break;
@@ -207,6 +219,8 @@ namespace EyeOut
                     case (e_motorDataType.returnDelayTime):
                         SET_motStrings(rot, string.Format(form_2dec+"us",mot.returnDelayTime*2));
                         break;
+
+                        
                     case (e_motorDataType.regByteValue):
                         SET_motStringsFromRegister(mot);
                         break;

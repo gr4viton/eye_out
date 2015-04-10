@@ -33,7 +33,8 @@ namespace EyeOut
 
         public object dgMotorData_lock;
         public static ObservableCollection<C_MotorDataRow> motorData;
-
+        
+                
         private void INIT_dgMotorData()
         {
             motorData = new ObservableCollection<C_MotorDataRow>();
@@ -95,7 +96,6 @@ namespace EyeOut
                         Ms[index].READ_positionSpeedLoadVoltageTemperatureRegisteredInstructionMoving();
                     }
                 }
-
             }
         }
         private void INIT_dgMotorData_binding()

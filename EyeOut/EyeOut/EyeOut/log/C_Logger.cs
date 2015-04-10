@@ -60,6 +60,7 @@ namespace EyeOut
 
         private static byte errorAntiLoopCounter = 0;
         private const byte errorAntiLoopCounter_max = 10; 
+        public long logMsgCount { get; private set; }
         //C_LoggingTable _tasks = (C_LoggingTable)this.Resources["tasks"];
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -148,6 +149,7 @@ namespace EyeOut
                         _logMsg.queue = itemList.Last().queue + 1;
                     }
                     itemList.Add(_logMsg);
+                    logMsgCount++;
                     errorAntiLoopCounter = 0;
                 }
                 catch (Exception e)

@@ -124,6 +124,12 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+        private void lbLogCount_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            lbLogCount.Content = C_Logger.Instance.logMsgCount;
+        }
+
+
         public static void LOG_logger(string _msg)
         {
             C_Logger.Instance.LOG(e_LogMsgSource.log, _msg);

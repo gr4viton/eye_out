@@ -18,6 +18,7 @@ namespace EyeOut
         static C_CounterDown readReturn = new C_CounterDown(10); // try to read return status packet x-times
 
         private static object queueSent_locker = new object();
+        public static int[] queueSent_Count = new int[] { 0,0,0 };
         private static List<Queue<C_Packet>> queueSent; // packets which was written and are waiting for getting some return status packet
 
         //const int packetLength_min = 6; // shortest packet consists of 6bytes
@@ -262,8 +263,7 @@ namespace EyeOut
                     }
                 }
             }
-            LOG_debug(string.Format("packetBytes=[{3}]; queueSent: yaw=[{0}]; pitch=[{1}]; roll=[{2}]",
-                queueSent[0].Count, queueSent[1].Count, queueSent[2].Count, receivingPacketBytes.Count));
+
         }
 
         public static bool PROCESS_receivedPacket(List<byte> receivedBytes)
@@ -336,6 +336,8 @@ namespace EyeOut
                         List<C_Packet> listSent = (queueSent[rotMot]).ToList();
                         bool foundBestPair = FIND_bestPairInQueue(received, ref paired, ref listSent);
                         queueSent[rotMot] = new Queue<C_Packet>(listSent);
+                        queueSent_Count[rotMot] = listSent.Count;
+                        C_MotorControl.ACTUALIZE_queueCounts(queueSent);
                         return foundBestPair;
                     }   
                     else

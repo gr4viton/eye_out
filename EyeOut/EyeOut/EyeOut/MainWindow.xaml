@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         
+        xmlns:userbo="clr-namespace:EyeOut;assembly=EyeOut"
         xmlns:local="clr-namespace:EyeOut" 
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"      
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -11,6 +12,7 @@
         Closing="Window_Closing" 
         Icon="Content\pic\eyeout.png"
         Title="EyeOut Telepresence 2015, Daniel Davidek" Height="730" Width="1300"
+        
         Top="0" Left="70"
         >
     <!--Closed="Window_Closed"-->
@@ -85,6 +87,7 @@
         <local:CONV_e_rot_ToString x:Key="conv_e_rot_ToString"/>
 
         <local:C_State x:Key="C_state"/>
+        <!--<local:C_Logger.Instance x:Key="C_Logger"/>-->
         <!--<ResourceDictionary>
             <ObjectDataProvider x:Key="MyEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                 <ObjectDataProvider.MethodParameters>
@@ -220,8 +223,10 @@
                                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
 
                                 <StackPanel Grid.Column="0">
-                                    <GroupBox Header="Read selected">
+                                            <GroupBox Header="Reading data from motors">
                                                 <StackPanel>
+                                                    <GroupBox Header="Settings">
+                                                    <StackPanel>
                                                     <DockPanel>
                                                     <GroupBox Header="Chosen motor:">
                                                         <ListBox x:Name="lsReadPresentPositionMotors" 
@@ -249,32 +254,41 @@
                                                         <Slider x:Name="slActiveReadingTimerInterval" Minimum="1" Maximum="1000" LargeChange="50" SmallChange="1" TickFrequency="50" Value="50" AutoToolTipPlacement="TopLeft" TickPlacement="BottomRight"
                                                                 ValueChanged="slActiveReadingTimerInterval_ValueChanged"/>
                                                     </GroupBox>
-                                                    <ListBox SelectionMode="Single">
-                                                        <ListBoxItem x:Name="lsiActualPostionEtc"
-                                                            Content="Actual Postion Speed Load etc."
-                                                                     IsSelected="True"> 
-                                                            <ListBoxItem.ToolTip>
-                                                                <ToolTip>
-                                                                    <StackPanel>
-                                                                        <TextBlock FontWeight="Bold" Text="Active reading of Data from selected motors:"/>
-                                                                        <ListBox>
-                                                                            <ListBoxItem>Present Position</ListBoxItem>
-                                                                            <ListBoxItem>Present Speed</ListBoxItem>
-                                                                            <ListBoxItem>Present Load</ListBoxItem>
-                                                                            <ListBoxItem>Present Voltage</ListBoxItem>
-                                                                            <ListBoxItem>Present Temperature</ListBoxItem>
-                                                                            <ListBoxItem>Registered Instruction</ListBoxItem>
-                                                                            <ListBoxItem>Moving state</ListBoxItem>
-                                                                        </ListBox>
-                                                                        <TextBlock Text="= register bytes from address [36-46] - not including [45]"/>
-                                                                    </StackPanel>
-                                                                </ToolTip>
-                                                            </ListBoxItem.ToolTip>
-                                                        </ListBoxItem>
 
-                                                        <ListBoxItem x:Name="lsiWholeRegister"
-                                                            Content="Whole readable register"/>
-                                                    </ListBox>
+                                                        <GroupBox Header="Select which data to read">
+                                                            <ListBox SelectionMode="Single">
+                                                                <ListBoxItem x:Name="lsiActualPostionEtc"
+                                                                    Content="Actual Postion Speed Load etc."
+                                                                             IsSelected="True"> 
+                                                                    <ListBoxItem.ToolTip>
+                                                                        <ToolTip>
+                                                                            <StackPanel>
+                                                                                <TextBlock FontWeight="Bold" Text="Active reading of Data from selected motors:"/>
+                                                                                <ListBox>
+                                                                                    <ListBoxItem>Present Position</ListBoxItem>
+                                                                                    <ListBoxItem>Present Speed</ListBoxItem>
+                                                                                    <ListBoxItem>Present Load</ListBoxItem>
+                                                                                    <ListBoxItem>Present Voltage</ListBoxItem>
+                                                                                    <ListBoxItem>Present Temperature</ListBoxItem>
+                                                                                    <ListBoxItem>Registered Instruction</ListBoxItem>
+                                                                                    <ListBoxItem>Moving state</ListBoxItem>
+                                                                                </ListBox>
+                                                                                <TextBlock Text="= register bytes from address [36-46] - not including [45]"/>
+                                                                            </StackPanel>
+                                                                        </ToolTip>
+                                                                    </ListBoxItem.ToolTip>
+                                                                </ListBoxItem>
+
+                                                                <ListBoxItem x:Name="lsiWholeRegister"
+                                                                    Content="Whole readable register"/>
+                                                                </ListBox>
+                                                </GroupBox>
+                                        </StackPanel>
+                                                </GroupBox>
+                                                    <GroupBox Header="Statistics">
+                                                        <ListBox x:Name="lsReadStatistics">
+                                                        </ListBox>
+                                                    </GroupBox>
                                                 </StackPanel>
                                             </GroupBox>
                                 </StackPanel>
@@ -780,31 +794,45 @@
 
             <Grid Grid.Column="0"  >
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="34"/>
+                    <RowDefinition Height="32"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StatusBar Grid.Row="0">
-                    <!--DataContext="{Binding Path=C_State}"-->
-                    <StatusBarItem>
-                        <!--<Label x:Name="tslConnected" BorderThickness="1" BorderBrush="Black"
-                    Content="{Binding Source={x:Static local:C_State.Spi}, Converter={StaticResource vcMyEnumToString},Mode=OneWay}" />-->
-                        <!--<Content-->
-                        <!--Content="{Binding Source={x:Static local:C_State.Spi}, Converter={StaticResource vcMyEnumToString}}" >-->
-                        <!--<TextBlock Text="{Binding Converter={StaticResource vcMyEnumToString}}"/>-->
+                <!--DataContext="{Binding Path=C_State}"-->
+                <StackPanel Grid.Row="0">
+                    <!--<Label x:Name="tslConnected" BorderThickness="1" BorderBrush="Black"
+                Content="{Binding Source={x:Static local:C_State.Spi}, Converter={StaticResource vcMyEnumToString},Mode=OneWay}" />-->
+                    <!--<Content-->
+                    <!--Content="{Binding Source={x:Static local:C_State.Spi}, Converter={StaticResource vcMyEnumToString}}" >-->
+                    <!--<TextBlock Text="{Binding Converter={StaticResource vcMyEnumToString}}"/>-->
 
-                        <Label x:Name="tslConnected" BorderThickness="1" BorderBrush="Black"
+                    <Label x:Name="tslConnected" BorderThickness="1" BorderBrush="Black"
+                           Padding="0" HorizontalAlignment="Center"
                     Content="{Binding Source={StaticResource ResourceKey=C_state}, Path=Spi,
                     Converter={StaticResource vcMyEnumToString},Mode =OneWay}" >
-                            <Label.ToolTip>
+                        <Label.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock >Serial port interface with motors</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                        </Label.ToolTip>
+                    </Label>
+                    <Label x:Name="lbLogCount" MouseDown="lbLogCount_MouseDown"
+                           HorizontalAlignment="Center"
+                        BorderThickness="1" BorderBrush="Black"
+                           Padding="0" Content="Click Log.Count">
+                           <!--Content="{Binding Source={x:Static local:C_Logger.Instance}, Mode =OneWay, Path=logMsgCount}">-->
+                    <!--Content="{Binding Source={StaticResource ResourceKey=C_Logger}, Path=logMsgCount}" >-->
+                        
+                        <Label.ToolTip>
                             <ToolTip>
                                 <StackPanel>
-                                    <TextBlock >Serial port interface with motors</TextBlock>
+                                    <TextBlock >Number of all logged messages - actualize on click</TextBlock>
                                 </StackPanel>
                             </ToolTip>
-                            </Label.ToolTip>
-                        </Label>
-                    </StatusBarItem>
-                </StatusBar>
+                        </Label.ToolTip>
+                    </Label>
+                </StackPanel>
                 <DockPanel Grid.Row="1">
                     <ListBox DockPanel.Dock="Top"
                         x:Name="lsLogSrcSelction" 
