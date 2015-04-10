@@ -264,7 +264,25 @@
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>
-                                                        <ToggleButton x:Name="tbtReadPresentPosition" Content="Active Reading " IsChecked="False"/>
+                                                                <ToggleButton x:Name="tbtActiveReadPresentPosition" Content="Active Reading " IsChecked="True" Click="tbtActiveReadPresentPosition_Click">
+                                                                    <ToggleButton.ToolTip>
+                                                                        <ToolTip>
+                                                                            <StackPanel>
+                                                                                <TextBlock FontWeight="Bold" Text="Active reading of Data from selected motors:"/>
+                                                                                <ListBox>
+                                                                                    <ListBoxItem>Present Position</ListBoxItem>
+                                                                                    <ListBoxItem>Present Speed</ListBoxItem>
+                                                                                    <ListBoxItem>Present Load</ListBoxItem>
+                                                                                    <ListBoxItem>Present Voltage</ListBoxItem>
+                                                                                    <ListBoxItem>Present Temperature</ListBoxItem>
+                                                                                    <ListBoxItem>Registered Instruction</ListBoxItem>
+                                                                                    <ListBoxItem>Moving state</ListBoxItem>
+                                                                                </ListBox>
+                                                                                <TextBlock Text="= register bytes from address [36-46] - not including [45]"/>
+                                                                            </StackPanel>
+                                                                        </ToolTip>
+                                                                    </ToggleButton.ToolTip>
+                                                                </ToggleButton>
                                                     </StackPanel>
                                                 </GroupBox>
                                             </StackPanel>
@@ -502,11 +520,11 @@
                             <GroupBox Header="Motors' pc shadow register view:">
 
                                 <StackPanel>
-
-                                    <ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
+                                        <Button Content="Refresh motorData (debug only - automatic otherwise)" Click="btnRefreshMotorData_Click"/>
+                                        <!--<ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
                                                       IsChecked="True"
                                                       Checked="tbtMotorDataRefresh_CheckedChanged"
-                                                      Unchecked="tbtMotorDataRefresh_CheckedChanged"/>
+                                                      Unchecked="tbtMotorDataRefresh_CheckedChanged"/>-->
                                     <!--Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>-->
                                     <DataGrid
                                         x:Name="dgMotorData"
@@ -517,7 +535,7 @@
                                         >
                                         <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="90" />
-                                                <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw, Mode=TwoWay}" Width="2*" />
+                                                <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw}" Width="2*" />
                                                 <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
                                                 <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
                                         </DataGrid.Columns>

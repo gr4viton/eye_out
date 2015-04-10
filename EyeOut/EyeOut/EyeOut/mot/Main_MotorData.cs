@@ -28,7 +28,7 @@ namespace EyeOut
     public partial class MainWindow : Window
     {
         // dgMotorData
-        public DispatcherTimer timMotorDataRefresh;
+        public DispatcherTimer timMotorDataRead;
         //public event
         public static ObservableCollection<C_MotorDataRow> motorData;
         //public ObservableCollection<C_MotorDataRow> motorData;
@@ -53,13 +53,13 @@ namespace EyeOut
             //e_regByteType regByteType = e_regByteType.seenValue;
 
             // cannot add all and have it without binding rebuilded every time!
-            //foreach (e_regByteType regByteType in Enum.GetValues(typeof(e_regByteType)))
-            //{
-            //    foreach (byte address in Ms.Yaw.Reg.GET_byteAddresses(regByteType))
-            //    {
-            //        motorData.Add(new C_MotorDataRow(address, regByteType));
-            //    }
-            //}
+            foreach (e_regByteType regByteType in Enum.GetValues(typeof(e_regByteType)))
+            {
+                foreach (byte address in Ms.Yaw.Reg.GET_byteAddresses(regByteType))
+                {
+                    motorData.Add(new C_MotorDataRow(address, regByteType));
+                }
+            }
 
             INIT_dgMotorData_binding();
             INIT_timMotorDataRefresh();
@@ -67,10 +67,10 @@ namespace EyeOut
 
         public void INIT_timMotorDataRefresh()
         {
-            timMotorDataRefresh = new DispatcherTimer();
-            timMotorDataRefresh.Tick += new EventHandler(timMotorDataRefresh_Tick);
-            timMotorDataRefresh.Interval = new TimeSpan(0, 0, 0, 0, 300);
-            timMotorDataRefresh.Start();
+            timMotorDataRead = new DispatcherTimer();
+            timMotorDataRead.Tick += new EventHandler(timMotorDataRefresh_Tick);
+            timMotorDataRead.Interval = new TimeSpan(0, 0, 0, 0, 300);
+            timMotorDataRead.Start();
         }
 
         private void btnReadLEDvalue_Click(object sender, RoutedEventArgs e)
@@ -79,10 +79,8 @@ namespace EyeOut
         }
 
         public static void REFRESH_motorData()
-        //public void REFRESH_motorData()
         {
             foreach (C_MotorDataRow row in MainWindow.motorData)
-        //    foreach (C_MotorDataRow row in motorData)
             {
                 row.REFRESH();
             }
@@ -91,68 +89,37 @@ namespace EyeOut
         {
             if (C_State.FURTHER(e_stateProg.initialized))
             {
-                if (tbtReadPresentPosition.IsChecked == true)
+                foreach( int index in lsReadPresentPositionMotors.SelectedItems)
                 {
-                    foreach( int index in lsReadPresentPositionMotors.SelectedItems)
-                    {
-                        //Ms[index].READ_position();
-                        Ms[index].READ_positionSpeedLoadVoltageTemperatureRegisteredInstructionMoving();
-                        //Ms[index].READ_movingByte();
-                        //Ms[index].READ(C_DynAdd.LED_ENABLE, 1);
-                    }
-                    //Ms.Yaw.READ_position
-                    //Ms.Yaw.READ_position();
+                    Ms[index].READ_positionSpeedLoadVoltageTemperatureRegisteredInstructionMoving();
                 }
 
-                //foreach (C_MotorDataRow row in MainWindow.motorData)
-                //foreach (C_MotorDataRow row in motorData)
-                //{
-                //    row.REFRESH();
-                //}
-                //REFRESH_motorData();
-                // it does not change the datagrid if the motorData is not recreated
-                //ItemCollectionViewSource_motorData.Source = new ObservableCollection<C_MotorDataRow>(motorData);
-                
-
-                //motorData.CollectionChanged;
-
-
-                //CollectionViewRegisteringEventArgs a;
-                //ItemCollectionViewSource_motorData.
-                //a.CollectionView.NeedsRefresh;
-
-                //    INotifyCollectionChanged
-
-                //EventHandler handler = motorDataChanged;
-                //if (handler != null)
-                //    handler(null, EventArgs.Empty);
             }
         }
         private void INIT_dgMotorData_binding()
         {
             // binding
-            //CollectionViewSource ItemCollectionViewSource_motorData;
             ItemCollectionViewSource_motorData = (CollectionViewSource)(FindResource("ItemCollectionViewSource_motorData"));
             ItemCollectionViewSource_motorData.Source = motorData;
-
 
             // when binding is changing inner guts of dataGrid from different thread
             dgMotorData_lock = new object(); // lock for datagrid
             BindingOperations.EnableCollectionSynchronization(motorData, dgMotorData_lock); // for multi-thread updating 
         }
 
-        private void tbtMotorDataRefresh_CheckedChanged(object sender, RoutedEventArgs e)
+        private void tbtActiveReadPresentPosition_Click(object sender, RoutedEventArgs e)
         {
             if (C_State.FURTHER(e_stateProg.initialized))
             {
-                timMotorDataRefresh.IsEnabled = (bool)tbtMotorDataRefresh.IsChecked;
+                timMotorDataRead.IsEnabled = (bool)tbtActiveReadPresentPosition.IsChecked;
             }
         }
 
-        private void tbtMotorDataRefresh_Unchecked(object sender, RoutedEventArgs e)
+        private void btnRefreshMotorData_Click(object sender, RoutedEventArgs e)
         {
-            timMotorDataRefresh.Stop();
+            REFRESH_motorData();
         }
+
 
         private void btnReadPresentPostionYaw_Click(object sender, RoutedEventArgs e)
         {
