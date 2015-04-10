@@ -131,11 +131,12 @@ namespace EyeOut
             reg = new C_ByteRegister();
 
             angleWanted = new C_Value();
+            //angleWanted.DecDefault = C_Value.angleFull.DecDefault;
             speedWanted = new C_Value();
-            angleSeen = new C_Value(angleWanted);
-            speedSeen = new C_Value(speedWanted);
-            angleSent = new C_Value(angleWanted);
-            speedSent = new C_Value(speedWanted);
+            angleSeen = new C_Value(C_Value.angleFull);
+            speedSeen = new C_Value(C_Value.speedFull);
+            angleSent = new C_Value(C_Value.angleFull);
+            speedSent = new C_Value(C_Value.speedFull);
 
         }
         public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed) 
@@ -145,10 +146,11 @@ namespace EyeOut
 
             angleWanted = _angle;
             speedWanted = _speed;
-            angleSeen = new C_Value(angleWanted);
-            speedSeen = new C_Value(speedWanted);
-            angleSent = new C_Value(angleWanted);
-            speedSent = new C_Value(speedWanted);
+            //angleWanted.DecDefault = C_Value.angleFull.DecDefault;
+            angleSeen = new C_Value(C_Value.angleFull);
+            speedSeen = new C_Value(C_Value.speedFull);
+            angleSent = new C_Value(C_Value.angleFull);
+            speedSent = new C_Value(C_Value.speedFull);
 
 
             rotMotor = _rot;

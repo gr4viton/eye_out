@@ -172,24 +172,20 @@ namespace EyeOut
         {
             INIT_listElementsOfAllMotors();
 
-            C_Value angleFull = new C_Value(0, 360, C_DynVal.SET_GOAL_POS_MIN, C_DynVal.SET_GOAL_POS_MAX);
-            //C_Value speedFull = new C_Value(0, 100, C_DynVal.SET_MOV_SPEED_MIN, C_DynVal.SET_MOV_SPEED_MAX, 20);
-            C_Value speedFull = new C_Value(0, 101, C_DynVal.SET_MOV_SPEED_NOCONTROL, C_DynVal.SET_MOV_SPEED_MAX, 5); // no control as 0
-
             // Motor Yaw
             Yaw = new C_Motor(e_rot.yaw, 1, // id
-                    new C_Value(angleFull, 0, 360, 200), // angle
-                    new C_Value(speedFull, 0, 101, 20) // speed
+                    new C_Value(C_Value.angleFull, 0, 360, 200), // angle
+                    new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
             // Motor Pitch
             Pitch = new C_Motor(e_rot.pitch, 2, // id
-                    new C_Value(angleFull, 111, 292, 200), // angle
-                    new C_Value(speedFull, 0, 101, 20) // speed
+                    new C_Value(C_Value.angleFull, 111, 292, 200), // angle
+                    new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
             // Motor Roll
             Roll = new C_Motor(e_rot.roll, 3, // id
-                    new C_Value(angleFull, 156, 248, 200), // angle
-                    new C_Value(speedFull, 0, 101, 20) // speed
+                    new C_Value(C_Value.angleFull, 156, 248, 200), // angle
+                    new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
         }
 
