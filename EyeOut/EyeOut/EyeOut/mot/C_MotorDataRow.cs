@@ -31,8 +31,8 @@ namespace EyeOut
         [Description("Register byte value")] regByteValue,
         
     }
-   
-    public class C_MotorDataRow
+
+    public class C_MotorDataRow : INotifyPropertyChanged
     {
         public e_motorDataType dataType { get; private set; }
         public e_regByteType regByteType { get; private set; }
@@ -64,14 +64,14 @@ namespace EyeOut
 
         public string this[int rot]
         {
-            get { return motStrings[rot]; }
-            set { motStrings[rot] = value; }
+            get { return GET_motStrings(rot); }
+            set { SET_motStrings(rot, value); }
         }
         
         public string this[e_rot rot]
         {
-            get { return motStrings[(int)rot]; }
-            set { motStrings[(int)rot] = value; }
+            get { return GET_motStrings(rot); }
+            set { SET_motStrings(rot, value); }
         }
 
         private string GET_motStrings(e_rot rot)
@@ -79,11 +79,45 @@ namespace EyeOut
             return motStrings[(int)rot];
         }
 
+        private string GET_motStrings(int rot)
+        {
+            return motStrings[rot];
+        }
+
         private void SET_motStrings(e_rot rot, string value)
         {
+            RAISE_PropertyChanged(rot);
             motStrings[(int)rot] = value;
-            OnCollectionChanged();
         }
+
+        private void SET_motStrings(int rot, string value)
+        {
+            RAISE_PropertyChanged((e_rot)rot);
+            motStrings[rot] = value;
+        }
+        private void RAISE_PropertyChanged(e_rot rot)
+        {
+            switch (rot)
+            {
+                case (e_rot.yaw): onPropertyChanged(this, "yaw"); break;
+                case (e_rot.pitch): onPropertyChanged(this, "pitch"); break;
+                case (e_rot.roll): onPropertyChanged(this, "roll"); break;
+            }
+        }
+
+        // Declare the PropertyChanged event
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        // OnPropertyChanged will raise the PropertyChanged event passing the
+        // source property that is being updated.
+        private void onPropertyChanged(object sender, string propertyName)
+        {
+            if (this.PropertyChanged != null)
+            {
+                PropertyChanged(sender, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public C_MotorDataRow(e_motorDataType _dataType)
         {

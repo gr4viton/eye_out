@@ -30,7 +30,8 @@ namespace EyeOut
         // dgMotorData
         public DispatcherTimer timMotorDataRefresh;
         //public event
-        public ObservableCollection<C_MotorDataRow> motorData;
+        public static ObservableCollection<C_MotorDataRow> motorData;
+        //public ObservableCollection<C_MotorDataRow> motorData;
         CollectionViewSource ItemCollectionViewSource_motorData;
         
         //public static event EventHandler motorDataChanged;
@@ -76,6 +77,16 @@ namespace EyeOut
         {
             Ms.Yaw.READ(C_DynAdd.LED_ENABLE, 1);
         }
+
+        public static void REFRESH_motorData()
+        //public void REFRESH_motorData()
+        {
+            foreach (C_MotorDataRow row in MainWindow.motorData)
+        //    foreach (C_MotorDataRow row in motorData)
+            {
+                row.REFRESH();
+            }
+        }
         private void timMotorDataRefresh_Tick(object sender, EventArgs e)
         {
             if (C_State.FURTHER(e_stateProg.initialized))
@@ -92,13 +103,15 @@ namespace EyeOut
                     //Ms.Yaw.READ_position
                     //Ms.Yaw.READ_position();
                 }
-                foreach (C_MotorDataRow row in motorData)
-                {
-                    row.REFRESH();
-                }
 
+                //foreach (C_MotorDataRow row in MainWindow.motorData)
+                //foreach (C_MotorDataRow row in motorData)
+                //{
+                //    row.REFRESH();
+                //}
+                //REFRESH_motorData();
                 // it does not change the datagrid if the motorData is not recreated
-                ItemCollectionViewSource_motorData.Source = new ObservableCollection<C_MotorDataRow>(motorData);
+                //ItemCollectionViewSource_motorData.Source = new ObservableCollection<C_MotorDataRow>(motorData);
                 
 
                 //motorData.CollectionChanged;

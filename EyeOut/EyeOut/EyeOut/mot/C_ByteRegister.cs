@@ -240,12 +240,12 @@ namespace EyeOut
                             rwActual = e_readWrite.readWrite;
                             break;
                         case ("R"): 
-                            rwShadow = e_readWrite.readWrite; 
-                            rwShadow = e_readWrite.readOnly; 
+                            rwShadow = e_readWrite.readWrite;
+                            rwActual = e_readWrite.readOnly; 
                             break;
                         case ("W"): 
-                            rwShadow = e_readWrite.readWrite; 
-                            rwShadow = e_readWrite.writeOnly; 
+                            rwShadow = e_readWrite.readWrite;
+                            rwActual = e_readWrite.writeOnly; 
                             break;
                     }
 

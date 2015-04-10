@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using System.Data; // datagrid
 
+//using System.Collections.Specialized; // INotifyCollectionChanged
+using System.ComponentModel; // INotifyPropertyChanged
 using System.Collections.ObjectModel; // ObservableCollection
 using System.Windows; // Window
 using System.Windows.Data; //CollectionViewSource
@@ -21,8 +23,15 @@ using System.Runtime.InteropServices;
 
 namespace EyeOut
 {
-    //class C_MotorDataGrid : ObservableCollection<C_MotorDataRow>, Inoti
+    //class C_MotorDataGrid : ObservableCollection<C_MotorDataRow> INotifyPropertyChanged
+    ////class C_MotorDataGrid : ObservableCollection<C_MotorDataRow>, INotifyCollectionChanged
     //{
 
+    //    ObservableCollection<C_MotorDataRow> rows;
+
+    //    public C_MotorDataGrid()
+    //    {
+    //        motorData = new ObservableCollection<C_MotorDataRow>();
+    //    }
     //}
 }

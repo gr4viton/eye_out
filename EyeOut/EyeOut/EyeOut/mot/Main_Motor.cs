@@ -257,6 +257,7 @@ namespace EyeOut
                     UPDATE_slidersFromMotor(rot);
                     ORDER_moveIfChecked(rot);
                 }
+                REFRESH_motorData();
             }
         }
 

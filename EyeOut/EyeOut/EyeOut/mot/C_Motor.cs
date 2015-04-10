@@ -281,6 +281,8 @@ namespace EyeOut
             {
                 Reg.SET(addressByte, byteValue, type);
                 ACTUALIZE_registerBinding(addressByte);
+                MainWindow.REFRESH_motorData();
+                //REFRESH_motorData();
             }
         }
 

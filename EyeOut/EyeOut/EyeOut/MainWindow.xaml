@@ -516,10 +516,10 @@
                                           CanUserAddRows="False"
                                         >
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="90" />
-                                            <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw}" Width="2*" />
-                                            <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
-                                            <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
+                                                <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="90" />
+                                                <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw, Mode=TwoWay}" Width="2*" />
+                                                <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
+                                                <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </StackPanel>
