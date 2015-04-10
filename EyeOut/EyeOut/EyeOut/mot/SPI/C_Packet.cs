@@ -616,9 +616,8 @@ namespace EyeOut
             }
         }
 
-        public static bool PROCESS_receivedPacket(C_Packet pairedLastSent, List<byte> receivedBytes)
+        public static bool PROCESS_statusPacket(C_Packet pairedLastSent, List<byte> receivedBytes)
         {
-            
             // we have received one whole packet
             //C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
             C_Packet received = new C_Packet(receivedBytes);
@@ -644,7 +643,7 @@ namespace EyeOut
                 else
                 {
                     C_SPI.LOG_debug("The processed package does not contain any error, going to process statusPacket");
-                    PROCESS_statusPacket(received, pairedLastSent);
+                    ACTUALIZE_motorRegistersFromStatusPacket(received, pairedLastSent);
                     C_SPI.LOG_debug("Status packet processing ended");
                 }
             }
@@ -681,9 +680,8 @@ namespace EyeOut
             return false;
             //if(packet.byteId == C_DynAdd.ID_BROADCAST)
         }
-        public static void PROCESS_statusPacket(C_Packet received, C_Packet pairedLastSent)
+        public static void ACTUALIZE_motorRegistersFromStatusPacket(C_Packet received, C_Packet pairedLastSent)
         {
-
             try
             {
                 if (received.byteId == pairedLastSent.byteId)

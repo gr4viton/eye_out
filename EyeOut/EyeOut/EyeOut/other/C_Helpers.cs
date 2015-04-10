@@ -71,6 +71,11 @@ namespace EyeOut
             return BitConverter.ToString(bys).Replace("-", " ");
         }
 
+        public static string byteArray2strHex_space(List<byte> lsBys)
+        {
+            return BitConverter.ToString(lsBys.ToArray()).Replace("-", " ");
+        }
+
         public static string byteArray2strHex_delimiter(byte[] bys, string del)
         {
             return BitConverter.ToString(bys).Replace("-", del);

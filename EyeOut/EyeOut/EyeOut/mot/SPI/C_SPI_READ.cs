@@ -38,7 +38,7 @@ namespace EyeOut
         //            };
         //static List<bool> lastSent_returnStatusPacketProcessed 
         //    = new List<bool> { true, true, true };
-        static byte receivedByte;
+        //static byte receivedByte;
 
         private static int GET_packetLength(byte lengthByte)
         {
@@ -103,7 +103,7 @@ namespace EyeOut
             {
                 SerialPort sp = (SerialPort)sender;
                 Queue<byte> readBuffer = new Queue<byte>();
-
+                byte receivedByte = 0;
                 LOG_unimportant("Start to read packet");
                 try
                 {
@@ -223,7 +223,8 @@ namespace EyeOut
                                     packetBytes.Clear();
                                     LOG_debug("Sent packetBytes to process and 'cleared from readBuffer' :" +
                                         C_CONV.byteArray2strHex_space(statusBytes.ToArray()));
-                                    PAIR_andProcessStatusPacket(statusBytes);
+                                    // process it
+                                    PROCESS_receivedPacket(statusBytes);
                                 }
                                 if (packetBytes.Count > packetLength)
                                 {
@@ -266,7 +267,7 @@ namespace EyeOut
                 {
                     if (PACKETSTART_detector(packetBytes) == 0)
                     {
-                        PAIR_andProcessStatusPacket(packetBytes);
+                        PROCESS_receivedPacket(packetBytes);
                         packetBytes.Clear();
                     }
                 }
@@ -276,18 +277,33 @@ namespace EyeOut
                 queueSent[0].Count, queueSent[1].Count, queueSent[2].Count, packetBytes.Count));
         }
 
-        //public static void FLUSH_forNextIncomingPackage(string because)
-        //{
-        //    LOG_debug("Stopped receiving this packet : " + 
-        //        C_CONV.byteArray2strHex_space( packetBytes.ToArray())
-        //        + "| because:" + because);
-        //    INCOMING_PACKET = false;
-        //    packetBytes.Clear();
-        //    i_packetByte = 0;
-        //    packetLength = packetLength_min;
-        //    LOG_debug("flushed packet residuum");
-        //}
-
+        public static bool PROCESS_receivedPacket(List<byte> receivedBytes)
+        {
+            /*
+                * PROCESS_statusPacket
+                -> is Consistent
+                -> is error
+                -> pair with best
+                *    -> return best
+                *  -> process pair of statusPacket and best PairedLastPacket = actualize
+                */
+            //C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
+            //C_Packet received;
+            //try
+            //{
+            //    received = new C_Packet(receivedBytes); // constructor throws error if incosistent
+            //    PAIR_andProcessStatusPacket(packetBytes);
+            //}
+            //catch (Exception e)
+            //{
+            //    LOG_debug(string.Format(
+            //        "Received packet bytes are probably not consistent: {0} with Exception:{1}",
+            //        C_CONV.byteArray2strHex_space(receivedBytes),
+            //        ));
+            //    return false;
+            //}
+            return PAIR_andProcessStatusPacket(receivedBytes);
+        }
         public static bool PAIR_andProcessStatusPacket(List<byte> packetBytes)
         {
             DateTime receivedTime = DateTime.UtcNow;
@@ -310,7 +326,7 @@ namespace EyeOut
                 // process paired lastSent and this statusPacket
                 try
                 {
-                    C_Packet.PROCESS_receivedPacket(pairedLastSent, packetBytes);
+                    C_Packet.PROCESS_statusPacket(pairedLastSent, packetBytes);
                 }
                 catch (Exception ex)
                 {
