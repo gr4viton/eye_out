@@ -243,7 +243,26 @@ namespace EyeOut
                 }
             }
         }
+        public bool IS_writable(int _add)
+        {
+            if ((reg[_add].Rw == e_readWrite.registered)
+                ||
+                (reg[_add].Rw == e_readWrite.readOnly))
+            {
+                return false;
+            }
+            else if ((reg[_add].Rw == e_readWrite.readWrite)
+                    ||
+                    (reg[_add].Rw == e_readWrite.writeOnly))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
 
+        }
         public string GET_name(int _add)
         {
             return reg[_add].Name;

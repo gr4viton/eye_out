@@ -187,7 +187,7 @@ namespace EyeOut
         }
         public void READ_positionSpeedLoadVoltageTemperatureRegisteredInstructionMoving()
         {
-            READ(C_DynAdd.PRESENT_POS_L, 10);
+            READ(C_DynAdd.PRESENT_POS_L, 11); // address[45] registerd 
         }
 
         public void READ_movingByte()

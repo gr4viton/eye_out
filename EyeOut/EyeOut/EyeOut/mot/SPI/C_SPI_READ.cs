@@ -24,7 +24,7 @@ namespace EyeOut
         //const int IndexOfLength = C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET;
 
         //static Queue<byte> readBuffer = new Queue<byte>();
-        static List<byte> packetBytes = new List<byte>();
+        static List<byte> receivingPacketBytes = new List<byte>();
         //static int cnt = 0;
         //static int i_packetByte = 0;
         //static int packetLength = packetLength_min;
@@ -113,14 +113,14 @@ namespace EyeOut
                     //int cnt = 0;
                     bool INCOMING_PACKET = false;//= START_withPacketStartBytes(packetBytes);
 
-                    if (packetBytes.Count <= GET_packetLength(packetBytes))
+                    if (receivingPacketBytes.Count <= GET_packetLength(receivingPacketBytes))
                     {
-                        if (PACKETSTART_detector(packetBytes) == 0)
+                        if (PACKETSTART_detector(receivingPacketBytes) == 0)
                         {
                             INCOMING_PACKET = true;
                         }
                     }
-                    int packetLength = GET_packetLength(packetBytes);
+                    int packetLength = GET_packetLength(receivingPacketBytes);
 
                     // read all the bytes to read
                     while (0 != sp.BytesToRead)
@@ -132,13 +132,13 @@ namespace EyeOut
                     while (readBuffer.Count != 0)
                     {
                         receivedByte = readBuffer.Dequeue();
-                        packetBytes.Add(receivedByte);
+                        receivingPacketBytes.Add(receivedByte);
                         //cnt = packetBytes.Count;
 
-                        if (packetBytes.Count >= 2)
+                        if (receivingPacketBytes.Count >= 2)
                         {
                             // PACKETSTART detector - detect whether the start sequence is not only in the first byte but wherever in the packetBytes array
-                            int i_start = PACKETSTART_detector(packetBytes); 
+                            int i_start = PACKETSTART_detector(receivingPacketBytes); 
                             if ( i_start == 0 )
                             {
                                 INCOMING_PACKET = true;
@@ -148,9 +148,9 @@ namespace EyeOut
                                 LOG_debug(string.Format(
                                     "Found another PACKETSTART sequence inside recieving packetBytes on index [{0}] in : {1}"
                                     + "\nthis is not allowed - skip this packet and use the next PACKETSTART sequence",
-                                    i_start, C_CONV.byteArray2strHex_space (packetBytes.ToArray())
+                                    i_start, C_CONV.byteArray2strHex_space (receivingPacketBytes.ToArray())
                                     ));
-                                packetBytes.RemoveRange(0, packetBytes.Count - i_start - 1); // -1??
+                                receivingPacketBytes.RemoveRange(0, receivingPacketBytes.Count - i_start - 1); // -1??
                                 // try to use the now trimmed part of packet as a full packet ?
                                 INCOMING_PACKET = true;
                                 continue;
@@ -159,7 +159,7 @@ namespace EyeOut
                             else if (i_start == -1)
                             {
                                 LOG_debug("Did not found any PACKETSTART sequence in receiving packet : " +
-                                    C_CONV.byteArray2strHex_space(packetBytes.ToArray()).ToString());
+                                    C_CONV.byteArray2strHex_space(receivingPacketBytes.ToArray()).ToString());
                                 INCOMING_PACKET = false;
                                 continue;
                             }
@@ -170,20 +170,20 @@ namespace EyeOut
                             }
                             if (INCOMING_PACKET == true)
                             {
-                                if (packetBytes.Count - 1 == C_DynAdd.INDEXOF_ID_IN_STATUSPACKET)
+                                if (receivingPacketBytes.Count - 1 == C_DynAdd.INDEXOF_ID_IN_STATUSPACKET)
                                 {
                                     if (receivedByte > C_DynAdd.ID_BROADCAST)
                                     {
                                         LOG_debug("Not allowed value of id : " + receivedByte.ToString());
-                                        packetBytes.RemoveAt(0); // remove the first byte as it disables the PACKETSTART detection with positioning the id byte as this
+                                        receivingPacketBytes.RemoveAt(0); // remove the first byte as it disables the PACKETSTART detection with positioning the id byte as this
                                         INCOMING_PACKET = false;
                                         continue; // it will be catched by PACKETSTART detector
                                     }
                                 }
 
-                                if (packetBytes.Count - 1 == C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET) // get the LENGTH_BYTE 
+                                if (receivingPacketBytes.Count - 1 == C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET) // get the LENGTH_BYTE 
                                 {
-                                    packetLength = GET_packetLength(packetBytes);
+                                    packetLength = GET_packetLength(receivingPacketBytes);
                                     if (packetLength > C_DynAdd.MAX_BYTES_OF_PACKET)
                                     {
                                         // too long packet
@@ -191,7 +191,7 @@ namespace EyeOut
                                             "Packet length byte greater than allowed = {0} > {1}",
                                             packetLength, C_DynAdd.MAX_BYTES_OF_PACKET
                                             ));
-                                        packetBytes.RemoveAt(0); // remove the first byte as it disables the PACKETSTART detection with positioning the id byte as this
+                                        receivingPacketBytes.RemoveAt(0); // remove the first byte as it disables the PACKETSTART detection with positioning the id byte as this
                                         INCOMING_PACKET = false;
                                         continue;
                                     }
@@ -202,7 +202,7 @@ namespace EyeOut
                                             "Packet length byte smaller than allowed = {0} < {1}",
                                             packetLength, C_DynAdd.MIN_BYTES_OF_PACKET
                                             ));
-                                        packetBytes.RemoveAt(0); // remove the first byte as it disables the PACKETSTART detection with positioning the id byte as this
+                                        receivingPacketBytes.RemoveAt(0); // remove the first byte as it disables the PACKETSTART detection with positioning the id byte as this
                                         INCOMING_PACKET = false;
                                         continue;
                                     }
@@ -210,46 +210,36 @@ namespace EyeOut
                                     // packetLength = [LENGTH_BYTE] + 1*[ID] + 1*[CheckSum] + 2*[PacketStart]
                                     //packetLength = (int)receivedByte + 4;
                                 }
-                                packetLength = GET_packetLength(packetBytes);
-                                if (packetBytes.Count >= packetLength)
+                                packetLength = GET_packetLength(receivingPacketBytes);
+                                if (receivingPacketBytes.Count >= packetLength)
                                 {
                                     // the last added byte to packetBytes was the most likely last byte of this package
                                     INCOMING_PACKET = false;
-                                    LOG_cmd(packetBytes.ToArray(), e_cmd.received);
+                                    LOG_cmd(receivingPacketBytes.ToArray(), e_cmd.received);
                                     LOG_unimportant("end of packet");
 
                                     // chose lastSent by receivedPacketBytes idByte
-                                    List<byte> statusBytes = new List<byte>(packetBytes);
-                                    packetBytes.Clear();
+                                    List<byte> statusBytes = new List<byte>(receivingPacketBytes);
+                                    receivingPacketBytes.Clear();
                                     LOG_debug("Sent packetBytes to process and 'cleared from readBuffer' :" +
                                         C_CONV.byteArray2strHex_space(statusBytes.ToArray()));
                                     // process it
                                     PROCESS_receivedPacket(statusBytes);
                                 }
-                                if (packetBytes.Count > packetLength)
+                                if (receivingPacketBytes.Count > packetLength)
                                 {
                                     // trim the packet
                                     LOG_err(String.Format(
                                         "Packet too long, there were more bytes read from packet than the length byte proposes: "+
                                         "{0} from {1}! LENBYTE={2}! \nIt will by cutted! : {3}",
-                                        packetBytes.Count, packetLength, 
-                                        packetBytes[C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET],
-                                        C_CONV.byteArray2strHex_space(packetBytes.ToArray())
+                                        receivingPacketBytes.Count, packetLength, 
+                                        receivingPacketBytes[C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET],
+                                        C_CONV.byteArray2strHex_space(receivingPacketBytes.ToArray())
                                         ));
-                                    packetBytes = packetBytes.GetRange(0, GET_packetLength(packetBytes));
+                                    receivingPacketBytes = receivingPacketBytes.GetRange(0, GET_packetLength(receivingPacketBytes));
                                 }
                             }
-
                         }
-
-                        //if (INCOMING_PACKET == true)
-                        //{
-                        //    //LOG_err(string.Format(
-                        //    //    "There are no more [BytesToRead] in the serial port readBuffer now! Packet bytes read [{0}/{1}] = [{2}]\nWaiting for more!",
-                        //    //    i_packetByte, packetLength, C_CONV.byteArray2strHex_space(packetBytes.ToArray())
-                        //    //    ));
-                        //}
-
                         if (C_State.prog == e_stateProg.closing)
                         {
                             return;
@@ -263,61 +253,54 @@ namespace EyeOut
                     //FLUSH_forNextIncomingPackage("exception");
                 }
                 // try if there is not a full packet in the packetBytes
-                if (packetBytes.Count == GET_packetLength(packetBytes))
+                if (receivingPacketBytes.Count == GET_packetLength(receivingPacketBytes))
                 {
-                    if (PACKETSTART_detector(packetBytes) == 0)
+                    if (PACKETSTART_detector(receivingPacketBytes) == 0)
                     {
-                        PROCESS_receivedPacket(packetBytes);
-                        packetBytes.Clear();
+                        PROCESS_receivedPacket(receivingPacketBytes);
+                        receivingPacketBytes.Clear();
                     }
                 }
-
             }
             LOG_debug(string.Format("packetBytes=[{3}]; queueSent: yaw=[{0}]; pitch=[{1}]; roll=[{2}]",
-                queueSent[0].Count, queueSent[1].Count, queueSent[2].Count, packetBytes.Count));
+                queueSent[0].Count, queueSent[1].Count, queueSent[2].Count, receivingPacketBytes.Count));
         }
 
         public static bool PROCESS_receivedPacket(List<byte> receivedBytes)
         {
+            // we have received one whole packet
             /*
-                * PROCESS_statusPacket
-                -> is Consistent
-                -> is error
-                -> pair with best
-                *    -> return best
-                *  -> process pair of statusPacket and best PairedLastPacket = actualize
+                -> is Consistent ?
+                -> pair with best from lastSent queues
+                -> PROCESS_statusPacket(received, paired)
                 */
-            //C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
-            //C_Packet received;
-            //try
-            //{
-            //    received = new C_Packet(receivedBytes); // constructor throws error if incosistent
-            //    PAIR_andProcessStatusPacket(packetBytes);
-            //}
-            //catch (Exception e)
-            //{
-            //    LOG_debug(string.Format(
-            //        "Received packet bytes are probably not consistent: {0} with Exception:{1}",
-            //        C_CONV.byteArray2strHex_space(receivedBytes),
-            //        ));
-            //    return false;
-            //}
-            return PAIR_andProcessStatusPacket(receivedBytes);
+            try 
+            {
+                C_Packet received = new C_Packet(receivedBytes); // constructor checks consistency
+                received.statusReceivedTime = DateTime.UtcNow;
+                return PAIR_andProcessStatusPacket(received);
+            }
+            catch (Exception e)
+            {
+                LOG_debug(string.Format(
+                    "Will not process received packet because of its consistency error: {0} Exception:{1}",
+                    C_CONV.byteArray2strHex_space(receivedBytes), e.Message
+                    ));
+                return false;
+            }
         }
-        public static bool PAIR_andProcessStatusPacket(List<byte> packetBytes)
+        public static bool PAIR_andProcessStatusPacket(C_Packet received)
         {
-            DateTime receivedTime = DateTime.UtcNow;
-
             //LOG_debug("index = " + index.ToString());
             C_Packet pairedLastSent = new C_Packet();
-            bool foundBestPair = DEQUEUE_bestPair(packetBytes, receivedTime, ref pairedLastSent);
+            bool foundBestPair = FIND_bestPairInLastSentQueues(received, ref pairedLastSent);
             // acquire the unprocessed lastSent package from queue if needed
 
             if (foundBestPair == true)
             {
                 LOG_debug(string.Format(
                     "Paired status package: {0}\n with this sentPackage: {1}",
-                    C_CONV.byteArray2strHex_space(packetBytes.ToArray()),
+                    received.PacketBytes_toString,
                     pairedLastSent.PacketBytes_toString
                     ));
 
@@ -326,7 +309,7 @@ namespace EyeOut
                 // process paired lastSent and this statusPacket
                 try
                 {
-                    C_Packet.PROCESS_statusPacket(pairedLastSent, packetBytes);
+                    C_Packet.PROCESS_statusPacket(received, pairedLastSent);
                 }
                 catch (Exception ex)
                 {
@@ -337,12 +320,11 @@ namespace EyeOut
             return false;
         }
 
-        public static bool DEQUEUE_bestPair(List<byte> packetBytes, DateTime receivedTime, ref C_Packet pairedPacket)
+        public static bool FIND_bestPairInLastSentQueues(C_Packet received, ref C_Packet paired)
         {
             // return through ref the best pairedPacket
-            int thisStatusId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
             e_rot rot;
-            bool foundMotor = C_MotorControl.GET_motorRotFromId(thisStatusId, out rot);
+            bool foundMotor = C_MotorControl.GET_motorRotFromId(received.ByteId, out rot);
             int rotMot = (int)rot;
 
             if (foundMotor == true)
@@ -352,7 +334,7 @@ namespace EyeOut
                     if (queueSent[rotMot].Count > 0)
                     {
                         List<C_Packet> listSent = (queueSent[rotMot]).ToList();
-                        bool foundBestPair = FIND_bestPairInQueue(packetBytes, receivedTime, ref pairedPacket, ref listSent);
+                        bool foundBestPair = FIND_bestPairInQueue(received, ref paired, ref listSent);
                         queueSent[rotMot] = new Queue<C_Packet>(listSent);
                         return foundBestPair;
                     }   
@@ -365,36 +347,26 @@ namespace EyeOut
             }
             else
             {
-                LOG_debug("Did not found any motor connected with this id from StatusPacket: "
-                    + thisStatusId.ToString());
+                LOG_debug("Did not found any motor connected with this StatusPacket id : "
+                    + received.ByteId.ToString());
             }
             return false;
         }
 
-        public static bool FIND_bestPairInQueue(List<byte> packetBytes, DateTime receivedTime, ref C_Packet pairedPacket, ref List<C_Packet> listLastSent)
+        public static bool FIND_bestPairInQueue(C_Packet received, ref C_Packet pairedPacket, ref List<C_Packet> listLastSent)
         {
             // go through whole queue
-            // find the best suitable pair for this packet in this queue
+            // find the best suitable pair for this packet in this queue: (id, read bytes wanted, timeSpan freshness)
             // remove it from his queue and return it
 
-            // if you found echo -> remove it from queue, log it, and continue withsearching
-
-            // decide upon:
-            // id
-            // read length wanted
-            // timeSpan freshness
-            byte byteId = packetBytes[C_DynAdd.INDEXOF_ID_IN_STATUSPACKET];
-            byte byteLength = packetBytes[C_DynAdd.INDEXOF_LENGTH_IN_STATUSPACKET];
-            //int numPar = byteLength - 2; // it should be consistent packet - it went through detection algorithm
+            // if you found echo -> remove it from queue, log it, and continue with search
 
             List<int> suitableIndexes = new List<int>();
             List<TimeSpan> age = new List<TimeSpan>();
-
-            C_Packet received = new C_Packet(packetBytes);
-
+            
             for(int q = 0; q < listLastSent.Count(); q++)
             {
-                if (received == listLastSent[q]) // echo
+                if (received == listLastSent[q]) // echo - possibly from uart2usb converter
                 {
                     C_Packet.LOG_statusPacket(string.Format(
                         "Processed echo of : [{0}] which was sent at [{1}]",
@@ -411,38 +383,29 @@ namespace EyeOut
                     return false; // found that this is echo of last sent - best pair, 
                     // but pairing is just deleting from listLastSent! - for now
                 }
-
-                if( listLastSent[q].ByteId == byteId)
+                if (listLastSent[q].IS_fresh(received.statusReceivedTime) == true) // suitability
                 {
-                    if (listLastSent[q].ByteInstructionOrError == C_DynAdd.INS_READ)
+                    if (received.IS_answerOf(listLastSent[q]) == true)
                     {
-                        int numOfWantedParams = listLastSent[q].Par[1];
-                        if (received.Par.Count == numOfWantedParams)
-                        {
-                            // this is probably the one - but may there be another with fresher time - on multiple sending.. maybe
-                            if (listLastSent[q].IS_fresh(receivedTime) == true)
-                            {
-                                suitableIndexes.Add(q);
-                                age.Add(listLastSent[q].GET_freshness(receivedTime));
-                            }
-                            else
-                            {
-                                // it is too old - remove it
-                                listLastSent.RemoveAt(q);
-                                q--; // and search from this index (now some other packet)
-                                continue;
-                            }
-                        }
-                        else
-                        {
-                            // not suitable number of parameters
-                        }
+                        // this is probably the one as the not fresh ones are already dead
+                        suitableIndexes.Add(q);
+                        age.Add(listLastSent[q].GET_freshness(received.statusReceivedTime));
+                    }
+                    else
+                    {
+                        // just not suitable for this status, but maybe will be for another
                     }
                 }
-                
-                    
+                else
+                {
+                    listLastSent.RemoveAt(q); // it is too old - remove it
+                    q--; // and analyse new lastSent on this index 
+                    continue;
+                    // possibly kills correct ones (if they are too old)
+                }   
             }
 
+            // find the freshest from the suitable
             if( age.Count > 0)
             {
                 // from the suitable ones get the most fresh one -
@@ -454,7 +417,7 @@ namespace EyeOut
                 if (age.Count > 1)
                 {
                     LOG_debug(string.Format(
-                        "There were [{0}] more packets suitable in the listLastSent list for this motor, but only one was selceted. (age={1}ms)",
+                        "[{0}] packets suitable pairs in the motor.listLastSent for this status, but only one was selceted. (age={1}ms)",
                                   suitableIndexes.Count - 1, age[minimumValueIndex]
                                 ));
                 }

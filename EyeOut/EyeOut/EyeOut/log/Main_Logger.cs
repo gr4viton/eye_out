@@ -11,6 +11,8 @@ using System.Windows; // Window
 using System.Windows.Data; //CollectionViewSource
 using System.Windows.Controls; // checkbox
 
+using System.Windows.Input;// mouse doubleClick
+
 namespace EyeOut
 {
     /// <summary>
@@ -75,16 +77,21 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region Filtering Checkboxes
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        private void LogFilterCheckAll(object sender, RoutedEventArgs e)
+        private void lsLogSrcSelction_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            lsLogSrcSelction.SelectAll();    
+            if (e.ClickCount == 1)
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    lsLogSrcSelction.SelectAll();
+                }
+                else if (e.RightButton == MouseButtonState.Pressed)
+                {
+                    lsLogSrcSelction.UnselectAll();
+                }
+            }
         }
 
-        private void LogFilterUncheckAll(object sender, RoutedEventArgs e)
-        {
-            lsLogSrcSelction.UnselectAll();
-        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Filtering Checkboxes
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

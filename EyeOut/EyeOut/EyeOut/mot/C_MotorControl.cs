@@ -179,6 +179,10 @@ namespace EyeOut
                 C_CONV.byteArray2strHex_space( parValues ) ));
             foreach (byte byteValue in parValues)
             {
+                C_SPI.LOG_unimportant(string.Format(
+                    "going to acualize mot[{0}] register on address [{1}]",
+                    rot, addressByte
+                    ));
                 MainWindow.Ms[rot].ACTUALIZE_register(addressByte, byteValue, type);
                 addressByte++;
             }

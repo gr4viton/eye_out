@@ -31,7 +31,7 @@ namespace EyeOut
         Disabled = 0,
         Enabled = 1
     }
-    public enum e_bool
+    public enum e_bool // because this has implicit conversion from byte
     {
         False = 0,
         True = 1
@@ -276,8 +276,11 @@ namespace EyeOut
 
         public void ACTUALIZE_register(byte addressByte, byte byteValue, e_regByteType type)
         {
-            Reg.SET(addressByte, byteValue, type);
-            ACTUALIZE_registerBinding(addressByte);
+            if (reg.IS_writable(addressByte) == true)
+            {
+                Reg.SET(addressByte, byteValue, type);
+                ACTUALIZE_registerBinding(addressByte);
+            }
         }
 
         public void ACTUALIZE_registerBinding(byte addressByte)

@@ -122,7 +122,7 @@ namespace EyeOut
         protected e_motorDataType motorDataType = e_motorDataType.angleSeen;
 
         public DateTime sentTime;
-        //public DateTime receivedTime;
+        public DateTime statusReceivedTime;
 
         // how long can the instructionPacket be waiting for its return packet
         //public TimeSpan allowedReturnTimeDelay = new TimeSpan(0, 0, 1, 0, 30); // ms
@@ -345,29 +345,22 @@ namespace EyeOut
             Par = _par;
             //Par = _par;
 
-            try
+            //    RESET_from_packetBytes(receivedBytes);
+            IS_consistent();
+
+            if (byteLength != receivedBytes[IndexOfLength])
             {
-                //    RESET_from_packetBytes(receivedBytes);
-                IS_consistent();
-
-                if (byteLength != receivedBytes[IndexOfLength])
-                {
-                    IsConsistent = false;
-                    // bad - but should never happen 
-                    // as the length byte directly creates the length of the byte array 
-                    // in the serial read function
-                    throw new Exception(GET_ByteFailInfo("LENGTH_BYTE", byteLength, receivedBytes[IndexOfLength]));
-                }
-
-                if (ByteCheckSum != receivedBytes[IndexOfCheckSum])
-                {
-                    IsConsistent = false;
-                    throw new Exception(GET_ByteFailInfo("CHECKSUM_BYTE", ByteCheckSum, receivedBytes[IndexOfCheckSum]));
-                }
+                IsConsistent = false;
+                // bad - but should never happen 
+                // as the length byte directly creates the length of the byte array 
+                // in the serial read function
+                throw new Exception(GET_ByteFailInfo("LENGTH_BYTE", byteLength, receivedBytes[IndexOfLength]));
             }
-            catch (Exception e)
+
+            if (ByteCheckSum != receivedBytes[IndexOfCheckSum])
             {
-                C_Packet.LOG_ex(this, e);
+                IsConsistent = false;
+                throw new Exception(GET_ByteFailInfo("CHECKSUM_BYTE", ByteCheckSum, receivedBytes[IndexOfCheckSum]));
             }
         }
         
@@ -572,13 +565,44 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion static functions
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        public static bool IS_error(C_Packet received, List<byte> receivedBytes)
+        public bool IS_answerOf(C_Packet lastSent)
         {
-            if (receivedBytes[C_DynAdd.INDEXOF_ERROR_IN_STATUSPACKET] != 0) // instead of echo ther may be error returned
+            // checks if this packet is possible status message of lastSent packet
+            // byteId
+            // length of bytes wanted 
+            if (lastSent.ByteId == ByteId)
+            {
+                if (lastSent.ByteInstructionOrError == C_DynAdd.INS_READ)
+                {
+                    int numOfWantedParams = lastSent.Par[1];
+                    if (Par.Count == numOfWantedParams)
+                    {
+                        // this is probably the one 
+                        return true;
+                    }
+                    else
+                    {
+                        return false; // not suitable number of parameters
+                    }
+                }
+                else
+                {
+                    return false; // last packet wasn't a read packet
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IS_error() 
+        {
+            // checks error byte
+            if (PacketBytes[C_DynAdd.INDEXOF_ERROR_IN_STATUSPACKET] != 0)
             {
                 // it is error - log error and dont process anything else as it won't come
-                C_Packet.LOG_errorByte(received);
+                C_Packet.LOG_errorByte(this);
                 return true;
             }
             return false;
@@ -616,41 +640,21 @@ namespace EyeOut
             }
         }
 
-        public static bool PROCESS_statusPacket(C_Packet pairedLastSent, List<byte> receivedBytes)
+        public static bool PROCESS_statusPacket(C_Packet status, C_Packet pairedLastSent)
         {
-            // we have received one whole packet
-            //C_Packet received = new C_StatusPacket(receivedBytes); // constructor throws error if incosistent
-            C_Packet received = new C_Packet(receivedBytes);
-
-            //IS_error(received, receivedBytes); // just log it
-
-            //it is echo or error - the echo may be of the res485 to usb origin
-            //if (received == lastSent)
-            //{
-            //    LOG_statusPacket("Got echo of :" + GET_packetInfo(lastSent));
-            //    //C_SPI.QUEUE_PacketSent(lastSent);
-            //    return false;
-            //}
-            //else
-
-            // no echo should get here (FIND_bestPairInQueue)
+            // no echo should get here (FIND_bestPairInQueue) sort it out
+            if (status.IS_error() == true) // status is consistent and correct, but may have error
             {
-                if (IS_error(received, receivedBytes) == true)
-                {
-                    C_SPI.LOG_debug("The processed package has an error! : "
-                        + received.PacketBytes_toString);
-                }
-                else
-                {
-                    C_SPI.LOG_debug("The processed package does not contain any error, going to process statusPacket");
-                    ACTUALIZE_motorRegistersFromStatusPacket(received, pairedLastSent);
-                    C_SPI.LOG_debug("Status packet processing ended");
-                }
+                C_SPI.LOG_debug("The processed package has an error! : "
+                    + status.PacketBytes_toString);
             }
-                    return true;
-            //return true;
-            //return false;
-            // return true if "processed" this status with this lastSent and want to load another lastSent
+            else
+            {
+                C_SPI.LOG_debug("The processed package does not contain any error, going to process statusPacket");
+                ACTUALIZE_motorRegistersFromStatusPacket(status, pairedLastSent);
+                C_SPI.LOG_debug("Status packet processing ended");
+            }
+            return true;
         }
 
         public static void PROCESS_instructionPacket(C_Packet lastSent)
