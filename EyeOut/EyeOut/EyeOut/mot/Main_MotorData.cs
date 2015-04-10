@@ -31,7 +31,8 @@ namespace EyeOut
         public DispatcherTimer timMotorDataRefresh;
         //public event
         public ObservableCollection<C_MotorDataRow> motorData;
-
+        CollectionViewSource ItemCollectionViewSource_motorData;
+        
         //public static event EventHandler motorDataChanged;
 
         public object dgMotorData_lock;
@@ -43,8 +44,21 @@ namespace EyeOut
             // add all
             foreach (e_motorDataType _type in Enum.GetValues(typeof(e_motorDataType)))
             {
-                motorData.Add(new C_MotorDataRow(_type));
+                if (_type != e_motorDataType.regByteValue)
+                {
+                    motorData.Add(new C_MotorDataRow(_type));
+                }
             }
+            //e_regByteType regByteType = e_regByteType.seenValue;
+
+            // cannot add all and have it without binding rebuilded every time!
+            //foreach (e_regByteType regByteType in Enum.GetValues(typeof(e_regByteType)))
+            //{
+            //    foreach (byte address in Ms.Yaw.Reg.GET_byteAddresses(regByteType))
+            //    {
+            //        motorData.Add(new C_MotorDataRow(address, regByteType));
+            //    }
+            //}
 
             INIT_dgMotorData_binding();
             INIT_timMotorDataRefresh();
@@ -62,7 +76,6 @@ namespace EyeOut
         {
             Ms.Yaw.READ(C_DynAdd.LED_ENABLE, 1);
         }
-        CollectionViewSource ItemCollectionViewSource_motorData;
         private void timMotorDataRefresh_Tick(object sender, EventArgs e)
         {
             if (C_State.FURTHER(e_stateProg.initialized))
@@ -86,7 +99,16 @@ namespace EyeOut
 
                 // it does not change the datagrid if the motorData is not recreated
                 ItemCollectionViewSource_motorData.Source = new ObservableCollection<C_MotorDataRow>(motorData);
+                
 
+                //motorData.CollectionChanged;
+
+
+                //CollectionViewRegisteringEventArgs a;
+                //ItemCollectionViewSource_motorData.
+                //a.CollectionView.NeedsRefresh;
+
+                //    INotifyCollectionChanged
 
                 //EventHandler handler = motorDataChanged;
                 //if (handler != null)

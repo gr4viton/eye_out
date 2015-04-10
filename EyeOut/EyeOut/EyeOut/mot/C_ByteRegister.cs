@@ -24,7 +24,8 @@ namespace EyeOut
         private byte val;
         private bool touched;
         private DateTime actualized;
-        private e_readWrite rw;
+        public e_readWrite rwShadow { get; private set;}
+        public e_readWrite rwActual {get; private set;}
 
         public bool Touched
         {
@@ -42,7 +43,7 @@ namespace EyeOut
         {
             get
             {
-                if (C_RegByteValue.CAN_read(rw) == true)
+                if (C_RegByteValue.IS_readable(rwShadow) == true)
                 {
                     return val;
                     //if (touched == true)
@@ -57,12 +58,12 @@ namespace EyeOut
                 else
                 {
                     throw new Exception(string.Format(
-                        "Read operation not permited on {0} value", rw));
+                        "Read operation not permited on {0} value", rwShadow));
                 }
             }
             set
             {
-                if (C_RegByteValue.CAN_write(rw) == true)
+                if (C_RegByteValue.IS_writable(rwShadow) == true)
                 {
                     val = value;
                     touched = true;
@@ -71,28 +72,40 @@ namespace EyeOut
                 else
                 {
                     throw new Exception(string.Format(
-                        "Read operation not permited on {0} value", rw));
+                        "Read operation not permited on {0} value", rwShadow));
                 }
             }
         }
 
-        public C_RegByteValue( byte _value, e_readWrite _rw)
+        public C_RegByteValue(byte _value, e_readWrite _rwActual, e_readWrite _rwShadow)
         {
-            rw = _rw;
+            rwShadow = _rwShadow;
+            rwActual = _rwActual;
             touched = false;
             val = _value;
             actualized = DateTime.UtcNow;
         }
 
-        public C_RegByteValue(byte _value, e_readWrite _rw, bool _touched)
+        public C_RegByteValue(byte _value, e_readWrite _rwActual, e_readWrite _rwShadow, bool _touched)
         {
-            rw = _rw;
+            rwShadow = _rwShadow;
+            rwActual = _rwActual;
             touched = _touched;
             val = _value;
             actualized = DateTime.UtcNow;
         }
 
-        public static bool CAN_read(e_readWrite rw)
+        public bool IS_readableActual()
+        {
+            return IS_readable(rwActual);
+        }
+            
+        public bool IS_writableActual()
+        {
+            return IS_writable(rwActual);
+        }
+
+        public static bool IS_readable(e_readWrite rw)
         {
             if ((rw == e_readWrite.readOnly) || (rw == e_readWrite.readWrite))
             {
@@ -103,7 +116,7 @@ namespace EyeOut
                 return false;
             }
         }
-        public static bool CAN_write(e_readWrite rw)
+        public static bool IS_writable(e_readWrite rw)
         {
             if ((rw == e_readWrite.writeOnly) || (rw == e_readWrite.readWrite))
             {
@@ -121,18 +134,19 @@ namespace EyeOut
         public C_RegByteValue def; // register default
         public C_RegByteValue sent; // last sent
         public C_RegByteValue seen; // last seen
+        public byte byteAddress { get; private set; }
 
         private string name;
-        private e_readWrite rw;
+        private e_readWrite rwShadow;
 
         public string Name
         {
             get { return name; }
         }
 
-        public e_readWrite Rw
+        public e_readWrite RwShadow
         {
-            get { return rw; }
+            get { return rwShadow; }
         }
 
 
@@ -158,14 +172,15 @@ namespace EyeOut
                 "[{0}] is not a valid type of register byte!", _type));
         }
 
-        public C_RegByte(string _name, e_readWrite _rw, byte _value)
+        public C_RegByte(string _name, e_readWrite _rwActual, e_readWrite _rwShadow, byte _address, byte _value)
             : base()
         {
-            rw = _rw;
+            rwShadow = _rwShadow;
             name = _name;
-            def = new C_RegByteValue(_value, _rw, true);
-            sent = new C_RegByteValue(_value, _rw);
-            seen = new C_RegByteValue(_value, _rw);
+            byteAddress = _address;
+            def = new C_RegByteValue(_value, _rwActual, _rwShadow, true);
+            sent = new C_RegByteValue(_value, _rwActual, _rwShadow);
+            seen = new C_RegByteValue(_value, _rwActual, _rwShadow);
         }
     }
 
@@ -193,6 +208,7 @@ namespace EyeOut
             string[] lines = txt.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             char sep = '|';
 
+            byte add = 0;
             foreach (string line in lines)
             {
                 if (line.Length > 2)
@@ -207,23 +223,37 @@ namespace EyeOut
                     // splited[2]= num - address in register - not needed
                     // splited[3]= name - address byte name string
 
-                    e_readWrite rw = e_readWrite.registered;
+                    e_readWrite rwShadow = e_readWrite.registered;
+                    e_readWrite rwActual = e_readWrite.registered;
                     switch (splited[1])
                     {
                         //case ("X"): rw = e_readWrite.registered; break;
                         //case ("B"): rw = e_readWrite.readWrite; break;
                         //case ("R"): rw = e_readWrite.readOnly; break;
                         //case ("W"): rw = e_readWrite.writeOnly; break;
-                        case ("X"): rw = e_readWrite.registered; break;
-                        case ("B"): rw = e_readWrite.readWrite; break;
-                        case ("R"): rw = e_readWrite.readWrite; break;
-                        case ("W"): rw = e_readWrite.readWrite; break;
+                        case ("X"): 
+                            rwShadow = e_readWrite.registered;
+                            rwActual = e_readWrite.registered;
+                            break;
+                        case ("B"): 
+                            rwShadow = e_readWrite.readWrite;
+                            rwActual = e_readWrite.readWrite;
+                            break;
+                        case ("R"): 
+                            rwShadow = e_readWrite.readWrite; 
+                            rwShadow = e_readWrite.readOnly; 
+                            break;
+                        case ("W"): 
+                            rwShadow = e_readWrite.readWrite; 
+                            rwShadow = e_readWrite.writeOnly; 
+                            break;
                     }
 
                     reg.Add(new C_RegByte(
-                        splited[3], rw, C_CONV.strHex2byte(splited[0])
+                        splited[3], rwActual, rwShadow, add, C_CONV.strHex2byte(splited[0])
                         ));
                     //reg[reg.Count-1].
+                    add++;
                 }
             }
             i_maxReg = reg.Count;
@@ -243,17 +273,17 @@ namespace EyeOut
                 }
             }
         }
-        public bool IS_writable(int _add)
+        public bool IS_writableShadow(int _add)
         {
-            if ((reg[_add].Rw == e_readWrite.registered)
+            if ((reg[_add].RwShadow == e_readWrite.registered)
                 ||
-                (reg[_add].Rw == e_readWrite.readOnly))
+                (reg[_add].RwShadow == e_readWrite.readOnly))
             {
                 return false;
             }
-            else if ((reg[_add].Rw == e_readWrite.readWrite)
+            else if ((reg[_add].RwShadow == e_readWrite.readWrite)
                     ||
-                    (reg[_add].Rw == e_readWrite.writeOnly))
+                    (reg[_add].RwShadow == e_readWrite.writeOnly))
             {
                 return true;
             }
@@ -280,6 +310,32 @@ namespace EyeOut
                     throw new Exception(GET_outOfBoundsInfo(_add));
                 }
             }
+        }
+
+        public List<byte> GET_byteAddresses(e_regByteType regByteType)
+        {
+            List<byte> bys = new List<byte>();
+            //returns the list of with stated rw 
+            foreach (C_RegByte regByte in reg)
+            {
+                // if seenValue -> return only those which can be read from motor
+                if(regByteType == e_regByteType.seenValue)
+                {
+                    if (regByte.GET(regByteType).IS_readableActual() == true)
+                    {
+                        bys.Add(regByte.byteAddress);
+                    }
+                }
+                // if sentValue -> return only those which can be written to motor 
+                else if (regByteType == e_regByteType.sentValue)
+                {
+                    if (regByte.GET(regByteType).IS_writableActual() == true)
+                    {
+                        bys.Add(regByte.byteAddress);
+                    }
+                }
+            }
+            return bys;
         }
 
         //public void Add(C_RegByte item)
