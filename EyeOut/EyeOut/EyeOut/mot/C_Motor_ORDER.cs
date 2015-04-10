@@ -190,6 +190,10 @@ namespace EyeOut
             READ(C_DynAdd.PRESENT_POS_L, 11); // address[45] registerd 
         }
 
+        public void READ_wholeRegister()
+        {
+            READ(C_DynAdd.ADDRESS_MIN, C_DynAdd.ADDRESS_MAX - C_DynAdd.ADDRESS_MIN);
+        }
         public void READ_movingByte()
         {
             READ(C_DynAdd.IS_MOVING, 1);

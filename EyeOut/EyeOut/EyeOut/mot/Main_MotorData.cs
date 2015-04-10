@@ -29,20 +29,16 @@ namespace EyeOut
     {
         // dgMotorData
         public DispatcherTimer timMotorDataRead;
-        //public event
-        public static ObservableCollection<C_MotorDataRow> motorData;
-        //public ObservableCollection<C_MotorDataRow> motorData;
         CollectionViewSource ItemCollectionViewSource_motorData;
-        
-        //public static event EventHandler motorDataChanged;
 
         public object dgMotorData_lock;
+        public static ObservableCollection<C_MotorDataRow> motorData;
 
         private void INIT_dgMotorData()
         {
             motorData = new ObservableCollection<C_MotorDataRow>();
 
-            // add all
+            // add all defined values
             foreach (e_motorDataType _type in Enum.GetValues(typeof(e_motorDataType)))
             {
                 if (_type != e_motorDataType.regByteValue)
@@ -50,9 +46,8 @@ namespace EyeOut
                     motorData.Add(new C_MotorDataRow(_type));
                 }
             }
-            //e_regByteType regByteType = e_regByteType.seenValue;
 
-            // cannot add all and have it without binding rebuilded every time!
+            // add whole shadow register (Readable & Writable)
             foreach (e_regByteType regByteType in Enum.GetValues(typeof(e_regByteType)))
             {
                 foreach (byte address in Ms.Yaw.Reg.GET_byteAddresses(regByteType))
@@ -69,7 +64,7 @@ namespace EyeOut
         {
             timMotorDataRead = new DispatcherTimer();
             timMotorDataRead.Tick += new EventHandler(timMotorDataRefresh_Tick);
-            timMotorDataRead.Interval = new TimeSpan(0, 0, 0, 0, 300);
+            timMotorDataRead.Interval = new TimeSpan(0, 0, 0, 0, 50);
             timMotorDataRead.Start();
         }
 
@@ -91,7 +86,14 @@ namespace EyeOut
             {
                 foreach( int index in lsReadPresentPositionMotors.SelectedItems)
                 {
-                    Ms[index].READ_positionSpeedLoadVoltageTemperatureRegisteredInstructionMoving();
+                    if( lsiWholeRegister.IsSelected == true )
+                    {
+                        Ms[index].READ_wholeRegister();
+                    }
+                    if (lsiActualPostionEtc.IsSelected == true)
+                    {
+                        Ms[index].READ_positionSpeedLoadVoltageTemperatureRegisteredInstructionMoving();
+                    }
                 }
 
             }
@@ -128,6 +130,14 @@ namespace EyeOut
         private void btnReadPresentPostionPitch_Click(object sender, RoutedEventArgs e)
         {
             Ms.Pitch.READ_position();
+        }
+
+        private void slActiveReadingTimerInterval_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(C_State.FURTHER(e_stateProg.initialized))
+            {
+                timMotorDataRead.Interval = new TimeSpan(0, 0, 0, 0, (int)slActiveReadingTimerInterval.Value);
+            }
         }
 
     }

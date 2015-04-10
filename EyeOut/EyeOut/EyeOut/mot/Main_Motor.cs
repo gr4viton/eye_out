@@ -70,6 +70,7 @@ namespace EyeOut
 
         public void SEARCH_motors()
         {
+            // not functional yet
             // should be in C_Motor
             // should use background worker
 
@@ -89,16 +90,6 @@ namespace EyeOut
 
                 querryPacket = new C_Packet(srchM, C_DynAdd.INS_PING);
                 C_Packet.SEND_packet(querryPacket);
-
-                /*
-                if (querryPacket.returnProcessed)
-                {
-
-                }*/
-                //if (C_SPI.READ_packet(querryPacket) 
-                //{
-                //    MessageBox.Show(id.ToString());
-                //}
                     
             }
         }

@@ -85,6 +85,9 @@ namespace EyeOut
         public const int MAX_BYTES_OF_PACKET = RECEIVING_BUFFER_VOLUME;
         public const int MAX_PARAMETERS = MAX_BYTES_OF_PACKET - 6; // 6 = PACKETSTART, ID, LENGTH, INSTRUCTION, CHECKSUM
         public const int MIN_BYTES_OF_PACKET = 6; // FF|FF|ID|LEN|INS|CHS
+        // ____________________________________________________ address space
+        public const byte ADDRESS_MIN = 0;
+        public const byte ADDRESS_MAX = 49;
         // ____________________________________________________ Goal position
         public const byte GOAL_POS_L = 30;
         public const byte GOAL_POS_H = 31;

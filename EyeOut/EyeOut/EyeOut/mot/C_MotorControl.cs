@@ -139,7 +139,10 @@ namespace EyeOut
                 // 2) to actualize motorRegister stored in pc and to know that it is set to always
                 mot.WRITE(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ONREAD);
                 mot.StatusReturnLevel = e_statusReturnLevel.onRead;
-                mot.WRITE(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ONREAD); 
+                //mot.WRITE(C_DynAdd.STATUS_RETURN_LEVEL, C_DynVal.STATUS_RETURN_LEVEL_ONREAD); 
+
+                // read out all values
+                mot.READ_wholeRegister();
             }
         }
         public void INIT_individualMotors()

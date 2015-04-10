@@ -16,12 +16,12 @@ namespace EyeOut
         // Actual = Present - received as actual Dynamixel Motor position
 
         // if not said otherwise the unit is degree for angle and RPM for speed
-        [Description("Wanted angle")] angleWanted = 0,
-        [Description("Sent angle")] angleSent,
-        [Description("Actual angle")] angleSeen,
-        [Description("Wanted speed")] speedWanted,
-        [Description("Goal speed")] speedSent,
-        [Description("Actual speed")] speedSeen,
+        [Description("Angle Wanted")] angleWanted = 0,
+        [Description("Angle Sent")] angleSent,
+        [Description("Angle Actual")]angleSeen,
+        [Description("Speed Wanted")]speedWanted,
+        [Description("Speed Goal speed")]speedSent,
+        [Description("Speed Actual speed")] speedSeen,
         [Description("Status Level")] statusReturnLevel,
         [Description("LED wanted")] LED,
         [Description("LED seen")]        LED_seen,
@@ -36,6 +36,7 @@ namespace EyeOut
     {
         public e_motorDataType dataType { get; private set; }
         public e_regByteType regByteType { get; private set; }
+        public char letter_regByteType { get; private set; } // W = sent, R = seen, D = default, ' ' = undefined
 
         public byte address { get; private set; }
         public string name { get; private set; }
@@ -128,6 +129,8 @@ namespace EyeOut
             dataType = _dataType;
             name = EnumGetDescription.GetDescription((e_motorDataType)dataType);
             motStrings = new string[3];
+            letter_regByteType = ' ';
+            address = 0;
             REFRESH();
         }
 
@@ -136,7 +139,16 @@ namespace EyeOut
             dataType = e_motorDataType.regByteValue ;
             address = _address;
             regByteType = _regByteType;
-            name = MainWindow.Ms.Yaw.Reg.GET_name(address);
+            letter_regByteType = 'D';
+            if(_regByteType == e_regByteType.seenValue)
+            {
+                letter_regByteType = 'R';
+            }
+            if(_regByteType == e_regByteType.sentValue)
+            {
+                letter_regByteType = 'W';
+            }
+            name = string.Format("{0}", MainWindow.Ms.Yaw.Reg.GET_name(address) );
 
             motStrings = new string[3];
             REFRESH();
@@ -206,7 +218,10 @@ namespace EyeOut
         {
             e_rot rot = mot.rotMotor;
             // show it as byte
-            SET_motStrings(rot, mot.Reg.GET(address, regByteType).Val.ToString());
+            SET_motStrings(rot,
+                string.Format("0x{0:X2}=\t{0}", //{0,4:###0}",
+                mot.Reg.GET(address, regByteType).Val
+                ));
         }
     }
 }

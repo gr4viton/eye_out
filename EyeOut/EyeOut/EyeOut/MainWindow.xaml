@@ -31,10 +31,6 @@
     <Window.Resources>
         <!--new instance of C_controlMot named controlMot-->
         <local:C_SPI x:Key="spi"/>
-        <!--<local:C_State x:Key="C_State"/>-->
-        <!--<local:App x:Key="app"/>-->
-
-        <!--<local:C_Motor x:Name="motYaw" x:Key="motYawDataSource"/>-->
 
         <!--Filtering and sorting of datagrid dgLog-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_log"  
@@ -44,29 +40,25 @@
                 <!-- Requires 'xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"' declaration. -->
                 <scm:SortDescription PropertyName="time" Direction="Descending"/>
                 <scm:SortDescription PropertyName="queue" Direction="Descending"/>
-                <!--<scm:SortDescription PropertyName="Complete" />
-                <scm:SortDescription PropertyName="DueDate" />-->
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
         <!--cam datagrid-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_cam"  
-                              CollectionViewType="ListCollectionView">
-            <!--Filter="CollectionViewSource_Filter">-->
-            <!--<CollectionViewSource.SortDescriptions>-->
-            <!-- Requires 'xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"' declaration. -->
-            <!--<scm:SortDescription PropertyName="time" Direction="Descending"/>-->
-            <!--</CollectionViewSource.SortDescriptions>-->
-        </CollectionViewSource>
+                              CollectionViewType="ListCollectionView"/>
 
         <!--about libraries-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_aboutLibraries"  
-                              CollectionViewType="ListCollectionView">
-        </CollectionViewSource>
+                              CollectionViewType="ListCollectionView"/>
 
         <!--motorData-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_motorData"  
                               CollectionViewType="ListCollectionView">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="address" Direction="Ascending"/>
+                <scm:SortDescription PropertyName="letter_regByteType" Direction="Ascending"/>
+                <scm:SortDescription PropertyName="name" Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
 
@@ -204,7 +196,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="5"/>
-                            <ColumnDefinition Width="350"/>
+                            <ColumnDefinition Width="450"/>
                         </Grid.ColumnDefinitions>
 
                     <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
@@ -228,66 +220,63 @@
                                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
 
                                 <StackPanel Grid.Column="0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <GroupBox Header="All motors">
-                                            <StackPanel>
-                                                <GroupBox Header="position &amp; speed">
-                                                    <StackPanel>
-                                                        <Button MaxHeight="20" Content="Apply sliders" VerticalAlignment="Top" Click="btnStartMotors_Click" />
-                                                        <Button MaxHeight="20" Content="Reset to default" VerticalAlignment="Top" Click="btnResetMotors_Click" />
-                                                    </StackPanel>
-                                                </GroupBox>
-                                                <ToggleButton Content="timSim" Checked="btnTimSim_Toggle" Unchecked="btnTimSim_Toggle"/>
-                                                <ListBox>
-                                                    <ListBox.Items>
-                                                        motor parameters
-                                                    </ListBox.Items>
-                                                </ListBox>
-                                            </StackPanel>
-                                        </GroupBox>
-                                        <GroupBox Header="Read selected">
-                                            <StackPanel Width="100">
-                                                <Button x:Name="btnReadLEDvalue" Content="Yaw LED value" Click="btnReadLEDvalue_Click"/>
-                                                <Button x:Name="btnReadPresentPostionYaw" Content="Yaw present position" Click="btnReadPresentPostionYaw_Click"/>
-                                                <Button x:Name="btnReadPresentPostionPitch" Content="Pitch present position" Click="btnReadPresentPostionPitch_Click"/>
-
-                                                <GroupBox Header="Reading from">
-                                                    <StackPanel >
+                                    <GroupBox Header="Read selected">
+                                                <StackPanel>
+                                                    <DockPanel>
+                                                    <GroupBox Header="Chosen motor:">
                                                         <ListBox x:Name="lsReadPresentPositionMotors" 
-                                                         ItemsSource="{Binding Source={StaticResource enumValues_rot}}"         
-                                                         SelectionMode="Multiple"
-                                                         MinWidth="160"
-                                                                 >
+                                                                ItemsSource="{Binding Source={StaticResource enumValues_rot}}"         
+                                                                SelectionMode="Multiple" >
+                                                            <ListBox.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <WrapPanel IsItemsHost="True" HorizontalAlignment="Center"/>
+                                                                </ItemsPanelTemplate>
+                                                            </ListBox.ItemsPanel>
                                                             <ListBox.ItemTemplate>
-                                                                <DataTemplate >
-                                                                    <TextBlock Text="{Binding Converter={StaticResource conv_e_rot_ToString}}"/>
+                                                                <DataTemplate>
+                                                                    <Border BorderThickness="1" BorderBrush="Black">
+                                                                        <TextBlock  Width="23" HorizontalAlignment="Stretch" Text="{Binding Converter={StaticResource conv_e_rot_ToString}}"/>
+                                                                    </Border>
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>
-                                                                <ToggleButton x:Name="tbtActiveReadPresentPosition" Content="Active Reading " IsChecked="True" Click="tbtActiveReadPresentPosition_Click">
-                                                                    <ToggleButton.ToolTip>
-                                                                        <ToolTip>
-                                                                            <StackPanel>
-                                                                                <TextBlock FontWeight="Bold" Text="Active reading of Data from selected motors:"/>
-                                                                                <ListBox>
-                                                                                    <ListBoxItem>Present Position</ListBoxItem>
-                                                                                    <ListBoxItem>Present Speed</ListBoxItem>
-                                                                                    <ListBoxItem>Present Load</ListBoxItem>
-                                                                                    <ListBoxItem>Present Voltage</ListBoxItem>
-                                                                                    <ListBoxItem>Present Temperature</ListBoxItem>
-                                                                                    <ListBoxItem>Registered Instruction</ListBoxItem>
-                                                                                    <ListBoxItem>Moving state</ListBoxItem>
-                                                                                </ListBox>
-                                                                                <TextBlock Text="= register bytes from address [36-46] - not including [45]"/>
-                                                                            </StackPanel>
-                                                                        </ToolTip>
-                                                                    </ToggleButton.ToolTip>
-                                                                </ToggleButton>
-                                                    </StackPanel>
-                                                </GroupBox>
-                                            </StackPanel>
-                                        </GroupBox>
-                                    </StackPanel>
+
+                                                    </GroupBox>
+
+                                                        <ToggleButton x:Name="tbtActiveReadPresentPosition" Content=" ActiveReading " IsChecked="True" Click="tbtActiveReadPresentPosition_Click"/>
+                                                    </DockPanel>
+                                                    <GroupBox Header="Active reading timer [1 to 1000] ms">
+                                                        <Slider x:Name="slActiveReadingTimerInterval" Minimum="1" Maximum="1000" LargeChange="50" SmallChange="1" TickFrequency="50" Value="50" AutoToolTipPlacement="TopLeft" TickPlacement="BottomRight"
+                                                                ValueChanged="slActiveReadingTimerInterval_ValueChanged"/>
+                                                    </GroupBox>
+                                                    <ListBox SelectionMode="Single">
+                                                        <ListBoxItem x:Name="lsiActualPostionEtc"
+                                                            Content="Actual Postion Speed Load etc."
+                                                                     IsSelected="True"> 
+                                                            <ListBoxItem.ToolTip>
+                                                                <ToolTip>
+                                                                    <StackPanel>
+                                                                        <TextBlock FontWeight="Bold" Text="Active reading of Data from selected motors:"/>
+                                                                        <ListBox>
+                                                                            <ListBoxItem>Present Position</ListBoxItem>
+                                                                            <ListBoxItem>Present Speed</ListBoxItem>
+                                                                            <ListBoxItem>Present Load</ListBoxItem>
+                                                                            <ListBoxItem>Present Voltage</ListBoxItem>
+                                                                            <ListBoxItem>Present Temperature</ListBoxItem>
+                                                                            <ListBoxItem>Registered Instruction</ListBoxItem>
+                                                                            <ListBoxItem>Moving state</ListBoxItem>
+                                                                        </ListBox>
+                                                                        <TextBlock Text="= register bytes from address [36-46] - not including [45]"/>
+                                                                    </StackPanel>
+                                                                </ToolTip>
+                                                            </ListBoxItem.ToolTip>
+                                                        </ListBoxItem>
+
+                                                        <ListBoxItem x:Name="lsiWholeRegister"
+                                                            Content="Whole readable register"/>
+                                                    </ListBox>
+                                                </StackPanel>
+                                            </GroupBox>
                                 </StackPanel>
 
                                 <Grid Grid.Column="2" Background="#FFE5E5E5">
@@ -299,7 +288,7 @@
                                                              
                                                      ItemsSource="{Binding Source={StaticResource enumValues_rot}}"         
                                                      SelectionMode="Single" SelectionChanged="lsChosenMotor_SelectionChanged"
-                                                     MinWidth="160">
+                                                     MinWidth="90">
                                                         <ListBox.ItemsPanel>
                                                             <ItemsPanelTemplate>
                                                                 <WrapPanel IsItemsHost="True" HorizontalAlignment="Center"/>
@@ -378,6 +367,10 @@
                                     <GridSplitter Grid.Column="3" Grid.RowSpan="10" HorizontalAlignment="Stretch" Background="Gray"/>
                                     <GridSplitter Grid.Column="5" Grid.RowSpan="10" HorizontalAlignment="Stretch" Background="Gray"/>
 
+
+                                    <StackPanel Grid.Column="0" Grid.Row="0">
+                                        <Button MaxHeight="20" Content="Reset to default" VerticalAlignment="Top" Click="btnResetMotors_Click" />
+                                    </StackPanel>
                                     <StackPanel Grid.Column="2" Grid.Row="0">
                                         <TextBlock Text="Yaw Motor"/>
                                     </StackPanel>
@@ -389,8 +382,8 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="0" Grid.Row="2">
-                                        <TextBlock Text="Set values on change" />
-                                    </StackPanel>
+                                                <Button MaxHeight="20" Content="Apply sliders" VerticalAlignment="Top" Click="btnStartMotors_Click" />
+                                            </StackPanel>
                                     <StackPanel Grid.Column="2" Grid.Row="2">
                                         <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorYaw" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
                                     </StackPanel>
@@ -515,35 +508,38 @@
 
                     </DockPanel>
 
-                    <GroupBox Header="Individual motor data" Grid.Column="2">
-                        <StackPanel>
-                            <GroupBox Header="Motors' pc shadow register view:">
+                        <GroupBox Header="Motors' pc shadow register view:" Grid.Column="2">
 
-                                <StackPanel>
-                                        <Button Content="Refresh motorData (debug only - automatic otherwise)" Click="btnRefreshMotorData_Click"/>
+                            <DockPanel>
+                                        <Button DockPanel.Dock="Top"
+                                            Content="Refresh motorData (debug only - automatic otherwise)" Click="btnRefreshMotorData_Click"/>
                                         <!--<ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
                                                       IsChecked="True"
                                                       Checked="tbtMotorDataRefresh_CheckedChanged"
                                                       Unchecked="tbtMotorDataRefresh_CheckedChanged"/>-->
                                     <!--Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>-->
-                                    <DataGrid
+                                    <Grid>
+                                        <DataGrid 
                                         x:Name="dgMotorData"
                                           DataContext="{StaticResource ItemCollectionViewSource_motorData}"
                                           ItemsSource="{Binding}"
                                           AutoGenerateColumns = "False" 
                                           CanUserAddRows="False"
+                                            ScrollViewer.CanContentScroll="True"
+                                           ScrollViewer.VerticalScrollBarVisibility="Visible"
                                         >
                                         <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="90" />
+                                            <DataGridTextColumn Header="Address" IsReadOnly="True" Binding="{Binding Path=address}" Width="5" />
+                                            <DataGridTextColumn Header="Type" IsReadOnly="True" Binding="{Binding Path=letter_regByteType}" Width="5" />
+                                            <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="120" />
                                                 <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw}" Width="2*" />
                                                 <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
                                                 <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
                                         </DataGrid.Columns>
                                     </DataGrid>
-                                </StackPanel>
+                                        </Grid>
+                            </DockPanel>
                             </GroupBox>
-                        </StackPanel>
-                        </GroupBox>
                     </Grid >
                 </Grid>
             </TabItem>
