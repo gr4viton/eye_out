@@ -40,7 +40,6 @@ namespace EyeOut
     /// </summary>
     public partial class C_Telepresence : Game
     {
-
         public C_TP_config config;
 
         public void INIT_toolkit(HMDType _hmdType) // called from constructor of class C_Telepresence

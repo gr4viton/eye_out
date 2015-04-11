@@ -349,13 +349,14 @@ namespace EyeOut
                 msg.Append(string.Format("YAW={0,5:0.00}°\tPITCH={1,5:0.00}°\tROLL={2,5:0.00}°", yawPitchRoll_d[q + 0], yawPitchRoll_d[q + 1], yawPitchRoll_d[q + 2]));
 
 
-                LOG(msg.ToString());
+                //LOG(msg.ToString());
 
 
                 foreach (C_Motor mot in MainWindow.Ms)
                 {
                     mot.angleWanted.Dec_FromDefault = yawPitchRoll_d[(int)mot.rotMotor];
-                    mot.speedWanted.Dec = mot.speedWanted.DecMax;
+                    //mot.speedWanted.Dec = mot.speedWanted.DecMax;
+                    mot.speedWanted.Dec = C_DynVal.SET_MOV_SPEED_NOCONTROL;
                     mot.REGISTER_move();
                 }
                 C_Motor.ORDER_ActionToAll();
@@ -416,8 +417,7 @@ namespace EyeOut
         protected void DRAW_txu()
         {
             //DRAW_cube();
-            
-            DRAW_triangle();
+            //DRAW_triangle();
             GET_txu();
         }
 

@@ -295,8 +295,9 @@
 
                                 <Grid Grid.Column="2" Background="#FFE5E5E5">
                                     <GroupBox Header="Control of individual motors">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal">
+                                        <DockPanel>
+                                            <StackPanel DockPanel.Dock="Top"
+                                                Orientation="Horizontal">
                                                 <GroupBox Header="Chosen motor:">
                                                     <ListBox x:Name="lsChosenMotor" 
                                                              
@@ -333,7 +334,8 @@
                                                             VerticalAlignment="Top" DockPanel.Dock="Top" MaxHeight="20" Click="btnSendExample_Click"/>
                                                 </StackPanel>
                                             </StackPanel>
-                                            <GroupBox Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
+                                            <GroupBox 
+                                                Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
                                                 <Grid>
                                                     <DockPanel>
                                                         <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" 
@@ -341,7 +343,7 @@
                                                     </DockPanel>
                                                 </Grid>
                                             </GroupBox>
-                                        </StackPanel>
+                                        </DockPanel>
                                     </GroupBox>
                                     <!--</Grid>-->
                                 </Grid>

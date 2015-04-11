@@ -1,9 +1,30 @@
 01|Ex3: Ping
-020501|Read ReturnDelayTime
-0205FA|SET ReturnDelayTime 500us = 250 = 0xFA (Default)
-020564|SET ReturnDelayTime 200us = 100 = 0x64
-020532|SET ReturnDelayTime 100us = 50 = 0x32
-020501|SET ReturnDelayTime   2us = 001 
+023002|GET PUNCH
+03301000|SET PUNCH [0x0010] = 16
+03302000|SET PUNCH [0x0020] = 32 = default
+03304000|SET PUNCH [0x0040] = 64 
+03308000|SET PUNCH [0x0080] = 128 
+0330FF00|SET PUNCH [0x00FF] = 256 
+03300002|SET PUNCH [0x0200] = 512 
+0330FF03|SET PUNCH [0x03FF] = 1023 
+021C02|GET CW&CCW Compliance Slope
+031C0000|SET CW&CCW Compliance Slope [0x00] = 0
+031C0404|SET CW&CCW Compliance Slope [0x04] = 4
+031C0808|SET CW&CCW Compliance Slope [0x08] = 8
+031C1010|SET CW&CCW Compliance Slope [0x10] = 16
+031C2020|SET CW&CCW Compliance Slope [0x20] = 32
+031C4040|SET CW&CCW Compliance Slope [0x40] = 64
+031C8080|SET CW&CCW Compliance Slope [0x80] = 128
+031CFEFE|SET CW&CCW Compliance Slope [0xFE] = 254
+021A02|GET CW&CCW Compliance Margin
+031A0000|SET CW&CCW Compliance Margin [0x00] = 0
+031A0404|SET CW&CCW Compliance Margin [0x04] = 4
+031A0808|SET CW&CCW Compliance Margin [0x08] = 8
+031A1010|SET CW&CCW Compliance Margin [0x10] = 16
+031A2020|SET CW&CCW Compliance Margin [0x20] = 32
+031A4040|SET CW&CCW Compliance Margin [0x40] = 64
+031A8080|SET CW&CCW Compliance Margin [0x80] = 128
+031AFEFE|SET CW&CCW Compliance Margin [0xFE] = 254
 031901|LED ON
 031900|LED OFF
 021901|LED READ
@@ -26,6 +47,11 @@
 06|Ex4: USE WITH CAUTION! Resets the Control Table of RX-64.
 030301|Ex2: USE WITH CAUTION! Sets the ID of RX-64 as “1’”. :: (Don't broadcast with multiple servos connected - all would be set to the same ID)
 03080002|Ex10: USE WITH CAUTION! Restricts the movement angle from 0 to 150°. 
+020501|Read ReturnDelayTime
+0305FA|SET ReturnDelayTime 500us = 250 = 0xFA (Default)
+030564|SET ReturnDelayTime 200us = 100 = 0x64
+030532|SET ReturnDelayTime 100us = 50 = 0x32
+030501|SET ReturnDelayTime   2us = 001 
 030B50|Ex11: Resets the highest limit of operating temperature as 80°.
 030C64AA|Ex12: Sets the operating voltage as 10 to 17V.  
 030EFF01|Ex13: Only generates 50% of the maximum torque.

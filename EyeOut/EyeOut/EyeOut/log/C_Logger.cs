@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq; // Last
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +20,6 @@ using System.Windows.Shapes;
 using System.Data; //DataGrid
 using System.Collections.ObjectModel; // ObservableCollection
 
-using System.Linq; // Last
 
 namespace EyeOut
 {

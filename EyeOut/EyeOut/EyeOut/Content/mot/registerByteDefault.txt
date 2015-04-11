@@ -1,50 +1,50 @@
-40|R|#0|Model Number L
-00|R|#1|Model Number H
-00|R|#2|Version of Firmware
-01|B|#3|ID
-22|B|#4|Baud Rage
-FA|B|#5|Return Delay time
-00|B|#6|CW Angle Limit L
-00|B|#7|CW Angle Limit H
-FF|B|#8|CCW Angle Limit L
-03|B|#9|CCW Angle Limit H
-00|X|#10|-
-50|B|#11|Highest Limit Temperature
-3C|B|#12|Lowest Limit Voltage
-F0|B|#13|Highest Limit Voltage
-FF|B|#14|Max Torque L
-03|B|#15|Max Torque H
-02|B|#16|Status Return Level
-24|B|#17|Alarm LED
-24|B|#18|Alarm Shutdown
-00|X|#19|-
-00|X|#20|-
-00|X|#21|-
-00|X|#22|-
-00|X|#23|-
-00|B|#24|Torque Enable
-00|B|#25|LED
-00|B|#26|CW Compliance Margin
-00|B|#27|CCW Compliance Margin
-20|B|#28|CW Compliance Slope
-20|B|#29|CCW Compliance Slope
-00|B|#30|Goal Position L
-00|B|#31|Goal Position H
-00|B|#32|Moving Speed L
-00|B|#33|Moving Speed H
-00|B|#34|Torque Limit L
-00|B|#35|Torque Limit H
-00|R|#36|Present Position L
-00|R|#37|Present Position H
-00|R|#38|Present Speed L
-00|R|#39|Present Speed H
-00|R|#40|Present Load L
-00|R|#41|Present Load H
-00|R|#42|Present Voltage
-00|R|#43|Present Temperature
-00|B|#44|Registred Instruction
-00|X|#45|- 
-00|R|#46|Moving
-00|B|#47|Locking EEPROM
-00|B|#48|Punch L
-00|B|#49|Punch H
+40|R|#0=00|Model Number L
+00|R|#1=01|Model Number H
+00|R|#2=02|Version of Firmware
+01|B|#3=03|ID
+22|B|#4=04|Baud Rage
+FA|B|#5=05|Return Delay time
+00|B|#6=06|CW Angle Limit L
+00|B|#7=07|CW Angle Limit H
+FF|B|#8=08|CCW Angle Limit L
+03|B|#9=09|CCW Angle Limit H
+00|X|#10=0A|-
+50|B|#11=0B|Highest Limit Temperature == val:from-to == defVal == permitedValues/hex1/hex2
+3C|B|#12=0C|Lowest Limit Voltage
+F0|B|#13=0D|Highest Limit Voltage
+FF|B|#14=0E|Max Torque L
+03|B|#15=0F|Max Torque H
+02|B|#16=10|Status Return Level
+24|B|#17=11|Alarm LED
+24|B|#18=12|Alarm Shutdown
+00|X|#19=13|-
+00|X|#20=14|-
+00|X|#21=15|-
+00|X|#22=16|-
+00|X|#23=17|-
+00|B|#24=18|Torque Enable
+00|B|#25=19|LED
+00|B|#26=1A|B:CW Compliance Margin == 00-FE 
+00|B|#27=1B|C:CCW Compliance Margin == 00-FE
+20|B|#28=1C|A:CW Compliance Slope == 01-FE == 10 == 04/08/10/20/40/80/FE 
+20|B|#29=1D|D:CCW Compliance Slope == 01-FE == 10 == 04/08/10/20/40/80/FE
+00|B|#30=1E|Goal Position L
+00|B|#31=1F|Goal Position H
+00|B|#32=20|Moving Speed L
+00|B|#33=21|Moving Speed H
+00|B|#34=22|Torque Limit L
+00|B|#35=23|Torque Limit H
+00|R|#36=24|Present Position L
+00|R|#37=25|Present Position H
+00|R|#38=26|Present Speed L
+00|R|#39=27|Present Speed H
+00|R|#40=28|Present Load L
+00|R|#41=29|Present Load H
+00|R|#42=2A|Present Voltage
+00|R|#43=2B|Present Temperature
+00|B|#44=2C|Registred Instruction
+00|X|#45=2D|- 
+00|R|#46=2E|Moving
+00|B|#47=2F|Locking EEPROM
+00|B|#48=30|E:Punch L == 00-FF == 20
+00|B|#49=31|E:Punch H == 00-03 == 00

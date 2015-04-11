@@ -82,10 +82,19 @@ namespace EyeOut
                 }
             };
             TP_config.hud.time = true;
+
+            KILL_allNotNeededGui();
         }
 
+        public void KILL_allNotNeededGui()
+        {
+            timCam.Stop();
+            timMotorDataRead.Stop();
+            timSim.Stop();
+        }
         public void START_TP_withCaution()
         {
+            INIT_TP();
             C_Telepresence.LOG("Starting EyeOut telepresence\nby Daniel Davídek 2015");
             if (cbSafe_Warning.IsChecked == true)
             {
