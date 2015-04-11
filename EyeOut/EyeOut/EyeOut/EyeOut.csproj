@@ -51,43 +51,39 @@
     <Reference Include="ReachFramework" />
     <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.D3DCompiler, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.D3DCompiler.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct2D1, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.Direct2D1.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Direct2D1.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D11, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D9, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DXGI, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.DXGI.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Toolkit, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.Toolkit.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Toolkit.Compiler, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.Toolkit.Compiler.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.Compiler.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Toolkit.Game, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.Toolkit.Game.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.Game.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Toolkit.Graphics, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\_dll\oculus_sharpDX\SharpDX.Toolkit.Graphics.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.Graphics.dll</HintPath>
     </Reference>
     <Reference Include="SharpOVR">
       <HintPath>..\_dll\oculus_sharpDX\SharpOVR.dll</HintPath>
@@ -139,8 +135,6 @@
     <Compile Include="mot\C_EulerAngles.cs" />
     <Compile Include="mot\SPI\C_Packet.cs" />
     <Compile Include="mot\Main_MotorData.cs" />
-    <Compile Include="oculus\C_Telepresence_TEXT_d3d9.cs" />
-    <Compile Include="oculus\C_Telepresence_TEXT_d3d10.cs" />
     <Compile Include="oculus\C_Telepresence_INIT.cs" />
     <Compile Include="oculus\C_Telepresence.cs" />
     <Compile Include="oculus\Main_Telepresence.cs" />

@@ -22,7 +22,7 @@ using System.Windows.Threading; // dispatcherTimer
 
 //using SharpDX.Direct2D1; // text d3d10
 //using SharpDX.DirectWrite; // text d3d10
-using SharpDX.Direct3D9; // text d3d9
+//using SharpDX.Direct3D9; // text d3d9
 
 namespace EyeOut
 {

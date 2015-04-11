@@ -23,6 +23,7 @@ using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
 using SharpDX.DXGI;
 using SharpDX.Windows;
+
 namespace EyeOut
 {
     // Use these namespaces here to override SharpDX.Direct3D11
@@ -174,7 +175,7 @@ namespace EyeOut
             base.Initialize();
 
             INIT_txu();
-            INIT_TP_text();
+            //INIT_TP_text();
         }
 
         protected void INIT_txu()

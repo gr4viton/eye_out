@@ -391,28 +391,28 @@ namespace EyeOut
             base.Draw(gameTime);
         }
 
-        protected void DRAW_text()
-        {
-            // Make the text boucing on the screen limits
-            if ((fontDimension.Right + xDir) > renderTarget.Width)
-                xDir = -1;
-            else if ((fontDimension.Left + xDir) <= 0)
-                xDir = 1;
+        //protected void DRAW_text()
+        //{
+        //    // Make the text boucing on the screen limits
+        //    if ((fontDimension.Right + xDir) > renderTarget.Width)
+        //        xDir = -1;
+        //    else if ((fontDimension.Left + xDir) <= 0)
+        //        xDir = 1;
 
-            if ((fontDimension.Bottom + yDir) > renderTarget.Height)
-                yDir = -1;
-            else if ((fontDimension.Top + yDir) <= 0)
-                yDir = 1;
+        //    if ((fontDimension.Bottom + yDir) > renderTarget.Height)
+        //        yDir = -1;
+        //    else if ((fontDimension.Top + yDir) <= 0)
+        //        yDir = 1;
 
-            fontDimension.Left += (int)xDir;
-            fontDimension.Top += (int)yDir;
-            fontDimension.Bottom += (int)yDir;
-            fontDimension.Right += (int)xDir;
+        //    fontDimension.Left += (int)xDir;
+        //    fontDimension.Top += (int)yDir;
+        //    fontDimension.Bottom += (int)yDir;
+        //    fontDimension.Right += (int)xDir;
 
-            // Draw the text
-            //font.DrawText(null, displayText, fontDimension, FontDrawFlags.Center | FontDrawFlags.VerticalCenter, Color.White);
+        //    // Draw the text
+        //    //font.DrawText(null, displayText, fontDimension, FontDrawFlags.Center | FontDrawFlags.VerticalCenter, Color.White);
 
-        }
+        //}
         protected void DRAW_txu()
         {
             //DRAW_cube();
