@@ -16,6 +16,8 @@ using System.Windows.Input; // GUI eventArgs
 //using SharpDX;
 using SharpOVR; // hmdType
 
+using TelepresenceSystem = EyeOut_TP.TelepresenceSystem;
+
 namespace EyeOut
 {
     /// <summary>
@@ -122,10 +124,15 @@ namespace EyeOut
         {
             HMDType hmdType = HMDType.DK1;
             // send active config
-            using (TP_program = new C_Telepresence(C_Camera.actualId, hmdType))
+            //using (TP_program = new C_Telepresence(C_Camera.actualId, hmdType))
+            //{
+            //    //TP_program.config = TP_config;
+            //    TP_program.Run();
+            //}
+
+            using (var program = new TelepresenceSystem())
             {
-                TP_program.config = TP_config;
-                TP_program.Run();
+                program.Run();
             }
         }
 
@@ -145,11 +152,11 @@ namespace EyeOut
 
         public void START_TP_Demo()
         {
-            RiftGame.LOG("Starting Demo of Oculus w/SharpDX & SharpOVR libraries\nby Guy Godin 2014");
-            using (var TP_Demo_program = new RiftGame())
-            {
-                TP_Demo_program.Run();
-            }
+            //RiftGame.LOG("Starting Demo of Oculus w/SharpDX & SharpOVR libraries\nby Guy Godin 2014");
+            //using (var TP_Demo_program = new RiftGame())
+            //{
+            //    TP_Demo_program.Run();
+            //}
         }
 
         private void btnStartOculusDemo_Click(object sender, RoutedEventArgs e)

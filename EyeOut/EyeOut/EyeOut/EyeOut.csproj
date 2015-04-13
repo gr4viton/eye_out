@@ -49,44 +49,56 @@
     </Reference>
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ReachFramework" />
-    <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SharpDX, Version=2.6.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.D3DCompiler, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.D3DCompiler, Version=2.6.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.Direct2D1, Version=2.6.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Direct2D1.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.Direct3D11, Version=2.6.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DXGI, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.DXGI, Version=2.6.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.DXGI.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Toolkit, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.Toolkit, Version=2.6.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Toolkit.Compiler, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.Toolkit.Audio">
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.Audio.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Toolkit.Compiler, Version=2.6.2, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.Compiler.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Toolkit.Game, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.Toolkit.Game, Version=2.6.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.Game.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Toolkit.Graphics, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.Toolkit.Graphics, Version=2.6.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.Graphics.dll</HintPath>
     </Reference>
-    <Reference Include="SharpOVR">
-      <HintPath>..\_dll\oculus_sharpDX\SharpOVR.dll</HintPath>
+    <Reference Include="SharpDX.Toolkit.Input, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.Toolkit.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XAudio2, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SharpDX.2.6.2\Bin\DirectX11-Signed-net40\SharpDX.XAudio2.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpOVR, Version=0.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SharpOVR.0.4.4.0\lib\SharpOVR.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -123,9 +135,15 @@
     </Compile>
     <Compile Include="mot\C_Value.cs" />
     <Compile Include="mot\SPI\C_SPI_READ.cs" />
-    <Compile Include="oculus\cam\C_Camera.cs" />
-    <Compile Include="oculus\cam\C_CameraCapture.cs" />
-    <Compile Include="oculus\cam\Main_Camera.cs" />
+    <Compile Include="oculus\Graphics\Data\Font.cs" />
+    <Compile Include="oculus\Graphics\Data\Sprite.cs" />
+    <Compile Include="oculus\Inputs\Input.cs" />
+    <Compile Include="oculus\Sounds\Sound.cs" />
+    <Compile Include="oculus\System\FPS.cs" />
+    <Compile Include="oculus\System\System.cs" />
+    <Compile Include="oculus\_RealCam\C_Camera.cs" />
+    <Compile Include="oculus\_RealCam\C_CameraCapture.cs" />
+    <Compile Include="oculus\_RealCam\Main_Camera.cs" />
     <Compile Include="about\Main_About.cs" />
     <Compile Include="log\C_Packet_LOG.cs" />
     <Compile Include="mot\C_ByteRegister.cs" />
@@ -176,6 +194,9 @@
     </EmbeddedResource>
     <ToolkitModel Include="Content\Demo\Ship.fbx" />
     <ToolkitTexture Include="Content\Demo\ShipDiffuse.dds" />
+    <ToolkitAudio Include="Content\Demo\TestBank.xwb" />
+    <ToolkitAudio Include="Content\Demo\TestBankXbox.xwb" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -189,16 +210,30 @@
     <Resource Include="Content\pic\eyeout.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="oculus\Graphics\" />
-    <Folder Include="oculus\Inputs\" />
-    <Folder Include="oculus\Shaders\" />
-    <Folder Include="oculus\System\" />
+    <Folder Include="oculus\Graphics\Cameras\" />
+    <Folder Include="oculus\Graphics\Models\" />
+    <Folder Include="oculus\Graphics\Shaders\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\about\aboutLibraries.txt" />
-    <Resource Include="Content\Demo\GeneticaMortarlessBlocks.jpg" />
+    <ToolkitTexture Include="Content\Demo\GeneticaMortarlessBlocks.jpg" />
+    <ToolkitFont Include="Content\Demo\Arial13.xml" />
+    <ToolkitFont Include="Content\Demo\Arial16.xml" />
+    <ToolkitFont Include="Content\Demo\Arial16Bold.xml" />
+    <ToolkitFont Include="Content\Demo\Arial16ClearType.xml" />
+    <ToolkitAudio Include="Content\Demo\beep-24.wav" />
+    <ToolkitAudio Include="Content\Demo\button-42.wav" />
+    <ToolkitAudio Include="Content\Demo\button-43.wav" />
+    <ToolkitFont Include="Content\Demo\Calibri64.xml" />
+    <ToolkitFont Include="Content\Demo\CourierNew10.xml" />
+    <ToolkitFont Include="Content\Demo\defaultFont.xml" />
+    <ToolkitAudio Include="Content\Demo\ergon.adpcm.wav" />
+    <ToolkitAudio Include="Content\Demo\ergon.wav" />
+    <ToolkitTexture Include="Content\Demo\listen.png" />
+    <ToolkitFont Include="Content\Demo\MicrosoftSansSerif10.xml" />
     <Content Include="Content\Demo\MiniCubeTexture.fx" />
     <Content Include="Content\Demo\MiniTri.fx" />
+    <ToolkitTexture Include="Content\Demo\speaker.png" />
     <Content Include="Content\mot\registerByteDefault.txt" />
     <Resource Include="Content\about\notUsedAfterall.txt" />
     <Content Include="Content\mot\cmdInEx.txt">
