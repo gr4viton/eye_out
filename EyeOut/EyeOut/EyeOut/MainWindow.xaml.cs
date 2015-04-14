@@ -50,7 +50,7 @@ namespace EyeOut
             INIT_allMotors();
             INIT_timSim();
             INIT_cam();
-            INIT_TP();
+            //INIT_Telepresence();
             INIT_about();
             INIT_keyMapping();
             C_State.prog = e_stateProg.initialized;
@@ -228,20 +228,17 @@ namespace EyeOut
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        private void cbLogSetMaximum_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            if (cbLogSetMaximum.IsChecked == true)
+            {
+                C_Logger.Instance.START_trimming(Convert.ToInt64(txLogBufferCount.Text));
+            }
+            else
+            {
+                C_Logger.Instance.TrimMsgBuffer = false;
+            }
+        }
 
 
 

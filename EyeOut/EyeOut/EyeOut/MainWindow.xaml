@@ -251,8 +251,16 @@
                                                         <ToggleButton x:Name="tbtActiveReadPresentPosition" Content=" ActiveReading " IsChecked="True" Click="tbtActiveReadPresentPosition_Click"/>
                                                     </DockPanel>
                                                     <GroupBox Header="Active reading timer [1 to 1000] ms">
-                                                        <Slider x:Name="slActiveReadingTimerInterval" Minimum="1" Maximum="1000" LargeChange="50" SmallChange="1" TickFrequency="50" Value="50" AutoToolTipPlacement="TopLeft" TickPlacement="BottomRight"
+                                                                <Grid >
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition />
+                                                                        <ColumnDefinition Width="42"/>
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Slider Grid.Column="0" x:Name="slActiveReadingTimerInterval" Minimum="1" Maximum="1000" LargeChange="50" SmallChange="1" TickFrequency="50" Value="50" AutoToolTipPlacement="TopLeft" TickPlacement="BottomRight"
                                                                 ValueChanged="slActiveReadingTimerInterval_ValueChanged"/>
+                                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                                    Text="{Binding ElementName=slActiveReadingTimerInterval, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                </Grid>
                                                     </GroupBox>
 
                                                         <GroupBox Header="Select which data to read">
@@ -528,7 +536,7 @@
 
                             <DockPanel>
                                         <Button DockPanel.Dock="Top"
-                                            Content="Refresh motorData (debug only - automatic otherwise)" Click="btnRefreshMotorData_Click"/>
+                                            Content="Refresh table from shadow register (debug only - automatic otherwise)" Click="btnRefreshMotorData_Click"/>
                                         <!--<ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
                                                       IsChecked="True"
                                                       Checked="tbtMotorDataRefresh_CheckedChanged"
@@ -607,30 +615,57 @@
                 </Grid>
             </TabItem>
 
-            <TabItem x:Name="tiOculus" Header="Oculus Headset" Background="DeepSkyBlue">
+            <TabItem x:Name="tiOculus" Header="Logger" Background="DeepSkyBlue">
                 <Grid Background="DeepSkyBlue">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="4"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="4"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
-                        <RowDefinition />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Column="0" Grid.Row="0">
-                        <Button x:Name="btnStartOculus" Content="Start Oculus Demo scene" Click="btnStartOculusDemo_Click"/>
-                    </StackPanel>
+                    <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
 
-                    <!--<DockPanel Grid.Column="0" Grid.Row="0">
-                        <Image Source="pack://siteoforigin:,,,/pic/eyeout.png"  />
-                        <Image Source="pack://siteoforigin:,,,/pic/eyeout.png"  />
-                        <Image Source="pack://siteoforigin:,,,/pic/eyeout.png"  Stretch="Fill"/>
-                    </DockPanel>
-
-                    <StackPanel Grid.Column="0" Grid.Row="1"  Orientation="Horizontal">
-                        <Image Source="pack://siteoforigin:,,,/pic/eyeout.png"  />
-                        <Image Source="pack://siteoforigin:,,,/pic/eyeout.png" />
-                        <Image Source="pack://siteoforigin:,,,/pic/eyeout.png" Stretch="Fill"/>
-                    </StackPanel>-->
+                    <GroupBox Header="Settings" Grid.Column="0">
+                        <StackPanel>
+                            <GroupBox Header="Log messages count">
+                                <StackPanel>
+                                    <CheckBox x:Name="cbLogShowCount" Content="Show Count in Status Label" IsEnabled="False"/>
+                                    <CheckBox x:Name="cbLogSetMaximum" Content="Set logger message buffer count" IsChecked="False"
+                                              Checked="cbLogSetMaximum_ValueChanged" Unchecked="cbLogSetMaximum_ValueChanged"/>
+                                    <GroupBox Header="Logger message buffer" IsEnabled="{Binding ElementName=cbLogSetMaximum, Path=IsChecked}" >
+                                        <TextBox x:Name="txLogBufferCount" PreviewTextInput="txLogBufferCount_PreviewTextInput" Text="5000"/>
+                                    </GroupBox>
+                                </StackPanel>
+                            </GroupBox>
+                            <!--<ListBox Name="listBoxZone" ItemsSource="{Binding TheList}" Height="115" Background="Azure">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Name="CheckBoxZone" Content="{Binding TheText}"
+                                            Tag="{Binding TheValue}" Checked="CheckBoxZone_Checked" Margin="0,5,0,0"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>-->
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Export" Grid.Column="2">
+                        <StackPanel>
+                            <Button Content="Export whole log to csv" IsEnabled="False"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Information" Grid.Column="4">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" >
+                                * You can filter the log messages by selecting items from the list on left side of the logger. 
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap">
+                                * As it is stated in the tooltip, you can select all or unselect all by Rigth and Left mouse doubleclicking.
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox>
                 </Grid>
             </TabItem>
 

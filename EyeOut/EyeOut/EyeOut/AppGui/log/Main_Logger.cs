@@ -13,6 +13,8 @@ using System.Windows.Controls; // checkbox
 
 using System.Windows.Input;// mouse doubleClick
 
+using System.Text.RegularExpressions;
+
 namespace EyeOut
 {
     /// <summary>
@@ -71,6 +73,35 @@ namespace EyeOut
         {
             lsLogSrcSelction.SelectedItems.Add(src);
         }
+
+        private void txLogBufferCount_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextNumerical(e.Text);
+        }
+
+
+        private static bool IsTextNumerical(string text)
+        {
+            //Regex regex = new Regex("[^0-9.-]+"); 
+            Regex regex = new Regex("[^0-9]+"); //regex that matches disallowed text
+            return !regex.IsMatch(text);
+        }
+
+        //private void TextBoxPasting(object sender, DataObjectPastingEventArgs e)
+        //{
+        //    if (e.DataObject.GetDataPresent(typeof(String)))
+        //    {
+        //        String text = (String)e.DataObject.GetData(typeof(String));
+        //        if (!IsTextNumerical(text))
+        //        {
+        //            e.CancelCommand();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        e.CancelCommand();
+        //    }
+        //}
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion Initialization

@@ -645,12 +645,12 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public static void LOG(string _msg)
         {
-            C_Logger.Instance.LOG(e_LogMsgSource.EyeOut, _msg);
+            C_Logger.Instance.LOG(e_LogMsgSource.oculus, _msg);
         }
 
         public static void LOG_err(string _msg)
         {
-            C_Logger.Instance.LOG_err(e_LogMsgSource.EyeOut, _msg);
+            C_Logger.Instance.LOG_err(e_LogMsgSource.oculus_err, _msg);
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #endregion LOG

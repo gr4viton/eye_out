@@ -102,8 +102,9 @@ namespace EyeOut_Telepresence
                     yawPitchRoll_d[0], yawPitchRoll_d[1], yawPitchRoll_d[2]
                     ));
                 //str.AppendLine(string.Format("{0}|{1}", C_Value.rad2deg, C_Value.deg2rad   ));
-                
 
+                str.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
+                str.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
                 text = str.ToString();
                 //q = 0;
                 //msg.Append(string.Format("YAW={0,5:0.00}°\tPITCH={1,5:0.00}°\tROLL={2,5:0.00}°", yawPitchRoll_d[q + 0], yawPitchRoll_d[q + 1], yawPitchRoll_d[q + 2]));
@@ -119,9 +120,10 @@ namespace EyeOut_Telepresence
                         mot.angleWanted.Dec_FromDefault = yawPitchRoll_d[(int)mot.rotMotor];
                         //mot.speedWanted.Dec = mot.speedWanted.DecMax;
                         mot.speedWanted.Dec = C_DynVal.SET_MOV_SPEED_NOCONTROL;
-                        mot.REGISTER_move();
+                        mot.ORDER_move();
+                        //mot.REGISTER_move();
                     }
-                    C_Motor.ORDER_ActionToAll();
+                    //C_Motor.ORDER_ActionToAll();
                 }
 
             }

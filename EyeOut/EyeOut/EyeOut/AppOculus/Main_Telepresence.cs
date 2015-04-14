@@ -34,23 +34,27 @@ namespace EyeOut
         public static TelepresenceSystemConfiguration TP_config;
         public static C_Telepresence TP_program;
 
-        public void INIT_TP()
+        public void INIT_Telepresence()
         {
+            lsLogSrcSelction.UnselectAll();
+            LOG_filterIn(e_LogMsgSource.oculus);
+            LOG_filterIn(e_LogMsgSource.oculus_err);
+
             TP_config = new TelepresenceSystemConfiguration()
             {
-                WRITE_dataToMotors = (bool)cbWriteMotorData.IsChecked,
-                READ_dataFromMotors = (bool)cbReadMotorData.IsChecked,
+                WRITE_dataToMotors = cbWriteMotorData.IsChecked.Value,
+                READ_dataFromMotors = cbReadMotorData.IsChecked.Value,
                 gazeMark = new C_DrawGazeMark()
                 {
                     Oculus = (bool)cbDrawOculusGaze.IsChecked,
-                    MotorPostureSent = (bool)cbDrawMotorPostureSent.IsChecked,
-                    MotorPostureSeen = (bool)cbDrawMotorPostureSeen.IsChecked,
+                    MotorPostureSent = cbDrawMotorPostureSent.IsChecked.Value,
+                    MotorPostureSeen = cbDrawMotorPostureSeen.IsChecked.Value,
                 },
                 hud = new C_HUD()
                 {
-                    time = (bool)cbHudTime.IsChecked,
-                    compas = (bool)cbHudCompas.IsChecked,
-                    motorPosture = (bool)cbHudMotorPosture.IsChecked
+                    time = cbHudTime.IsChecked.Value,
+                    compas = cbHudCompas.IsChecked.Value,
+                    motorPosture = cbHudMotorPosture.IsChecked.Value
                 }
             };
             TP_config.hud.time = true;
@@ -66,7 +70,7 @@ namespace EyeOut
         }
         public void START_TP_withCaution()
         {
-            INIT_TP();
+            INIT_Telepresence();
             C_Telepresence.LOG("Starting EyeOut telepresence\nby Daniel Davídek 2015");
             if (cbSafe_Warning.IsChecked == true)
             {

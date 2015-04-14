@@ -133,6 +133,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AppOculus\Graphics\Graphics.cs" />
     <Compile Include="AppOculus\Outputs\MotorPosture.cs" />
     <Compile Include="AppOculus\System\TelepresenceSystemConfiguration.cs" />
     <Compile Include="Interconnection\mot\C_Value.cs" />

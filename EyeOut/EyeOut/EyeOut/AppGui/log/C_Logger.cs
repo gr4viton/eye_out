@@ -38,9 +38,8 @@ namespace EyeOut
         gui, log, 
         mot, mot_yaw, mot_pitch, mot_roll,
         byteReg,
-        cam, 
-        Demo_TP, EyeOut, 
-        EyeOut_cam,
+        cam, cam_err,
+        oculus, oculus_err,
         valConv, debug, unimportant
     }
     public enum e_LogMsgType
@@ -53,13 +52,34 @@ namespace EyeOut
     internal class C_Logger
     {
         //private DataTable dataTable;
-        private ObservableCollection<C_LogMsg> itemList { get; set; }
+        private ObservableCollection<C_LogMsg> msgList { get; set; }
 
         private static object itemList_locker = new object();
 
         private static byte errorAntiLoopCounter = 0;
         private const byte errorAntiLoopCounter_max = 10; 
         public long logMsgCount { get; private set; }
+
+        private bool trimMsgBuffer = false;
+        public bool TrimMsgBuffer 
+        {
+            get { return trimMsgBuffer; }
+            set
+            {
+                if (logMsgCount > 0)
+                    trimMsgBuffer = value;
+                else
+                    trimMsgBuffer = false;
+            } 
+        }
+
+        public void START_trimming(long _logMsgCountMaximum)
+        {
+            logMsgCountMaximum = _logMsgCountMaximum;
+            TrimMsgBuffer = true;
+        }
+
+        public long logMsgCountMaximum = 0;
         //C_LoggingTable _tasks = (C_LoggingTable)this.Resources["tasks"];
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,14 +109,14 @@ namespace EyeOut
 
         private C_Logger()
         {
-            itemList = new ObservableCollection<C_LogMsg>();
+            msgList = new ObservableCollection<C_LogMsg>();
             //dataTable = new DataTable();
 
             //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             //create business data
             //var itemList = new List<StockItem>();
 
-            itemList.Add(new C_LogMsg { time = DateTime.UtcNow, src = e_LogMsgSource.log, 
+            msgList.Add(new C_LogMsg { time = DateTime.UtcNow, src = e_LogMsgSource.log, 
                 msg = "Logging system initialized! Time is [Ascending] == new messages on first row == ^^^^^^" });
             //...
 
@@ -105,7 +125,7 @@ namespace EyeOut
         // property
         public ObservableCollection<C_LogMsg> Data
         {
-            get { return itemList; }
+            get { return msgList; }
         }
 
         public void LOG(C_LogMsg _msg)
@@ -143,12 +163,34 @@ namespace EyeOut
             {
                 try
                 {
-                    if (itemList.Last().time == _logMsg.time) // multiple at the same time
+                    if (msgList.Last().time == _logMsg.time) // multiple at the same time
                     {
-                        _logMsg.queue = itemList.Last().queue + 1;
+                        _logMsg.queue = msgList.Last().queue + 1;
                     }
-                    itemList.Add(_logMsg);
-                    logMsgCount++;
+                    msgList.Add(_logMsg);
+                    if( trimMsgBuffer == true)
+                    {
+
+                        if (logMsgCount > logMsgCountMaximum)
+                        {
+                            msgList = new ObservableCollection<C_LogMsg>(
+                                msgList.Skip((int)(logMsgCountMaximum - logMsgCount))
+                                );
+                            logMsgCount = logMsgCountMaximum;
+                        }
+                        else if (logMsgCount == logMsgCountMaximum)
+                        {
+                            msgList.RemoveAt(0);
+                        }
+                        else
+                        {
+                            logMsgCount++;
+                        }
+                    }
+                    else
+                    {   
+                        logMsgCount++;
+                    }
                     errorAntiLoopCounter = 0;
                 }
                 catch (Exception e)
