@@ -10,7 +10,7 @@ using SharpDX.Direct3D11;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Input;
 
-namespace EyeOut_TP
+namespace EyeOut_Telepresence
 {
     /// <summary>
     /// Input part

@@ -13,7 +13,7 @@ using SharpDX.Toolkit.Graphics;
 using SharpDX.Toolkit.Input;
 
 
-namespace EyeOut_TP
+namespace EyeOut_Telepresence
 {
     using SharpDX.Toolkit.Graphics;
     /// <summary>

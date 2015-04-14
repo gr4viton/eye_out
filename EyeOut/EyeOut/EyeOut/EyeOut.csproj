@@ -133,47 +133,49 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="mot\C_Value.cs" />
-    <Compile Include="mot\SPI\C_SPI_READ.cs" />
-    <Compile Include="oculus\Graphics\Data\Font.cs" />
-    <Compile Include="oculus\Graphics\Data\Sprite.cs" />
-    <Compile Include="oculus\Inputs\Input.cs" />
-    <Compile Include="oculus\Sounds\Sound.cs" />
-    <Compile Include="oculus\System\FPS.cs" />
-    <Compile Include="oculus\System\System.cs" />
-    <Compile Include="oculus\_RealCam\C_Camera.cs" />
-    <Compile Include="oculus\_RealCam\C_CameraCapture.cs" />
-    <Compile Include="oculus\_RealCam\Main_Camera.cs" />
-    <Compile Include="about\Main_About.cs" />
-    <Compile Include="log\C_Packet_LOG.cs" />
-    <Compile Include="mot\C_ByteRegister.cs" />
-    <Compile Include="mot\C_MotorControl.cs" />
-    <Compile Include="mot\C_MotorDataRow.cs" />
-    <Compile Include="mot\C_Motor_ORDER.cs" />
-    <Compile Include="mot\C_EulerAngles.cs" />
-    <Compile Include="mot\SPI\C_Packet.cs" />
-    <Compile Include="mot\Main_MotorData.cs" />
-    <Compile Include="oculus\C_Telepresence_INIT.cs" />
-    <Compile Include="oculus\C_Telepresence.cs" />
-    <Compile Include="oculus\Main_Telepresence.cs" />
-    <Compile Include="other\C_State.cs" />
-    <Compile Include="mot\SPI\Main_SPI.cs" />
-    <Compile Include="log\C_Logger.cs" />
-    <Compile Include="mot\Main_Motor.cs" />
-    <Compile Include="mot\C_Motor.cs" />
-    <Compile Include="mot\SPI\C_SPI.cs" />
-    <Compile Include="log\Main_Logger.cs" />
-    <Compile Include="mot\SPI\C_CheckSum.cs" />
-    <Compile Include="other\C_Helpers.cs" />
-    <Compile Include="mot\C_DynAdd.cs" />
+    <Compile Include="AppOculus\Outputs\MotorPosture.cs" />
+    <Compile Include="AppOculus\System\TelepresenceSystemConfiguration.cs" />
+    <Compile Include="Interconnection\mot\C_Value.cs" />
+    <Compile Include="Interconnection\mot\SPI\C_SPI_READ.cs" />
+    <Compile Include="AppOculus\Graphics\Data\Font.cs" />
+    <Compile Include="AppOculus\Graphics\Data\Sprite.cs" />
+    <Compile Include="AppOculus\Inputs\Input.cs" />
+    <Compile Include="AppOculus\Sounds\Sound.cs" />
+    <Compile Include="AppOculus\System\FPS.cs" />
+    <Compile Include="AppOculus\System\TelepresenceSystem.cs" />
+    <Compile Include="Interconnection\cam\C_Camera.cs" />
+    <Compile Include="Interconnection\cam\C_CameraCapture.cs" />
+    <Compile Include="Interconnection\cam\Main_Camera.cs" />
+    <Compile Include="AppGui\about\Main_About.cs" />
+    <Compile Include="AppGui\log\C_Packet_LOG.cs" />
+    <Compile Include="Interconnection\mot\C_ByteRegister.cs" />
+    <Compile Include="Interconnection\mot\C_MotorControl.cs" />
+    <Compile Include="Interconnection\mot\C_MotorDataRow.cs" />
+    <Compile Include="Interconnection\mot\C_Motor_ORDER.cs" />
+    <Compile Include="Interconnection\mot\C_EulerAngles.cs" />
+    <Compile Include="Interconnection\mot\SPI\C_Packet.cs" />
+    <Compile Include="Interconnection\mot\Main_MotorData.cs" />
+    <Compile Include="AppOculus\C_Telepresence_INIT.cs" />
+    <Compile Include="AppOculus\C_Telepresence.cs" />
+    <Compile Include="AppOculus\Main_Telepresence.cs" />
+    <Compile Include="AppGui\other\C_State.cs" />
+    <Compile Include="Interconnection\mot\SPI\Main_SPI.cs" />
+    <Compile Include="AppGui\log\C_Logger.cs" />
+    <Compile Include="Interconnection\mot\Main_Motor.cs" />
+    <Compile Include="Interconnection\mot\C_Motor.cs" />
+    <Compile Include="Interconnection\mot\SPI\C_SPI.cs" />
+    <Compile Include="AppGui\log\Main_Logger.cs" />
+    <Compile Include="Interconnection\mot\SPI\C_CheckSum.cs" />
+    <Compile Include="AppGui\other\C_Helpers.cs" />
+    <Compile Include="Interconnection\mot\C_DynAdd.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="oculus\Demo_RiftGame.cs" />
-    <Compile Include="other\Helpers.cs" />
+    <Compile Include="AppOculus\Demo_RiftGame.cs" />
+    <Compile Include="AppGui\other\Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -210,9 +212,9 @@
     <Resource Include="Content\pic\eyeout.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="oculus\Graphics\Cameras\" />
-    <Folder Include="oculus\Graphics\Models\" />
-    <Folder Include="oculus\Graphics\Shaders\" />
+    <Folder Include="AppOculus\Graphics\Cameras\" />
+    <Folder Include="AppOculus\Graphics\Models\" />
+    <Folder Include="AppOculus\Graphics\Shaders\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\about\aboutLibraries.txt" />
@@ -226,7 +228,7 @@
     <ToolkitAudio Include="Content\Demo\button-43.wav" />
     <ToolkitFont Include="Content\Demo\Calibri64.xml" />
     <ToolkitFont Include="Content\Demo\CourierNew10.xml" />
-    <ToolkitFont Include="Content\Demo\defaultFont.xml" />
+    <ToolkitFont Include="Content\Demo\fontDefault.xml" />
     <ToolkitAudio Include="Content\Demo\ergon.adpcm.wav" />
     <ToolkitAudio Include="Content\Demo\ergon.wav" />
     <ToolkitTexture Include="Content\Demo\listen.png" />

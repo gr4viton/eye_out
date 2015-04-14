@@ -14,7 +14,7 @@ using SharpDX.Toolkit.Input;
 
 using System.Threading.Tasks;
 
-namespace EyeOut_TP
+namespace EyeOut_Telepresence
 {
     using SharpDX.Toolkit.Graphics;
     /// <summary>
@@ -33,6 +33,7 @@ namespace EyeOut_TP
         private SpriteFont fontDefault;
         private Texture2D colorTexture;
 
+        public string text;
 
         void LoadContent_Font()
         {
@@ -44,7 +45,7 @@ namespace EyeOut_TP
             defaultFont = ToDisposeContent(Content.Load<SpriteFont>("Arial16Bold"));
             calibri64 = ToDisposeContent(Content.Load<SpriteFont>("Calibri64"));
             courrierNew10 = ToDisposeContent(Content.Load<SpriteFont>("CourierNew10"));
-            fontDefault = ToDisposeContent(Content.Load<SpriteFont>("defaultFont"));
+            fontDefault = ToDisposeContent(Content.Load<SpriteFont>("fontDefault"));
         }
 
         public void BeginDraw_Font()
@@ -56,11 +57,17 @@ namespace EyeOut_TP
 
         public void Draw_Font(int eye)
         {
+            //MatrixOrthoSubProjection - no
+            // GetTranslationMatrix 
 
             spriteBatch.Begin(SpriteSortMode.FrontToBack,
                 GraphicsDevice.BlendStates.NonPremultiplied);  // Use NonPremultiplied, as this sprite texture is not premultiplied
             // Render the text
-            var text = String.Format("{0}{0}{0}", "Hello World - EyeOut is comming to town!\n");
+            //var text = String.Format("{0}{0}{0}", "Hello World - EyeOut is comming to town!\n");
+            if (text == null)
+            {
+                text = String.Format("{0}{0}{0}", "Hello World - EyeOut is comming to town!\n");
+            }
             //var dim = fontDefault.MeasureString(text);
             var dim = fontDefault.MeasureString(text);
             int diff = -452; // for DK1

@@ -20,10 +20,10 @@ namespace EyeOut
         public static C_Value speedFull = new C_Value(0, 101, 1,C_DynVal.SET_MOV_SPEED_NOCONTROL, C_DynVal.SET_MOV_SPEED_MAX); // no control as 0
 
         // angle constants
-        private const double pi = Math.PI;
-        private const double piHalf = Math.PI / 2;
-        private const double deg2rad = pi / 180;
-        private const double rad2deg = 180 / pi;
+        public const double pi = Math.PI;
+        public const double piHalf = Math.PI / 2;
+        public const double deg2rad = pi / (double)180;
+        public const double rad2deg = (double)180 / pi;
 
         // speed constants
         // 100 should be [decLimitMax - decLimitMin - 1] 

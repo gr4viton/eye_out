@@ -16,7 +16,10 @@ using System.Windows.Input; // GUI eventArgs
 //using SharpDX;
 using SharpOVR; // hmdType
 
-using TelepresenceSystem = EyeOut_TP.TelepresenceSystem;
+using TelepresenceSystem = EyeOut_Telepresence.TelepresenceSystem;
+
+using TelepresenceSystemConfiguration = EyeOut_Telepresence.TelepresenceSystemConfiguration;
+using EyeOut_Telepresence;
 
 namespace EyeOut
 {
@@ -24,49 +27,16 @@ namespace EyeOut
     /// Oculus - gui
     /// </summary>
     /// 
-    /*
-    public class C_HUD_item
-    {
-        bool visibility
-        string value
-        doubl value
-    }
-     */
-    public class C_HUD
-    {
-        public bool time;
-        public bool compas;
-        public bool motorPosture;
-        public C_HUD() {}
-    }
-
-    public class C_DrawGazeMark
-    {
-        public bool Oculus = true;
-        public bool MotorPostureSent = true;
-        public bool MotorPostureSeen = true;
-    }
-
-    // telepresence configurations
-    public class C_TP_config
-    {
-        public C_HUD hud;
-        public bool WRITE_dataToMotors = false;
-        public bool READ_dataFromMotors = false;
-        public C_DrawGazeMark gazeMark;
-
-        public C_TP_config() {}
-    }
 
 
     public partial class MainWindow : Window
     {
-        public static C_TP_config TP_config;
+        public static TelepresenceSystemConfiguration TP_config;
         public static C_Telepresence TP_program;
 
         public void INIT_TP()
         {
-            TP_config = new C_TP_config()
+            TP_config = new TelepresenceSystemConfiguration()
             {
                 WRITE_dataToMotors = (bool)cbWriteMotorData.IsChecked,
                 READ_dataFromMotors = (bool)cbReadMotorData.IsChecked,
@@ -120,7 +90,7 @@ namespace EyeOut
             }
         }
 
-        public void START_TP(C_TP_config TP_config)
+        public void START_TP(TelepresenceSystemConfiguration TP_config)
         {
             HMDType hmdType = HMDType.DK1;
             // send active config
@@ -130,7 +100,7 @@ namespace EyeOut
             //    TP_program.Run();
             //}
 
-            using (var program = new TelepresenceSystem())
+            using (var program = new TelepresenceSystem(TP_config))
             {
                 program.Run();
             }

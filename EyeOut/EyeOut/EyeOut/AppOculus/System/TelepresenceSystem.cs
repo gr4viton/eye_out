@@ -15,7 +15,7 @@ using SharpDX.Toolkit.Input;
 
 using System.Threading.Tasks;
 
-namespace EyeOut_TP
+namespace EyeOut_Telepresence
 {
     // Use these namespaces here to override SharpDX.Direct3D11
     using SharpDX.Toolkit;
@@ -55,6 +55,7 @@ namespace EyeOut_TP
         private Texture2D texture;
         private List<GeometricPrimitive> primitives;
 
+        public TelepresenceSystemConfiguration config;
 
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,8 +65,9 @@ namespace EyeOut_TP
         /// <summary>
         /// Initializes a new instance of the <see cref="TelepresenceSystem" /> class.
         /// </summary>
-        public TelepresenceSystem()
+        public TelepresenceSystem(TelepresenceSystemConfiguration _configuration)
         {
+            config = _configuration;
             // Creates a graphics manager. This is mandatory.
             graphicsDeviceManager = new GraphicsDeviceManager(this);
 
@@ -103,6 +105,17 @@ namespace EyeOut_TP
 
         protected override void Initialize()
         {
+            //            INIT_TP_window();
+            //            INIT_TP_renderTarget();
+            //            INIT_TP_eyeTextureRendering();
+            //            INIT_TP_d3d11();
+            //            INIT_TP_hmd();
+
+            //            base.Initialize();
+
+            //            INIT_txu();
+            //            //INIT_TP_text();
+
             // Modify the title of the window
             Window.Title = "RiftGame";
 
@@ -366,9 +379,10 @@ namespace EyeOut_TP
             //DrawFonts(0);
             //DrawFonts(1);
             EndDraw_Font();
+            CONTROL_motors();
         }
 
-#endregion Draw
+        #endregion Draw
 
         protected override void EndDraw()
         {

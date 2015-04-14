@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using System.Diagnostics; // StopWatch
 
-namespace EyeOut_TP
+namespace EyeOut_Telepresence
 {
     using SharpDX.Toolkit.Graphics;
     /// <summary>
