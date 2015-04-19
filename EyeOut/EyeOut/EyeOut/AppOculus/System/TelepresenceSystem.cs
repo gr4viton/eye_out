@@ -17,6 +17,13 @@ using System.Threading.Tasks;
 
 using EyeOut;
 
+using System.Runtime.InteropServices; // marshal
+
+using BaslerImage = Basler.Pylon.IImage;
+using ToolkitImage = SharpDX.Toolkit.Graphics.Image;
+using ToolkitTexture = SharpDX.Toolkit.Graphics.Texture2D;
+//using SharpDX.Toolkit.Graphics;
+
 namespace EyeOut_Telepresence
 {
     // Use these namespaces here to override SharpDX.Direct3D11
@@ -80,7 +87,11 @@ namespace EyeOut_Telepresence
         /// </summary>
         public TelepresenceSystem(TelepresenceSystemConfiguration _configuration)
         {
+            // configuration
             config = _configuration;
+
+            config.streamController.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+            
             // Creates a graphics manager. This is mandatory.
             graphicsDeviceManager = new GraphicsDeviceManager(this);
 
@@ -88,6 +99,7 @@ namespace EyeOut_Telepresence
             graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = false;
 
+            
             Constructor_FPS();
             fpsClock = new Stopwatch(); // readonly
 
@@ -113,6 +125,74 @@ namespace EyeOut_Telepresence
             // Match back buffer size with HMD resolution
             graphicsDeviceManager.PreferredBackBufferWidth = hmd.Resolution.Width;
             graphicsDeviceManager.PreferredBackBufferHeight = hmd.Resolution.Height;
+
+        }
+
+        void StreamGrabber_ImageGrabbed(object sender, Basler.Pylon.ImageGrabbedEventArgs e)
+        {
+            // writes the grabbed image from camera into the texture
+
+            Basler.Pylon.IImage im = (Basler.Pylon.IImage)e.GrabResult;
+            //guiImageViewer.CaptureImage();
+
+            if (im == null)
+            {
+                LOG("Could not retrieve grabbed image");
+            }
+            else
+            {
+                LOG("Retrieved grabbed image");
+
+                byte[] pixelData = (byte[])im.PixelData; // R,G,B,A
+
+                //DataBox[] db = new DataBox()[];
+
+                //IntPtr ptr = ref pixelData;
+                int arraySize = pixelData.Length;
+
+                IntPtr unmanagedPointer = Marshal.AllocHGlobal(arraySize);
+                Marshal.Copy(pixelData, 0, unmanagedPointer, arraySize);
+                // Call unmanaged code
+
+                ToolkitImage img = ToolkitImage.New2D(im.Width, im.Height, 1,
+                    PixelFormat.B8G8R8A8.UNorm, arraySize,
+                    unmanagedPointer);
+
+                
+
+                
+                //ToolkitImage imCam = ToolkitImage.Load(pixelData, true);
+                try
+                {
+                    texture = Texture2D.New(GraphicsDevice, img);
+                }
+                catch(Exception ex)
+                {
+                    LOG("Catched exception when creating texture from camera: " + ex.Message);
+                }
+
+                Marshal.FreeHGlobal(unmanagedPointer);
+
+                //Texture2D txu = Texture2D.New(
+                //                                GrahpicsDevice, 
+                //                                im.Width, 
+                //                                im.Height, 
+                //                                1, 
+                //                                PixelFormat.B8G8R8X8.UNorm, 
+                //                                db);
+                 
+    //,TextureFlags.None );
+                
+                
+                //CamTexture.Load(device, stream);
+                //texture = CamTexture.New(GraphicsDevice, imCam, TextureFlags.None, ResourceUsage.Default);
+                //, baCam.Width, baCam.Height, imCam);
+
+                //public static Texture2D New(GraphicsDevice device, Image image, 
+                //TextureFlags flags = TextureFlags.ShaderResource, ResourceUsage usage = ResourceUsage.Immutable);
+                //texture = 
+                //throw new NotImplementedException();
+            }
 
         }
 

@@ -34,7 +34,7 @@ namespace EyeOut
         public static TelepresenceSystemConfiguration TP_config;
         public static C_Telepresence TP_program;
 
-        public void INIT_Telepresence()
+        public void INIT_TelepresenceConfigAndPrepareGui()
         {
             lsLogSrcSelction.UnselectAll();
             LOG_filterIn(e_LogMsgSource.oculus);
@@ -61,7 +61,7 @@ namespace EyeOut
                     motorPosture = cbHudMotorPosture.IsChecked.Value
                 },
 
-                TelepresenceImageViewer = guiImageViewer
+                streamController = guiStreamController
             };
             TP_config.hud.time = true;
 
@@ -79,7 +79,9 @@ namespace EyeOut
         }
         public void START_TP_withCaution()
         {
-            INIT_Telepresence();
+            INIT_TelepresenceConfigAndPrepareGui();
+
+
             C_Telepresence.LOG("Starting EyeOut telepresence\nby Daniel Davídek 2015");
             if (cbSafe_Warning.IsChecked == true)
             {

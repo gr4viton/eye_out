@@ -548,7 +548,17 @@
             <TabItem x:Name="tiBaslerCamera" Header="Basler Camera" Background="LightBlue" >
                 <DockPanel x:Name="dpBaslerCamera"
                     LastChildFill="True">
-                    <Button x:Name="btnBaslerCameraCapture" Content="Basler Camera capture"  Click="btnBaslerCameraCapture_Click"/>
+                    <GroupBox Header="Basler Camera Commands">
+                        <StackPanel>
+                            <ListBox x:Name="lsBaslerCameraCommands" MouseDoubleClick="lsBaslerCameraCommands_MouseDoubleClick">
+                                <ListBoxItem Content="Init streamGrabber"/>
+                                <ListBoxItem Content="Start streamGrabber"/>
+                                <ListBoxItem Content="Stop streamGrabber"/>
+                                <ListBoxItem Content="Take single snapshot"/>
+                                <!--<ListBoxItem Content="Capture single image"/>-->
+                            </ListBox>
+                        </StackPanel>
+                    </GroupBox>
                     <!--listens to cameras connected to usb-->
                     <basler:CameraLister x:Name="cameraListener" 
                         DockPanel.Dock="Left"
@@ -557,7 +567,7 @@
                     <DockPanel Width="500">
                         
                         <!--controls the stream of video from camera-->
-                        <basler:StreamController x:Name="streamController"
+                        <basler:StreamController x:Name="guiStreamController"
                                                  DockPanel.Dock="Top" Height="50"  VerticalAlignment="Top" ActiveViewer="{Binding ., ElementName=guiImageViewer}" Camera="{Binding Camera, ElementName=cameraListener}"/>
 
                         <!--shows the stream of video from camera-->

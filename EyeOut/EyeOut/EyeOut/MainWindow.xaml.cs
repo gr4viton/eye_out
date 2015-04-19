@@ -242,25 +242,77 @@ namespace EyeOut
                 }
             }
         }
+        
+        //public event EventHandler<ImageGrabbedEventArgs> ImageGrabbed
 
-        private void btnBaslerCameraCapture_Click(object sender, RoutedEventArgs e)
+
+        void GUI_StreamGrabber_ImageGrabbed(object sender, Basler.Pylon.ImageGrabbedEventArgs e)
         {
-            if (streamController.Camera.StreamGrabber.IsGrabbing == false)
-            {
-                streamController.Camera.StreamGrabber.Start();
-            }
-            streamController.Camera.Open();
-            Basler.Pylon.IImage im = 
-                guiImageViewer.CaptureImage();
+
+            Basler.Pylon.IImage im = (Basler.Pylon.IImage)e.GrabResult;
+                //guiImageViewer.CaptureImage();
 
             if (im == null)
             {
-                btnBaslerCameraCapture.Background = Brushes.Red;
+                LOG_gui("Could not retrieve grabbed image");
             }
             else
             {
-                btnBaslerCameraCapture.Background = Brushes.Green;
-                byte[] pixelData = (byte[])im.PixelData;
+                //byte[] pixelData = (byte[])im.PixelData;
+                LOG_gui("Retrieved grabbed image (in gui event handler)");
+            }
+            //throw new NotImplementedException();
+        }
+
+
+        private void lsBaslerCameraCommands_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            switch (lsBaslerCameraCommands.SelectedIndex)
+            {
+                case(0): 
+                    // event EventHandler<ImageGrabbedEventArgs> ImageGrabbed // - possible continuous grabbing, and choose from grabbed list when drawing into scene
+                    if(guiStreamController.Camera.IsOpen)
+                    //if (streamController.Camera.StreamGrabber.IsGrabbing == false)
+                    {
+
+                        //event EventHandler<ImageGrabbedEventArgs> ImageGrabbed
+                        guiStreamController.Camera.StreamGrabber.ImageGrabbed += GUI_StreamGrabber_ImageGrabbed;
+                        //streamController.Camera.StreamGrabber.
+                        // setup grabber
+                        // ...
+                        // start grabber
+                        guiStreamController.Camera.Open();
+                    }
+                    //streamController.Camera.Open();
+                    break;
+                case (1): 
+                    if(guiStreamController.Camera.IsOpen)
+                        //if (streamController.Camera.StreamGrabber.IsGrabbing == false)
+                        {
+                            //streamController.Camera.StreamGrabber.Start();
+                            guiStreamController.StartStreaming();
+                            LOG_gui("Started streamGrabbing");
+                        }
+                    break;
+                case (2):
+                    if (guiStreamController.Camera.IsOpen)
+                        //if (streamController.Camera.StreamGrabber.IsGrabbing == true)
+                        {
+                            //streamController.Camera.StreamGrabber.Stop();
+                            guiStreamController.StopStreaming();
+                            LOG_gui("Stopped streamGrabbing");
+                        }
+
+                    break;
+                case (3):
+                    if (guiStreamController.Camera.IsOpen)
+                    {
+                        guiStreamController.TakeSingleSnapshot();// Camera.StreamGrabber.take;
+                        LOG_gui("Took single snapshot");
+                    }
+
+                    break;
+
             }
         }
 
