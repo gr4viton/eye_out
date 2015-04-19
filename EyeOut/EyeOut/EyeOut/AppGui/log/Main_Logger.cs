@@ -56,6 +56,7 @@ namespace EyeOut
 
             LOG_filterOut(e_LogMsgSource.unimportant);
 
+            C_Logger.Instance.START_trimming(Convert.ToInt64(txLogBufferCount.Text));
         }
         public void LOG_filter(e_LogMsgSource src, bool visible)
         {
@@ -87,6 +88,20 @@ namespace EyeOut
             return !regex.IsMatch(text);
         }
 
+        private void cbLogSetMaximum_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            if(C_State.FURTHER(e_stateProg.initialized))
+            {
+                if (cbLogSetMaximum.IsChecked == true)
+                {
+                    C_Logger.Instance.START_trimming(Convert.ToInt64(txLogBufferCount.Text));
+                }
+                else
+                {
+                    C_Logger.Instance.TrimMsgBuffer = false;
+                }
+            }
+        }
         //private void TextBoxPasting(object sender, DataObjectPastingEventArgs e)
         //{
         //    if (e.DataObject.GetDataPresent(typeof(String)))

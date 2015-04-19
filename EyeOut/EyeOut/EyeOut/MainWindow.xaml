@@ -634,7 +634,7 @@
                             <GroupBox Header="Log messages count">
                                 <StackPanel>
                                     <CheckBox x:Name="cbLogShowCount" Content="Show Count in Status Label" IsEnabled="False"/>
-                                    <CheckBox x:Name="cbLogSetMaximum" Content="Set logger message buffer count" IsChecked="False"
+                                    <CheckBox x:Name="cbLogSetMaximum" Content="Set logger message buffer count" IsChecked="True"
                                               Checked="cbLogSetMaximum_ValueChanged" Unchecked="cbLogSetMaximum_ValueChanged"/>
                                     <GroupBox Header="Logger message buffer" IsEnabled="{Binding ElementName=cbLogSetMaximum, Path=IsChecked}" >
                                         <TextBox x:Name="txLogBufferCount" PreviewTextInput="txLogBufferCount_PreviewTextInput" Text="5000"/>

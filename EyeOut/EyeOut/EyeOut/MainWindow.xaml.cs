@@ -228,17 +228,6 @@ namespace EyeOut
         }
 
 
-        private void cbLogSetMaximum_ValueChanged(object sender, RoutedEventArgs e)
-        {
-            if (cbLogSetMaximum.IsChecked == true)
-            {
-                C_Logger.Instance.START_trimming(Convert.ToInt64(txLogBufferCount.Text));
-            }
-            else
-            {
-                C_Logger.Instance.TrimMsgBuffer = false;
-            }
-        }
 
 
 
