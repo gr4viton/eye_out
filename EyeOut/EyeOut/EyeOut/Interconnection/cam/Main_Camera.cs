@@ -39,11 +39,12 @@ namespace EyeOut
         public static List<System.Windows.Controls.Image> camImages;
 
         private object dgCam_lock; // lock for datagrid
-        public List<C_Camera> Cs;
+        public List<C_WebCamera> Cs;
 
         private void INIT_cam()
         {
             INIT_allSources();
+            C_State.cam = e_stateWebCam.ready;
         }
 
         private void INIT_timCam()
@@ -80,20 +81,34 @@ namespace EyeOut
         }
         void PLOT_listPreviewImages()
         {
-            for (int q = 0; q < C_Camera.numCamSources; q++)
+            try
             {
-                camImages[q].Source = Cs[q].GET_frame();
+                for (int q = 0; q < C_WebCamera.numCamSources; q++)
+                {
+                    camImages[q].Source = Cs[q].GET_frame();
+                }
+            }
+            catch (Exception ex)
+            {
+                C_WebCamera.LOG_err("Catched exception when trying to plot camera preview images: " + ex.Message);
             }
         }
         void PLOT_activePreviewImage()
         {
-            if (tcMain.SelectedItem == tiCamera)
+            try
             {
-                imgMain.Source = Cs[C_Camera.actualId].GET_frame();
+                if (tcMain.SelectedItem == tiWebCamera)
+                {
+                    imgMain.Source = Cs[C_WebCamera.actualId].GET_frame();
+                }
+                else if (tcMain.SelectedItem == tiTelepresence)
+                {
+                    imgMain_TP.Source = Cs[C_WebCamera.actualId].GET_frame();
+                }
             }
-            else if (tcMain.SelectedItem == tiTelepresence)
+            catch (Exception ex)
             {
-                imgMain_TP.Source = Cs[C_Camera.actualId].GET_frame();
+                C_WebCamera.LOG_err("Catched exception when trying to plot camera preview images: " + ex.Message);
             }
         }
 
@@ -103,7 +118,7 @@ namespace EyeOut
             {
                 if(Cs.Count > 0)
                 {
-                    foreach(C_Camera cam in Cs)
+                    foreach(C_WebCamera cam in Cs)
                     {
                         cam.ReleaseData();
                     }
@@ -118,16 +133,16 @@ namespace EyeOut
             //Get the information about the installed cameras and add the combobox items 
             DsDevice[] _SystemCamereas = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
 
-            C_Camera.numCamSources = _SystemCamereas.Length;
-            C_Camera.camList = new ObservableCollection<C_VideoDevice>();
+            C_WebCamera.numCamSources = _SystemCamereas.Length;
+            C_WebCamera.camList = new ObservableCollection<C_VideoDevice>();
             //C_Camera.camList = new ObservableCollection<C_VideoDevice>(C_Camera.numCamSources);
 
-            camImages = new List<System.Windows.Controls.Image>(C_Camera.numCamSources);
+            camImages = new List<System.Windows.Controls.Image>(C_WebCamera.numCamSources);
 
-            for (int i = 0; i < C_Camera.numCamSources; i++)
+            for (int i = 0; i < C_WebCamera.numCamSources; i++)
             {
                 //fill web cam array
-                C_Camera.camList.Add(
+                C_WebCamera.camList.Add(
                     new C_VideoDevice(i, _SystemCamereas[i].Name, _SystemCamereas[i].ClassID)
                     );
                 camImages.Add(new System.Windows.Controls.Image());
@@ -135,10 +150,10 @@ namespace EyeOut
             }
 
             // load up cameras
-            Cs = new List<C_Camera>(C_Camera.numCamSources);
-            foreach (C_VideoDevice source in C_Camera.camList)
+            Cs = new List<C_WebCamera>(C_WebCamera.numCamSources);
+            foreach (C_VideoDevice source in C_WebCamera.camList)
             {
-                Cs.Add(new C_Camera(source.deviceID));
+                Cs.Add(new C_WebCamera(source.deviceID));
             }
 
             INIT_dgCam();
@@ -152,7 +167,7 @@ namespace EyeOut
             }
             else
             {
-                C_Camera.LOG_err("No source video found! Connect some video capture equipment and click [Rescan video sources]");
+                C_WebCamera.LOG_err("No source video found! Connect some video capture equipment and click [Rescan video sources]");
                 return; // error - no sources of data - clic on refresh after you connect some video equipment
 
             }
@@ -179,16 +194,16 @@ namespace EyeOut
             // binding
             CollectionViewSource ItemCollectionViewSource_cam;
             ItemCollectionViewSource_cam = (CollectionViewSource)(FindResource("ItemCollectionViewSource_cam"));
-            ItemCollectionViewSource_cam.Source = C_Camera.camList;
+            ItemCollectionViewSource_cam.Source = C_WebCamera.camList;
 
             // when binding is changing inner guts of dataGrid from different thread
             dgCam_lock = new object(); // lock for datagrid
-            BindingOperations.EnableCollectionSynchronization(C_Camera.camList, dgCam_lock); // for multi-thread updating
+            BindingOperations.EnableCollectionSynchronization(C_WebCamera.camList, dgCam_lock); // for multi-thread updating
         }
 
         private void dgCams_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            C_Camera.actualId = dgCams.SelectedIndex;
+            C_WebCamera.actualId = dgCams.SelectedIndex;
             // looses selectionIndex
             //if (C_State.FURTHER(e_stateProg.initialized))
             //{

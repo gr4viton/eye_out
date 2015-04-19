@@ -117,14 +117,8 @@ namespace EyeOut
             M = new List<C_Motor>();
 
             INIT_individualMotors();
-            INIT_groupSettings();
             actMrot = e_rot.yaw;
         }
-        //public new void Add(C_Motor mot)
-        //{   
-        //    base.Add(mot);
-        //    REFRESH_motors();
-        //}
 
         public void INIT_listElementsOfAllMotors()
         {
@@ -134,7 +128,7 @@ namespace EyeOut
                 M.Add(new C_Motor((byte)imot));
             }
         }
-        public void INIT_groupSettings()
+        public static void INIT_groupSettings()
         {
             foreach (C_Motor mot in M)
             {

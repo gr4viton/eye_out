@@ -88,8 +88,10 @@ namespace EyeOut
             lock (spiSent_locker)
             {
                 //UPDATE_SPI_Settings();
-                //SPI_UPDATE_baudRate();
-                //SPI_UPDATE_portName();
+                //UPDATE_baudRate();
+                if ( UPDATE_portName() == false )
+                    return false;
+
                 /*
                 if (C_State.FURTHER(e_stateSPI.notConnected))
                 else
@@ -130,6 +132,27 @@ namespace EyeOut
             return spi.IsOpen;
         }
 
+        public static bool UPDATE_portName()
+        {
+            // returns false if no COM port is found
+            string[] portNames = SerialPort.GetPortNames();
+            if(portNames == null)
+            {
+                return false;
+            }
+            else
+            {
+                // select the last one
+                spi.PortName = portNames[portNames.Length-1];
+                if(spi.PortName == "COM6")
+                {
+                    C_MotorControl.INIT_groupSettings();
+                    return true;
+                }
+                else 
+                    return false;
+            }
+        }
         public static int REFRESH_timeWaitBeforeRtsEnable_ms()
         {
             double numOfBytesInMessage = 1 + spi.DataBits;

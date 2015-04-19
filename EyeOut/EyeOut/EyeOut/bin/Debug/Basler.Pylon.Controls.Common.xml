@@ -1,0 +1,3321 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Basler.Pylon.Controls.Common</name>
+    </assembly>
+    <members>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.ParameterEventArgs">
+            <summary>
+            Event arguments class for parameter event handling.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.ParameterEventArgs.#ctor(Basler.Pylon.IParameter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Cameras.ParameterEventArgs"/> class.
+            </summary>
+            <param name="parameter">Parameter object.</param>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.ParameterEventArgs.Parameter">
+            <summary>
+            Gets Parameter object.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraInfoExtension">
+            <summary>
+            Extensions for <see cref="T:Basler.Pylon.ICameraInfo"/>.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraInfoExtension.GetCameraType(Basler.Pylon.ICameraInfo)">
+            <summary>
+            Gets <see cref="T:Basler.Pylon.Controls.Common.Cameras.CameraType"/>
+            </summary>
+            <param name="info">The camera information.</param>
+            <returns>CameraType.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraInfoExtension.GetCameraTypeStr(Basler.Pylon.ICameraInfo)">
+            <summary>
+            Gets the type of the camera.
+            </summary>
+            <param name="info">The camera information.</param>
+            <returns>System.String.</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.IParameterSource">
+            <summary>
+            Interface for parameter sources. Parameter source provide access to the current parameter
+            and notifies if the current parameter has changed.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.IParameterSource.Parameter">
+            <summary>
+            Gets the parameter.
+            </summary>
+            <value>The parameter.</value>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.IParameterSource.ParameterChanged">
+            <summary>
+            Occurs when [parameter changed].
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Constants.CategoryNames">
+            <summary>
+            Contains names of parameter categories.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ActionControl">
+            <summary>
+            The action control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.AutoFunctionsControl">
+            <summary>
+            The auto functions control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.AutoFunctions">
+            <summary>
+            The auto functions control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.AutoFunctionControl">
+            <summary>
+            The auto functions control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ChunkDataControl">
+            <summary>
+            The chunk data control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ChunkData">
+            <summary>
+            The chunk data control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ChunkDataStreams">
+            <summary>
+            The chunk data streams control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ChunkDataStreamsControl">
+            <summary>
+            The chunk data stream control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.AnalogControl">
+            <summary>
+            The analog control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.AnalogControls">
+            <summary>
+            The analog control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ImageFormatControl">
+            <summary>
+            The image format control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ImageFormat">
+            <summary>
+            The image format control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ImageQualityControl">
+            <summary>
+            The image quality control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.Aoi">
+            <summary>
+            The AOI.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.AcquisitionControl">
+            <summary>
+            The acquisition trigger.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.AcquisitionTrigger">
+            <summary>
+            The acquisition trigger control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.DeviceInformation">
+            <summary>
+            The device information.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.LutControl">
+            <summary>
+            The LUT control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.LutControls">
+            <summary>
+            The LUT control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.DigitalIoControl">
+            <summary>
+            The digital io control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.DigitalIo">
+            <summary>
+            The digital io control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.CounterAndTimerControl">
+            <summary>
+            The counter and timer control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.TimerControls">
+            <summary>
+            The timer control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.EventControl">
+            <summary>
+            The event control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.EventsGeneration">
+            <summary>
+            The event generation control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.FeatureSets">
+            <summary>
+            The Feature Sets control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.UserSetControl">
+            <summary>
+            The user set control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.UserSets">
+            <summary>
+            The user set control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.TransportLayerControl">
+            <summary>
+            The transport layer control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.TransportLayer">
+            <summary>
+            The transport layer control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.UserDefinedValues">
+            <summary>
+            The user defined values.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.UserDefinedValueControl">
+            <summary>
+            The user defined values control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.RemoveParameterLimitControl">
+            <summary>
+            The remove parameter limit control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.RemoveParamLimits">
+            <summary>
+            The remove parameter limit control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ExpertFeatureAccess">
+            <summary>
+            The expert parameter access.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.FileAccessControl">
+            <summary>
+            The file access control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ColorImprovementsControl">
+            <summary>
+            The сolor improvements control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ColorOverexposureCompensation">
+            <summary>
+            The Color Overexposure Compensation control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ColorOverexplosureControl">
+            <summary>
+            The color overexplosureControl control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.Device">
+            <summary>
+            The device control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.DeviceControl">
+            <summary>
+            The device control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.EventGenerationControl">
+            <summary>
+            The event generation control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.FeatureSetsControl">
+            <summary>
+            The feature sets control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.FrequencyConverterControl">
+            <summary>
+            The frequency converter control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.FrequencyConverter">
+            <summary>
+            The frequency converter control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.SequenceControl">
+            <summary>
+            The sequence control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.SequencerControl">
+            <summary>
+            The sequencer control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ShadingControl">
+            <summary>
+            The shading control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.Shading">
+            <summary>
+            The shading control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ShaftEncoderModuleControl">
+            <summary>
+            The shaft encoder module control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.ShaftEncoderModule">
+            <summary>
+            The shaft encoder module control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.SoftwareSignalControl">
+            <summary>
+            The software signal control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.TimerControl">
+            <summary>
+            The timer control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.StatisticControl">
+            <summary>
+            The statistic control.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.TransportLayerCustomCategory">
+            <summary>
+            The transport layer custom category.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.CategoryNames.StreamCustomCategory">
+            <summary>
+            The stream custom category.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Constants.ParameterNames">
+            <summary>
+            Contains text constants of parameters names.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.ParameterNames.TransportLayerPrefix">
+            <summary>
+            The transport layer parameter prefix.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.ParameterNames.DevicePrefix">
+            <summary>
+            The device parameter prefix.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.ParameterNames.DeviceReset">
+            <summary>
+            Name of reset device parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Constants.ParameterNames.CameraDeviceRoot">
+            <summary>
+            Name of root parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Constants.ParameterNames.TransportLayerRoot">
+            <summary>
+            The transportlayer root
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Constants.ParameterNames.FirstStreamGrabberRoot">
+            <summary>
+            The first streamgrabber root
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraEqualityComparer">
+            <summary>
+            Compares two instances of <see cref="T:Basler.Pylon.ICameraInfo"/> by their serial numbers.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraEqualityComparer.Equals(Basler.Pylon.ICamera,Basler.Pylon.ICamera)">
+            <summary>
+            Determines whether the specified objects are equal.
+            </summary>
+            <param name="x">The first object of type <see cref="T:Basler.Pylon.ICameraInfo"/> to compare.</param>
+            <param name="y">The second object of type <see cref="T:Basler.Pylon.ICameraInfo"/> to compare.</param>
+            <returns>
+            true if the specified objects are equal; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraEqualityComparer.GetHashCode(Basler.Pylon.ICamera)">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <param name="obj">The object.</param>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraInfoEqualityComparer">
+            <summary>
+            Compares two instances of <see cref="T:Basler.Pylon.ICameraInfo"/> by their serial numbers.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraInfoEqualityComparer.Equals(Basler.Pylon.ICameraInfo,Basler.Pylon.ICameraInfo)">
+            <summary>
+            Determines whether the specified objects are equal.
+            </summary>
+            <param name="x">The first object of type <see cref="T:Basler.Pylon.ICameraInfo"/> to compare.</param>
+            <param name="y">The second object of type <see cref="T:Basler.Pylon.ICameraInfo"/> to compare.</param>
+            <returns>
+            true if the specified objects are equal; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraInfoEqualityComparer.GetHashCode(Basler.Pylon.ICameraInfo)">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <param name="obj">The object.</param>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraEventArgs">
+            <summary>
+            Event arguments class for camera event handling.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraEventArgs.#ctor(Basler.Pylon.ICamera)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Cameras.CameraEventArgs"/> class.
+            </summary>
+            <param name="camera">Camera object.</param>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.CameraEventArgs.Camera">
+            <summary>
+            Gets Camera object.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraExtension">
+            <summary>
+            Extension class for ICamera interface.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraExtension.GetSerie(Basler.Pylon.ICamera)">
+            <summary>
+            Gets serie of a camera model.
+            </summary>
+            <param name="camera">Camera object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraExtension.GetState(Basler.Pylon.ICamera)">
+            <summary>
+            Gets the state of the camera.
+            </summary>
+            <param name="camera">The camera.</param>
+            <returns>CameraState.</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraPropertyFilter">
+            <summary>
+            Class for filtering camera properties.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraPropertyFilter.Filter(System.String,Basler.Pylon.ICameraInfo)">
+            <summary>
+            Filters camera properties in accordance with camera interface type.
+            </summary>
+            <param name="interfaceType">Camera interface type.</param>
+            <param name="parameters">List of camera properties.</param>
+            <returns>Filtered and sorted list of camera properties.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraPropertyFilter.FilterPropertiesForInfo(System.String,System.Collections.Generic.IList{Basler.Pylon.Controls.Common.Cameras.IProperty})">
+            <summary>
+            Filters the properties for information.
+            </summary>
+            <param name="interfaceType">Type of the interface.</param>
+            <param name="properties">The properties.</param>
+            <returns>IList{IProperty}.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraPropertyFilter.Sort(System.Collections.Generic.IEnumerable{Basler.Pylon.Controls.Common.Cameras.IProperty},System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Sorts the properties in accordatce with defined order
+            </summary>
+            <param name="properties">Properties which will be sorted.</param>
+            <param name="propertiesOrder">Names of properties which will be used for sorting order.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraProvider">
+            <summary>
+            Provide camera list for consumers and actualize availability state of every camera in the list.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.ICameraProvider">
+            <summary>
+            Provide camera list for consumers and actualize availability state of every camera in the list.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.ICameraProvider.Actualize">
+            <summary>
+            Actualizes the camera list.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.ICameraProvider.Clear">
+            <summary>
+            Closes all cameras and clears the camera list.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.ICameraProvider.Cameras">
+            <summary>
+            List of cameras.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.ICameraProvider.IsAutoActualizationOn">
+            <summary>
+            Gets or sets a flag which defines if automatic actualization of camera list is on or off.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.ICameraProvider.AutoActualizePeriod">
+            <summary>
+            Gets or sets the period in milliseconds in which the camera list is refreshed.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.ICameraProvider.CameraListChanged">
+            <summary>
+            Fires after the camera list has been changed.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.ICameraProvider.CameraChanged">
+            <summary>
+            Fires when state of a camera in the list has been changed.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.ICameraProvider.CameraDisconnected">
+            <summary>
+            Fires when the camera has been removed.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Cameras.CameraProvider"/> class.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Cameras.CameraProvider"/> class and sets a flag defined if auto actualization is enabled.
+            </summary>
+            <param name="isAutoActualize">Turn on/off automatic actualization of the camera list.</param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Basler.Pylon.Controls.Common.Cameras.CameraProvider"/> class.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.Actualize">
+            <summary>
+            Actualizes the camera list.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.Clear">
+            <summary>
+            Closes all cameras and clears the camera list.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing">
+            <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
+            unmanaged resources.
+            </param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.CameraListChangedNotify">
+            <summary>
+            Send notification to subscribers if the camera list is changed.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.CameraDisconnectedNotify(Basler.Pylon.ICamera)">
+            <summary>
+            Send notification after camera is removed.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.CameraChangedNotify(Basler.Pylon.ICamera)">
+            <summary>
+            Send notification to subscribers if the camera state is changed.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.OnActualizationTimerTick(System.Object)">
+            <summary>
+            Fired in defined interval, actualize devices in device list, actualize available state of every device.
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.StartActualizationTimer">
+            <summary>
+            Starts actualization of the device list.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.StopActualizationTimer">
+            <summary>
+            Stops actualization of the device list.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.CameraProvider.OnCameraRemoved(System.Object,System.EventArgs)">
+            <summary>
+            Fires after camera is removed.
+            </summary>
+            <param name="sender">Sender of the event.</param>
+            <param name="e"><see cref="T:System.EventArgs"/></param>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.CameraProvider.IsAutoActualizationOn">
+            <summary>
+            Gets or sets a flag which defines if automatic actualization of camera list is on or off.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.CameraProvider.AutoActualizePeriod">
+            <summary>
+            Gets or sets the period in milliseconds in which the camera list is refreshed.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.CameraProvider.Cameras">
+            <summary>
+            List of cameras.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.CameraProvider.CameraListChanged">
+            <summary>
+            Fires when the camera list has been changed.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.CameraProvider.CameraDisconnected">
+            <summary>
+            Fires when the camera has been removed.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.CameraProvider.CameraChanged">
+            <summary>
+            Fires when state of a camera in the list has been changed.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.ICameraSource">
+            <summary>
+            Interface for device sources. Camera source provide access to the current camera 
+            and notifies if the current camera has changed.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.ICameraSource.Camera">
+            <summary>
+            Gets the camera device.
+            </summary>
+            <value>The camera.</value>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.ICameraSource.CameraChanged">
+            <summary>
+            Occurs when the <see cref="P:Basler.Pylon.Controls.Common.Cameras.ICameraSource.Camera"/> is changed.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.ImmediateCameraSource">
+            <summary>
+            The implementation of <see cref="T:Basler.Pylon.ICamera"/> that returns the camera passed into its constructor.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.ImmediateCameraSource.#ctor(Basler.Pylon.ICamera)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Cameras.ImmediateCameraSource"/> class.
+            </summary>
+            <param name="camera">The camera to be returned by this camera source.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="camera"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.ImmediateCameraSource.Camera">
+            <summary>
+            Gets the camera device.
+            </summary>
+            <value>The device.</value>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.ImmediateCameraSource.Basler#Pylon#Controls#Common#Cameras#ICameraSource#Camera">
+            <summary>
+            Gets the camera device.
+            </summary>
+            <value>The camera.</value>
+            <exception cref="T:System.NotSupportedException"><see cref="T:Basler.Pylon.Controls.Common.Cameras.ImmediateCameraSource"/> does not support changing the camera.</exception>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.ImmediateCameraSource.Basler#Pylon#Controls#Common#Cameras#ICameraSource#CameraChanged">
+            <summary>
+            Occurs when the <see cref="P:Basler.Pylon.Controls.Common.Cameras.ImmediateCameraSource.Camera"/> is changed.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncAdvancedParameterAccess.ContainsProperty(System.String)">
+            <summary>
+            Determines whether the specified name contains property.
+            </summary>
+            <param name="name">The name.</param>
+            <returns><see langword="true" /> if the specified name contains property; otherwise, <see langword="false" />.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncAdvancedParameterAccess.GetProperty(System.String)">
+            <summary>
+            Gets the property.
+            </summary>
+            <param name="name">The name.</param>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncAdvancedParameterAccess.GetPropertyOrDefault(System.String,System.String)">
+            <summary>
+            Gets the property value if the given property key exists, returns the default value otherwise.
+            </summary>
+            <returns>
+            Returns the property value if the given property key exists, returns the default value otherwise.
+            </returns>
+            <param name="key">The key of the property to look up. The comparison is case sensitive.</param><param name="defaultValue">The default value returned if the property key is not found.</param>
+            <remarks>
+            <para>
+            <b>Thread-Safety:</b>This method is synchronized with the source of the parameter collection if any.
+            </para>
+            <para>
+            <b>Error-Safety:</b> Can throw exceptions.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncAdvancedParameterAccess.SetProperty(System.String,System.String)">
+            <summary>
+            Sets the value for the property specified by the key.
+            </summary>
+            <param name="key">String containig the name of the property. You can use the <see cref="T:Basler.Pylon.AdvancedParameterAccessKey"/> class to get a list of possible values.</param><param name="value">String containig the value of the property to set.</param>
+            <remarks>
+            <para>
+            <b>Thread-Safety:</b>This method is synchronized with the source of the parameter collection if any.
+            </para>
+            <para>
+            <b>Error-Safety:</b> Can throw exceptions. Throws a System.ArgumentNullException if the passed <paramref name="key"/> is null.
+            Throws a System.NotSupportedException if writing the passed <paramref name="key"/> is not supported.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncAdvancedParameterAccess.Refresh">
+            <summary>
+            Invalidates all cached values.
+            </summary>
+            <remarks>
+            <para>
+            Some parameter values are cached, e.g. to minimize the communication overhead with a camera device.
+            You can call this method to force an invalidation of the cached values.
+            So on the next read of the parameter the value will be read from the source instead of returning a cached value.
+            This in turn raises a ParameterChanged event.
+            This method can be used to reread the value in the ParameterChanged event handler.
+            </para>
+            <para>
+            <b>Thread-Safety:</b>This method is synchronized with the source of the parameter collection if any.
+            </para>
+            <para>
+            <b>Error-Safety:</b>Can throw exceptions. Parameter event handlers can throw exceptions.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncAdvancedParameterAccess.GetLock">
+            <summary>
+            Advanced: Returns the object used to lock access to the parameter.
+            </summary>
+            <returns>Returns the object used to lock access to the parameter. If there is no lock object a null reference will be returned.</returns>
+            <remarks><para>
+            Returns the object used to lock access to the parameter.
+            This is an advanced function.
+              </para>
+              <para>
+            For each successful acquisition of the lock you must release the lock.
+            Failure to do so may result in lockups and indeterministic behavior of pylon objects.
+              </para>
+              <para>
+              <b>Thread-Safety:</b>This method thread safe</para>
+              <para>
+              <b>Error-Safety:</b>Does not throw exceptions.</para></remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncParameter.IsEmpty">
+            <summary>
+            Returns false if the parameter is a valid, existing parameter.
+            If a requested parameter does not exist in a parameter collection an empty parameter object will be returned to simplify handling.
+            An empty parameter is never readable or writable.
+            </summary>
+            <remarks>
+            <para>
+            <b>Thread-Safety:</b>This method is synchronized with the source of the parameter collection if any.
+            </para>
+            <para>
+            <b>Error-Safety:</b>Does not throw exceptions.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncParameter.FullName">
+            <summary>
+            Returns the full name of the parameter including path information.
+            </summary>
+            <returns>
+            Returns the full name of the parameter.
+            </returns>
+            <remarks>
+            <para>
+            <b>Thread-Safety:</b> This method is synchronized with source of the parameter collection if any.
+            </para>
+            <para>
+            <b>Error-Safety:</b> Does not throw exceptions.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.Open(System.Int32,Basler.Pylon.TimeoutHandling)">
+            <summary>
+            Tries to open a connection to the camera until timeout.
+            If the camera device is not available the method tries to access the camera until timeout.
+            </summary>
+            <param name="timeoutMs">The timeout in milliseconds.</param>
+            <param name="timeoutHandling">The action to perform when the functions exits with a timeout.</param>
+            <returns>Returns false if the camera cannot be found or opened.</returns>
+            <remarks>
+                <para>
+                    <list type="bullet">
+                        <item>If the camera is already open, the function returns successfully.</item>
+                        <item>
+                        If the camera device is not available, the method tries to rediscover the camera by enumerating all
+                        camera devices of the same type or by checking the accessiblity until timeout or disposal of the camera
+                        class.
+                        </item>
+                        <item>
+                        If the camera is not found the method returns or throws an exception depending on the
+                        <paramref name="timeoutHandling" /> parameter.
+                        </item>
+                        <item>
+                        Calls <see cref="M:Basler.Pylon.ICamera.Open" />) if the camera device has been found by enumeration
+                        and it is accessible (see
+                        <see cref="M:Basler.Pylon.CameraFinder.GetDeviceAccessibilityInfo(Basler.Pylon.ICameraInfo)" />).
+                        </item>
+                    </list>
+                </para>
+                <para>
+                <b>Thread-Safety:</b> This method is synchronized with the lock of the camera object.
+                </para>
+                <para>
+                <b>Error-Safety:</b> Can throw exceptions if the camera cannot be opened successfully or any of the event handlers
+                throw an exception.
+                </para>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.Open">
+            <summary>
+            Opens the camera object and establishes a connection to the camera device identified by
+            <see cref="T:Basler.Pylon.ICameraInfo" />.
+            </summary>
+            <returns>
+            Returns a reference to the opened camera.
+            </returns>
+            <remarks>
+            <list type="bullet">
+                <item>
+                If the Camera object is already open, nothing more is done.
+                </item>
+                <item>
+                The <see cref="E:Basler.Pylon.ICamera.CameraOpening" /> event is fired. The notification of event handlers stops
+                when
+                an event call triggers an exception.
+                </item>
+                <item>
+                If not already done, resources needed for accessing the camera device are allocated.
+                </item>
+                <item>
+                The connection to the camera device identified by <see cref="T:Basler.Pylon.ICameraInfo" /> is established.
+                </item>
+                <item>
+                The <see cref="E:Basler.Pylon.ICamera.CameraOpened" /> configuration event is fired if the camera object has been
+                opened successfully. The notification of event handlers stops when an event call triggers an exception.
+                </item>
+            </list>
+            <b>Postconditions</b>
+            <list type="bullet">
+                <item>
+                The Camera object is open.
+                </item>
+                <item>
+                A connection to the camera device identified by <see cref="T:Basler.Pylon.ICameraInfo" /> is established.
+                </item>
+            </list>
+            <para>
+            The Camera object is still valid after error.
+            Can throw exceptions.
+            Event callbacks may throw.
+            The Camera Object is closed with <see cref="M:Basler.Pylon.ICamera.Close" /> if any OnOpened event callback triggers an
+            exception.
+            If open fails the accessibility can be checked using
+            <see cref="M:Basler.Pylon.CameraFinder.GetDeviceAccessibilityInfo(Basler.Pylon.ICameraInfo)" />.
+            If the camera is not (<see cref="F:Basler.Pylon.DeviceAccessibilityInfo.NotReachable" />) or the accessibility is
+            unknown (
+            <see cref="F:Basler.Pylon.DeviceAccessibilityInfo.Unknown" />),
+            It is possible to try to rediscover the camera using <see cref="M:Basler.Pylon.ICamera.Rediscover" />.
+            </para>
+            This method is synchronized using the lock provided by GetLock().
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.Close">
+            <summary>
+            Closes the camera object and closes the connection to the camera device.
+            </summary>
+            <remarks>
+                <list type="bullet">
+                    <item>
+                    If the Camera object is already closed, nothing is done.
+                    </item>
+                    <item>
+                    If a grab is in progress, it is stopped by calling StopGrabbing() an all Stream Grabbers.
+                    </item>
+                    <item>
+                    The configuration event OnClose is fired. Possible exceptions from event calls are caught and ignored. All
+                    event handlers are notified.
+                    </item>
+                    <item>
+                    The connection to the camera device is closed.
+                    </item>
+                    <item>
+                    If resources needed for accessing the camera device may be deallocated, e.g. if the connection to the camera
+                    device has been lost while open.
+                    </item>
+                    <item>
+                    The configuration event OnClosed is fired. Possible exceptions from event calls are caught and ignored. All
+                    event handlers are notified.
+                    </item>
+                </list>
+                <para>
+                <b>Postconditions</b>
+                The Camera object and the connection to the camera device are closed.
+                </para>
+                <note>Does not throw exceptions. Possible exceptions are caught and ignored.</note>
+                <note>This method is synchronized using the lock provided by GetLock().</note>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.WaitForFrameTriggerReady(System.Int32,Basler.Pylon.TimeoutHandling)">
+            <summary>
+            Actively waits until the the camera is ready to accept a frame trigger.
+            </summary>
+            <remarks>
+            The implementation selects 'FrameTriggerWait' for the 'AcquisitionStatusSelector'
+            and waits until the 'AcquisitionStatus' is true.
+            If the above mentioned parameters do are not available and the SoftwareTrigger parameter is readable,
+            the implementation waits for SoftwareTrigger.IsDone().
+            The WaitForFrameTriggerReady method does not work for A600 Firewire cameras.
+            <param name="timeoutMs">The timeout in ms for active waiting.</param>
+            <param name="timeoutHandling">
+            If timeoutHandling equals TimeoutHandling_ThrowException, a timeout exception is thrown
+            on timeout.
+            </param>
+            <returns>
+            True if the camera can execute a frame trigger.
+            </returns>
+            <para />
+            <b>Preconditions</b>
+            The 'AcquisitionStatusSelector' parameter is writable and the 'AcquisitionStatus' parameter is readable or the
+            'SoftwareTrigger' parameter is readable.
+            This depends on the used camera model.
+            <para />
+            <note>Accessing the camera registers may fail. </note>
+            <note>This method is synchronized using the lock provided by GetLock(). </note>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.ExecuteSoftwareTrigger">
+            <summary>
+            Executes the software trigger command.
+            </summary>
+            <remarks>
+            The camera needs to be configured for software trigger mode.
+            Additionally, the camera needs to be ready to accept triggers.
+            When triggering a frame this can be checked using the WaitForFrameTriggerReady() method;
+            <note>
+            The application has to make sure that the correct trigger is selected
+            before calling ExecuteSoftwareTrigger().
+            This can be done via the camera's TriggerSelector node.
+            The <c>Configuration.SoftwareTrigger </c>
+            selects the correct trigger when the Instant Camera is opened.
+            </note>
+            <list type="bullet">
+                <item>
+                The grabbing is started on any stream grabber.
+                </item>
+                <item>
+                The camera device supports software trigger.
+                </item>
+                <item>
+                The software trigger is available.This depends on the configuration of the camera device.
+                </item>
+            </list>
+            <note>
+            Accessing the camera registers may fail.Throws an exception on timeout if <c>timeoutHandling</c> is
+            TimeoutHandling_ThrowException.
+            </note><note>This method is synchronized using the lock provided by GetLock(). </note>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.GetSfncVersion">
+            <summary>
+            Returns the SFNC version read from the camera node map.
+            </summary>
+            <remarks>
+            The SFNC version is read from the camera node map using the integer nodes
+            DeviceSFNCVersionMajor, DeviceSFNCVersionMinor, and DeviceSFNCVersionSubMinor.
+            <returns>
+            The SFNC version used by the camera device. The returned SFNC version is 0.0.0.0 (Pylon::Sfnc_VersionUndefined)
+            if no SFNC version information is provided by the camera device.
+            </returns>
+            <note>Can throw exceptions. </note><note>This method is synchronized using the lock provided by GetLock(). </note>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.CameraInfo">
+            <summary>
+            Gets or sets the camera information.
+            </summary>
+            <value>The camera information.</value>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.Parameters">
+            <summary>
+            Returns the parameter collection of the the Camera object.
+            </summary>
+            <remarks>
+            Single parameters are accessed using the index operator with a
+            key from a parameter list, e.g.
+            <code language="cpp">
+            camera.Parameters[PLCamera.Width].GetValue();
+            </code>
+            <b>The following Lists are usable:</b>
+            PLCamera
+            PLCameraObject
+            PLStreamGrabber
+            PLEventGrabber
+            PLTransportLayer
+            There can be more lists available.
+            <para />
+            <b>The following Paths are available:</b>
+            CameraDevice
+            CameraObject
+            EventGrabber
+            DeviceTransportLayer
+            StreamGrabber0 to StreamGrabberX
+            There can be more paths available, depending on the used device class.
+            <para />
+            The main parameter path is CameraDevice, see the documentation of ParameterCollection
+            for more information.
+            <returns>
+            Returns the parameter collection of the the Camera object.
+            </returns>
+            <note>This property is thread-safe.</note><note>Does not throw exceptions.</note>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.StreamGrabber">
+            <summary>
+            Returns the main stream grabber of the Camera object.
+            </summary>
+            <remarks>
+            The main stream grabber has index 0.
+            <returns>
+            Returns the main stream grabber of the Camera object.
+            </returns>
+            <note>Does not throw exceptions.</note><note>This property is thread-safe.</note>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.IsConnected">
+            <summary>
+            Returns true if the camera device is properly connected to the camera object while the camera object is open.
+            </summary>
+            <returns>
+            Returns true if the camera device is properly connected to the camera object while the camera object is open. Returns
+            false if the camera object is closed
+            </returns>
+            <remarks>
+            The connection to the camera device can be lost if it is physically disconnected from the PC.
+            <see cref="M:Basler.Pylon.ICamera.Rediscover" /> can be used to find the camera again after connection loss, e.g. if
+            the IP
+            adress has changed.
+            <note type="important">Does not throw exceptions.</note>
+            <note type="note">This method is synchronized using the lock provided by GetLock().</note>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCamera.IsOpen">
+            <summary>
+            Returns the open state of the Camera object.
+            </summary>
+            <returns>
+            Returns true if the Camera object is open.
+            </returns>
+            <remarks>
+                <note>Does not throw exceptions.</note>
+                <note>This method is synchronized using the lock provided by GetLock().</note>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraInfo.GetValueOrDefault(System.String,System.String)">
+            <summary>
+            Gets the property value if the given property key exists, returns the default value otherwise.
+            </summary>
+            <returns>
+            Returns the property value if the given property key exists, returns the default value otherwise.
+            </returns>
+            <param name="key">The key of the property to look up. The comparison is case sensitive.</param><param name="defaultValue">The default value returned if the property key is not found.</param>
+            <remarks>
+            <para>
+            <b>Thread-Safety:</b> This method is thread-safe.
+            </para>
+            <para>
+            <b>Error-Safety:</b> Throws a System.ArgumentNullException if the passed <paramref name="key"/> is null.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.DeviceFeatures210">
+            <summary>
+            The name of the abstract device providing SFNC 2.1.0 device features.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.DeviceFeatures151">
+            <summary>
+            The name of the abstract device providing SFNC 1.5.1 device features.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.TransportBufferFeatures100">
+            <summary>
+            The name of the abstract device providing GenTL SFNC 1.0.0 transport layer buffer features.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.TransportDataStreamFeatures100">
+            <summary>
+            The name of the abstract device providing GenTL SFNC 1.0.0 transport layer data stream features.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.TransportDeviceFeatures100">
+            <summary>
+            The name of the abstract device providing GenTL SFNC 1.0.0 transport layer device features.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.TransportInterfaceFeatures100">
+            <summary>
+            The name of the abstract device providing GenTL SFNC 1.0.0 transport layer interface features.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.TransportSystemFeatures100">
+            <summary>
+            The name of the abstract device providing GenTL SFNC 1.0.0 transport layer system features.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.Actualize">
+            <summary>
+            Actualizes the camera list.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.Clear">
+            <summary>
+            Closes all cameras and clears the camera list.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.Cameras">
+            <summary>
+            List of cameras.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.IsAutoActualizationOn">
+            <summary>
+            Gets or sets a flag which defines if automatic actualization of camera list is on or off.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.AutoActualizePeriod">
+            <summary>
+            Gets or sets the period in milliseconds in which the camera list is refreshed.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.CameraListChanged">
+            <summary>
+            Fires after the camera list has been changed.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.CameraChanged">
+            <summary>
+            Fires when state of a camera in the list has been changed.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCameraProvider.CameraDisconnected">
+            <summary>
+            Fires when the camera has been removed.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCommandParameter.Execute">
+            <summary>
+            Executes the command and returns immediatly
+            </summary>
+            <remarks><para>
+              <b>Preconditions:</b>
+              <br />
+              <list type="bullet">
+              <item>The parameter must be writable.</item>
+              </list>
+              </para>
+              <para>
+              <b>Thread-Safety:</b> This method is synchronized with the source of the parameter collection if any.</para>
+              <para>
+              <b>Error-Safety:</b> Can throw exceptions, if the parameter is not writable or accessing the camera failed.</para></remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncCommandParameter.IsExecuting">
+            <summary>
+            Returns the executionstatus of the command.
+            </summary>
+            <returns>
+            Returns true if the command is currently executing, otherwise false is returned.
+            </returns>
+            <remarks>
+            <para>
+            <b>Thread-Safety:</b> This method is synchronized with the source of the parameter collection if any.
+            </para>
+            <para>
+            <b>Error-Safety:</b> Can throw exceptions, if accessing the camera failed.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncEnumParameter.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>
+            A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncEnumParameter.CanSetValue(System.String)">
+            <summary>
+            Checks to see if a the passed value can be set.
+            </summary>
+            <param name="value">The value check.</param>
+            <returns>
+            Returns true if the parameter is a valid value. Returns false if the parameter is not writable.
+            </returns>
+            <remarks>
+            <para>
+            <b>Thread-Safety:</b> This method is synchronized with the source of the parameter collection if any.
+            </para>
+            <para>
+            <b>Error-Safety:</b> Does not throw exceptions.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncEnumParameter.SetValue(System.String)">
+            <summary>
+            Sets the provided value.
+            </summary>
+            <param name="value">The value to set.</param>
+            <remarks><para>
+              <b>Preconditions:</b>
+              <br />
+              <list type="bullet">
+              <item>The parameter must be writable.</item>
+              <item>The value must be <see cref="M:Basler.Pylon.IEnumParameter.CanSetValue(System.String)">contained</see> in the set of settable enumeration values.</item>
+              </list>
+              </para>
+              <para>
+              <b>Thread-Safety:</b> This method is synchronized with the source of the parameter collection if any.</para>
+              <para>
+              <b>Error-Safety:</b> Can throw exceptions, if the parameter is not writable, the value is not valid or writing the value fails.</para></remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncEnumParameter.GetAllValues">
+            <summary>
+            Gets a list of all values of the enumeration including the values that are currently not settable.
+            </summary>
+            <returns>Returns a list of all values of the enumeration including the values that are currently not settable.</returns>
+            <remarks><para>
+              <b>Thread-Safety:</b> This method is synchronized with the source of the parameter collection if any.</para>
+              <para>
+              <b>Error-Safety:</b> Can throw exceptions.</para></remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncEnumParameter.GetValue">
+            <summary>
+            Gets the current parameter value.
+            </summary>
+            <returns>Returns the current parameter value.</returns>
+            <remarks><para>
+              <b>Preconditions:</b> The parameter must be readable.</para>
+              <para>
+              <b>Thread-Safety:</b> This method is synchronized with the source of the parameter collection if any.</para>
+              <para>
+              <b>Error-Safety:</b> Can throw exceptions, if the parameter is not readable or if reading the value fails.</para></remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncEnumParameter.GetAdvancedValueProperties(System.String)">
+            <summary>
+            Returns the advanced access to properties of an enum value.
+            </summary>
+            <param name="value">The value to look up.</param>
+            <returns>
+            Returns the advanced access to properties of an enum value.
+            </returns>
+            <remarks>
+            <para>
+            <b>Preconditions:</b><br/>
+            <list type="bullet">
+            <item>
+            The parameter must be readable.
+            </item>
+            <item>
+            The value must be contained in the set of <see cref="M:Basler.Pylon.IEnumParameter.GetAllValues">of all enumeration values</see>.
+            </item>
+            </list>
+            </para>
+            <para>
+            <b>Thread-Safety:</b> This method is synchronized with the source of the parameter collection, if any.
+            </para>
+            <para>
+            <b>Error-Safety:</b> Can throw exceptions if the parameter is not readable or the value is not valid.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncEnumParameter.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>
+            An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncParameterCollection.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>
+            A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncParameterCollection.Refresh">
+            <summary>
+            Advanced: Invalidates all cached values for all parameters, see <see cref="M:Basler.Pylon.IAdvancedParameterAccess.Refresh"/> for more information.
+            </summary>
+            <remarks>
+            <para>
+            <b>Thread-Safety:</b> This method is synchronized with the source of the parameter collection.
+            </para>
+            <para>
+            <b>Error-Safety:</b> Can throw exceptions.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncParameterCollection.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>
+            An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Sfnc.SfncStringParameter.GetMaxLength">
+            <summary>
+            Gets the maximum length of the string parameter.
+            </summary>
+            <returns>
+            Returns maxiumum number of characters the string parameter supports.
+            </returns>
+            <remarks>
+            <para>
+            <b>Preconditions:</b> The parameter must be readable.
+            </para>
+            <para>
+            <b>Thread-Safety:</b> This method is synchronized with the source of the parameter collection if any.
+            </para>
+            <para>
+            <b>Error-Safety:</b> Can throw exceptions, if the parameter is not readable or if reading the value fails.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterRelationType">
+            <summary>
+            Indicated parameter relation type.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterRelationType.Unsupported">
+            <summary>
+            The parameter is unsupported.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterRelationType.Leaf">
+            <summary>
+            The parameter is a leaf.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterRelationType.Category">
+            <summary>
+            The parameter is a category.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterRelationType.Selector">
+            <summary>
+            The parameter is a selector.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Helpers.CameraIconNameList">
+            <summary>
+            Defines camera icons.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.CameraIconNameList.GetIconNameForCamera(Basler.Pylon.Controls.Common.Cameras.CameraSeries,Basler.Pylon.Controls.Common.Cameras.CameraState)">
+            <summary>
+            Gets camera icon name by camera series and state.
+            </summary>
+            <param name="series">Camera series.</param>
+            <param name="state">Camera state.</param>
+            <returns>Name of the icon.</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Helpers.MathExtentions">
+            <summary>
+            Extension class contains different kinds of math operations.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.MathExtentions.RoundDown(System.Int64,System.Int64)">
+            <summary>
+            Rounds the number up to the nearest multiple.
+            </summary>
+            <param name="this">The number to which rounding is applied.</param>
+            <param name="multiple">Multiple.</param>
+            <returns>Rounded number.</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Helpers.ResourceManagerExtension">
+            <summary>
+            Extension class for ResourceManager.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.ResourceManagerExtension.GetString(System.Resources.ResourceManager,System.String,System.Boolean)">
+            <summary>
+            Looks up a resource value for a particular name.
+            Returns null if the resource wasn't found.
+            </summary>
+            <param name="resManager">The ResourceManager itself.</param>
+            <param name="key">Key of the resource.</param>
+            <param name="isIgnoreCase">The flag defined if case sensitive look up is used.</param>
+            <returns>The found resource or null.</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Helpers.NumberPrefixFormatter">
+            <summary>
+            Double numbers formatter.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.NumberPrefixFormatter.GetInfo(System.Double,System.Int32)">
+            <summary>
+            Gets the prefix information.
+            </summary>
+            <param name="amount">The amount.</param>
+            <param name="decimals">The decimals.</param>
+            <returns>Prefix information.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.NumberPrefixFormatter.GetFormattedAmount(System.Double,System.Int32)">
+            <summary>
+            Gets the formatted amount.
+            </summary>
+            <param name="amount">The amount.</param>
+            <param name="decimals">The decimals.</param>
+            <returns>Formatted amount.</returns>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Helpers.NumberPrefixFormatter.NumberPrefixInfoList">
+            <summary>
+            Gets the number prefix information list.
+            </summary>
+            <value>The number prefix information list.</value>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Helpers.NumberPrefixInfo">
+            <summary>
+            Contains format information.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.NumberPrefixInfo.Clone">
+            <summary>
+            Creates a new object that is a copy of the current instance.
+            </summary>
+            <returns>A new object that is a copy of this instance.</returns>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Helpers.NumberPrefixInfo.Symbol">
+            <summary>
+            Gets or sets the symbol.
+            </summary>
+            <value>The symbol.</value>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Helpers.NumberPrefixInfo.FormatExample">
+            <summary>
+            Gets or sets the format example.
+            </summary>
+            <value>The format example.</value>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Helpers.NumberPrefixInfo.Prefix">
+            <summary>
+            Gets or sets the prefix.
+            </summary>
+            <value>The prefix.</value>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Helpers.NumberPrefixInfo.ZeroLength">
+            <summary>
+            Gets or sets the length of the zero.
+            </summary>
+            <value>The length of the zero.</value>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Helpers.NumberPrefixInfo.ShortScaleName">
+            <summary>
+            Gets or sets the short name of the scale.
+            </summary>
+            <value>The short name of the scale.</value>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Helpers.NumberPrefixInfo.LongScaleName">
+            <summary>
+            Gets or sets the long name of the scale.
+            </summary>
+            <value>The long name of the scale.</value>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Helpers.NumberPrefixInfo.AmountWithPrefix">
+            <summary>
+            Gets or sets the amount with prefix.
+            </summary>
+            <value>The amount with prefix.</value>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.ImageProcessing.CircularBufferProvider.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.ImageProcessing.PylonImage.#ctor(System.Object,System.Int32,System.Int32,System.Int32,Basler.Pylon.PixelType,Basler.Pylon.ImageOrientation)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Object" /> class.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.ImageProcessing.SimpleBufferProvider.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.CanBeNullAttribute">
+            <summary>
+            Indicates that the value of the marked element could be <c>null</c> sometimes,
+            so the check for <c>null</c> is necessary before its usage
+            </summary>
+            <example><code>
+            [CanBeNull] public object Test() { return null; }
+            public void UseTest() {
+              var p = Test();
+              var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
+            }
+            </code></example>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.NotNullAttribute">
+            <summary>
+            Indicates that the value of the marked element could never be <c>null</c>
+            </summary>
+            <example><code>
+            [NotNull] public object Foo() {
+              return null; // Warning: Possible 'null' assignment
+            }
+            </code></example>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.StringFormatMethodAttribute">
+            <summary>
+            Indicates that the marked method builds string by format pattern and (optional) arguments.
+            Parameter, which contains format string, should be given in constructor. The format string
+            should be in <see cref="M:System.String.Format(System.IFormatProvider,System.String,System.Object[])"/>-like form
+            </summary>
+            <example><code>
+            [StringFormatMethod("message")]
+            public void ShowError(string message, params object[] args) { /* do something */ }
+            public void Foo() {
+              ShowError("Failed: {0}"); // Warning: Non-existing argument in format string
+            }
+            </code></example>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Internal.StringFormatMethodAttribute.#ctor(System.String)">
+            <param name="formatParameterName">
+            Specifies which parameter of an annotated method should be treated as format-string
+            </param>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.InvokerParameterNameAttribute">
+            <summary>
+            Indicates that the function argument should be string literal and match one
+            of the parameters of the caller function. For example, ReSharper annotates
+            the parameter of <see cref="T:System.ArgumentNullException"/>
+            </summary>
+            <example><code>
+            public void Foo(string param) {
+              if (param == null)
+                throw new ArgumentNullException("par"); // Warning: Cannot resolve symbol
+            }
+            </code></example>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.NotifyPropertyChangedInvocatorAttribute">
+             <summary>
+             Indicates that the method is contained in a type that implements
+             <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> interface
+             and this method is used to notify that some property value changed
+             </summary>
+             <remarks>
+             The method should be non-static and conform to one of the supported signatures:
+             <list>
+             <item><c>NotifyChanged(string)</c></item>
+             <item><c>NotifyChanged(params string[])</c></item>
+             <item><c>NotifyChanged{T}(Expression{Func{T}})</c></item>
+             <item><c>NotifyChanged{T,U}(Expression{Func{T,U}})</c></item>
+             <item><c>SetProperty{T}(ref T, T, string)</c></item>
+             </list>
+             </remarks>
+             <example><code>
+             public class Foo : INotifyPropertyChanged {
+               public event PropertyChangedEventHandler PropertyChanged;
+               [NotifyPropertyChangedInvocator]
+               protected virtual void NotifyChanged(string propertyName) { ... }
+            
+               private string _name;
+               public string Name {
+                 get { return _name; }
+                 set { _name = value; NotifyChanged("LastName"); /* Warning */ }
+               }
+             }
+             </code>
+             Examples of generated notifications:
+             <list>
+             <item><c>NotifyChanged("Property")</c></item>
+             <item><c>NotifyChanged(() =&gt; Property)</c></item>
+             <item><c>NotifyChanged((VM x) =&gt; x.Property)</c></item>
+             <item><c>SetProperty(ref myField, value, "Property")</c></item>
+             </list>
+             </example>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.ContractAnnotationAttribute">
+            <summary>
+            Describes dependency between method input and output
+            </summary>
+            <syntax>
+            <p>Function Definition Table syntax:</p>
+            <list>
+            <item>FDT      ::= FDTRow [;FDTRow]*</item>
+            <item>FDTRow   ::= Input =&gt; Output | Output &lt;= Input</item>
+            <item>Input    ::= ParameterName: Value [, Input]*</item>
+            <item>Output   ::= [ParameterName: Value]* {halt|stop|void|nothing|Value}</item>
+            <item>Value    ::= true | false | null | notnull | canbenull</item>
+            </list>
+            If method has single input parameter, it's name could be omitted.<br/>
+            Using <c>halt</c> (or <c>void</c>/<c>nothing</c>, which is the same)
+            for method output means that the methods doesn't return normally.<br/>
+            <c>canbenull</c> annotation is only applicable for output parameters.<br/>
+            You can use multiple <c>[ContractAnnotation]</c> for each FDT row,
+            or use single attribute with rows separated by semicolon.<br/>
+            </syntax>
+            <examples><list>
+            <item><code>
+            [ContractAnnotation("=> halt")]
+            public void TerminationMethod()
+            </code></item>
+            <item><code>
+            [ContractAnnotation("halt &lt;= condition: false")]
+            public void Assert(bool condition, string text) // regular assertion method
+            </code></item>
+            <item><code>
+            [ContractAnnotation("s:null => true")]
+            public bool IsNullOrEmpty(string s) // string.IsNullOrEmpty()
+            </code></item>
+            <item><code>
+            // A method that returns null if the parameter is null, and not null if the parameter is not null
+            [ContractAnnotation("null => null; notnull => notnull")]
+            public object Transform(object data) 
+            </code></item>
+            <item><code>
+            [ContractAnnotation("s:null=>false; =>true,result:notnull; =>false, result:null")]
+            public bool TryParse(string s, out Person result)
+            </code></item>
+            </list></examples>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.LocalizationRequiredAttribute">
+            <summary>
+            Indicates that marked element should be localized or not
+            </summary>
+            <example><code>
+            [LocalizationRequiredAttribute(true)]
+            public class Foo {
+              private string str = "my string"; // Warning: Localizable string
+            }
+            </code></example>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.CannotApplyEqualityOperatorAttribute">
+            <summary>
+            Indicates that the value of the marked type (or its derivatives)
+            cannot be compared using '==' or '!=' operators and <c>Equals()</c>
+            should be used instead. However, using '==' or '!=' for comparison
+            with <c>null</c> is always permitted.
+            </summary>
+            <example><code>
+            [CannotApplyEqualityOperator]
+            class NoEquality { }
+            class UsesNoEquality {
+              public void Test() {
+                var ca1 = new NoEquality();
+                var ca2 = new NoEquality();
+                if (ca1 != null) { // OK
+                  bool condition = ca1 == ca2; // Warning
+                }
+              }
+            }
+            </code></example>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.BaseTypeRequiredAttribute">
+            <summary>
+            When applied to a target attribute, specifies a requirement for any type marked
+            with the target attribute to implement or inherit specific type or types.
+            </summary>
+            <example><code>
+            [BaseTypeRequired(typeof(IComponent)] // Specify requirement
+            public class ComponentAttribute : Attribute { }
+            [Component] // ComponentAttribute requires implementing IComponent interface
+            public class MyComponent : IComponent { }
+            </code></example>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.UsedImplicitlyAttribute">
+            <summary>
+            Indicates that the marked symbol is used implicitly
+            (e.g. via reflection, in external library), so this symbol
+            will not be marked as unused (as well as by other usage inspections)
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.MeansImplicitUseAttribute">
+            <summary>
+            Should be used on attributes and causes ReSharper
+            to not mark symbols marked with such attributes as unused
+            (as well as by other usage inspections)
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Internal.ImplicitUseKindFlags.Access">
+            <summary>Only entity marked with attribute considered used</summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Internal.ImplicitUseKindFlags.Assign">
+            <summary>Indicates implicit assignment to a member</summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Internal.ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature">
+            <summary>
+            Indicates implicit instantiation of a type with fixed constructor signature.
+            That means any unused constructor parameters won't be reported as such.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Internal.ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature">
+            <summary>Indicates implicit instantiation of a type</summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.ImplicitUseTargetFlags">
+            <summary>
+            Specify what is considered used implicitly
+            when marked with <see cref="T:Basler.Pylon.Controls.Common.Internal.MeansImplicitUseAttribute"/>
+            or <see cref="T:Basler.Pylon.Controls.Common.Internal.UsedImplicitlyAttribute"/>
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Internal.ImplicitUseTargetFlags.Members">
+            <summary>Members of entity marked with attribute are considered used</summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Internal.ImplicitUseTargetFlags.WithMembers">
+            <summary>Entity marked with attribute and all its members considered used</summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.PublicAPIAttribute">
+            <summary>
+            This attribute is intended to mark publicly available API
+            which should not be removed and so is treated as used
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.InstantHandleAttribute">
+            <summary>
+            Tells code analysis engine if the parameter is completely handled
+            when the invoked method is on stack. If the parameter is a delegate,
+            indicates that delegate is executed while the method is executed.
+            If the parameter is an enumerable, indicates that it is enumerated
+            while the method is executed
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.PureAttribute">
+            <summary>
+            Indicates that a method does not make any observable state changes.
+            The same as <c>System.Diagnostics.Contracts.PureAttribute</c>
+            </summary>
+            <example><code>
+            [Pure] private int Multiply(int x, int y) { return x * y; }
+            public void Foo() {
+              const int a = 2, b = 2;
+              Multiply(a, b); // Waring: Return value of pure method is not used
+            }
+            </code></example>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.PathReferenceAttribute">
+            <summary>
+            Indicates that a parameter is a path to a file or a folder
+            within a web project. Path can be relative or absolute,
+            starting from web root (~)
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcActionAttribute">
+            <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+            is an MVC action. If applied to a method, the MVC action name is calculated
+            implicitly from the context. Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcAreaAttribute">
+            <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC area.
+            Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcControllerAttribute">
+            <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that
+            the parameter is an MVC controller. If applied to a method,
+            the MVC controller name is calculated implicitly from the context.
+            Use this attribute for custom wrappers similar to 
+            <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String, String)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcMasterAttribute">
+            <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC Master.
+            Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Controller.View(String, String)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcModelTypeAttribute">
+            <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC model type.
+            Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Controller.View(String, Object)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcPartialViewAttribute">
+            <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that
+            the parameter is an MVC partial view. If applied to a method,
+            the MVC partial view name is calculated implicitly from the context.
+            Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Html.RenderPartialExtensions.RenderPartial(HtmlHelper, String)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcSupressViewErrorAttribute">
+            <summary>
+            ASP.NET MVC attribute. Allows disabling all inspections
+            for MVC views within a class or a method.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcDisplayTemplateAttribute">
+            <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC display template.
+            Use this attribute for custom wrappers similar to 
+            <c>System.Web.Mvc.Html.DisplayExtensions.DisplayForModel(HtmlHelper, String)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcEditorTemplateAttribute">
+            <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC editor template.
+            Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Html.EditorExtensions.EditorForModel(HtmlHelper, String)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcTemplateAttribute">
+            <summary>
+            ASP.NET MVC attribute. Indicates that a parameter is an MVC template.
+            Use this attribute for custom wrappers similar to
+            <c>System.ComponentModel.DataAnnotations.UIHintAttribute(System.String)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcViewAttribute">
+            <summary>
+            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+            is an MVC view. If applied to a method, the MVC view name is calculated implicitly
+            from the context. Use this attribute for custom wrappers similar to
+            <c>System.Web.Mvc.Controller.View(Object)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.AspMvcActionSelectorAttribute">
+            <summary>
+            ASP.NET MVC attribute. When applied to a parameter of an attribute,
+            indicates that this parameter is an MVC action name
+            </summary>
+            <example><code>
+            [ActionName("Foo")]
+            public ActionResult Login(string returnUrl) {
+              ViewBag.ReturnUrl = Url.Action("Foo"); // OK
+              return RedirectToAction("Bar"); // Error: Cannot resolve action
+            }
+            </code></example>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.RazorSectionAttribute">
+            <summary>
+            Razor attribute. Indicates that a parameter or a method is a Razor section.
+            Use this attribute for custom wrappers similar to 
+            <c>System.Web.WebPages.WebPageBase.RenderSection(String)</c>
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.EnumImagePathAttribute">
+            <summary>
+            Attribute class.
+            </summary>
+            <remarks>Provide image file name for the specific enumeration.</remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Internal.EnumImagePathAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the  <see cref="T:Basler.Pylon.Controls.Common.Internal.EnumImagePathAttribute"/> class.
+            </summary>
+            <param name="imageFileName">Name of the image file.</param>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Internal.EnumImagePathAttribute.ImageFileName">
+            <summary>
+            Gets the name of the image file stored in this attribute.
+            </summary>
+            <value>The name of the image file stored in this attribute.</value>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.EnumImageResourceKeyAttribute">
+            <summary>
+            Attribute class.
+            </summary>
+            <remarks>Provide resource key of the image for the specific enumeration.</remarks>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Internal.EnumImageResourceKeyAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Internal.EnumImageResourceKeyAttribute"/> class.
+            </summary>
+            <param name="resourceKey">Key of the image resource.</param>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Internal.EnumImageResourceKeyAttribute.ResourceKey">
+            <summary>
+            Gets the name of the image resource stored in this attribute.
+            </summary>
+            <value>The name of the image resource stored in this attribute.</value>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Helpers.ParameterIconNameList">
+            <summary>
+            Defines parameter icon names.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.ParameterIconNameList.GetIconNameForParameter(Basler.Pylon.IParameter)">
+            <summary>
+            Gets icon name associated with camera parameter.
+            </summary>
+            <param name="parameter"><see cref="T:Basler.Pylon.IParameter"/></param>
+            <returns>Icon name.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.ParameterIconNameList.GetDefaultEnabledIconName">
+            <summary>
+            Gets default enabled icon name.
+            </summary>
+            <returns>Icon name.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.ParameterIconNameList.GetDefaultDisabledIconName">
+            <summary>
+            Gets default disabled icon name.
+            </summary>
+            <returns>Icon name.</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Constants.TextConstants">
+            <summary>
+            Contains different text constants.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.TextConstants.RootCategoryName">
+            <summary>
+            Name of root category contained in every parameter group.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.TextConstants.SaveFileFilter">
+            <summary>
+            The save file filter.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.TextConstants.SaveFileDateFormat">
+            <summary>
+            The file name date section format.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.TextConstants.SaveFileTimeFormat">
+            <summary>
+            The file name time section format.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.TextConstants.DesignTimeNodeTypePrefix">
+            <summary>
+            The design time node type prefix. Prefix for encoding node type in parameter path string.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.TextConstants.FilterCategoryName">
+            <summary>
+            The filter category name.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.TextConstants.DeviceResetCommandName">
+            <summary>
+            The reset device command name.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Constants.TextConstants.StreamGrabberCategorySuffix">
+            <summary>
+            The stream grabber category suffix.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraType">
+            <summary>
+            Represents device class enumeration.
+            </summary>
+            <remarks>Define camera connection interface type.</remarks>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraType.Other">
+            <summary>
+            Other interface.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraType.Usb">
+            <summary>
+            The USB 3.0 interface.
+             </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraType.GigE">
+            <summary>
+            The gigabit ethernet interface.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraType.CamLink">
+            <summary>
+            The Camera Link interface.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraSeries">
+            <summary>
+            Represents series of a camera.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Other">
+            <summary>
+            The unknown camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Emulator">
+            <summary>
+            The emulator camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.A100">
+            <summary>
+            The Ace camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.A600">
+            <summary>
+            The Ace camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Ace">
+            <summary>
+            The Ace camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Aviator">
+            <summary>
+            The Aviator camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Dart">
+            <summary>
+            The Dart camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Pilot">
+            <summary>
+            The Pilot camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Scout">
+            <summary>
+            The Scout camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Racer">
+            <summary>
+            The Racer camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Runner">
+            <summary>
+            The Runner camera series.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraSeries.Sprint">
+            <summary>
+            The Sprint camera series.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.CameraState">
+            <summary>
+            Represents states of a device.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraState.Unknown">
+            <summary>
+            The unknown state.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraState.Available">
+            <summary>
+            The available state.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraState.Blocked">
+            <summary>
+            The blocked state.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Cameras.CameraState.Opened">
+            <summary>
+            The opened state.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.ErrorHandling.DebugErrorHandler">
+            <summary>
+            Writes all errors to output window of Visual Studio.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.ErrorHandling.IErrorHandler">
+            <summary>
+            Interface for error handler.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.ErrorHandling.IErrorHandler.HandleError(System.Object,System.Exception)">
+            <summary>
+            Handles the error.
+            </summary>
+            <param name="source">The exception source.</param>
+            <param name="exception">The exception to handle.</param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.ErrorHandling.DebugErrorHandler.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.ErrorHandling.DebugErrorHandler"/> class.
+            </summary>
+            <param name="breakInDebugMode">
+            If set to <see langword="true"/> and the debugger is attached to the process, the handler will break into the debugger.
+            </param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.ErrorHandling.DebugErrorHandler.HandleError(System.Object,System.Exception)">
+            <summary>
+            Handles the error.
+            </summary>
+            <param name="source">The exception source.</param>
+            <param name="exception">The exception to handle.</param>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.ErrorHandling.ErrorHandlerHolder">
+            <summary>
+            Static class which holds error handler
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.ErrorHandling.ErrorHandlerHolder.HandleError(System.Object,System.Exception)">
+            <summary>
+            Handles an error.
+            </summary>
+            <param name="source">Source of exception.</param>
+            <param name="ex">Exception object.</param>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.ErrorHandling.ErrorHandlerHolder.Handler">
+            <summary>
+            Gets or sets error handler.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.ErrorHandling.IgnoreErrorHandler">
+            <summary>
+            Error handler that silently ignores all errors.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.ErrorHandling.IgnoreErrorHandler.HandleError(System.Object,System.Exception)">
+            <summary>
+            Handles the error.
+            </summary>
+            <param name="source">The exception source.</param>
+            <param name="exception">The exception to handle.</param>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Exceptions.ParameterTypeException">
+            <summary>
+            Represents errors that occur during creation of node with the handle for another parameter type.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Exceptions.PylonException">
+            <summary>
+            Base exception class for Basler.Pylon exceptions.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Exceptions.PylonException.#ctor(System.String,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Exceptions.PylonException"/> class.
+            </summary>
+            <param name="errorMessage">The error message that explains the reason for the exception.</param>
+            <param name="errorDetails">Information describing the conditions that caused the error.</param>
+            <param name="innerEx">The exception that is the cause of the current exception, 
+            or <see langword="null"/> if no inner exception is specified.
+            </param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Exceptions.PylonException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Exceptions.PylonException"/> class.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> 
+            that holds the serialized object data about the exception being thrown.
+            </param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> 
+            that contains contextual information about the source or destination.
+            </param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Exceptions.PylonException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+            <PermissionSet>
+              <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Read="*AllFiles*" PathDiscovery="*AllFiles*" />
+              <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="SerializationFormatter" />
+            </PermissionSet>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Exceptions.PylonException.ErrorDetails">
+            <summary>
+            Gets the conditions that caused the error.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Exceptions.ParameterTypeException.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Exceptions.ParameterTypeException"/> class.
+            </summary>
+            <param name="errorMessage">The error message that explains the reason for the exception.</param>
+            <param name="errorDetails">Information describing the conditions that caused the error.</param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Exceptions.ParameterTypeException.#ctor(System.String,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Exceptions.ParameterTypeException"/> class.
+            </summary>
+            <param name="errorMessage">The error message that explains the reason for the exception.</param>
+            <param name="errorDetails">Information describing the conditions that caused the error.</param>
+            <param name="innerEx">The exception that is the cause of the current exception, 
+            or <see langword="null"/> if no inner exception is specified.
+            </param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Exceptions.ParameterTypeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Exceptions.PylonException"/> class.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> 
+            that holds the serialized object data about the exception being thrown.
+            </param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> 
+            that contains contextual information about the source or destination.
+            </param>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Helpers.EnumDescriptionExtension">
+            <summary>
+            Provides extension methods for the enumerations.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.EnumDescriptionExtension.GetDescription(System.Enum)">
+            <summary>
+            Gets the <see cref="T:System.ComponentModel.DescriptionAttribute"/> of an <see cref="T:System.Enum"/>
+            type value.
+            </summary>
+            <param name="value">The <see cref="T:System.Enum"/> type value.</param>
+            <returns>
+            A string containing the text of the.
+            <see cref="T:System.ComponentModel.DescriptionAttribute"/>.
+            </returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.EnumDescriptionExtension.GetEnumFromDescription(System.String,System.Type)">
+            <summary>
+            Gets the enumeration from description.
+            </summary>
+            <param name="description">The description.</param>
+            <param name="enumType">Type of the enumeration.</param>
+            <returns>System.Int32.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.EnumDescriptionExtension.GetImageFileName(System.Enum)">
+            <summary>
+            Gets the name of the image file.
+            </summary>
+            <param name="value">The enumeration.</param>
+            <returns>The image file name.</returns>
+            <exception cref="T:System.ArgumentNullException">value</exception>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.EnumDescriptionExtension.GetImageResourceKey(System.Enum)">
+            <summary>
+            Gets the key of the image resource.
+            </summary>
+            <param name="value">The enumeration.</param>
+            <returns>The image resource key</returns>
+            <exception cref="T:System.ArgumentNullException">value</exception>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.EnumDescriptionExtension.ToDictionaryWithDescription(System.Type)">
+            <summary>
+            Converts the <see cref="T:System.Enum"/> type to an <see cref="T:System.Collections.IList"/>
+            compatible object.
+            </summary>
+            <param name="type">The <see cref="T:System.Enum"/> type.</param>
+            <returns>
+            An <see cref="T:System.Collections.IList"/> containing the enumerated
+            type value and description.
+            </returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.EnumDescriptionExtension.ToDictionaryWithDescription(System.Collections.Generic.IEnumerable{System.Enum})">
+            <summary>
+            Converts the <see cref="T:System.Enum"/> type to an <see cref="T:System.Collections.IList"/>
+            compatible object.
+            </summary>
+            <param name="list">List of <see cref="T:System.Enum"/> values.</param>
+            <returns>
+            An <see cref="T:System.Collections.IList"/> containing the enumerated
+            type value and description.
+            </returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.EnumDescriptionExtension.ToKeyValueWithDescription(System.Enum)">
+            <summary>
+            Converts enumeration value to the key-value pair containing enumeration value as <see cref="P:System.Collections.Generic.KeyValuePair`2.Key"/>
+            and description as <see cref="P:System.Collections.Generic.KeyValuePair`2.Value"/>.
+            </summary>
+            <param name="enum">The enumeration value.</param>
+            <returns>
+            The key-value pair containing enumeration value as <see cref="P:System.Collections.Generic.KeyValuePair`2.Key"/>
+            and description as <see cref="P:System.Collections.Generic.KeyValuePair`2.Value"/>.
+            </returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="enum"/> is null.</exception>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.EnumDescriptionExtension.ToListOfMembers``1">
+            <summary>
+            Returns the list of <typeparamref name="TEnum"/> enumeration members.
+            </summary>
+            <typeparam name="TEnum">The enumeration type.</typeparam>
+            <returns>The list of <see cref="T:System.Collections.Generic.IList`1"/> members.</returns>
+            <exception cref="T:System.ArgumentException">The type TEnum must be an enumeration.</exception>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType">
+            <summary>
+            Represents types of a parameter.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType.Integer">
+            <summary>
+            Represents an integer-valued parameter type. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType.Boolean">
+            <summary>
+            Represents a boolean-valued parameter type. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType.Float">
+            <summary>
+            Represents a floating point-valued parameter type. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType.Command">
+            <summary>
+            Represents a trigger (command) parameter type. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType.StringNode">
+            <summary>
+            Represents a string-valued parameter type. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType.Enumeration">
+            <summary>
+            Represents an enumeration-valued parameter type. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType.Unknown">
+            <summary>
+            Represents invalid parameter type.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility">
+            <summary>
+            Represents visibility level of the parameter.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility.Beginner">
+            <summary>
+            Visible to everyone.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility.Expert">
+            <summary>
+            Visible to experts or gurus only.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility.Guru">
+            <summary>
+            Visible to gurus only. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility.Invisible">
+            <summary>
+            Not visible at all. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility.Undefined">
+            <summary>
+            Visibility invalid.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode">
+            <summary>
+            Represents access mode of a parameter.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode.NotImplemented">
+            <summary>
+            Not implemented. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode.NotAvailable">
+            <summary>
+            Not available.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode.WriteOnly">
+            <summary>
+            Write Only. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode.ReadOnly">
+            <summary>
+            Read Only. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode.ReadWrite">
+            <summary>
+            Read and Write. 
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode.Undefined">
+            <summary>
+            Access mode invalid. 
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation">
+            <summary>
+            Represents parameter value representation.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation.Undefined">
+            <summary>
+            Undefined.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation.Linear">
+            <summary>
+            Linear behavior.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation.Logarithmic">
+            <summary>
+            Logarithmic behavior.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation.Boolean">
+            <summary>
+            Boolean value.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation.PureNumber">
+            <summary>
+            Decimal number.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation.HexNumber">
+            <summary>
+            Hexadecimal number.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Helpers.DelegatePredicateBuilder">
+            <summary>
+            Provides the efficient, dynamic composition of query predicates.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.DelegatePredicateBuilder.True``1">
+            <summary>
+            Creates a predicate that evaluates to true.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns>result predicate</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.DelegatePredicateBuilder.False``1">
+            <summary>
+            Creates a predicate that evaluates to false.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns>combined predicate</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.DelegatePredicateBuilder.Or``1(System.Func{``0,System.Boolean},System.Func{``0,System.Boolean})">
+            <summary>
+            Combines the first predicate with the second using the logical "or".
+            </summary>
+            <typeparam name="T">Type of object to which predicate will be applied.</typeparam>
+            <param name="expr1">the first predicate</param>
+            <param name="expr2">the second predicate</param>
+            <returns></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.DelegatePredicateBuilder.And``1(System.Func{``0,System.Boolean},System.Func{``0,System.Boolean})">
+            <summary>
+            Combines the first predicate with the second using the logical "and".
+            </summary>
+            <typeparam name="T">Type of object to which predicate will be applied.</typeparam>
+            <param name="expr1">the first predicate</param>
+            <param name="expr2">the second predicate</param>
+            <returns>combined predicate</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.DynamicScaleSliderFormula">
+            <summary>
+                <para>Provides functions for dynamic scale slider.</para>
+                <para>
+                    <strong>This class supports the infrastructure and is not intended to be used from the user code.</strong>
+                </para>
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Internal.DynamicScaleSliderFormula.OffsetToValue(System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+                <para>
+                Converts the slider offset to the current value.
+                </para>
+                <para>
+                    <strong>This class supports the infrastructure and is not intended to be used from the user code.</strong>
+                </para>
+            </summary>
+            <param name="offset">The offset.</param>
+            <param name="value">The value.</param>
+            <param name="step">The value change step.</param>
+            <param name="minimum">The minimum.</param>
+            <param name="maximum">The maximum.</param>
+            <returns>The value corresponding to the offset.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Internal.DynamicScaleSliderFormula.ValueToOffset(System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+                <para>Converts the value to the slider offset.</para>
+                <para>
+                    <strong>This class supports the infrastructure and is not intended to be used from the user code.</strong>
+                </para>
+            </summary>
+            <param name="currentValue">The current value.</param>
+            <param name="value">The value.</param>
+            <param name="step">The value change step.</param>
+            <param name="minimum">The minimum.</param>
+            <param name="maximum">The maximum.</param>
+            <returns>The offset corresponding to the value.</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Internal.DynamicScaleSliderFormula.ExponentParameters">
+            <summary>
+            Parameters for exponent: f(x) = a * exp(b * x) + d
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.IProperty">
+            <summary>
+            Provide property of an object.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.IProperty.Name">
+            <summary>
+            Gets the name of the property.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.IProperty.LocalizedName">
+            <summary>
+            Gets the localized name of the property.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.IProperty.Value">
+            <summary>
+            Gets the value of the property.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Parameters.EmptyParameter">
+            <summary>
+            Class EmptyParameter.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Parameters.IEmptyParameter">
+            <summary>
+            Empty parameter interface.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.IEmptyParameter.ParameterType">
+            <summary>
+            Gets parameter type of the parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.IEmptyParameter.ValueRepresentation">
+            <summary>
+            Gets value representation of the parameter.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.#ctor(Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType)">
+            <summary>
+            Initializes an instance of <see cref="T:Basler.Pylon.Controls.Common.Parameters.EmptyParameter"/> class.
+            </summary>
+            <param name="nodeType">
+                <see cref="!:Controls.Common.GenApiEnums.ParameterType"/>
+            </param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.#ctor(Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType,System.String)">
+            <summary>
+            Initializes an instance of <see cref="T:Basler.Pylon.Controls.Common.Parameters.EmptyParameter"/> class.
+            </summary>
+            <param name="nodeType">
+                <see cref="!:Controls.Common.GenApiEnums.ParameterType"/>
+            </param>
+            <param name="name">Name of the parameter.</param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.#ctor(Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType,System.String,Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation)">
+            <summary>
+            Initializes an instance of EmptyParameter class.
+            </summary>
+            <param name="nodeType">
+                <see cref="!:Controls.Common.GenApiEnums.ParameterType"/>
+            </param>
+            <param name="name">Name of the parameter.</param>
+            <param name="valueRepresentation">Representation of the value.</param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.ParseAndSetValue(System.String)">
+            <summary>
+            Parses the value as string and sets the value.
+            </summary>
+            <param name="val"></param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.ToString(System.IFormatProvider)">
+            <summary>
+            Returns the parameter value as string.
+            </summary>
+            <param name="formatProvider">Ignored.</param>
+            <returns>The parameter value as string.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.TryParseAndSetValue(System.String)">
+            <summary>
+            Tries parsing the value as string and tries setting the value.
+            </summary>
+            <param name="val">Parsing value.</param>
+            <returns>False if the value cannot be parsed or the value is out of bounds or setting the value fails.</returns>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.ParameterType">
+            <summary>
+            Gets the parameter type.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.ValueRepresentation">
+            <summary>
+            Gets the parameter value representation.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.Advanced">
+            <summary>
+            Returns advanced parameter settings if available.
+            </summary>
+            <value>The advanced.</value>
+            <returns>Returns advanced parameter settings. Returns null if no advanced parameter settings are available.</returns>
+            <remarks>
+                <para>
+                <b>Thread-Safety:</b> This method is synchronized with source of the parameter collection if any.
+                </para>
+                <para>
+                <b>Error-Safety:</b> Does not throw exceptions.
+                </para>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.IsEmpty">
+            <summary>
+            Returns false if the parameter is a valid, existing parameter.
+            If a requested parameter does not exist in a parameter collection an empty parameter object will be returned to
+            simplify handling.
+            An empty parameter is never readable or writable.
+            </summary>
+            <remarks>
+                <para>
+                <b>Thread-Safety:</b>This method is synchronized with the source of the parameter collection if any.
+                </para>
+                <para>
+                <b>Error-Safety:</b>Does not throw exceptions.
+                </para>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.IsReadable">
+            <summary>
+            Returns true if the parameter is readable.
+            </summary>
+            <value><see langword="true" /> if this instance is readable; otherwise, <see langword="false" />.</value>
+            <returns>Returns true if the parameter is readable.</returns>
+            <remarks>
+                <para>
+                <b>Thread-Safety:</b> This method is synchronized with source of the parameter collection if any.
+                </para>
+                <para>
+                <b>Error-Safety:</b> Does not throw exceptions.
+                </para>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.FullName">
+            <summary>
+            Returns the full name of the parameter including path information.
+            </summary>
+            <returns>
+            Returns the full name of the parameter.
+            </returns>
+            <remarks>
+                <para>
+                <b>Thread-Safety:</b> This method is synchronized with source of the parameter collection if any.
+                </para>
+                <para>
+                <b>Error-Safety:</b> Does not throw exceptions.
+                </para>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.IsWritable">
+            <summary>
+            Returns true if the parameter is writable.
+            </summary>
+            <value><see langword="true" /> if this instance is writable; otherwise, <see langword="false" />.</value>
+            <returns>Returns true if the parameter is writable.</returns>
+            <remarks>
+                <para>
+                <b>Thread-Safety:</b> This method is synchronized with source of the parameter collection if any.
+                </para>
+                <para>
+                <b>Error-Safety:</b> Does not throw exceptions.
+                </para>
+            </remarks>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.Name">
+            <summary>
+            Gets or sets name of the parameter.
+            </summary>
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.ParameterChanged">
+            <inheritdoc />
+        </member>
+        <member name="E:Basler.Pylon.Controls.Common.Parameters.EmptyParameter.ParameterValueChanged">
+            <inheritdoc />
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Helpers.ListExtensions">
+            <summary>
+            Extensions for <see cref="T:System.Collections.Generic.IList`1"/> and <see cref="T:System.Collections.Generic.List`1"/> types.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.ListExtensions.RemoveRange``1(System.Collections.Generic.IList{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Removes the range of items form the list.
+            </summary>
+            <typeparam name="T">The type of list elements.</typeparam>
+            <param name="this">The list to remove the items from.</param>
+            <param name="itemsToRemove">The items to remove.</param>
+            <returns>The original list passed in <paramref name="this" />.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.ListExtensions.FindIndex``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>Finds the index of the first item matching an expression in an enumerable.</summary>
+            <param name="items">The enumerable to search.</param>
+            <param name="predicate">The expression to test the items against.</param>
+            <returns>The index of the first matching item, or -1 if no items match.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Helpers.ListExtensions.IndexOf``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>Finds the index of the first occurrence of an item in an enumerable.</summary>
+            <param name="items">The enumerable to search.</param>
+            <param name="item">The item to find.</param>
+            <returns>The index of the first matching item, or -1 if the item was not found.</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Parameters.ParameterExtension">
+            <summary>
+            Extension class for <see cref="T:Basler.Pylon.IParameter"/>
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.GetParameterType(Basler.Pylon.IParameter)">
+            <summary>
+            Gets a <see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType"/> value defined a type of <see cref="T:Basler.Pylon.IParameter"/>
+            </summary>
+            <returns><see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterType"/></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.GetParameterValueRepresentation(Basler.Pylon.IParameter)">
+            <summary>
+            Gets a <see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation"/> value defined representation of parameter value.
+            </summary>
+            <returns><see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation"/></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.GetDisplayName(Basler.Pylon.IParameter)">
+            <summary>
+            Gets a displayed name of the camera parameter.
+            </summary>
+            <returns><see cref="T:System.String"/></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.GetDescription(Basler.Pylon.IParameter)">
+            <summary>
+            Gets a description of the camera parameter.
+            </summary>
+            <returns><see cref="T:System.String"/></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.GetVisibility(Basler.Pylon.IParameter)">
+            <summary>
+            Gets a description of the camera parameter.
+            </summary>
+            <returns><see cref="T:System.String"/></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.GetAccessMode(Basler.Pylon.IParameter)">
+            <summary>
+            Gets an access mode of the camera parameter.
+            </summary>
+            <returns><see cref="T:System.String"/></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.ConvertFromAccessMode(Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode)">
+            <summary>
+            Converts an access mode of parameter from <see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode"/> format to string representation.
+            </summary>
+            <param name="mode"><see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode"/></param>
+            <returns>String representation of parameter access mode.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.ConvertFromValueRepresentation(Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation)">
+            <summary>
+            Converts an value representation of parameter from <see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation"/> format to string.
+            </summary>
+            <param name="representation"><see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation"/></param>
+            <returns>String value.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.ConvertToAccessMode(System.String)">
+            <summary>
+            Converts parameter access mode string to <see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode"/>
+            </summary>
+            <param name="mode">Parameter access mode string.</param>
+            <returns><see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterAccessMode"/></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.ConvertToVisibility(System.String)">
+            <summary>
+            Converts parameter visibility string to <see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility"/>.
+            </summary>
+            <param name="visibility">Parameter visibility string.</param>
+            <returns><see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility"/></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.ConvertFromVisibility(Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility)">
+            <summary>
+            Converts parameter visibility to string representation.
+            </summary>
+            <param name="visibility"><see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility"/>.</param>
+            <returns>String representation of <see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility"/>.</returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterExtension.ConvertToValueRepresentation(System.String)">
+            <summary>
+            Converts value representation string to <see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation"/>.
+            </summary>
+            <param name="representationString">Value representation string.</param>
+            <returns><see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterValueRepresentation"/>.</returns>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Parameters.ParameterNode">
+            <summary>
+            Wrapper of Pylon <see cref="T:Basler.Pylon.IParameter"/>.
+            </summary>
+        </member>
+        <member name="F:Basler.Pylon.Controls.Common.Parameters.ParameterNode.inDispose">
+            <summary>
+            The value indicating whether the instance is being disposed.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterNode.#ctor(Basler.Pylon.IParameter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Parameters.ParameterNode"/> class.
+            </summary>
+            <param name="parameter"></param>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterNode.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterNode.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing">
+            <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
+            unmanaged resources.
+            </param>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.ParameterNode.Name">
+            <summary>
+            Gets a name of the wrapped parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.ParameterNode.DisplayName">
+            <summary>
+            Gets a name of the wrapped parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.ParameterNode.Description">
+            <summary>
+            Gets a description of the wrapped parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.ParameterNode.Parameter">
+            <summary>
+            Gets the wrapped parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.ParameterNode.ParameterNodeType">
+            <summary>
+            Gets a type of patameter node.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.ParameterNode.ParameterRelation">
+            <summary>
+            Gets or sets the parameter relation.
+            </summary>
+            <value>The parameter relation.</value>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Parameters.ParameterNode.Children">
+            <summary>
+            Gets a list of the wrapped parameter children.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Parameters.ParameterNodeBuilder">
+            <summary>
+            Creates parameters hierarchy.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterNodeBuilder.Build(Basler.Pylon.ICamera,System.String,Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility)">
+            <summary>
+            Builds <see cref="T:Basler.Pylon.Controls.Common.Parameters.ParameterNode"/> with its children.
+            </summary>
+            <param name="camera"><see cref="T:Basler.Pylon.ICamera"/></param>
+            <param name="rootName">Name of the root parameter.</param>
+            <param name="requiredParameterVisibility"><see cref="T:Basler.Pylon.Controls.Common.ParameterPropertyEnums.ParameterVisibility"/></param>
+            <returns><see cref="T:Basler.Pylon.Controls.Common.Parameters.ParameterNode"/></returns>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Parameters.ParameterNodeBuilder.GetParameterNodeNames(Basler.Pylon.Controls.Common.Parameters.ParameterNode)">
+            <summary>
+            Gets the list of objects of the all parameter children. The key - parameter name, the value - parameter display name
+            </summary>
+            <param name="rootParameterNode">The root parameter.</param>
+            <returns>IList{KeyValuePair{System.StringSystem.String}}.</returns>
+            <exception cref="T:System.ArgumentNullException">rootParameterNode</exception>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.AboutBaslerYear">
+            <summary>
+              Looks up a localized string similar to © BASLER 2014.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.AboutCommunityDeveloperPreview">
+            <summary>
+              Looks up a localized string similar to COMMUNITY DEVELOPER PREVIEW.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.AboutWPFControlsSampleViewerV">
+            <summary>
+              Looks up a localized string similar to C# WPF CONTROLS SAMPLE VIEWER V.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.AutoRefreshListToggleButtonTooltipText">
+            <summary>
+              Looks up a localized string similar to Enable/disable automatical refreshing the list.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.BlockedStateToolTipText">
+            <summary>
+              Looks up a localized string similar to The camera is used by another application..
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.BooleanParameterName">
+            <summary>
+              Looks up a localized string similar to Boolean parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.CametaListerShowAdditionalInfo">
+            <summary>
+              Looks up a localized string similar to Additional information (Ctrl+F1).
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.CategoryCollapsedToolTipText">
+            <summary>
+              Looks up a localized string similar to Click to view the group content.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.CategoryExpandedToolTipText">
+            <summary>
+              Looks up a localized string similar to Click to hide the group content.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ClickToCloseCamera">
+            <summary>
+              Looks up a localized string similar to Click to close the camera.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ClickToOpenCamera">
+            <summary>
+              Looks up a localized string similar to Click to open the camera.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.CloseFilterCategoryButtonToolTip">
+             <summary>
+               Looks up a localized string similar to Click to hide
+            Filter section.
+             </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.CommandParameterName">
+            <summary>
+              Looks up a localized string similar to Command parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ConnectedCamerasNotFound">
+            <summary>
+              Looks up a localized string similar to No connected cameras found.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.CurrnetItemInSearchResultMessage">
+            <summary>
+              Looks up a localized string similar to {0} of {1}.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.DefaultFilterMessage">
+            <summary>
+              Looks up a localized string similar to Type parameter name into Search box to see it in this section. All parameters, which names contain the defined text, will be displayed here..
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.Device">
+            <summary>
+              Looks up a localized string similar to Device.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.DeviceExpanderToggleButtonTooltipTextCollapsed">
+            <summary>
+              Looks up a localized string similar to Click to show more information about the camera..
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.DeviceExpanderToggleButtonTooltipTextExpanded">
+            <summary>
+              Looks up a localized string similar to Click to hide additional information..
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.DeviceGUID">
+            <summary>
+              Looks up a localized string similar to Device GUID.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.DeviceListerRefreshListToolTipText">
+            <summary>
+              Looks up a localized string similar to Refresh the list.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.DoubleClickToOpenCamera">
+            <summary>
+              Looks up a localized string similar to Double-click to open the camera.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.EmptyDescriptionText">
+            <summary>
+              Looks up a localized string similar to Select parameter to view it&apos;s description.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.EmptySearchResultMessage">
+            <summary>
+              Looks up a localized string similar to No parameters with name containing &apos;{0}&apos; found.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.EmptySearchText">
+            <summary>
+              Looks up a localized string similar to Search cameras.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.EnumParameterName">
+            <summary>
+              Looks up a localized string similar to Enum parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.FilterCategoryDisplayName">
+            <summary>
+              Looks up a localized string similar to Filter&lt;{0}&gt;.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.FilterToolTipPrefix">
+            <summary>
+              Looks up a localized string similar to Path:.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.FloatParameterName">
+            <summary>
+              Looks up a localized string similar to Float parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.GenericParameterName">
+            <summary>
+              Looks up a localized string similar to Feature.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.IntegerParameterName">
+            <summary>
+              Looks up a localized string similar to Integer parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.Interface">
+            <summary>
+              Looks up a localized string similar to interface.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.InterfaceCamLink">
+            <summary>
+              Looks up a localized string similar to CamLink.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.InterfaceEthernet">
+            <summary>
+              Looks up a localized string similar to Gigabit Ethernet.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.InterfaceIEEE1394">
+            <summary>
+              Looks up a localized string similar to IEEE1394.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.InterfaceUnspecified">
+            <summary>
+              Looks up a localized string similar to Unspecified.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.InterfaceUSB3">
+            <summary>
+              Looks up a localized string similar to USB 3.0.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.IPAddress">
+            <summary>
+              Looks up a localized string similar to IP Address.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.MACAddress">
+            <summary>
+              Looks up a localized string similar to MAC Address.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ModelName">
+            <summary>
+              Looks up a localized string similar to Model Name.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.NextSearchButtonToolTip">
+            <summary>
+              Looks up a localized string similar to Go to the next result..
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.OpenStateToolTipText">
+            <summary>
+              Looks up a localized string similar to The camera is opened.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ParameterNotFound">
+            <summary>
+              Looks up a localized string similar to No parameters available.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.PinUnpinCameraListerPanel">
+            <summary>
+              Looks up a localized string similar to Pin/unpin the panel.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.PollingButtonToolTipText">
+            <summary>
+              Looks up a localized string similar to Refresh the properties list and their values automatically.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.PrevSearchButtonToolTip">
+            <summary>
+              Looks up a localized string similar to Go to the previous result..
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.RefreshButtonToolTipText">
+            <summary>
+              Looks up a localized string similar to Refresh the properties list.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.SearchResultMessage">
+            <summary>
+              Looks up a localized string similar to {0} result(s) found.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.SearchTextBoxToolTip">
+             <summary>
+               Looks up a localized string similar to Type the name of a parameter
+            to find it in the Parameter Tree..
+             </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.SelectorHeaderMessage">
+            <summary>
+              Looks up a localized string similar to Contains Selector with {0} Parameters.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.SerialNumber">
+            <summary>
+              Looks up a localized string similar to Serial Number.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ShowAllResultsToggleSwitchOffToolTip">
+             <summary>
+               Looks up a localized string similar to Toggle to see all search results
+            in a separate section (Filter)..
+             </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ShowAllResultsToggleSwitchOnToolTip">
+             <summary>
+               Looks up a localized string similar to Toggle to hide
+            Filter section..
+             </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ShowDescriptionButtonToolTipText">
+            <summary>
+              Looks up a localized string similar to Display the selected parameter description box.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ShowRecordRegionMenuItemText">
+            <summary>
+              Looks up a localized string similar to Show Record Buttons.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ShowSaveRegionMenuItemText">
+            <summary>
+              Looks up a localized string similar to Show Save Button.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ShowStreamRegionMenuItemText">
+            <summary>
+              Looks up a localized string similar to Show Stream Buttons.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ShowZoomRegionMenuItemText">
+            <summary>
+              Looks up a localized string similar to Show Zoom Buttons.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.SpeedSupportBitmask">
+            <summary>
+              Looks up a localized string similar to Speed Support Bitmask.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.StringParameterName">
+            <summary>
+              Looks up a localized string similar to String parameter.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ToggleOffToolTipText">
+            <summary>
+              Looks up a localized string similar to Toggle to open the camera.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.ToggleOnToolTipText">
+            <summary>
+              Looks up a localized string similar to Toggle to close the camera.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.TransportLayer">
+            <summary>
+              Looks up a localized string similar to Transport Layer.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.UnknownStateToolTipText">
+            <summary>
+              Looks up a localized string similar to The camera has unknown state. Please refresh the camera list..
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.UserLevelSelectorTooltipText">
+            <summary>
+              Looks up a localized string similar to Select the user experience level to see the appropriate parameters in the list.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.Vendor">
+            <summary>
+              Looks up a localized string similar to vendor.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Properties.Resources.VendorName">
+            <summary>
+              Looks up a localized string similar to Vendor Name.
+            </summary>
+        </member>
+        <member name="T:Basler.Pylon.Controls.Common.Cameras.Property">
+            <summary>
+            Provide property of an object.
+            </summary>
+        </member>
+        <member name="M:Basler.Pylon.Controls.Common.Cameras.Property.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Basler.Pylon.Controls.Common.Cameras.Property"/> class.
+            </summary>
+            <param name="name">The name of the property.</param>
+            <param name="value">The value of a property.</param>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Property.Name">
+            <summary>
+            Gets or sets the name of the property.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Property.LocalizedName">
+            <summary>
+            Gets the localized name of the property.
+            </summary>
+        </member>
+        <member name="P:Basler.Pylon.Controls.Common.Cameras.Property.Value">
+            <summary>
+            Gets the value of the property.
+            </summary>
+        </member>
+    </members>
+</doc>

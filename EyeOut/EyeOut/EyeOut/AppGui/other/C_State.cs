@@ -18,7 +18,20 @@ namespace EyeOut
     }
     public enum e_stateMotor
     {
-        initializing = 0, ready = 1
+        [Description("Not initialized yet")]
+        initializing = 0, 
+        [Description("Shadow registers and motor structures initialized, no initial settings sent to motors")]
+        initializedInPc = 1, 
+        [Description("Initial settings sent to motors, motor ready to function")]
+        ready = 2
+    }
+
+    public enum e_stateWebCam
+    {
+        [Description("Not initialized yet")]
+        initializing = 0,
+        [Description("TimCam and webcamera capture is ready")]
+        ready = 1
     }
 
     public enum e_stateSPI
@@ -34,13 +47,16 @@ namespace EyeOut
     }
 
 
+
     public class C_State
     {
         //public static event EventHandler SpiChanged;
         
         public static e_stateProg prog;
         public static e_stateMotor mot;
+        public static e_stateWebCam cam;
         private static e_stateSPI spi;
+        
         //public bool spi_tryToConnect = true;
 
         public static event EventHandler SpiChanged;
@@ -62,6 +78,7 @@ namespace EyeOut
             prog = e_stateProg.started;
             mot = e_stateMotor.initializing;
             Spi = e_stateSPI.disconnected;
+            cam = e_stateWebCam.initializing;
         }
 
         public static void CLOSE_program()
@@ -90,6 +107,11 @@ namespace EyeOut
         public static bool FURTHER(e_stateMotor _comparedState)
         {
             return FURTHER((object)_comparedState, (object)mot);
+        }
+
+        public static bool FURTHER(e_stateWebCam _comparedState)
+        {
+            return FURTHER((object)_comparedState, (object)cam);
         }
 
         public static bool FURTHER(e_stateProg _comparedState)

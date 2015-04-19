@@ -1,4 +1,4 @@
-﻿<Window x:Class="EyeOut.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         
@@ -9,24 +9,14 @@
         
         xmlns:diagnostics="clr-namespace:System.Diagnostics;assembly=WindowsBase" 
         
+        xmlns:basler="http://schemas.baslerweb.com/2014/xaml/presentation" x:Class="EyeOut.MainWindow" 
+        
         Closing="Window_Closing" 
         Icon="Content\pic\eyeout.png"
         Title="EyeOut Telepresence 2015, Daniel Davidek" Height="730" Width="1300"
         
         Top="0" Left="70"
         >
-    <!--Closed="Window_Closed"-->
-
-
-    <Window.CommandBindings>
-        <CommandBinding Command="Help" 
-        CanExecute="CanExecute"
-        Executed="StartTelepresence" />
-    </Window.CommandBindings>
-
-    <Window.InputBindings>
-        <KeyBinding Command="Help" Key="T" Modifiers="Ctrl"/>
-    </Window.InputBindings>
 
 
     <!--instances of binding classes, styles definitions-->
@@ -36,7 +26,7 @@
 
         <!--Filtering and sorting of datagrid dgLog-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_log"  
-                              CollectionViewType="ListCollectionView"
+                              CollectionViewType="{x:Type ListCollectionView}"
                               Filter="CollectionViewSource_Filter">
             <CollectionViewSource.SortDescriptions>
                 <!-- Requires 'xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"' declaration. -->
@@ -47,15 +37,15 @@
 
         <!--cam datagrid-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_cam"  
-                              CollectionViewType="ListCollectionView"/>
+                              CollectionViewType="{x:Type ListCollectionView}"/>
 
         <!--about libraries-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_aboutLibraries"  
-                              CollectionViewType="ListCollectionView"/>
+                              CollectionViewType="{x:Type ListCollectionView}"/>
 
         <!--motorData-->
         <CollectionViewSource x:Key="ItemCollectionViewSource_motorData"  
-                              CollectionViewType="ListCollectionView">
+                              CollectionViewType="{x:Type ListCollectionView}">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="address" Direction="Ascending"/>
                 <scm:SortDescription PropertyName="letter_regByteType" Direction="Ascending"/>
@@ -98,6 +88,20 @@
         </ResourceDictionary>-->
     </Window.Resources>
 
+    <!--Closed="Window_Closed"-->
+
+
+    <Window.CommandBindings>
+        <CommandBinding Command="Help" 
+        CanExecute="CanExecute"
+        Executed="StartTelepresence" />
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+        <KeyBinding Command="Help" Key="T" Modifiers="Ctrl"/>
+    </Window.InputBindings>
+
+
     <Grid >
 
         <Grid.RowDefinitions>
@@ -106,7 +110,8 @@
             <RowDefinition Height="200"/>
         </Grid.RowDefinitions>
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
-        <TabControl x:Name="tcMain" Grid.Row="0" >
+        <TabControl x:Name="tcMain" Grid.Row="0" 
+                   SelectionChanged="tcMain_SelectionChanged">
             <TabItem Header="Dynamixel Motors" Background="Orange">
                 <!--<Grid Background="#FFE5E5E5">-->
                 <Grid Background="Orange">
@@ -122,37 +127,15 @@
                                 <GroupBox Header="Protocol" >
                                     <StackPanel>
                                         <Label Content="COM Port:"/>
-                                        <ComboBox Name="cbPort">
-                                            <ComboBox.SelectedValue>
-                                                <Binding Source="{StaticResource spi}" Path="PortName"/>
-                                            </ComboBox.SelectedValue>
-                                        </ComboBox>
-                                        <Button Name="btnRescanPort" Content="Rescan Ports" Click="btnRescanPort_Click" />
+                                        <ComboBox x:Name="cbPort" SelectedValue="{Binding PortName, Source={StaticResource spi}}"/>
+                                        <Button x:Name="btnRescanPort" Content="Rescan Ports" Click="btnRescanPort_Click" />
                                         <Label Content="Selected [bps]:"/>
-                                        <TextBox Name="txBaudRate" Background="#FF66FF4E">
-                                            <TextBox.Text>
-                                                <!--<Binding ElementName="lsBaudRate" Path="SelectedValue"/>-->
-                                                <Binding Source="{StaticResource spi}" Path="BaudRate">
-                                                    <!--<Binding.ValidationRules>
-                                                        <ExceptionValidationRule/>
-                                                    </Binding.ValidationRules>-->
-                                                </Binding>
-                                            </TextBox.Text>
-                                        </TextBox>
+                                        <TextBox x:Name="txBaudRate" Background="#FF66FF4E" Text="{Binding BaudRate, Source={StaticResource spi}}"/>
                                         <Label Content="BaudRate list:"/>
-                                        <ListBox x:Name="lsBaudRate" MinHeight="20" SelectionMode="Single" SelectedIndex="0">
-                                            <ListBox.SelectedValue>
-                                                <Binding Source="{StaticResource spi}" Path="BaudRate">
-                                                    <!--<Binding.ValidationRules>
-                                                        <ExceptionValidationRule/>
-                                                    </Binding.ValidationRules>-->
-                                                </Binding>
-                                            </ListBox.SelectedValue>
-
-                                        </ListBox>
+                                        <ListBox x:Name="lsBaudRate" MinHeight="20" SelectionMode="Single" SelectedIndex="0" SelectedValue="{Binding BaudRate, Source={StaticResource spi}}"/>
                                     </StackPanel>
                                 </GroupBox>
-                                <Button Name="btnConnect" Content="ReConnect" Click="btnSPIConnect_Click" />
+                                <Button x:Name="btnConnect" Content="ReConnect" Click="btnSPIConnect_Click" />
                                 <Button x:Name="btnSPIClose" Content="Close connection" Click="btnSPIClose_Click" />
 
                                 <!--<Check Content="Connect" Appearence="Button" />-->
@@ -163,14 +146,12 @@
                             <StackPanel>
                                 <Button Content="Search for connected" Click="btnSearch4motors_Click"/>
                                 <GroupBox Header="Select">
-                                    <ListBox Name="lsMot" MinHeight="40"/>
+                                    <ListBox x:Name="lsMot" MinHeight="40"/>
                                 </GroupBox>
                                 <GroupBox Header="Selected motor info" VerticalAlignment="Top">
                                     <StackPanel>
-                                        <ListBox Name="lsInfo" MinHeight="40" SelectionMode="Multiple"/>
-                                        <TextBox>
-                                            Selected information
-                                        </TextBox>
+                                        <ListBox x:Name="lsInfo" MinHeight="40" SelectionMode="Multiple"/>
+                                        <TextBox Text="Selected information"/>
                                     </StackPanel>
                                 </GroupBox>
 
@@ -181,12 +162,10 @@
 
                             <StackPanel>
                                 <ListBox IsEnabled="False">
-                                    <ListBoxItem>Syntax</ListBoxItem>
-                                    <ListBoxItem FontSize="8">FF FF ID LEN INS PAR CHS</ListBoxItem>
+                                    <ListBoxItem Content="Syntax"/>
+                                    <ListBoxItem FontSize="8" Content="FF FF ID LEN INS PAR CHS"/>
                                 </ListBox>
-                                <TextBox x:Name="txRawBytes" FontSize="8" TextChanged="txRawBytes_TextChanged">
-                                    FF FF 01 02 01 FB
-                                </TextBox>
+                                <TextBox x:Name="txRawBytes" FontSize="8" TextChanged="txRawBytes_TextChanged" Text="FF FF 01 02 01 FB"/>
                                 <Button x:Name="btnSendRawBytes" Content="Send raw bytes" Click="btnSendRawBytes_Click"/>
                             </StackPanel>
                         </GroupBox>
@@ -202,55 +181,55 @@
                             <ColumnDefinition Width="450"/>
                         </Grid.ColumnDefinitions>
 
-                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
-                    <DockPanel Grid.Column="0">
-                        
-                    <Grid Grid.Column="2" Background="#FFE5E5E5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height= "3*" />
-                            <RowDefinition Height="5" />
-                            <RowDefinition Height="110" />
-                        </Grid.RowDefinitions>
+                        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
+                        <DockPanel Grid.Column="0">
 
-
-                        <DockPanel Grid.Row="0" >
                             <Grid Grid.Column="2" Background="#FFE5E5E5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="5" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height= "3*" />
+                                    <RowDefinition Height="5" />
+                                    <RowDefinition Height="110" />
+                                </Grid.RowDefinitions>
 
-                                <StackPanel Grid.Column="0">
+
+                                <DockPanel Grid.Row="0" >
+                                    <Grid Grid.Column="2" Background="#FFE5E5E5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="220" />
+                                            <ColumnDefinition Width="5" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+
+                                        <StackPanel Grid.Column="0">
                                             <GroupBox Header="Reading data from motors">
                                                 <StackPanel>
                                                     <GroupBox Header="Settings">
-                                                    <StackPanel>
-                                                    <DockPanel>
-                                                    <GroupBox Header="Chosen motor:">
-                                                        <ListBox x:Name="lsReadPresentPositionMotors" 
+                                                        <StackPanel>
+                                                            <DockPanel>
+                                                                <GroupBox Header="Chosen motor:">
+                                                                    <ListBox x:Name="lsReadPresentPositionMotors" 
                                                                 ItemsSource="{Binding Source={StaticResource enumValues_rot}}"         
                                                                 SelectionMode="Multiple" >
-                                                            <ListBox.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <WrapPanel IsItemsHost="True" HorizontalAlignment="Center"/>
-                                                                </ItemsPanelTemplate>
-                                                            </ListBox.ItemsPanel>
-                                                            <ListBox.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <Border BorderThickness="1" BorderBrush="Black">
-                                                                        <TextBlock  Width="23" HorizontalAlignment="Stretch" Text="{Binding Converter={StaticResource conv_e_rot_ToString}}"/>
-                                                                    </Border>
-                                                                </DataTemplate>
-                                                            </ListBox.ItemTemplate>
-                                                        </ListBox>
+                                                                        <ListBox.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <WrapPanel IsItemsHost="True" HorizontalAlignment="Center"/>
+                                                                            </ItemsPanelTemplate>
+                                                                        </ListBox.ItemsPanel>
+                                                                        <ListBox.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <Border BorderThickness="1" BorderBrush="Black">
+                                                                                    <TextBlock  Width="23" HorizontalAlignment="Stretch" Text="{Binding Converter={StaticResource conv_e_rot_ToString}}"/>
+                                                                                </Border>
+                                                                            </DataTemplate>
+                                                                        </ListBox.ItemTemplate>
+                                                                    </ListBox>
 
-                                                    </GroupBox>
+                                                                </GroupBox>
 
-                                                        <ToggleButton x:Name="tbtActiveReadPresentPosition" Content=" ActiveReading " IsChecked="True" Click="tbtActiveReadPresentPosition_Click"/>
-                                                    </DockPanel>
-                                                    <GroupBox Header="Active reading timer [1 to 1000] ms">
+                                                                <ToggleButton x:Name="tbtActiveReadPresentPosition" Content=" ActiveReading " IsChecked="True" Click="tbtActiveReadPresentPosition_Click"/>
+                                                            </DockPanel>
+                                                            <GroupBox Header="Active reading timer [1 to 1000] ms">
                                                                 <Grid >
                                                                     <Grid.ColumnDefinitions>
                                                                         <ColumnDefinition />
@@ -259,291 +238,290 @@
                                                                     <Slider Grid.Column="0" x:Name="slActiveReadingTimerInterval" Minimum="1" Maximum="1000" LargeChange="50" SmallChange="1" TickFrequency="50" Value="50" AutoToolTipPlacement="TopLeft" TickPlacement="BottomRight"
                                                                 ValueChanged="slActiveReadingTimerInterval_ValueChanged"/>
                                                                     <TextBox Grid.Column="1" TextAlignment="Center" 
-                                                                    Text="{Binding ElementName=slActiveReadingTimerInterval, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                    Text="{Binding Value, ElementName=slActiveReadingTimerInterval, UpdateSourceTrigger=PropertyChanged}"/>
                                                                 </Grid>
-                                                    </GroupBox>
+                                                            </GroupBox>
 
-                                                        <GroupBox Header="Select which data to read">
-                                                            <ListBox SelectionMode="Single">
-                                                                <ListBoxItem x:Name="lsiActualPostionEtc"
+                                                            <GroupBox Header="Select which data to read">
+                                                                <ListBox SelectionMode="Single">
+                                                                    <ListBoxItem x:Name="lsiActualPostionEtc"
                                                                     Content="Actual Postion Speed Load etc."
-                                                                             IsSelected="True"> 
-                                                                    <ListBoxItem.ToolTip>
-                                                                        <ToolTip>
-                                                                            <StackPanel>
-                                                                                <TextBlock FontWeight="Bold" Text="Active reading of Data from selected motors:"/>
-                                                                                <ListBox>
-                                                                                    <ListBoxItem>Present Position</ListBoxItem>
-                                                                                    <ListBoxItem>Present Speed</ListBoxItem>
-                                                                                    <ListBoxItem>Present Load</ListBoxItem>
-                                                                                    <ListBoxItem>Present Voltage</ListBoxItem>
-                                                                                    <ListBoxItem>Present Temperature</ListBoxItem>
-                                                                                    <ListBoxItem>Registered Instruction</ListBoxItem>
-                                                                                    <ListBoxItem>Moving state</ListBoxItem>
-                                                                                </ListBox>
-                                                                                <TextBlock Text="= register bytes from address [36-46] - not including [45]"/>
-                                                                            </StackPanel>
-                                                                        </ToolTip>
-                                                                    </ListBoxItem.ToolTip>
-                                                                </ListBoxItem>
+                                                                             IsSelected="True">
+                                                                        <ListBoxItem.ToolTip>
+                                                                            <ToolTip>
+                                                                                <StackPanel>
+                                                                                    <TextBlock FontWeight="Bold" Text="Active reading of Data from selected motors:"/>
+                                                                                    <ListBox>
+                                                                                        <ListBoxItem Content="Present Position"/>
+                                                                                        <ListBoxItem Content="Present Speed"/>
+                                                                                        <ListBoxItem Content="Present Load"/>
+                                                                                        <ListBoxItem Content="Present Voltage"/>
+                                                                                        <ListBoxItem Content="Present Temperature"/>
+                                                                                        <ListBoxItem Content="Registered Instruction"/>
+                                                                                        <ListBoxItem Content="Moving state"/>
+                                                                                    </ListBox>
+                                                                                    <TextBlock Text="= register bytes from address [36-46] - not including [45]"/>
+                                                                                </StackPanel>
+                                                                            </ToolTip>
+                                                                        </ListBoxItem.ToolTip>
+                                                                    </ListBoxItem>
 
-                                                                <ListBoxItem x:Name="lsiWholeRegister"
+                                                                    <ListBoxItem x:Name="lsiWholeRegister"
                                                                     Content="Whole readable register"/>
                                                                 </ListBox>
-                                                </GroupBox>
-                                        </StackPanel>
-                                                </GroupBox>
+                                                            </GroupBox>
+                                                        </StackPanel>
+                                                    </GroupBox>
                                                     <GroupBox Header="Statistics">
-                                                        <ListBox x:Name="lsReadStatistics">
-                                                        </ListBox>
+                                                        <ListBox x:Name="lsReadStatistics"/>
                                                     </GroupBox>
                                                 </StackPanel>
                                             </GroupBox>
-                                </StackPanel>
+                                        </StackPanel>
 
-                                <Grid Grid.Column="2" Background="#FFE5E5E5">
-                                    <GroupBox Header="Control of individual motors">
-                                        <DockPanel>
-                                            <StackPanel DockPanel.Dock="Top"
+                                        <Grid Grid.Column="2" Background="#FFE5E5E5">
+                                            <GroupBox Header="Control of individual motors">
+                                                <DockPanel>
+                                                    <StackPanel DockPanel.Dock="Top"
                                                 Orientation="Horizontal">
-                                                <GroupBox Header="Chosen motor:">
-                                                    <ListBox x:Name="lsChosenMotor" 
+                                                        <GroupBox Header="Chosen motor:">
+                                                            <ListBox x:Name="lsChosenMotor" 
                                                              
                                                      ItemsSource="{Binding Source={StaticResource enumValues_rot}}"         
                                                      SelectionMode="Single" SelectionChanged="lsChosenMotor_SelectionChanged"
                                                      MinWidth="90">
-                                                        <ListBox.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <WrapPanel IsItemsHost="True" HorizontalAlignment="Center"/>
-                                                            </ItemsPanelTemplate>
-                                                        </ListBox.ItemsPanel>
-                                                        <ListBox.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <Border BorderThickness="1" BorderBrush="Black">
-                                                                    <TextBlock  Width="23" HorizontalAlignment="Stretch" Text="{Binding Converter={StaticResource conv_e_rot_ToString}}">
+                                                                <ListBox.ItemsPanel>
+                                                                    <ItemsPanelTemplate>
+                                                                        <WrapPanel IsItemsHost="True" HorizontalAlignment="Center"/>
+                                                                    </ItemsPanelTemplate>
+                                                                </ListBox.ItemsPanel>
+                                                                <ListBox.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <Border BorderThickness="1" BorderBrush="Black">
+                                                                            <TextBlock  Width="23" HorizontalAlignment="Stretch" Text="{Binding Converter={StaticResource conv_e_rot_ToString}}">
                                                                         <!--<TextBlock.ToolTip >
                                                                             <ToolTip>
                                                                                 <TextBlock  Width="23" HorizontalAlignment="Stretch" Text="{Binding Converter={StaticResource conv_e_rot_ToString}}"/>
                                                                             </ToolTip>
                                                                         </TextBlock.ToolTip >-->
-                                                                    </TextBlock>
+                                                                            </TextBlock>
 
-                                                                </Border>
-                                                            </DataTemplate>
-                                                        </ListBox.ItemTemplate>
-                                                    </ListBox>
+                                                                        </Border>
+                                                                    </DataTemplate>
+                                                                </ListBox.ItemTemplate>
+                                                            </ListBox>
 
-                                                    <!--Converter={StaticResource conv_e_rot_ToString}-->
-                                                </GroupBox>
-                                                <StackPanel>
-                                                    <CheckBox x:Name="cbExampleDoubleClick" Content="Send by DoubleClick and Enter" 
+                                                            <!--Converter={StaticResource conv_e_rot_ToString}-->
+                                                        </GroupBox>
+                                                        <StackPanel>
+                                                            <CheckBox x:Name="cbExampleDoubleClick" Content="Send by DoubleClick and Enter" 
                                                       DockPanel.Dock="Top" IsChecked="True"/>
-                                                    <Button Name="btnSendExample" Content="Send example to [Chosen motor]" 
+                                                            <Button x:Name="btnSendExample" Content="Send example to [Chosen motor]" 
                                                             VerticalAlignment="Top" DockPanel.Dock="Top" MaxHeight="20" Click="btnSendExample_Click"/>
-                                                </StackPanel>
-                                            </StackPanel>
-                                            <GroupBox 
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    <GroupBox 
                                                 Grid.Column="2" x:Name="gpCmds" Header="Example commands" >
-                                                <Grid>
-                                                    <DockPanel>
-                                                        <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" 
+                                                        <Grid>
+                                                            <DockPanel>
+                                                                <ListBox x:Name="lsCmdEx" DockPanel.Dock="Top" MinHeight="40" 
                                                              MouseDoubleClick="lsCmdEx_MouseDoubleClick" KeyDown="lsCmdEx_KeyDown" />
-                                                    </DockPanel>
-                                                </Grid>
+                                                            </DockPanel>
+                                                        </Grid>
+                                                    </GroupBox>
+                                                </DockPanel>
                                             </GroupBox>
-                                        </DockPanel>
-                                    </GroupBox>
-                                    <!--</Grid>-->
-                                </Grid>
+                                            <!--</Grid>-->
+                                        </Grid>
 
-                            </Grid>
-                        </DockPanel>
+                                    </Grid>
+                                </DockPanel>
 
-                        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
+                                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
 
-                        <DockPanel Grid.Row="2" >
-                            <GroupBox Header="Individual motor Position &amp; Speed gui control" Grid.Column="2">
-                                <Grid x:Name="grAllMotors" >
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="2"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="15"/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition Height="15"/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="2"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
+                                <DockPanel Grid.Row="2" >
+                                    <GroupBox Header="Individual motor Position &amp; Speed gui control" Grid.Column="2">
+                                        <Grid x:Name="grAllMotors" >
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="2"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="2"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="2"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="15"/>
+                                                <RowDefinition Height="2"/>
+                                                <RowDefinition Height="15"/>
+                                                <RowDefinition Height="2"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="2"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
 
 
-                                    <GridSplitter Grid.Row="1" Grid.ColumnSpan="10"  HorizontalAlignment="Stretch" Background="DarkGray"/>
-                                    <GridSplitter Grid.Row="3" Grid.ColumnSpan="10"  HorizontalAlignment="Stretch" Background="DarkGray"/>
-                                    <GridSplitter Grid.Row="5" Grid.ColumnSpan="10"  HorizontalAlignment="Stretch" Background="DarkGray"/>
-                                    <GridSplitter Grid.Column="1" Grid.RowSpan="10" HorizontalAlignment="Stretch" Background="Gray"/>
-                                    <GridSplitter Grid.Column="3" Grid.RowSpan="10" HorizontalAlignment="Stretch" Background="Gray"/>
-                                    <GridSplitter Grid.Column="5" Grid.RowSpan="10" HorizontalAlignment="Stretch" Background="Gray"/>
+                                            <GridSplitter Grid.Row="1" Grid.ColumnSpan="10"  HorizontalAlignment="Stretch" Background="DarkGray"/>
+                                            <GridSplitter Grid.Row="3" Grid.ColumnSpan="10"  HorizontalAlignment="Stretch" Background="DarkGray"/>
+                                            <GridSplitter Grid.Row="5" Grid.ColumnSpan="10"  HorizontalAlignment="Stretch" Background="DarkGray"/>
+                                            <GridSplitter Grid.Column="1" Grid.RowSpan="10" HorizontalAlignment="Stretch" Background="Gray"/>
+                                            <GridSplitter Grid.Column="3" Grid.RowSpan="10" HorizontalAlignment="Stretch" Background="Gray"/>
+                                            <GridSplitter Grid.Column="5" Grid.RowSpan="10" HorizontalAlignment="Stretch" Background="Gray"/>
 
 
-                                    <StackPanel Grid.Column="0" Grid.Row="0">
-                                        <Button MaxHeight="20" Content="Reset to default" VerticalAlignment="Top" Click="btnResetMotors_Click" />
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="0">
-                                        <TextBlock Text="Yaw Motor"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="0">
-                                        <TextBlock Text="Pitch Motor"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="6" Grid.Row="0">
-                                        <TextBlock Text="Roll Motor"/>
-                                    </StackPanel>
+                                            <StackPanel Grid.Column="0" Grid.Row="0">
+                                                <Button MaxHeight="20" Content="Reset to default" VerticalAlignment="Top" Click="btnResetMotors_Click" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Grid.Row="0">
+                                                <TextBlock Text="Yaw Motor"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4" Grid.Row="0">
+                                                <TextBlock Text="Pitch Motor"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="6" Grid.Row="0">
+                                                <TextBlock Text="Roll Motor"/>
+                                            </StackPanel>
 
-                                    <StackPanel Grid.Column="0" Grid.Row="2">
+                                            <StackPanel Grid.Column="0" Grid.Row="2">
                                                 <Button MaxHeight="20" Content="Apply sliders" VerticalAlignment="Top" Click="btnStartMotors_Click" />
                                             </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="2">
-                                        <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorYaw" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="2">
-                                        <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorPitch" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="6" Grid.Row="2">
-                                        <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorRoll" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
-                                    </StackPanel>
+                                            <StackPanel Grid.Column="2" Grid.Row="2">
+                                                <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorYaw" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4" Grid.Row="2">
+                                                <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorPitch" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="6" Grid.Row="2">
+                                                <CheckBox Content="Set values on change" IsChecked="True" x:Name="cbSendValuesToMotorRoll" Checked ="cbSetValues_ValueChanged" Unchecked="cbSetValues_ValueChanged"/>
+                                            </StackPanel>
 
 
-                                    <StackPanel Grid.Column="0" Grid.Row="4">
-                                        <Label Content="Position [0 to 360]°" />
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="4">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="42"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Slider Grid.Column="0"
+                                            <StackPanel Grid.Column="0" Grid.Row="4">
+                                                <Label Content="Position [0 to 360]°" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Grid.Row="4">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
                                                         x:Name="slAngleYaw"   
                                                         SmallChange="0.1" TickPlacement="TopLeft"
                                                         ValueChanged="slider_ValueChanged"
                                                             Minimum="0"
                                                         Ticks ="0,30,60,90,120,150,180,210,240,270,300,330,360,44,45,46,88,89,90,91,92,134,135,136,178,179,180,181,182,224,225,226,268,269,270,271,272,314,315,316,358,359,1,2"/>
-                                            <!--TickFrequency="45" />-->
-                                            <!--DataContext="{Binding Source={StaticResource motYawDataSource}}"
+                                                    <!--TickFrequency="45" />-->
+                                                    <!--DataContext="{Binding Source={StaticResource motYawDataSource}}"
                                                 Value="{Binding angleDeg, Mode=Default}"-->
-                                            <TextBox Grid.Column="1" TextAlignment="Center" 
-                                                             Text="{Binding ElementName=slAngleYaw, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </Grid>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="4">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="42"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Slider Grid.Column="0"
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                             Text="{Binding Value, ElementName=slAngleYaw, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4" Grid.Row="4">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
                                                     x:Name="slAnglePitch" 
                                                     SmallChange="0.1" TickPlacement="TopLeft"
                                                     ValueChanged="slider_ValueChanged" 
                                                     Ticks ="0,30,60,90,120,150,180,210,240,270,300,330,360,44,45,46,88,89,90,91,92,134,135,136,178,179,180,181,182,224,225,226,268,269,270,271,272,314,315,316,358,359,1,2"
                                                     />
-                                            <TextBox Grid.Column="1" TextAlignment="Center" 
-                                                        Text="{Binding ElementName=slAnglePitch, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </Grid>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="6" Grid.Row="4">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="42"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Slider Grid.Column="0"
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding Value, ElementName=slAnglePitch, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="6" Grid.Row="4">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
                                                     x:Name="slAngleRoll" 
                                                     SmallChange="0.1" TickPlacement="TopLeft"
                                                     ValueChanged="slider_ValueChanged" 
                                                     Ticks ="0,30,60,90,120,150,180,210,240,270,300,330,360,44,45,46,88,89,90,91,92,134,135,136,178,179,180,181,182,224,225,226,268,269,270,271,272,314,315,316,358,359,1,2"
                                                     />
-                                            <TextBox Grid.Column="1" TextAlignment="Center" 
-                                                        Text="{Binding ElementName=slAngleRoll, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </Grid>
-                                    </StackPanel>
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding Value, ElementName=slAngleRoll, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </StackPanel>
 
 
-                                    <StackPanel Grid.Column="0" Grid.Row="6">
-                                        <Label Content="Speed [1 to 101], 0 = no speed control" />
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="6">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="42"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Slider Grid.Column="0"
+                                            <StackPanel Grid.Column="0" Grid.Row="6">
+                                                <Label Content="Speed [1 to 101], 0 = no speed control" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Grid.Row="6">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
                                                     x:Name="slSpeedYaw" 
                                                     SmallChange="0.1" TickPlacement="TopLeft"
                                                     ValueChanged="slider_ValueChanged" 
                                                     />
-                                            <TextBox Grid.Column="1" TextAlignment="Center" 
-                                                        Text="{Binding ElementName=slSpeedYaw, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </Grid>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="6">
-                                        <Grid Grid.Row="1">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="42"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Slider Grid.Column="0"
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding Value, ElementName=slSpeedYaw, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4" Grid.Row="6">
+                                                <Grid Grid.Row="1">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
                                                     x:Name="slSpeedPitch" 
                                                     SmallChange="0.1" TickPlacement="TopLeft"
                                                     ValueChanged="slider_ValueChanged" 
                                                     />
-                                            <TextBox Grid.Column="1" TextAlignment="Center" 
-                                                        Text="{Binding ElementName=slSpeedPitch, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </Grid>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="6" Grid.Row="6">
-                                        <Grid Grid.Row="1">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="42"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Slider Grid.Column="0"
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding Value, ElementName=slSpeedPitch, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="6" Grid.Row="6">
+                                                <Grid Grid.Row="1">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="42"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Slider Grid.Column="0"
                                                     x:Name="slSpeedRoll" 
                                                     SmallChange="0.1" TickPlacement="TopLeft"
                                                     ValueChanged="slider_ValueChanged" 
                                                     />
-                                            <TextBox Grid.Column="1" TextAlignment="Center" 
-                                                        Text="{Binding ElementName=slSpeedRoll, Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </Grid>
-                                    </StackPanel>
+                                                    <TextBox Grid.Column="1" TextAlignment="Center" 
+                                                        Text="{Binding Value, ElementName=slSpeedRoll, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </StackPanel>
 
-                                </Grid>
-                            </GroupBox>
+                                        </Grid>
+                                    </GroupBox>
+
+                                </DockPanel>
+                            </Grid>
 
                         </DockPanel>
-                    </Grid>
-
-                    </DockPanel>
 
                         <GroupBox Header="Motors' pc shadow register view:" Grid.Column="2">
 
                             <DockPanel>
-                                        <Button DockPanel.Dock="Top"
+                                <Button DockPanel.Dock="Top"
                                             Content="Refresh table from shadow register (debug only - automatic otherwise)" Click="btnRefreshMotorData_Click"/>
-                                        <!--<ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
+                                <!--<ToggleButton x:Name="tbtMotorDataRefresh" Content="Active preview" 
                                                       IsChecked="True"
                                                       Checked="tbtMotorDataRefresh_CheckedChanged"
                                                       Unchecked="tbtMotorDataRefresh_CheckedChanged"/>-->
-                                    <!--Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>-->
-                                    <Grid>
-                                        <DataGrid 
+                                <!--Checked="tbtMotorDataRefresh_Checked" Unchecked="tbtMotorDataRefresh_Unchecked"/>-->
+                                <Grid>
+                                    <DataGrid 
                                         x:Name="dgMotorData"
                                           DataContext="{StaticResource ItemCollectionViewSource_motorData}"
                                           ItemsSource="{Binding}"
@@ -553,21 +531,46 @@
                                            ScrollViewer.VerticalScrollBarVisibility="Visible"
                                         >
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Address" IsReadOnly="True" Binding="{Binding Path=address}" Width="5" />
-                                            <DataGridTextColumn Header="Type" IsReadOnly="True" Binding="{Binding Path=letter_regByteType}" Width="5" />
-                                            <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=name}" Width="120" />
-                                                <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding Path=yaw}" Width="2*" />
-                                                <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding Path=pitch}" Width="2*" />
-                                                <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding Path=roll}" Width="2*" />
+                                            <DataGridTextColumn Header="Address" IsReadOnly="True" Binding="{Binding address}" Width="5" />
+                                            <DataGridTextColumn Header="Type" IsReadOnly="True" Binding="{Binding letter_regByteType}" Width="5" />
+                                            <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding name}" Width="120" />
+                                            <DataGridTextColumn Header="Yaw" IsReadOnly="True" Binding="{Binding yaw}" Width="2*" />
+                                            <DataGridTextColumn Header="Pitch" IsReadOnly="True" Binding="{Binding pitch}" Width="2*" />
+                                            <DataGridTextColumn Header="Roll" IsReadOnly="True"  Binding="{Binding roll}" Width="2*" />
                                         </DataGrid.Columns>
                                     </DataGrid>
-                                        </Grid>
+                                </Grid>
                             </DockPanel>
-                            </GroupBox>
-                    </Grid >
+                        </GroupBox>
+                    </Grid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiCamera" Header="Basler Camera" Background="GreenYellow">
+            <TabItem x:Name="tiBaslerCamera" Header="Basler Camera" Background="LightBlue" >
+                <DockPanel x:Name="dpBaslerCamera"
+                    LastChildFill="True">
+                    <Button x:Name="btnBaslerCameraCapture" Content="Basler Camera capture"  Click="btnBaslerCameraCapture_Click"/>
+                    <!--listens to cameras connected to usb-->
+                    <basler:CameraLister x:Name="cameraListener" 
+                        DockPanel.Dock="Left"
+                        VerticalAlignment="Stretch"/>
+                    
+                    <DockPanel Width="500">
+                        
+                        <!--controls the stream of video from camera-->
+                        <basler:StreamController x:Name="streamController"
+                                                 DockPanel.Dock="Top" Height="50"  VerticalAlignment="Top" ActiveViewer="{Binding ., ElementName=guiImageViewer}" Camera="{Binding Camera, ElementName=cameraListener}"/>
+
+                        <!--shows the stream of video from camera-->
+                        <basler:ImageViewer x:Name="guiImageViewer"
+                                            DockPanel.Dock="Top" MinHeight="100" VerticalAlignment="Stretch" Camera="{Binding Camera, ElementName=cameraListener}"/>
+                    </DockPanel>
+                    <!--when some cammera is selected it shows which parameters can be changed-->
+                    <basler:ParameterTreeControl
+                        DockPanel.Dock="Right" VerticalAlignment="Stretch" Camera="{Binding Camera, ElementName=cameraListener}"/>
+
+                </DockPanel>
+            </TabItem>
+            <TabItem x:Name="tiWebCamera" Header="Webcam" Background="GreenYellow" IsEnabled="False">
                 <Grid Background="GreenYellow">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="372*"/>
@@ -587,9 +590,9 @@
                                         SelectionChanged="dgCams_SelectionChanged"
                                     >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID"  IsReadOnly="True" Binding="{Binding Path=DeviceID}" Width="10" />
-                                    <DataGridTextColumn Header="Name" IsReadOnly="True"  Binding="{Binding Path=DeviceName}" Width="100"/>
-                                    <DataGridTextColumn Header="Identifier" IsReadOnly="True"  Binding="{Binding Path=Identifier}" Width="200"/>
+                                    <DataGridTextColumn Header="ID"  IsReadOnly="True" Binding="{Binding DeviceID}" Width="10" />
+                                    <DataGridTextColumn Header="Name" IsReadOnly="True"  Binding="{Binding DeviceName}" Width="100"/>
+                                    <DataGridTextColumn Header="Identifier" IsReadOnly="True"  Binding="{Binding Identifier}" Width="200"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <GroupBox Header="All connected camera previews" >
@@ -636,7 +639,7 @@
                                     <CheckBox x:Name="cbLogShowCount" Content="Show Count in Status Label" IsEnabled="False"/>
                                     <CheckBox x:Name="cbLogSetMaximum" Content="Set logger message buffer count" IsChecked="True"
                                               Checked="cbLogSetMaximum_ValueChanged" Unchecked="cbLogSetMaximum_ValueChanged"/>
-                                    <GroupBox Header="Logger message buffer" IsEnabled="{Binding ElementName=cbLogSetMaximum, Path=IsChecked}" >
+                                    <GroupBox Header="Logger message buffer" IsEnabled="{Binding IsChecked, ElementName=cbLogSetMaximum}" >
                                         <TextBox x:Name="txLogBufferCount" PreviewTextInput="txLogBufferCount_PreviewTextInput" Text="5000"/>
                                     </GroupBox>
                                 </StackPanel>
@@ -658,12 +661,8 @@
                     </GroupBox>
                     <GroupBox Header="Information" Grid.Column="4">
                         <StackPanel>
-                            <TextBlock TextWrapping="Wrap" >
-                                * You can filter the log messages by selecting items from the list on left side of the logger. 
-                            </TextBlock>
-                            <TextBlock TextWrapping="Wrap">
-                                * As it is stated in the tooltip, you can select all or unselect all by Rigth and Left mouse doubleclicking.
-                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" ><Run Text="* You can filter the log messages by selecting items from the list on left side of the logger."/></TextBlock>
+                            <TextBlock TextWrapping="Wrap"><Run Text="* As it is stated in the tooltip, you can select all or unselect all by Rigth and Left mouse doubleclicking."/></TextBlock>
                         </StackPanel>
                     </GroupBox>
                 </Grid>
@@ -685,7 +684,10 @@
                         </Grid.RowDefinitions>
                         <GridSplitter Grid.Row="1"  Height="5" VerticalAlignment="Stretch"/>
                         <GroupBox Grid.Row="0" Header="Actual camera preview">
-                            <StackPanel >
+                            <StackPanel>
+                                
+
+                                <StackPanel Visibility="Collapsed">
                                 <ToggleButton Content="Active preview" 
                                           IsChecked="{Binding IsChecked, ElementName=tbtActivePreviewActual}"
                                           >
@@ -693,6 +695,7 @@
 
                                 </ToggleButton>
                                 <Image x:Name="imgMain_TP" Stretch="Fill"/>
+                                </StackPanel>
                             </StackPanel>
                         </GroupBox>
                         <GroupBox  Grid.Row="2" Header="Acquisition data">
@@ -706,7 +709,7 @@
                     <GroupBox Grid.Column="2" Header="Telepresence configuration">
 
                         <GroupBox.Resources>
-                            <Style TargetType="CheckBox">
+                            <Style TargetType="{x:Type CheckBox}">
                                 <!--<Setter Property="FontSize" Value="8" />-->
                                 <!--<Setter Property="FontWeight" Value="Normal" />-->
                                 <Setter Property="Foreground" Value="LimeGreen"/>
@@ -719,6 +722,12 @@
                                     <CheckBox x:Name="cbHudTime" Content="Time" IsEnabled="False"/>
                                     <CheckBox x:Name="cbHudCompas" Content="Radar" IsEnabled="False"/>
                                     <CheckBox x:Name="cbHudMotorPosture" Content="Motor posture" IsEnabled="False"/>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="Camera Data">
+                                <StackPanel>
+                                    <CheckBox x:Name="cbReadCameraStream" Content="Read camera stream from selected Basler camera" IsChecked="False"/>
                                 </StackPanel>
                             </GroupBox>
 
@@ -750,7 +759,7 @@
                             </GroupBox>
                             <GroupBox Header="Config bundles">
                                 <ListBox>
-                                    Default settings
+                                    <sys:String>Default settings</sys:String>
                                 </ListBox>
                             </GroupBox>
                             <ToggleButton x:Name="tbtToggleTP" Content="Start Telepresence" Click="tbtToggleTP_Click" Checked="tbtToggleTP_ValueChanged" Unchecked="tbtToggleTP_ValueChanged" Background="GreenYellow" Height="42" FontWeight="ExtraBold" FontSize="26"/>
@@ -769,12 +778,8 @@
                             </Grid.ColumnDefinitions>
                             <Image Grid.Column="0" Source="Content/pic/eyeout.png" Height="42" Width="42" />
                             <StackPanel Grid.Column="1">
-                                <TextBlock TextAlignment="Center" FontSize="42">
-                                    EyeOut
-                                </TextBlock>
-                                <TextBlock TextAlignment="Center" FontSize="20">
-                                    Telepresence frontend
-                                </TextBlock>
+                                <TextBlock TextAlignment="Center" FontSize="42"><Run Text="EyeOut"/></TextBlock>
+                                <TextBlock TextAlignment="Center" FontSize="20"><Run Text="Telepresence frontend"/></TextBlock>
                             </StackPanel>
                             <Image Grid.Column="2" Source="Content/pic/eyeout.png" Height="42" Width="42" FlowDirection="RightToLeft"/>
                         </Grid>
@@ -805,12 +810,12 @@
                                   MinHeight="100"
                                 >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name"  IsReadOnly="True" Binding="{Binding Path=Name}" Width="76"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Version" IsReadOnly="True"  Binding="{Binding Path=Version}"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Purpose" IsReadOnly="True"  Binding="{Binding Path=Purpose}" ></DataGridTextColumn>
-                                    <DataGridTextColumn Header="License" IsReadOnly="True"  Binding="{Binding Path=License}" ></DataGridTextColumn>
-                                    <DataGridTextColumn Header="About" IsReadOnly="True"  Binding="{Binding Path=About}" ></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Site" IsReadOnly="True"  Binding="{Binding Path=Site}" ></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Name"  IsReadOnly="True" Binding="{Binding Name}" Width="76"/>
+                                    <DataGridTextColumn Header="Version" IsReadOnly="True"  Binding="{Binding Version}"/>
+                                    <DataGridTextColumn Header="Purpose" IsReadOnly="True"  Binding="{Binding Purpose}" />
+                                    <DataGridTextColumn Header="License" IsReadOnly="True"  Binding="{Binding License}" />
+                                    <DataGridTextColumn Header="About" IsReadOnly="True"  Binding="{Binding About}" />
+                                    <DataGridTextColumn Header="Site" IsReadOnly="True"  Binding="{Binding Site}" />
 
                                 </DataGrid.Columns>
                             </DataGrid>
@@ -844,27 +849,26 @@
 
                     <Label x:Name="tslConnected" BorderThickness="1" BorderBrush="Black"
                            Padding="0" HorizontalAlignment="Center"
-                    Content="{Binding Source={StaticResource ResourceKey=C_state}, Path=Spi,
-                    Converter={StaticResource vcMyEnumToString},Mode =OneWay}" >
+                    Content="{Binding Spi, Converter={StaticResource vcMyEnumToString}, Mode=OneWay, Source={StaticResource ResourceKey=C_state}}" >
                         <Label.ToolTip>
-                        <ToolTip>
-                            <StackPanel>
-                                <TextBlock >Serial port interface with motors</TextBlock>
-                            </StackPanel>
-                        </ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock ><Run Text="Serial port interface with motors"/></TextBlock>
+                                </StackPanel>
+                            </ToolTip>
                         </Label.ToolTip>
                     </Label>
                     <Label x:Name="lbLogCount" MouseDown="lbLogCount_MouseDown"
                            HorizontalAlignment="Center"
                         BorderThickness="1" BorderBrush="Black"
                            Padding="0" Content="Click Log.Count">
-                           <!--Content="{Binding Source={x:Static local:C_Logger.Instance}, Mode =OneWay, Path=logMsgCount}">-->
-                    <!--Content="{Binding Source={StaticResource ResourceKey=C_Logger}, Path=logMsgCount}" >-->
-                        
+                        <!--Content="{Binding Source={x:Static local:C_Logger.Instance}, Mode =OneWay, Path=logMsgCount}">-->
+                        <!--Content="{Binding Source={StaticResource ResourceKey=C_Logger}, Path=logMsgCount}" >-->
+
                         <Label.ToolTip>
                             <ToolTip>
                                 <StackPanel>
-                                    <TextBlock >Number of all logged messages - actualize on click</TextBlock>
+                                    <TextBlock ><Run Text="Number of all logged messages - actualize on click"/></TextBlock>
                                 </StackPanel>
                             </ToolTip>
                         </Label.ToolTip>
@@ -884,8 +888,8 @@
                         <ListBox.ToolTip>
                             <ToolTip>
                                 <StackPanel>
-                                    <TextBlock >Left mouse double click selects all</TextBlock>
-                                    <TextBlock >Right mouse double click unselects all</TextBlock>
+                                    <TextBlock ><Run Text="Left mouse double click selects all"/></TextBlock>
+                                    <TextBlock ><Run Text="Right mouse double click unselects all"/></TextBlock>
                                 </StackPanel>
                             </ToolTip>
                         </ListBox.ToolTip>
@@ -902,11 +906,11 @@
               CanUserAddRows="False"
             >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Time"  IsReadOnly="True" Binding="{Binding Path=time, StringFormat=HH:mm:ss.fff}" Width="76" />
-                    <DataGridTextColumn Header="#"  IsReadOnly="True" Binding="{Binding Path=queue}" Width="5" />
-                    <DataGridTextColumn Header="Type" IsReadOnly="True"  Binding="{Binding Path=type}" Width="50" />
-                    <DataGridTextColumn Header="Source" IsReadOnly="True"  Binding="{Binding Path=src}" />
-                    <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding Path=msg}" MinWidth="50" />
+                    <DataGridTextColumn Header="Time"  IsReadOnly="True" Binding="{Binding time, StringFormat=HH:mm:ss.fff}" Width="76" />
+                    <DataGridTextColumn Header="#"  IsReadOnly="True" Binding="{Binding queue}" Width="5" />
+                    <DataGridTextColumn Header="Type" IsReadOnly="True"  Binding="{Binding type}" Width="50" />
+                    <DataGridTextColumn Header="Source" IsReadOnly="True"  Binding="{Binding src}" />
+                    <DataGridTextColumn Header="Message" IsReadOnly="True"  Binding="{Binding msg}" MinWidth="50" />
                 </DataGrid.Columns>
             </DataGrid>
 

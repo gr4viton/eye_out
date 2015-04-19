@@ -49,7 +49,7 @@ namespace EyeOut
             INIT_spi();
             INIT_allMotors();
             INIT_timSim();
-            INIT_cam();
+            //INIT_cam();
             //INIT_Telepresence();
             INIT_about();
             INIT_keyMapping();
@@ -225,6 +225,43 @@ namespace EyeOut
                 );
 
             MessageBox.Show(str.ToString());
+        }
+
+        private void tcMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (C_State.FURTHER(e_stateProg.initialized))
+            {
+
+                if (tiBaslerCamera.IsSelected == true)
+                {
+                    dpBaslerCamera.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    dpBaslerCamera.Visibility = Visibility.Hidden;
+                }
+            }
+        }
+
+        private void btnBaslerCameraCapture_Click(object sender, RoutedEventArgs e)
+        {
+            if (streamController.Camera.StreamGrabber.IsGrabbing == false)
+            {
+                streamController.Camera.StreamGrabber.Start();
+            }
+            streamController.Camera.Open();
+            Basler.Pylon.IImage im = 
+                guiImageViewer.CaptureImage();
+
+            if (im == null)
+            {
+                btnBaslerCameraCapture.Background = Brushes.Red;
+            }
+            else
+            {
+                btnBaslerCameraCapture.Background = Brushes.Green;
+                byte[] pixelData = (byte[])im.PixelData;
+            }
         }
 
 

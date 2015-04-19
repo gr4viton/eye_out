@@ -45,7 +45,7 @@ namespace EyeOut_Telepresence
             // Clear the screen
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            Draw_Sound();
+            Draw_SoundGraphicalEffects();
 
 
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)

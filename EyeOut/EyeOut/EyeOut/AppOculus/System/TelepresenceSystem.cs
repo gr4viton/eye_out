@@ -15,6 +15,8 @@ using SharpDX.Toolkit.Input;
 
 using System.Threading.Tasks;
 
+using EyeOut;
+
 namespace EyeOut_Telepresence
 {
     // Use these namespaces here to override SharpDX.Direct3D11
@@ -24,6 +26,17 @@ namespace EyeOut_Telepresence
 
     /// <summary>
     /// Simple RiftGame game using SharpDX.Toolkit.
+    /// Individual methods:
+    /// - Initialize	Called after the Game and GraphicsDevice are created, but before LoadContent. Reference page contains code sample. 
+    /// - LoadContent	Loads the content.
+    /// - Run	        Call this method to initialize the game, begin running the game loop, and start processing events for the game.
+    ///     - BeginRun	    Called after all components are initialized but before the first update in the game loop. 
+    ///     - Tick	        Updates the game's clock and calls Update and Draw. 
+    ///         - Update    Called before BeginDraw - may contain pre-draw calculations
+    ///         - BeginDraw	    Starts the drawing of a frame. This method is followed by calls to Draw and EndDraw. 
+    ///         - Draw          The drawing methods itself
+    ///         - EndDraw	    Ends the drawing of a frame. This method is preceeded by calls to Draw and BeginDraw. 
+    /// - EndRun	    Called after the game loop has stopped running before exiting. 
     /// </summary>
     public partial class TelepresenceSystem : Game
     {
@@ -253,6 +266,7 @@ namespace EyeOut_Telepresence
         #endregion LoadContent
 
         #region Update
+
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -261,6 +275,7 @@ namespace EyeOut_Telepresence
             view = Matrix.LookAtRH(new Vector3(0.0f, 0.0f, 7.0f), new Vector3(0, 0.0f, 0), Vector3.UnitY);
             projection = Matrix.PerspectiveFovRH(0.9f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);
 
+            
             Update_Sound();
             Update_Input();
         }
@@ -287,6 +302,27 @@ namespace EyeOut_Telepresence
             UnloadContent_Sprites();
             base.UnloadContent();
         }
+
+
+
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #region LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        public static void LOG(string _msg)
+        {
+            C_Logger.Instance.LOG(e_LogMsgSource.oculus, _msg);
+        }
+
+        public static void LOG_err(string _msg)
+        {
+            C_Logger.Instance.LOG_err(e_LogMsgSource.oculus_err, _msg);
+        }
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #endregion LOG
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     }
 }
 

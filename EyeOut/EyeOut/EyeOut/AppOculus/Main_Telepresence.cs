@@ -40,8 +40,12 @@ namespace EyeOut
             LOG_filterIn(e_LogMsgSource.oculus);
             LOG_filterIn(e_LogMsgSource.oculus_err);
 
+            
+
             TP_config = new TelepresenceSystemConfiguration()
             {
+                ReadCameraStream = cbReadCameraStream.IsChecked.Value,
+
                 WRITE_dataToMotors = cbWriteMotorData.IsChecked.Value,
                 READ_dataFromMotors = cbReadMotorData.IsChecked.Value,
                 gazeMark = new C_DrawGazeMark()
@@ -55,7 +59,9 @@ namespace EyeOut
                     time = cbHudTime.IsChecked.Value,
                     compas = cbHudCompas.IsChecked.Value,
                     motorPosture = cbHudMotorPosture.IsChecked.Value
-                }
+                },
+
+                TelepresenceImageViewer = guiImageViewer
             };
             TP_config.hud.time = true;
 
@@ -64,7 +70,10 @@ namespace EyeOut
 
         public void KILL_allNotNeededGui()
         {
-            timCam.Stop();
+            if (C_State.FURTHER(e_stateWebCam.ready))
+            {
+                timCam.Stop();
+            }
             timMotorDataRead.Stop();
             timSim.Stop();
         }

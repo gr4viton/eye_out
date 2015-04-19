@@ -13,6 +13,11 @@ using SharpDX.Toolkit.Input;
 using SharpOVR; // PoseF
 using EyeOut;
 
+using BaslerImage = Basler.Pylon.IImage;
+using CamImage = SharpDX.Toolkit.Graphics.Image;
+using CamTexture = SharpDX.Toolkit.Graphics.Texture2D;
+using SharpDX.Toolkit.Graphics;
+
 namespace EyeOut_Telepresence
 {
     //class MotorPosture
@@ -24,9 +29,37 @@ namespace EyeOut_Telepresence
     public partial class TelepresenceSystem : Game
     {
 
+        public void CAPTURE_cameraImage()
+        {
+
+            Basler.Pylon.IImage im = config.TelepresenceImageViewer.CaptureImage();
+            byte[] pixelData = (byte[])im.PixelData;
+            //byte[] pixelData = (byte[])config.TelepresenceImageViewer.CaptureImage().PixelData;
+
+            //BaslerImage baCam = config.TelepresenceImageViewer.CaptureImage();
+            if (pixelData == null)
+            {
+                LOG("The Image captured is null");
+                return;
+            }
+            //byte[] byCam = (byte[])baCam.PixelData; // R,G,B,A
+
+            CamImage imCam = CamImage.Load(pixelData);
+            //CamTexture.Load(device, stream);
+            texture = CamTexture.New(GraphicsDevice, imCam, TextureFlags.None, ResourceUsage.Default);
+            //, baCam.Width, baCam.Height, imCam);
+            
+            //public static Texture2D New(GraphicsDevice device, Image image, 
+            //TextureFlags flags = TextureFlags.ShaderResource, ResourceUsage usage = ResourceUsage.Immutable);
+        }
+
         public void CONTROL_motors()
         {
             ORDER_motors();
+            if (config.ReadCameraStream == true)
+            {
+                CAPTURE_cameraImage();
+            }
             if (config.READ_dataFromMotors == true)
             {
                 //MainWindow.Ms.Yaw.READ_position();

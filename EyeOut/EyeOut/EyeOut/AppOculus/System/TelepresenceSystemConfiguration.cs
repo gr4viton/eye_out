@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using ImageViewer = Basler.Pylon.Controls.WPF.ImageViewer;
+
 namespace EyeOut_Telepresence
 {
     /*
@@ -35,7 +37,12 @@ namespace EyeOut_Telepresence
         public C_HUD hud;
         public bool WRITE_dataToMotors = false;
         public bool READ_dataFromMotors = false;
+
+        public bool ReadCameraStream = false;
         public C_DrawGazeMark gazeMark;
+
+
+        public ImageViewer TelepresenceImageViewer;
 
         public TelepresenceSystemConfiguration() { }
     }

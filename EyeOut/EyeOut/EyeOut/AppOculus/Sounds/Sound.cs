@@ -103,7 +103,7 @@ namespace EyeOut_Telepresence
             geometryEffect.TextureEnabled = true;
 
         }
-        void Draw_Sound()
+        void Draw_SoundGraphicalEffects()
         {   
             if (play3D)
                 DrawAudio3D(gameTime);
