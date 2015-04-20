@@ -32,7 +32,8 @@ namespace EyeOut_Telepresence
     using SharpDX.DXGI;
 
     /// <summary>
-    /// Simple RiftGame game using SharpDX.Toolkit.
+    /// EyeOut telepresence using SharpDX.Toolkit
+    /// 
     /// Individual methods:
     /// - Initialize	Called after the Game and GraphicsDevice are created, but before LoadContent. Reference page contains code sample. 
     /// - LoadContent	Loads the content.
@@ -72,8 +73,9 @@ namespace EyeOut_Telepresence
         uint frameIndex = 0;
 
         private BasicEffect basicEffect;
-        private Texture2D texture;
+        private Texture2D cameraTexture;
         private List<GeometricPrimitive> primitives;
+        private GeometricPrimitive cameraSurface;
 
         public TelepresenceSystemConfiguration config;
 
@@ -128,14 +130,41 @@ namespace EyeOut_Telepresence
 
         }
 
+
+        ToolkitImage cameraImage;
+        PixelFormat cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
+
+        void INIT_cameraImage(Basler.Pylon.IImage baslerImage)
+        {
+            if (baslerImage != null)
+            {
+                if (cameraImage == null)
+                {
+                    // not defined yet
+                    cameraImage = ToolkitImage.New2D(baslerImage.Width, baslerImage.Height, 1, cameraPixelFormat);
+                }
+                else
+                {
+                    // only redefine if something changed
+                    if ((cameraImage.Description.Width != baslerImage.Width)
+                        ||
+                        (cameraImage.Description.Height != baslerImage.Height))
+                    {
+                        cameraImage = ToolkitImage.New2D(baslerImage.Width, baslerImage.Height, 1, cameraPixelFormat);
+                    }
+                }
+            }
+        }
         void StreamGrabber_ImageGrabbed(object sender, Basler.Pylon.ImageGrabbedEventArgs e)
         {
             // writes the grabbed image from camera into the texture
 
-            Basler.Pylon.IImage im = (Basler.Pylon.IImage)e.GrabResult;
+            Basler.Pylon.IImage baslerImage = (Basler.Pylon.IImage)e.GrabResult;
             //guiImageViewer.CaptureImage();
 
-            if (im == null)
+            INIT_cameraImage(baslerImage);
+
+            if (baslerImage == null)
             {
                 LOG("Could not retrieve grabbed image");
             }
@@ -143,35 +172,34 @@ namespace EyeOut_Telepresence
             {
                 LOG("Retrieved grabbed image");
 
-                byte[] pixelData = (byte[])im.PixelData; // R,G,B,A
+                //byte[] pixelData = (byte[])baslerImage.PixelData; // R,G,B,A
 
                 //DataBox[] db = new DataBox()[];
 
                 //IntPtr ptr = ref pixelData;
-                int arraySize = pixelData.Length;
+                //int arraySize = pixelData.Length;
 
-                IntPtr unmanagedPointer = Marshal.AllocHGlobal(arraySize);
-                Marshal.Copy(pixelData, 0, unmanagedPointer, arraySize);
+                //IntPtr unmanagedPointer = Marshal.AllocHGlobal(arraySize);
+                //Marshal.Copy(pixelData, 0, unmanagedPointer, arraySize);
                 // Call unmanaged code
 
-                ToolkitImage img = ToolkitImage.New2D(im.Width, im.Height, 1,
-                    PixelFormat.B8G8R8A8.UNorm, arraySize,
-                    unmanagedPointer);
-
-                
+                    //, arraySize,
+                    //unmanagedPointer);
+                cameraImage.PixelBuffer[0].SetPixels((byte[])baslerImage.PixelData);                
 
                 
                 //ToolkitImage imCam = ToolkitImage.Load(pixelData, true);
                 try
                 {
-                    texture = Texture2D.New(GraphicsDevice, img);
+                    cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
                 }
                 catch(Exception ex)
                 {
                     LOG("Catched exception when creating texture from camera: " + ex.Message);
                 }
 
-                Marshal.FreeHGlobal(unmanagedPointer);
+                //cameraImage.Dispose();
+                //Marshal.FreeHGlobal(unmanagedPointer);
 
                 //Texture2D txu = Texture2D.New(
                 //                                GrahpicsDevice, 
@@ -337,9 +365,13 @@ namespace EyeOut_Telepresence
                                  ToDisposeContent(GeometricPrimitive.Teapot.New(GraphicsDevice))
                              };
 
+
+            cameraSurface = ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice));
+
             // Load the texture
-            texture = Content.Load<Texture2D>("speaker");
-            basicEffect.Texture = texture;
+            //cameraTexture = Content.Load<Texture2D>("speaker");
+            cameraTexture = Content.Load<Texture2D>("cameraDefault_2015-04-20_09-34-31");
+            basicEffect.Texture = cameraTexture;
             basicEffect.TextureEnabled = true;
         }
 

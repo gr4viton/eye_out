@@ -241,6 +241,7 @@
     <ToolkitAudio Include="Content\Demo\ergon.wav" />
     <ToolkitTexture Include="Content\Demo\listen.png" />
     <ToolkitFont Include="Content\Demo\MicrosoftSansSerif10.xml" />
+    <ToolkitTexture Include="Content\Demo\cameraDefault_2015-04-20_09-34-31.png" />
     <Content Include="Content\Demo\MiniCubeTexture.fx" />
     <Content Include="Content\Demo\MiniTri.fx" />
     <ToolkitTexture Include="Content\Demo\speaker.png" />

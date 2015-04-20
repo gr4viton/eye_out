@@ -123,16 +123,17 @@ namespace EyeOut
 
         public void STOP_TP()
         {
-            if (TP_program.IsRunning)
+            if (TP_program != null)
             {
-                TP_program.Exit();
-                System.Windows.Forms.Cursor.Show(); // not working
-                C_Telepresence.LOG("The Telepresence session is stopped");
+                if (TP_program.IsRunning)
+                {
+                    TP_program.Exit();
+                    System.Windows.Forms.Cursor.Show(); // not working
+                    C_Telepresence.LOG("The Telepresence session is stopped");
+                    return;
+                }
             }
-            else
-            {
-                C_Telepresence.LOG_err("The Telepresence session is not running");
-            }
+            C_Telepresence.LOG_err("The Telepresence session is not running");
         }
 
         public void START_TP_Demo()

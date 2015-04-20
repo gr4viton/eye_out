@@ -25,12 +25,6 @@ namespace EyeOut_Telepresence
     public partial class TelepresenceSystem : Game
     {
 
-        public void CAPTURE_cameraImage()
-        {
-            // ask the camera for capture - rest is done in the StreamGrabber_ImageGrabbed handler function
-            config.streamController.TakeSingleSnapshot();
-        }
-
         public void CONTROL_motors()
         {
             ORDER_motors();
