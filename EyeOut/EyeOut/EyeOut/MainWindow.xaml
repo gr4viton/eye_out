@@ -737,7 +737,7 @@
 
                             <GroupBox Header="Camera Data">
                                 <StackPanel>
-                                    <CheckBox x:Name="cbReadCameraStream" Content="Read camera stream from selected Basler camera" IsChecked="False"/>
+                                    <CheckBox x:Name="cbReadCameraStream" Content="Read camera stream from selected Basler camera" IsChecked="True"/>
                                 </StackPanel>
                             </GroupBox>
 

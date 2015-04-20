@@ -88,7 +88,7 @@ namespace EyeOut_Telepresence
                 }
 
 
-                str.AppendLine(string.Format("X[{0}]Y[{1}]Z[{2}]W[{3}]", Q.X, Q.Y, Q.Z, Q.W));
+                //str.AppendLine(string.Format("X[{0}]Y[{1}]Z[{2}]W[{3}]", Q.X, Q.Y, Q.Z, Q.W));
                 str.AppendLine(string.Format("Angle[{0}] Axis[{1}]", Q.Angle, Q.Axis));
                 str.AppendLine(string.Format("YawPitchRoll[rad] [{0,7:0.0000}|{1,7:0.0000}|{2,7:0.0000}]",
                     yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]
@@ -110,6 +110,19 @@ namespace EyeOut_Telepresence
 
                 str.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
                 str.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
+                if (cameraImage != null)
+                {
+                    str.AppendLine(cameraImage.Description.Format.ToString());
+
+                    str.AppendLine(string.Format("len={0},wid*hei={1},data=",
+                        pixelData.Length,
+                        cameraImage.Description.Width * cameraImage.Description.Height
+                        ));
+                    for(q=0; q<10;q++)
+                    {
+                        str.Append(string.Format("{0,4:0}",pixelData[q].ToString()));
+                    }
+                }
                 text = str.ToString();
                 //q = 0;
                 //msg.Append(string.Format("YAW={0,5:0.00}°\tPITCH={1,5:0.00}°\tROLL={2,5:0.00}°", yawPitchRoll_d[q + 0], yawPitchRoll_d[q + 1], yawPitchRoll_d[q + 2]));

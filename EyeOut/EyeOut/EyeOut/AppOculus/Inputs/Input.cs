@@ -140,6 +140,33 @@ namespace EyeOut_Telepresence
                 return;
             }
 
+            if (keyboardState.IsKeyPressed(Keys.T))
+            {
+                //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
+                cameraImage.Description.Format = cameraImage.Description.Format+1;
+                return;
+            }
+
+            if (keyboardState.IsKeyPressed(Keys.Y))
+            {
+                //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
+                cameraImage.Description.Format = cameraImage.Description.Format + 2;
+                return;
+            }
+            if (keyboardState.IsKeyPressed(Keys.U))
+            {
+                //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
+                cameraImage.Description.Format = cameraImage.Description.Format + 3;
+                return;
+            }
+
+            if (keyboardState.IsKeyPressed(Keys.I))
+            {
+                //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
+                cameraImage.Description.Format = cameraImage.Description.Format + 5;
+                return;
+            }
+
             if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Control))
             {
                 //config.READ_dataFromMotors ^= true; // toggle

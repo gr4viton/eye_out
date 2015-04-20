@@ -36,12 +36,15 @@ namespace EyeOut_Telepresence
     /// </summary>
     public partial class TelepresenceSystem : Game
     {
+        
+        //private List<GeometricPrimitive> primitives;
+
 
         private BasicEffect cameraBasicEffect;
         private Texture2D cameraTexture;
-        private List<GeometricPrimitive> primitives;
         private GeometricPrimitive cameraSurface;
-
+        private byte[] pixelData;
+        private bool notGrabbedYet = true;
 
         public void CAPTURE_cameraImage()
         {
@@ -50,6 +53,43 @@ namespace EyeOut_Telepresence
         }
 
 
+        void ConvertTexture()
+        {
+            //http://sharpdx.org/forum/5-api-usage/3214-d3d11-surface-datastream-to-bitmap
+            //using (var stagingTexture = CreateStagingTexture())
+            //{
+            //    _deviceContext.CopyResource(renderToTextureRtv.Resource, stagingTexture);
+
+            //    DataStream stream;
+            //    var wb = new WriteableBitmap(Width, Height);
+
+            //    try
+            //    {
+            //        var dataBox = _deviceContext.MapSubresource(stagingTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None, out stream);
+            //        var line = new byte[Width * 4];
+
+            //        using (var s = wb.PixelBuffer.AsStream())
+            //        {
+            //            for (int i = 0; i < Height; i++)
+            //            {
+            //                stream.Seek(i * dataBox.RowPitch, System.IO.SeekOrigin.Begin);
+            //                stream.Read(line, 0, line.Length);
+
+            //                s.Seek(i * Width * 4, System.IO.SeekOrigin.Begin);
+            //                s.Write(line, 0, line.Length);
+            //            }
+            //        }
+            //    }
+            //    finally
+            //    {
+            //        if (stream != null)
+            //            stream.Dispose();
+            //        _deviceContext.UnmapSubresource(stagingTexture, 0);
+            //        wb.Invalidate();
+            //    }
+            //    return wb;
+            //}        
+        }
         void StreamGrabber_ImageGrabbed(object sender, Basler.Pylon.ImageGrabbedEventArgs e)
         {
             // writes the grabbed image from camera into the texture
@@ -67,54 +107,89 @@ namespace EyeOut_Telepresence
             {
                 LOG("Retrieved grabbed image");
 
-                //byte[] pixelData = (byte[])baslerImage.PixelData; // R,G,B,A
-
                 //DataBox[] db = new DataBox()[];
+                //cameraImage.Description.Format = Format.R8G8B8A8_UNorm_SRgb;
+                pixelData = (byte[])baslerImage.PixelData;
 
-                //IntPtr ptr = ref pixelData;
-                //int arraySize = pixelData.Length;
+                int length = pixelData.Length;
+                int width = baslerImage.Width;
+                int height = baslerImage.Height;
 
-                //IntPtr unmanagedPointer = Marshal.AllocHGlobal(arraySize);
-                //Marshal.Copy(pixelData, 0, unmanagedPointer, arraySize);
-                // Call unmanaged code
+                //byte[] txuData = new byte[length];
+                
+                //int i = 0;
+                //for (int dif = 0; dif < 3; dif++)
+                //{
+                //    for (int x = 0; x < width; x++)
+                //    {
+                //        txuData[x+dif] = pixelData[x*3+dif];
+                //    }
+                //}
 
-                //, arraySize,
-                //unmanagedPointer);
-                cameraImage.PixelBuffer[0].SetPixels((byte[])baslerImage.PixelData);
+
+                if (notGrabbedYet == true)
+                {
+
+                    cameraImage = ToolkitImage.New2D(width, height, 1, cameraPixelFormat);
+                    cameraImage.PixelBuffer[0].SetPixels(pixelData, 0);
+                    notGrabbedYet = false;
+                }
+                else
+                {
 
 
-                //ToolkitImage imCam = ToolkitImage.Load(pixelData, true);
+                    //txuData = pixelData;
+                    int indexRed = 0;
+                    Color pixelColor;
+                    for (int y = 0; y < height; y++)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            //txuData[y+x*y] = pixelData
+                            indexRed = 3 * (x + y * width);
+                            if (indexRed + 2 < length)
+                            {
+                                pixelColor = new Color(pixelData[indexRed], pixelData[indexRed + 1], pixelData[indexRed + 2]);
+                                cameraImage.PixelBuffer[0].SetPixel(x, y, pixelColor);
+
+                            }
+                        }
+                    }
+                    //cameraImage.PixelBuffer[0].SetPixels(txuData,0);
+                }
+
+                
+        //SharpDX.WIC.PixelFormat.Format32bppPRGBA,
+                
+ 
+                //var bitmapDecoder = new SharpDX.WIC.BitmapDecoder( devices.WICFactory, filepath, SharpDX.WIC.DecodeOptions.CacheOnDemand );
+             
+                //var formatConverter = new SharpDX.WIC.FormatConverter( devices.WICFactory );
+ 
+                //formatConverter.Initialize(
+                //        bitmapDecoder.GetFrame(0),
+                //        SharpDX.WIC.PixelFormat.Format32bppPRGBA,
+                //        SharpDX.WIC.BitmapDitherType.None,
+                //        null,
+                //        0.0,
+                //        SharpDX.WIC.BitmapPaletteType.Custom);
+ 
+                //Texture2D tex = CreateTexture2DFromBitmap(devices.3D3Device, formatConverter, ref desc);
+ 
+                //formatConverter.Dispose();
+                //bitmapDecoder.Dispose();
+
                 try
                 {
                     cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
+                    //cameraTexture = Texture2D.New(GraphicsDevice, width, height, PixelFormat.B8G8R8A8.UNorm);
+                    //cameraTexture.SetData<Byte>(pixelData);\
+                    //cameraTexture.SetData(cameraImage);
                 }
                 catch (Exception ex)
                 {
                     LOG("Catched exception when creating texture from camera: " + ex.Message);
                 }
-
-                //cameraImage.Dispose();
-                //Marshal.FreeHGlobal(unmanagedPointer);
-
-                //Texture2D txu = Texture2D.New(
-                //                                GrahpicsDevice, 
-                //                                im.Width, 
-                //                                im.Height, 
-                //                                1, 
-                //                                PixelFormat.B8G8R8X8.UNorm, 
-                //                                db);
-
-                //,TextureFlags.None );
-
-
-                //CamTexture.Load(device, stream);
-                //texture = CamTexture.New(GraphicsDevice, imCam, TextureFlags.None, ResourceUsage.Default);
-                //, baCam.Width, baCam.Height, imCam);
-
-                //public static Texture2D New(GraphicsDevice device, Image image, 
-                //TextureFlags flags = TextureFlags.ShaderResource, ResourceUsage usage = ResourceUsage.Immutable);
-                //texture = 
-                //throw new NotImplementedException();
             }
 
         }
@@ -136,7 +211,8 @@ namespace EyeOut_Telepresence
             //GraphicsDevice.SetRasterizerState(i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack);
 
             //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
-
+            //cameraBasicEffect.VertexColorEnabled = true;
+            cameraBasicEffect.TextureEnabled = true;
             cameraBasicEffect.Texture = cameraTexture;
             //cameraSurface.VertexBuffer = 
             // Draw the primitive using BasicEffect
@@ -160,6 +236,9 @@ namespace EyeOut_Telepresence
             // Load the texture
             //cameraTexture = Content.Load<Texture2D>("speaker");
             cameraTexture = Content.Load<Texture2D>("cameraDefault_2015-04-20_09-34-31");
+            
+            
+            //cameraTexture = Texture2D.New(GraphicsDevice, width, height, PixelFormat.B8G8R8A8.UNorm);
             cameraBasicEffect.Texture = cameraTexture;
             cameraBasicEffect.TextureEnabled = true;
         }

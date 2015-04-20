@@ -68,6 +68,7 @@ namespace EyeOut_Telepresence
             {
                 text = String.Format("{0}{0}{0}", "Hello World - EyeOut is comming to town!\n");
             }
+
             //var dim = fontDefault.MeasureString(text);
             var dim = fontDefault.MeasureString(text);
             int diff = -452; // for DK1
@@ -87,14 +88,6 @@ namespace EyeOut_Telepresence
 
             //spriteBatch.DrawString(courrierNew10, "Measured: " + dim, new SharpDX.Vector2(x, y + dim.Y + 5), SharpDX.Color.GreenYellow);
 
-            // Update the FPS text
-            frameCount++;
-            if (fpsClock.ElapsedMilliseconds > 1000.0f)
-            {
-                fpsText = string.Format("{0:F2} FPS", (float)frameCount * 1000 / fpsClock.ElapsedMilliseconds);
-                frameCount = 0;
-                fpsClock.Restart();
-            }
 
             //spriteBatch.DrawString(defaultFont, "  " + SpriteCount + "\nSprites", new Vector2(spriteSceneWidth - 32, spriteSceneHeight - 24), Color.White);
             spriteBatch.DrawString(fontDefault, fpsText, new Vector2(x, y + 200), Color.Black);
