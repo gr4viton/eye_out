@@ -88,59 +88,21 @@ namespace EyeOut_Telepresence
 
                 if (first == true)
                 {
-                    pixelDataConverter = new Basler.Pylon.PixelDataConverter();
-                    //pixelDataConverter.OutputPixelFormat = Basler.Pylon.PixelType.RGB8planar;
-                    //pixelDataConverter.OutputPixelFormat = Basler.Pylon.PixelType.RGB8packed;
-                    pixelDataConverter.OutputPixelFormat = Basler.Pylon.PixelType.BGR8packed;
+                    
                     //cameraPixelFormat = PixelFormat..R8G8B8A8.UNorm;
                     cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
-                    //R8G8_B8G8_UNorm
-                    width = baslerImage.Width;
-                    height = baslerImage.Height;
-                    rgbLen = pixelDataConverter.GetBufferSizeForConversion(pixelDataConverter.OutputPixelFormat, width, height);
-                    rgbPixelData = new byte[rgbLen];
-
-                    rgbaLen = (rgbLen / 3) * 4;
-                    pixelData = new byte[rgbaLen];
-
-                    //cameraImage = ToolkitImage.New2D(width, height, 1, cameraPixelFormat);
-                    //cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
-                    //cameraTexture = Texture2D.New(GraphicsDevice, width, height, 0, Usage.Shared, cameraPixelFormat);
-                    cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
-
-
+                    
                     pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
                     width = config.imageViewer.CaptureImage().Width;
                     height = config.imageViewer.CaptureImage().Height;
                     cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
+                    first = false;
                 }
                 else
                 {
                     pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
                     cameraTexture.SetData<byte>(pixelData);
                 }
-                //LOG("Start conversion");
-                //pixelDataConverter.Convert(rgbPixelData, baslerImage);
-                //LOG("Stop conversion");
-                //LOG("Start add alpha");
-                //int q = 0;
-                //for (int i = 0; i < rgbLen; i++)
-                //{
-                //    pixelData[q] = rgbPixelData[i];
-                //    q++;
-                //    // if first
-                //    if (i % 3 == 2) // every third pixel color 
-                //    {
-                //        pixelData[q] = 255;
-                //        q++;
-                //    }
-                //}
-                //LOG("Stop add alpha");
-
-                //// copy our buffer to the texture
-                //cameraTexture.SetData<byte>(pixelData);
-                ////cameraTexture.SetData<byte>(rgbPixelData);
-
 
                 //http://stackoverflow.com/questions/2869801/is-there-a-fast-alternative-to-creating-a-texture2d-from-a-bitmap-object-in-xna
 
