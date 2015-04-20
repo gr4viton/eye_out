@@ -90,19 +90,19 @@ namespace EyeOut_Telepresence
 
                 //str.AppendLine(string.Format("X[{0}]Y[{1}]Z[{2}]W[{3}]", Q.X, Q.Y, Q.Z, Q.W));
                 str.AppendLine(string.Format("Angle[{0}] Axis[{1}]", Q.Angle, Q.Axis));
-                str.AppendLine(string.Format("YawPitchRoll[rad] [{0,7:0.0000}|{1,7:0.0000}|{2,7:0.0000}]",
-                    yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]
-                    ));
                 //str.AppendLine(string.Format("YawPitchRoll[rad] [{0,7:0.0000}|{1,7:0.0000}|{2,7:0.0000}]",
-                //    (double)(yawPitchRoll[0]), (double)(yawPitchRoll[1]), (double)(yawPitchRoll[2])
+                //    yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]
                 //    ));
+                ////str.AppendLine(string.Format("YawPitchRoll[rad] [{0,7:0.0000}|{1,7:0.0000}|{2,7:0.0000}]",
+                ////    (double)(yawPitchRoll[0]), (double)(yawPitchRoll[1]), (double)(yawPitchRoll[2])
+                ////    ));
 
-                //str.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                //    (double)(yawPitchRoll[0]) * 57, (double)(yawPitchRoll[1]) * C_Value.deg2rad, (double)(yawPitchRoll[2]) * (double)57
-                //    ));
-                //float pif = 3.141592f;
-                //double pid = (double)pif;
-                //str.AppendLine(string.Format("{0}f == {1}d", pif,pid ));
+                ////str.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                ////    (double)(yawPitchRoll[0]) * 57, (double)(yawPitchRoll[1]) * C_Value.deg2rad, (double)(yawPitchRoll[2]) * (double)57
+                ////    ));
+                ////float pif = 3.141592f;
+                ////double pid = (double)pif;
+                ////str.AppendLine(string.Format("{0}f == {1}d", pif,pid ));
                 str.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
                     yawPitchRoll_d[0], yawPitchRoll_d[1], yawPitchRoll_d[2]
                     ));
@@ -118,9 +118,14 @@ namespace EyeOut_Telepresence
                         pixelData.Length,
                         cameraImage.Description.Width * cameraImage.Description.Height
                         ));
-                    for(q=0; q<10;q++)
+                    int width = cameraImage.Description.Width;
+                    for (int y = 0; y < 6; y++)
                     {
-                        str.Append(string.Format("{0,4:0}",pixelData[q].ToString()));
+                        for (q = 0; q < 6; q++)
+                        {
+                            str.Append(string.Format("{0,4:0}", pixelData[q + y * (width-1)].ToString()));
+                        }
+                        str.Append("\n");
                     }
                 }
                 text = str.ToString();

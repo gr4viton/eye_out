@@ -40,6 +40,9 @@ namespace EyeOut_Telepresence
         //private List<GeometricPrimitive> primitives;
 
 
+        ToolkitImage cameraImage;
+        PixelFormat cameraPixelFormat = PixelFormat.R8G8B8A8.UNorm;
+        //PixelFormat cameraPixelFormat = PixelFormat.R8;
         private BasicEffect cameraBasicEffect;
         private Texture2D cameraTexture;
         private GeometricPrimitive cameraSurface;
@@ -95,6 +98,14 @@ namespace EyeOut_Telepresence
             // writes the grabbed image from camera into the texture
 
             Basler.Pylon.IImage baslerImage = (Basler.Pylon.IImage)e.GrabResult;
+            Basler.Pylon.PixelDataConverter pixelDataConverter = new Basler.Pylon.PixelDataConverter();
+            pixelDataConverter.OutputPixelFormat = Basler.Pylon.PixelType.RGB8packed;
+
+            int len = baslerImage.Width * baslerImage.Height * 3; 
+            byte[] rgbPixelData = new byte[len];
+            pixelDataConverter.Convert(rgbPixelData, baslerImage);
+
+
             //guiImageViewer.CaptureImage();
 
             INIT_cameraImage(baslerImage);
@@ -112,8 +123,12 @@ namespace EyeOut_Telepresence
                 pixelData = (byte[])baslerImage.PixelData;
 
                 int length = pixelData.Length;
-                int width = baslerImage.Width;
-                int height = baslerImage.Height;
+                int width = baslerImage.Width ;
+                int height = baslerImage.Height ;
+                int halfWidth = width /2;
+                int halfHeight = height / 2;
+                int doubllelWidth = baslerImage.Width * 2;
+                int doubleHeight = baslerImage.Height * 2;
 
                 //byte[] txuData = new byte[length];
                 
@@ -129,33 +144,44 @@ namespace EyeOut_Telepresence
 
                 if (notGrabbedYet == true)
                 {
-
-                    cameraImage = ToolkitImage.New2D(width, height, 1, cameraPixelFormat);
+                    
+                    cameraImage = ToolkitImage.New2D(halfWidth, halfHeight, 1, cameraPixelFormat);
                     cameraImage.PixelBuffer[0].SetPixels(pixelData, 0);
+
+                    //cameraTexture = new Texture2D(GraphicsDevice, width, height, cameraPixelFormat, 1);
+                    //cameraTexture.Dispose();
+                    cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
+
                     notGrabbedYet = false;
                 }
                 else
                 {
 
 
-                    //txuData = pixelData;
-                    int indexRed = 0;
-                    Color pixelColor;
-                    for (int y = 0; y < height; y++)
-                    {
-                        for (int x = 0; x < width; x++)
-                        {
-                            //txuData[y+x*y] = pixelData
-                            indexRed = 3 * (x + y * width);
-                            if (indexRed + 2 < length)
-                            {
-                                pixelColor = new Color(pixelData[indexRed], pixelData[indexRed + 1], pixelData[indexRed + 2]);
-                                cameraImage.PixelBuffer[0].SetPixel(x, y, pixelColor);
+                    //cameraImage.PixelBuffer[0].SetPixels(pixelData, 0);
+                    //int indexRed = 0;
+                    //int indexGreen1 = 0;
+                    //int indexGreen2 = 0;
+                    //int indexBlue = 0;
+                    //Color pixelColor;
+                    //for (int y = 0; y < halfHeight; y++)
+                    //{
+                    //    for (int x = 0; x < halfWidth; x++)
+                    //    {
+                    //        indexBlue = x + y * doubllelWidth;
+                    //        //txuData[y+x*y] = pixelData
+                    //        indexRed = (x + y * halfWidth);
+                    //        if (indexRed + 2 < length)
+                    //        {
+                    //            pixelColor = new Color(pixelData[indexRed], pixelData[indexGreen1,] pixelData[indexBlue]);
+                    //            cameraImage.PixelBuffer[0].SetPixel(x, y, pixelColor);
 
-                            }
-                        }
-                    }
-                    //cameraImage.PixelBuffer[0].SetPixels(txuData,0);
+                    //        }
+                    //    }
+                    //}
+                    //baslerImage.PixelTypeValue = Basler.Pylon.PixelType.RGB8packed;
+                    cameraImage.PixelBuffer[0].SetPixels(pixelData, 0);
+                    cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
                 }
 
                 
@@ -182,6 +208,7 @@ namespace EyeOut_Telepresence
                 try
                 {
                     cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
+                    
                     //cameraTexture = Texture2D.New(GraphicsDevice, width, height, PixelFormat.B8G8R8A8.UNorm);
                     //cameraTexture.SetData<Byte>(pixelData);\
                     //cameraTexture.SetData(cameraImage);

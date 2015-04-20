@@ -128,8 +128,6 @@ namespace EyeOut_Telepresence
         }
 
 
-        ToolkitImage cameraImage;
-        PixelFormat cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
 
         void INIT_cameraImage(Basler.Pylon.IImage baslerImage)
         {
