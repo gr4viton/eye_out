@@ -97,6 +97,7 @@ namespace EyeOut_Telepresence
 
                 // Perform the actual drawing
                 Draw_Model(gameTime);
+                Draw_BaslerCamera(gameTime);
                 //DrawFonts((int)eye);
             }
 

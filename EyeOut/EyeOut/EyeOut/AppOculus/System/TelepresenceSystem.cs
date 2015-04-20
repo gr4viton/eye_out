@@ -73,9 +73,7 @@ namespace EyeOut_Telepresence
         uint frameIndex = 0;
 
         private BasicEffect basicEffect;
-        private Texture2D cameraTexture;
-        private List<GeometricPrimitive> primitives;
-        private GeometricPrimitive cameraSurface;
+        private Texture2D primitiveTexture;
 
         public TelepresenceSystemConfiguration config;
 
@@ -91,8 +89,7 @@ namespace EyeOut_Telepresence
         {
             // configuration
             config = _configuration;
-
-            config.streamController.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+            Constructor_BaslerCamera();
             
             // Creates a graphics manager. This is mandatory.
             graphicsDeviceManager = new GraphicsDeviceManager(this);
@@ -154,74 +151,6 @@ namespace EyeOut_Telepresence
                     }
                 }
             }
-        }
-        void StreamGrabber_ImageGrabbed(object sender, Basler.Pylon.ImageGrabbedEventArgs e)
-        {
-            // writes the grabbed image from camera into the texture
-
-            Basler.Pylon.IImage baslerImage = (Basler.Pylon.IImage)e.GrabResult;
-            //guiImageViewer.CaptureImage();
-
-            INIT_cameraImage(baslerImage);
-
-            if (baslerImage == null)
-            {
-                LOG("Could not retrieve grabbed image");
-            }
-            else
-            {
-                LOG("Retrieved grabbed image");
-
-                //byte[] pixelData = (byte[])baslerImage.PixelData; // R,G,B,A
-
-                //DataBox[] db = new DataBox()[];
-
-                //IntPtr ptr = ref pixelData;
-                //int arraySize = pixelData.Length;
-
-                //IntPtr unmanagedPointer = Marshal.AllocHGlobal(arraySize);
-                //Marshal.Copy(pixelData, 0, unmanagedPointer, arraySize);
-                // Call unmanaged code
-
-                    //, arraySize,
-                    //unmanagedPointer);
-                cameraImage.PixelBuffer[0].SetPixels((byte[])baslerImage.PixelData);                
-
-                
-                //ToolkitImage imCam = ToolkitImage.Load(pixelData, true);
-                try
-                {
-                    cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
-                }
-                catch(Exception ex)
-                {
-                    LOG("Catched exception when creating texture from camera: " + ex.Message);
-                }
-
-                //cameraImage.Dispose();
-                //Marshal.FreeHGlobal(unmanagedPointer);
-
-                //Texture2D txu = Texture2D.New(
-                //                                GrahpicsDevice, 
-                //                                im.Width, 
-                //                                im.Height, 
-                //                                1, 
-                //                                PixelFormat.B8G8R8X8.UNorm, 
-                //                                db);
-                 
-    //,TextureFlags.None );
-                
-                
-                //CamTexture.Load(device, stream);
-                //texture = CamTexture.New(GraphicsDevice, imCam, TextureFlags.None, ResourceUsage.Default);
-                //, baCam.Width, baCam.Height, imCam);
-
-                //public static Texture2D New(GraphicsDevice device, Image image, 
-                //TextureFlags flags = TextureFlags.ShaderResource, ResourceUsage usage = ResourceUsage.Immutable);
-                //texture = 
-                //throw new NotImplementedException();
-            }
-
         }
 
         protected override void Initialize()
@@ -325,6 +254,7 @@ namespace EyeOut_Telepresence
             LoadContent_Models();
             LoadContent_Font();
             LoadContent_Sound();
+            LoadContent_BaslerCamera();
 
             base.LoadContent();
 
@@ -353,26 +283,24 @@ namespace EyeOut_Telepresence
             basicEffect.PreferPerPixelLighting = true;
             basicEffect.EnableDefaultLighting();
 
-            // Creates all primitives
-            primitives = new List<GeometricPrimitive>
-                             {
-                                 ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice)),
-                                 ToDisposeContent(GeometricPrimitive.Cube.New(GraphicsDevice)),
-                                 ToDisposeContent(GeometricPrimitive.Sphere.New(GraphicsDevice)),
-                                 ToDisposeContent(GeometricPrimitive.GeoSphere.New(GraphicsDevice)),
-                                 ToDisposeContent(GeometricPrimitive.Torus.New(GraphicsDevice)),
-                                 ToDisposeContent(GeometricPrimitive.Cylinder.New(GraphicsDevice)),
-                                 ToDisposeContent(GeometricPrimitive.Teapot.New(GraphicsDevice))
-                             };
+            //// Creates all primitives
+            //primitives = new List<GeometricPrimitive>
+            //                 {
+            //                     ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice)),
+            //                     ToDisposeContent(GeometricPrimitive.Cube.New(GraphicsDevice)),
+            //                     ToDisposeContent(GeometricPrimitive.Sphere.New(GraphicsDevice)),
+            //                     ToDisposeContent(GeometricPrimitive.GeoSphere.New(GraphicsDevice)),
+            //                     ToDisposeContent(GeometricPrimitive.Torus.New(GraphicsDevice)),
+            //                     ToDisposeContent(GeometricPrimitive.Cylinder.New(GraphicsDevice)),
+            //                     ToDisposeContent(GeometricPrimitive.Teapot.New(GraphicsDevice))
+            //                 };
 
 
-            cameraSurface = ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice));
-
-            // Load the texture
-            //cameraTexture = Content.Load<Texture2D>("speaker");
-            cameraTexture = Content.Load<Texture2D>("cameraDefault_2015-04-20_09-34-31");
-            basicEffect.Texture = cameraTexture;
-            basicEffect.TextureEnabled = true;
+            //// Load the texture
+            ////cameraTexture = Content.Load<Texture2D>("speaker");
+            //primitiveTexture = Content.Load<Texture2D>("speaker");
+            //basicEffect.Texture = primitiveTexture;
+            //basicEffect.TextureEnabled = true;
         }
 
         #endregion LoadContent

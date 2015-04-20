@@ -140,6 +140,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AppOculus\Graphics\Cameras\BaslerCamera.cs" />
     <Compile Include="AppOculus\Graphics\Graphics.cs" />
     <Compile Include="AppOculus\Outputs\MotorPosture.cs" />
     <Compile Include="AppOculus\System\TelepresenceSystemConfiguration.cs" />
@@ -220,7 +221,6 @@
     <Resource Include="Content\pic\eyeout.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AppOculus\Graphics\Cameras\" />
     <Folder Include="AppOculus\Graphics\Models\" />
     <Folder Include="AppOculus\Graphics\Shaders\" />
   </ItemGroup>

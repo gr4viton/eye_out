@@ -112,32 +112,32 @@ namespace EyeOut_Telepresence
         public void Draw_Geometrics()
         {
 
-            // Render each primitive
-            for (int i = 0; i < primitives.Count; i++)
-            {
-                var primitive = primitives[i];
+            //// Render each primitive
+            //for (int i = 0; i < primitives.Count; i++)
+            //{
+            //    var primitive = primitives[i];
 
-                // Calculate the translation
-                float dx = ((i + 1) % 4);
-                float dy = ((i + 1) / 4);
+            //    // Calculate the translation
+            //    float dx = ((i + 1) % 4);
+            //    float dy = ((i + 1) / 4);
 
-                float x = (dx - 1.5f) * 1.7f;
-                float y = 1.0f - 2.0f * dy;
+            //    float x = (dx - 1.5f) * 1.7f;
+            //    float y = 1.0f - 2.0f * dy;
 
-                var time = (float)gameTime.TotalGameTime.TotalSeconds + i;
+            //    var time = (float)gameTime.TotalGameTime.TotalSeconds + i;
 
-                // Setup the World matrice for this primitive
-                basicEffect.World = Matrix.Scaling((float)Math.Sin(time * 1.5f) * 0.2f + 1.0f) * Matrix.RotationX(time) * Matrix.RotationY(time * 2.0f) * Matrix.RotationZ(time * .7f) * Matrix.Translation(x, y, 0);
+            //    // Setup the World matrice for this primitive
+            //    basicEffect.World = Matrix.Scaling((float)Math.Sin(time * 1.5f) * 0.2f + 1.0f) * Matrix.RotationX(time) * Matrix.RotationY(time * 2.0f) * Matrix.RotationZ(time * .7f) * Matrix.Translation(x, y, 0);
 
-                // Render the name of the primitive
-                spriteBatch.DrawString(defaultFont, primitive.Name, new Vector2(GraphicsDevice.BackBuffer.Width * (0.08f + dx / 4.0f), GraphicsDevice.BackBuffer.Height * (0.47f + dy / 2.2f)), Color.White);
+            //    // Render the name of the primitive
+            //    spriteBatch.DrawString(defaultFont, primitive.Name, new Vector2(GraphicsDevice.BackBuffer.Width * (0.08f + dx / 4.0f), GraphicsDevice.BackBuffer.Height * (0.47f + dy / 2.2f)), Color.White);
 
-                // Disable Cull only for the plane primitive, otherwise use standard culling
-                GraphicsDevice.SetRasterizerState(i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack);
+            //    // Disable Cull only for the plane primitive, otherwise use standard culling
+            //    GraphicsDevice.SetRasterizerState(i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack);
 
-                // Draw the primitive using BasicEffect
-                primitive.Draw(basicEffect);
-            }
+            //    // Draw the primitive using BasicEffect
+            //    primitive.Draw(basicEffect);
+            //}
         }
         public void EndDraw_Font()
         {

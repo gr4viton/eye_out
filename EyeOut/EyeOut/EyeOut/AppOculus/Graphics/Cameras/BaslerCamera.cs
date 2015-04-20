@@ -37,6 +37,12 @@ namespace EyeOut_Telepresence
     public partial class TelepresenceSystem : Game
     {
 
+        private BasicEffect cameraBasicEffect;
+        private Texture2D cameraTexture;
+        private List<GeometricPrimitive> primitives;
+        private GeometricPrimitive cameraSurface;
+
+
         public void CAPTURE_cameraImage()
         {
             // ask the camera for capture - rest is done in the StreamGrabber_ImageGrabbed handler function
@@ -111,6 +117,51 @@ namespace EyeOut_Telepresence
                 //throw new NotImplementedException();
             }
 
+        }
+
+        protected virtual void Draw_BaslerCamera(GameTime gameTime)
+        {
+            int i = 0;
+            // Calculate the translation
+            float dx = ((i + 1) % 4);
+            float dy = ((i + 1) / 4);
+
+            float x = (dx - 1.5f) * 1.7f;
+            float y = 1.0f - 2.0f * dy;
+
+            // Setup the World matrice for this primitive
+            //basicEffect.World = Matrix.Scaling((float)Math.Sin(gameTime * 1.5f) * 0.2f + 1.0f) * Matrix.RotationX(gameTime) * Matrix.RotationY(time * 2.0f) * Matrix.RotationZ(time * .7f) * Matrix.Translation(x, y, 0);
+            
+            // Disable Cull only for the plane primitive, otherwise use standard culling
+            //GraphicsDevice.SetRasterizerState(i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack);
+
+            //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
+
+            cameraBasicEffect.Texture = cameraTexture;
+            //cameraSurface.VertexBuffer = 
+            // Draw the primitive using BasicEffect
+            cameraSurface.Draw(cameraBasicEffect);
+        }
+
+        public void Constructor_BaslerCamera()
+        {
+            if (config.ReadCameraStream == true)
+            {
+                config.streamController.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+            }
+        }
+
+        public void LoadContent_BaslerCamera()
+        {
+            //config.streamController.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+            cameraBasicEffect = ToDisposeContent(new BasicEffect(GraphicsDevice));
+            cameraSurface = ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice));
+
+            // Load the texture
+            //cameraTexture = Content.Load<Texture2D>("speaker");
+            cameraTexture = Content.Load<Texture2D>("cameraDefault_2015-04-20_09-34-31");
+            cameraBasicEffect.Texture = cameraTexture;
+            cameraBasicEffect.TextureEnabled = true;
         }
     }
 }
