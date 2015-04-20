@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using StreamController = Basler.Pylon.Controls.WPF.StreamController;
+using ImageViewer = Basler.Pylon.Controls.WPF.ImageViewer;
 
 namespace EyeOut_Telepresence
 {
@@ -42,6 +43,7 @@ namespace EyeOut_Telepresence
         public C_DrawGazeMark gazeMark;
 
 
+        public ImageViewer imageViewer;
         public StreamController streamController;
 
         public TelepresenceSystemConfiguration() { }

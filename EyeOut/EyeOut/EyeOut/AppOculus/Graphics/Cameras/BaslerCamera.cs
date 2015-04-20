@@ -76,6 +76,8 @@ namespace EyeOut_Telepresence
             // writes the grabbed image from camera into the texture
             Basler.Pylon.IImage baslerImage = (Basler.Pylon.IImage)e.GrabResult;
             
+            
+
             if (baslerImage == null)
             {
                 LOG("Could not retrieve grabbed image");
@@ -92,69 +94,55 @@ namespace EyeOut_Telepresence
                     pixelDataConverter.OutputPixelFormat = Basler.Pylon.PixelType.BGR8packed;
                     //cameraPixelFormat = PixelFormat..R8G8B8A8.UNorm;
                     cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
+                    //R8G8_B8G8_UNorm
                     width = baslerImage.Width;
                     height = baslerImage.Height;
                     rgbLen = pixelDataConverter.GetBufferSizeForConversion(pixelDataConverter.OutputPixelFormat, width, height);
                     rgbPixelData = new byte[rgbLen];
+
                     rgbaLen = (rgbLen / 3) * 4;
                     pixelData = new byte[rgbaLen];
-                    
+
                     //cameraImage = ToolkitImage.New2D(width, height, 1, cameraPixelFormat);
                     //cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
                     //cameraTexture = Texture2D.New(GraphicsDevice, width, height, 0, Usage.Shared, cameraPixelFormat);
                     cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
+
+
+                    pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
+                    width = config.imageViewer.CaptureImage().Width;
+                    height = config.imageViewer.CaptureImage().Height;
+                    cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
                 }
-                LOG("Start conversion");
-                pixelDataConverter.Convert(rgbPixelData, baslerImage);
-                LOG("Stop conversion");
-                LOG("Start add alpha");
-                int q = 0;
-                for (int i = 0; i < rgbLen; i++)
+                else
                 {
-                    pixelData[q] = rgbPixelData[i];
-                    q++;
-                    // if first
-                    if (i % 3 == 2) // every third pixel color 
-                    {
-                        pixelData[q] = 255;
-                        q++;
-                    }
+                    pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
+                    cameraTexture.SetData<byte>(pixelData);
                 }
-                LOG("Stop add alpha");
-
-                //cameraImage.PixelBuffer[0].SetPixels(rgbPixelData);
-                //cameraImage.PixelBuffer[0].SetPixels(pixelData);
-                //cameraImage.PixelBuffer[0].CopyTo(
-                //if (first == true)
+                //LOG("Start conversion");
+                //pixelDataConverter.Convert(rgbPixelData, baslerImage);
+                //LOG("Stop conversion");
+                //LOG("Start add alpha");
+                //int q = 0;
+                //for (int i = 0; i < rgbLen; i++)
                 //{
+                //    pixelData[q] = rgbPixelData[i];
+                //    q++;
+                //    // if first
+                //    if (i % 3 == 2) // every third pixel color 
+                //    {
+                //        pixelData[q] = 255;
+                //        q++;
+                //    }
+                //}
+                //LOG("Stop add alpha");
 
-                // too slow
-                //cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
-
-                // copy our buffer to the texture
+                //// copy our buffer to the texture
                 //cameraTexture.SetData<byte>(pixelData);
-                cameraTexture.SetData<byte>(rgbPixelData);
-                //Size of toData (12521520 bytes) is not compatible expected size (16695360 bytes) : Width * Height * Depth * sizeof(PixelFormat) size in bytes
+                ////cameraTexture.SetData<byte>(rgbPixelData);
 
 
-                //    first = false;
-                //}
-                //cameraTexture.SetData(GraphicsDevice, cameraImage);
-                //cameraTexture.SetData<byte>(GraphicsDevice, pixelData);
-                //cameraTexture.Description.Format = Format.R8G8B8A8_UInt;
-
-                //cameraTexture.SetData<byte>(pixelData, 0, rgbaLen, SetDataOptions.NoOverwrite);
-                //cameraTexture.SetData<byte>(pixelData, 0, 0);
                 //http://stackoverflow.com/questions/2869801/is-there-a-fast-alternative-to-creating-a-texture2d-from-a-bitmap-object-in-xna
-
-                //try
-                //{
-                //}
-                //catch (Exception ex)
-                //{
-                //    LOG("catched ex="+ ex.Message.ToString());
-                //}
-                //cameraBasicEffect.Texture = cameraTexture;
 
             }
 

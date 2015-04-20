@@ -61,7 +61,8 @@ namespace EyeOut
                     motorPosture = cbHudMotorPosture.IsChecked.Value
                 },
 
-                streamController = guiStreamController
+                streamController = guiStreamController,
+                imageViewer = guiImageViewer
             };
             TP_config.hud.time = true;
 
