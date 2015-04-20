@@ -113,15 +113,37 @@ namespace EyeOut_Telepresence
                 Exit();
                 return;
             }
-
+            float step = 5.0f;
+            if (keyboardState.IsKeyPressed(Keys.W))
+            {
+                cameraSurfaceY =cameraSurfaceY+ step;
+                return;
+            }
+            if (keyboardState.IsKeyPressed(Keys.S))
+            {
+                cameraSurfaceY =cameraSurfaceY- step;
+                return;
+            }
             if (keyboardState.IsKeyPressed(Keys.A))
+            {
+                cameraSurfaceX -= step;
+                return;
+            }
+            if (keyboardState.IsKeyPressed(Keys.D))
+            {
+                cameraSurfaceX += step;
+                return;
+            }
+
+
+            if (keyboardState.IsKeyPressed(Keys.H))
             {
                 tiles[3].PlayDelegate();
                 return;
             }
 
 
-            if (keyboardState.IsKeyPressed(Keys.S))
+            if (keyboardState.IsKeyPressed(Keys.J))
             {
                 tiles[3].StopDelegate();
                 return;
@@ -134,7 +156,7 @@ namespace EyeOut_Telepresence
             }
 
 
-            if (keyboardState.IsKeyPressed(Keys.W))
+            if (keyboardState.IsKeyPressed(Keys.P))
             {
                 tiles[4].StopDelegate();
                 return;
@@ -143,14 +165,14 @@ namespace EyeOut_Telepresence
             if (keyboardState.IsKeyPressed(Keys.T))
             {
                 //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
-                cameraImage.Description.Format = cameraImage.Description.Format+1;
+                cameraImage.Description.Format = cameraImage.Description.Format + 1;
                 return;
             }
 
             if (keyboardState.IsKeyPressed(Keys.Y))
             {
                 //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
-                cameraImage.Description.Format = cameraImage.Description.Format + 2;
+                cameraImage.Description.Format = cameraImage.Description.Format -1;
                 return;
             }
             if (keyboardState.IsKeyPressed(Keys.U))
@@ -163,7 +185,7 @@ namespace EyeOut_Telepresence
             if (keyboardState.IsKeyPressed(Keys.I))
             {
                 //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
-                cameraImage.Description.Format = cameraImage.Description.Format + 5;
+                cameraImage.Description.Format = cameraImage.Description.Format -3;
                 return;
             }
 

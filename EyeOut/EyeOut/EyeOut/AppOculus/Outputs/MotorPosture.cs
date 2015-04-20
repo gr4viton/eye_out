@@ -111,23 +111,26 @@ namespace EyeOut_Telepresence
                 str.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
                 str.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
                 if (cameraImage != null)
+                //if(false)
                 {
-                    str.AppendLine(cameraImage.Description.Format.ToString());
+                    str.AppendLine(string.Format("{0}={1}",cameraImage.Description.Format.ToString(),cameraImage.Description.Format));
 
-                    str.AppendLine(string.Format("len={0},wid*hei={1},data=",
-                        pixelData.Length,
-                        cameraImage.Description.Width * cameraImage.Description.Height
-                        ));
+                    //str.AppendLine(string.Format("len={0},wid*hei={1},data=",
+                    //    pixelData.Length,
+                    //    cameraImage.Description.Width * cameraImage.Description.Height
+                    //    ));
                     int width = cameraImage.Description.Width;
-                    for (int y = 0; y < 6; y++)
+                    for (int y = 0; y < 1; y++)
                     {
                         for (q = 0; q < 6; q++)
                         {
-                            str.Append(string.Format("{0,4:0}", pixelData[q + y * (width-1)].ToString()));
+                            str.Append(string.Format("{0,4:0}", rgbPixelData[q + y * (width - 1)].ToString()));
                         }
                         str.Append("\n");
                     }
                 }
+
+                str.Append(string.Format("cam position:{0}|{1}, keyboardStateW={2}", cameraSurfaceX, cameraSurfaceY, keyboardState.IsKeyPressed(Keys.U)));
                 text = str.ToString();
                 //q = 0;
                 //msg.Append(string.Format("YAW={0,5:0.00}°\tPITCH={1,5:0.00}°\tROLL={2,5:0.00}°", yawPitchRoll_d[q + 0], yawPitchRoll_d[q + 1], yawPitchRoll_d[q + 2]));

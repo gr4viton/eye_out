@@ -143,6 +143,8 @@ namespace EyeOut_Telepresence
         protected override void EndDraw()
         {
             // Cancel original EndDraw() as the Present call is made through hmd.EndFrame()
+            
+            //base.EndDraw();
             hmd.EndFrame(renderPose, eyeTexture);
         }
 

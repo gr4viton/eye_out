@@ -217,6 +217,7 @@ namespace EyeOut_Telepresence
             // Configure rendering
             eyeRenderDesc = new EyeRenderDesc[2];
             if (!hmd.ConfigureRendering(d3d11cfg, DistortionCapabilities.Chromatic | DistortionCapabilities.TimeWarp, hmd.DefaultEyeFov, eyeRenderDesc))
+            //if (!hmd.ConfigureRendering(d3d11cfg, DistortionCapabilities.None, hmd.DefaultEyeFov, eyeRenderDesc))
             //if (!hmd.ConfigureRendering(d3d11cfg, DistortionCapabilities.TimeWarp, hmd.DefaultEyeFov, eyeRenderDesc))
             {
                 throw new Exception("Failed to configure rendering");
