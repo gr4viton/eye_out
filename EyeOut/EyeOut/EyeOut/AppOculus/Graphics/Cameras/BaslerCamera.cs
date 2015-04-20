@@ -21,7 +21,7 @@ using System.Runtime.InteropServices; // marshal
 
 using BaslerImage = Basler.Pylon.IImage;
 using ToolkitImage = SharpDX.Toolkit.Graphics.Image;
-using ToolkitTexture = SharpDX.Toolkit.Graphics.Texture2D;
+//using ToolkitTexture = SharpDX.Toolkit.Graphics.Texture2D;
 //using SharpDX.Toolkit.Graphics;
 
 namespace EyeOut_Telepresence
@@ -89,9 +89,9 @@ namespace EyeOut_Telepresence
                     pixelDataConverter = new Basler.Pylon.PixelDataConverter();
                     //pixelDataConverter.OutputPixelFormat = Basler.Pylon.PixelType.RGB8planar;
                     //pixelDataConverter.OutputPixelFormat = Basler.Pylon.PixelType.RGB8packed;
-                    pixelDataConverter.OutputPixelFormat = Basler.Pylon.PixelType.RGB8packed;
+                    pixelDataConverter.OutputPixelFormat = Basler.Pylon.PixelType.BGR8packed;
                     //cameraPixelFormat = PixelFormat..R8G8B8A8.UNorm;
-                    cameraPixelFormat = PixelFormat.R8G8B8A8.UNorm;
+                    cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
                     width = baslerImage.Width;
                     height = baslerImage.Height;
                     rgbLen = pixelDataConverter.GetBufferSizeForConversion(pixelDataConverter.OutputPixelFormat, width, height);
@@ -99,14 +99,15 @@ namespace EyeOut_Telepresence
                     rgbaLen = (rgbLen / 3) * 4;
                     pixelData = new byte[rgbaLen];
                     
-                    cameraImage = ToolkitImage.New2D(width, height, 1, cameraPixelFormat);
+                    //cameraImage = ToolkitImage.New2D(width, height, 1, cameraPixelFormat);
                     //cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
                     //cameraTexture = Texture2D.New(GraphicsDevice, width, height, 0, Usage.Shared, cameraPixelFormat);
-                    cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Immutable);
+                    cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
                 }
                 LOG("Start conversion");
                 pixelDataConverter.Convert(rgbPixelData, baslerImage);
                 LOG("Stop conversion");
+                LOG("Start add alpha");
                 int q = 0;
                 for (int i = 0; i < rgbLen; i++)
                 {
@@ -119,13 +120,22 @@ namespace EyeOut_Telepresence
                         q++;
                     }
                 }
+                LOG("Stop add alpha");
 
                 //cameraImage.PixelBuffer[0].SetPixels(rgbPixelData);
-                cameraImage.PixelBuffer[0].SetPixels(pixelData);
+                //cameraImage.PixelBuffer[0].SetPixels(pixelData);
                 //cameraImage.PixelBuffer[0].CopyTo(
                 //if (first == true)
                 //{
-                cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
+
+                // too slow
+                //cameraTexture = Texture2D.New(GraphicsDevice, cameraImage);
+
+                // copy our buffer to the texture
+                //cameraTexture.SetData<byte>(pixelData);
+                cameraTexture.SetData<byte>(rgbPixelData);
+                //Size of toData (12521520 bytes) is not compatible expected size (16695360 bytes) : Width * Height * Depth * sizeof(PixelFormat) size in bytes
+
 
                 //    first = false;
                 //}
