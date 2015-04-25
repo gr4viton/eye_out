@@ -113,27 +113,6 @@ namespace EyeOut_Telepresence
                 Exit();
                 return;
             }
-            float step = 5.0f;
-            if (keyboardState.IsKeyPressed(Keys.W))
-            {
-                cameraSurfaceY =cameraSurfaceY+ step;
-                return;
-            }
-            if (keyboardState.IsKeyPressed(Keys.S))
-            {
-                cameraSurfaceY =cameraSurfaceY- step;
-                return;
-            }
-            if (keyboardState.IsKeyPressed(Keys.A))
-            {
-                cameraSurfaceX -= step;
-                return;
-            }
-            if (keyboardState.IsKeyPressed(Keys.D))
-            {
-                cameraSurfaceX += step;
-                return;
-            }
 
 
             if (keyboardState.IsKeyPressed(Keys.K))

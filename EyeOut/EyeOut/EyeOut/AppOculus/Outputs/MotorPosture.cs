@@ -101,7 +101,7 @@ namespace EyeOut_Telepresence
                 }
             }
 
-            str.Append(string.Format("cam position:{0}|{1}, keyboardStateW={2}", cameraSurfaceX, cameraSurfaceY, keyboardState.IsKeyPressed(Keys.U)));
+            //str.Append(string.Format("cam position:{0}|{1}, keyboardStateW={2}", cameraSurfaceX, cameraSurfaceY, keyboardState.IsKeyPressed(Keys.U)));
             text = str.ToString();
 
             if (config.WRITE_dataToMotors == true)

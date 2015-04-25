@@ -258,6 +258,18 @@ namespace EyeOut
         {
             get
             {
+                return CONV_deg2rad(Dec_FromDefault);
+            }
+            set
+            {
+                Dec_FromDefault = CONV_deg2rad(value);
+            }
+        }
+
+        public double RadFromDefaultZero // <-pi;pi>
+        {
+            get
+            {
                 return CONV_deg2rad(Dec_FromDefaultZero);
             }
             set
