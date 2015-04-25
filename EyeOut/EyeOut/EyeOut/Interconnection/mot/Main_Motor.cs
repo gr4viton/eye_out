@@ -112,19 +112,7 @@ namespace EyeOut
 
         private void btnResetMotors_Click(object sender, RoutedEventArgs e)
         {
-            foreach (C_Motor m in Ms)
-            {
-                m.angleWanted.RESET_toDefault();
-                m.speedWanted.RESET_toDefault();
-                //UPDATE_sliderFromMotor(m.rotationMotor);
-                m.REGISTER_move();
-            }
-            C_Motor.ORDER_ActionToAll();
-            /*
-            foreach (C_Motor m in Ms)
-            {
-                UPDATE_sliderFromMotor(m.rotationMotor);
-            }*/
+            MainWindow.Ms.SYNC_WRITE_defaultMoveSpeed();
         }
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -288,6 +288,18 @@ namespace EyeOut
             }
         }
 
+        public byte[] HexDefault 
+        {
+            get
+            {
+                return dec2hex(decDefault);
+            }
+            //set
+            //{
+            //    decDefault = GET_bounded_decLimits(value);
+            //}
+        }
+
         public double Dec_FromDefault // <decLimitMin; decLimitMax>
         {
             get

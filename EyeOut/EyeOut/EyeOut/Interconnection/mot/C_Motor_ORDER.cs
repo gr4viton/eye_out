@@ -84,6 +84,7 @@ namespace EyeOut
             }
         }
 
+
         // move without speed control - does not change current speed in motor class instance
         public void ORDER_moveBrisk()
         {

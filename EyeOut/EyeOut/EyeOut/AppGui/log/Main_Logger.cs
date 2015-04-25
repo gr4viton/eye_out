@@ -127,7 +127,7 @@ namespace EyeOut
         {
             if (e.ClickCount == 1)
             {
-                if (e.LeftButton == MouseButtonState.Pressed)
+                if (e.MiddleButton == MouseButtonState.Pressed)
                 {
                     lsLogSrcSelction.SelectAll();
                 }

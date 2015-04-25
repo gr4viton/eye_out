@@ -85,9 +85,13 @@ namespace EyeOut
             {
                 foreach (object o in L)
                 {
-                    if (o is byte)
+                    if(o is byte)
                     {
                         liby.Add((byte)o);
+                    }
+                    else if (o is int)
+                    {
+                        liby.Add((byte)(int)o);
                     }
                     else if (o is byte[])
                     {

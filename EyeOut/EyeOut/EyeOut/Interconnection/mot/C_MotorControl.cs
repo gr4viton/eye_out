@@ -207,7 +207,29 @@ namespace EyeOut
             }
         }
 
-        
+
+        public void SYNC_WRITE_moveSpeed()
+        {
+            // write speed and goal position to 3 motors synchronously at once
+            C_Motor.SEND_packetToAll(C_DynAdd.INS_SYNC_WRITE, new List<object> {
+                    C_DynAdd.GOAL_POS_L, 4,
+                    Yaw.id, Yaw.angleWanted.Hex, Yaw.speedWanted.Hex,
+                    Pitch.id, Pitch.angleWanted.Hex, Pitch.speedWanted.Hex, 
+                    Roll.id, Roll.angleWanted.Hex, Roll.speedWanted.Hex
+                });
+        }
+
+        public void SYNC_WRITE_defaultMoveSpeed()
+        {
+            // write speed and goal position to 3 motors synchronously at once
+            C_Motor.SEND_packetToAll(C_DynAdd.INS_SYNC_WRITE, new List<object> {
+                    C_DynAdd.GOAL_POS_L, 4,
+                    Yaw.id, Yaw.angleWanted.HexDefault, Yaw.speedWanted.HexDefault,
+                    Pitch.id, Pitch.angleWanted.HexDefault, Pitch.speedWanted.HexDefault, 
+                    Roll.id, Roll.angleWanted.HexDefault, Roll.speedWanted.HexDefault
+                });
+        }
+
         public static bool GET_motorRotFromId(int id, out e_rot rot)
         {
             if (id == C_DynAdd.ID_BROADCAST)

@@ -661,13 +661,26 @@ namespace EyeOut
         {
             if (IS_packetChangingValue(lastSent) == true)
             {
-                C_MotorControl.ACTUALIZE_motorRegister(
-                    lastSent.rotMotor,
-                    e_regByteType.sentValue, // as we written them just now
-                    lastSent.Par);
-                LOG_instruPacket(string.Format(
-                    "Written OK (blind) - actualizing motor register sentValue: \t{0}",
-                    lastSent.PacketBytes_toString));
+                if (lastSent.byteId != C_DynAdd.ID_BROADCAST)
+                {
+                    C_MotorControl.ACTUALIZE_motorRegister(
+                        lastSent.rotMotor,
+                        e_regByteType.sentValue, // as we written them just now
+                        lastSent.Par);
+                    LOG_instruPacket(string.Format(
+                        "Written OK (blind) - actualizing motor [{1}] register sentValue: \t{0}",
+                        lastSent.PacketBytes_toString, lastSent.rotMotor));
+                }
+                else
+                {
+                    // parse it and process each part alone
+                    //LOG_instruPacket(string.Format(
+                    //    "Written OK (blind) - actualizing motors (broadcast) register sentValue: \t{0}",
+                    //    lastSent.PacketBytes_toString));
+                    LOG_instruPacket(string.Format(
+                        "Written OK (blind) - NOT actualizing motors (broadcast) register sentValue: \t{0}",
+                        lastSent.PacketBytes_toString));
+                }
             }
         }
         public static bool IS_packetChangingValue(C_Packet packet)

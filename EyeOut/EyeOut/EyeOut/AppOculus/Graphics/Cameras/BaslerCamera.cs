@@ -117,11 +117,11 @@ namespace EyeOut_Telepresence
 
             //if (baslerImage == null)
             //{
-            //    LOG("Could not retrieve grabbed image");
+            //    LOG("Could not retreive grabbed image");
             //}
             //else
             {
-                LOG("Retrieved grabbed image");
+                //LOG("Retreived grabbed image");
 
 
                 //http://stackoverflow.com/questions/2869801/is-there-a-fast-alternative-to-creating-a-texture2d-from-a-bitmap-object-in-xna

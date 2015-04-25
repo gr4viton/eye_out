@@ -545,7 +545,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiBaslerCamera" Header="Basler Camera" Background="LightBlue" IsSelected="True">
+            <TabItem x:Name="tiBaslerCamera" Header="Basler Camera" Background="LightBlue" IsSelected="False">
                 <DockPanel x:Name="dpBaslerCamera"
                     LastChildFill="True">
                     <GroupBox Header="Basler Camera Commands">
@@ -672,7 +672,7 @@
                     <GroupBox Header="Information" Grid.Column="4">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" ><Run Text="* You can filter the log messages by selecting items from the list on left side of the logger."/></TextBlock>
-                            <TextBlock TextWrapping="Wrap"><Run Text="* As it is stated in the tooltip, you can select all or unselect all by Rigth and Left mouse doubleclicking."/></TextBlock>
+                            <TextBlock TextWrapping="Wrap"><Run Text="* As it is stated in the tooltip, you can select all or unselect all by Middle and Right mouse doubleclicking."/></TextBlock>
                         </StackPanel>
                     </GroupBox>
                 </Grid>
@@ -898,7 +898,7 @@
                         <ListBox.ToolTip>
                             <ToolTip>
                                 <StackPanel>
-                                    <TextBlock ><Run Text="Left mouse double click selects all"/></TextBlock>
+                                    <TextBlock ><Run Text="Middle mouse double click selects all"/></TextBlock>
                                     <TextBlock ><Run Text="Right mouse double click unselects all"/></TextBlock>
                                 </StackPanel>
                             </ToolTip>
