@@ -133,11 +133,49 @@ namespace EyeOut_Telepresence
 
 
             //Matrix mRot = Matrix.RotationY((float)Math.PI );
-            Matrix mRot = Matrix.RotationYawPitchRoll(
-                            (float)MainWindow.Ms.Yaw.angleSeen.RadFromDefault + (float)Math.PI,
-                            (float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault,
-                            (float)MainWindow.Ms.Roll.angleSeen.RadFromDefault
-                            );
+
+            // robotic arm dimensions
+            // in [mm]
+            float y_Desk2RollAxis = 140f;
+            float y_RollAxis2PitchAxis = 82.3f;
+            float y_PitchAxis2YawAxisTop = 74.5f;
+            float y_YawAxisTop2SensorMiddle = 39f;
+
+            //float y_HeadCenter2Desk = -335.8f; // sum of previous
+            float y_HeadCenter2Desk = -250f;
+
+            float z_YawAxis2SensorSurface = -30.526f;
+            float z_Sensor2CameraTexture = 100;
+
+
+            Matrix translation_HeadCenter2Desk = Matrix.Translation(0, y_HeadCenter2Desk, 0);
+            Matrix translation_Desk2RollAxis = Matrix.Translation(0, y_Desk2RollAxis, 0);
+            Matrix translation_RollAxis2PitchAxis = Matrix.Translation(0,y_RollAxis2PitchAxis,0);
+            Matrix translation_PitchAxis2YawAxisTop = Matrix.Translation(0, y_PitchAxis2YawAxisTop, 0);
+            Matrix translation_YawAxisTop2Sensor = Matrix.Translation(0, y_YawAxisTop2SensorMiddle, z_YawAxis2SensorSurface);
+            Matrix translation_Sensor2CameraTexture = Matrix.Translation(0, 0, z_Sensor2CameraTexture);
+
+            
+
+            //Matrix mRot = Matrix.RotationYawPitchRoll(
+            //                (float)MainWindow.Ms.Yaw.angleSeen.RadFromDefault + (float)Math.PI,
+            //                (float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault,
+            //                (float)MainWindow.Ms.Roll.angleSeen.RadFromDefault
+            //                );
+
+            Matrix HeadCenter2CameraTexture = Matrix.Identity
+                * translation_HeadCenter2Desk
+                * translation_Desk2RollAxis * Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefault)
+                * translation_RollAxis2PitchAxis * Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault)
+                * translation_PitchAxis2YawAxisTop * Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefault + (float)Math.PI)
+                * translation_YawAxisTop2Sensor * translation_Sensor2CameraTexture
+                ;
+                
+                //Matrix.RotationYawPitchRoll(
+                //            (float)MainWindow.Ms.Yaw.angleSeen.RadFromDefault + (float)Math.PI,
+                //            (float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault,
+                //            (float)MainWindow.Ms.Roll.angleSeen.RadFromDefault
+                //            );
 
             text = text + string.Format("\n[{0}] == {1}", (float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault, (float)MainWindow.Ms.Pitch.angleSeen.Dec_FromDefaultZero);
             //Matrix mRot = Matrix.RotationYawPitchRoll(
@@ -146,7 +184,6 @@ namespace EyeOut_Telepresence
             //                (float)MainWindow.Ms.Roll.angleWanted.RadFromDefault
             //                );
 
-            Matrix mTransl = Matrix.Translation(0, 0, -10);
             //cameraBasicEffect.World = Matrix.Identity
             //            * Matrix.Scaling(1f)
             //    //* Matrix.RotationX(time * 4)
@@ -157,11 +194,12 @@ namespace EyeOut_Telepresence
             //            //* -mTransl
             //            ;
 
-            float scaling = 5;
-            var world = Matrix.Scaling(scaling)
+            float scaling = 0.001f;
+            var world = Matrix.Identity
                         //* Matrix.RotationY(time)
-                        * mTransl
-                        * mRot
+                        //* mTransl
+                        * HeadCenter2CameraTexture
+                        * Matrix.Scaling(scaling)
                 //* mTransl
                         ;
 
@@ -175,7 +213,7 @@ namespace EyeOut_Telepresence
 
 
 
-            model.Draw(GraphicsDevice, Matrix.Scaling(0.001f / scaling) * world, view, projection);
+            model.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * world, view, projection);
 
             // Draw the primitive using BasicEffect
             cameraSurface.Draw(cameraBasicEffect);
