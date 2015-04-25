@@ -164,6 +164,11 @@ namespace EyeOut_Telepresence
         {
             if (config.ReadCameraStream == true)
             {
+                if (config.streamController.Camera == null)
+                {
+                    // add camear
+                    config.streamController.
+                }
                 config.streamController.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
                 //config.imageViewer.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
             }
