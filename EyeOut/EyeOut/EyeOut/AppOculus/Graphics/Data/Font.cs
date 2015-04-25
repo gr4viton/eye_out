@@ -71,7 +71,8 @@ namespace EyeOut_Telepresence
 
             //var dim = fontDefault.MeasureString(text);
             var dim = fontDefault.MeasureString(text);
-            int diff = -452; // for DK1
+            //int diff = -452; // for DK1
+            int diff = 0*152; // for DK2
             int x = 620 + eye * diff, y = 1020; // for DK1
 
             if (config.SHOW_helpText == true)

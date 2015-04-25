@@ -545,7 +545,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiBaslerCamera" Header="Basler Camera" Background="LightBlue" IsSelected="False">
+            <TabItem x:Name="tiBaslerCamera" Header="Basler Camera" Background="LightBlue" IsSelected="True">
                 <DockPanel x:Name="dpBaslerCamera"
                     LastChildFill="True">
                     <GroupBox Header="Basler Camera Commands">
@@ -737,7 +737,7 @@
 
                             <GroupBox Header="Camera Data">
                                 <StackPanel>
-                                    <CheckBox x:Name="cbReadCameraStream" Content="Read camera stream from selected Basler camera" IsChecked="True"/>
+                                    <CheckBox x:Name="cbReadCameraStream" Content="Read camera stream from selected Basler camera" IsChecked="False"/>
                                 </StackPanel>
                             </GroupBox>
 

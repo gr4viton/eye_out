@@ -66,28 +66,21 @@ namespace EyeOut_Telepresence
         public C_CounterDown everyFrame = new C_CounterDown(10);
         public void CAPTURE_cameraImage()
         {
-            // ask the camera for capture - rest is done in the StreamGrabber_ImageGrabbed handler function
-
-            //config.streamController.TakeSingleSnapshot();
-
             if (config.firstPass == true)
             {
                 config.streamController.StartStreaming();
 
-                //cameraPixelFormat = PixelFormat..R8G8B8A8.UNorm;
                 cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
 
                 //baslerImage.PixelTypeValue = Basler.Pylon.PixelType.BGR8packed;
                 if (config.imageViewer != null)
                 {
-                    //config.imageViewer.Ca
                     baslerImage = config.imageViewer.CaptureImage();
                     if(baslerImage != null)
                     {
                         pixelData = (byte[])baslerImage.PixelData;
                         width = config.imageViewer.CaptureImage().Width;
                         height = config.imageViewer.CaptureImage().Height;
-                        //pixelData = (byte[])baslerImage.PixelData;
 
                         cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
                         config.firstPass = false;
@@ -96,66 +89,94 @@ namespace EyeOut_Telepresence
             }
             else
             {
-                //if (everyFrame.DecrementAndRestart() == 0)
-                //{
-                    pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
-                    cameraTexture.SetData<byte>(pixelData);
-                //}
+                pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
+                cameraTexture.SetData<byte>(pixelData);
             }
-            
-            //config.streamController.
         }
 
-
-
-        void StreamGrabber_ImageGrabbed(object sender, Basler.Pylon.ImageGrabbedEventArgs e)
-        {
-            // writes the grabbed image from camera into the texture
-            //Basler.Pylon.IImage baslerImage = (Basler.Pylon.IImage)e.GrabResult;
-            
-            
-
-            //if (baslerImage == null)
-            //{
-            //    LOG("Could not retreive grabbed image");
-            //}
-            //else
-            {
-                //LOG("Retreived grabbed image");
-
-
-                //http://stackoverflow.com/questions/2869801/is-there-a-fast-alternative-to-creating-a-texture2d-from-a-bitmap-object-in-xna
-
-            }
-
-        }
 
         protected virtual void Draw_BaslerCamera(GameTime _gameTime)
         {
-            int i = 0;
-            // Calculate the translation
-            float dx = ((i + 1) % 4);
-            float dy = ((i + 1) / 4);
-
-
-            //float gameTime = _gameTime.ElapsedGameTime.Milliseconds/100;
-            float gameTime = 0;
-            // Setup the World matrice for this primitive
-            cameraBasicEffect.World = 
-                Matrix.Scaling(0.5f) 
-                * Matrix.RotationX(gameTime) 
-                * Matrix.RotationY(gameTime * 2.0f) 
-                * Matrix.RotationZ(gameTime * .7f) 
-                * Matrix.Translation(cameraSurfaceX, cameraSurfaceY, 0);
-            
-            // Disable Cull only for the plane primitive, otherwise use standard culling
-            //GraphicsDevice.SetRasterizerState(i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack);
+            //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullBack);
 
             //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
             //cameraBasicEffect.VertexColorEnabled = true;
             cameraBasicEffect.TextureEnabled = true;
             cameraBasicEffect.Texture = cameraTexture;
-            //cameraSurface.VertexBuffer = 
+
+            // Calculate the translation
+
+            //float gameTime = _gameTime.ElapsedGameTime.Milliseconds/100;
+
+            // Setup the World matrice for this primitive
+            //cameraBasicEffect.World =
+            //    Matrix.Scaling(1f)
+            //    * Matrix.Translation(cameraSurfaceX, cameraSurfaceY, 0);
+                //* Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSent.Dec_interval_piPi);
+                //* Matrix.RotationY((float) MainWindow.Ms.Yaw.angleSent.Dec_interval_piPi)
+                //* Matrix.RotationZ((float) MainWindow.Ms.Roll.angleSent.Dec_interval_piPi);
+
+            //cameraBasicEffect.View =
+            //    Matrix.Scaling(1f)
+            //    * Matrix.Translation(cameraSurfaceX, cameraSurfaceY, 0);
+            //* Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSent.Dec_interval_piPi);
+            //* Matrix.RotationY((float) MainWindow.Ms.Yaw.angleSent.Dec_interval_piPi)
+            //* Matrix.RotationZ((float) MainWindow.Ms.Roll.angleSent.Dec_interval_piPi);
+
+            //            * Matrix.RotationYawPitchRoll(
+            //                (float)MainWindow.Ms.Yaw.angleWanted.Dec_interval_piPi,
+            //                (float)MainWindow.Ms.Pitch.angleWanted.Dec_interval_piPi,
+            //                (float)MainWindow.Ms.Roll.angleWanted.Dec_interval_piPi
+            //                )
+            var time = (float)gameTime.TotalGameTime.TotalSeconds;
+            //cameraBasicEffect.Projection = 
+
+
+            //Matrix mRot = Matrix.RotationY((float)Math.PI );
+            Matrix mRot = Matrix.RotationYawPitchRoll(
+                            (float)MainWindow.Ms.Yaw.angleSeen.RadFromDefault + (float)Math.PI,
+                            (float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault,
+                            (float)MainWindow.Ms.Roll.angleSeen.RadFromDefault
+                            );
+
+            text = text + string.Format("\n[{0}] == {1}", (float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault, (float)MainWindow.Ms.Pitch.angleSeen.Dec_FromDefaultZero);
+            //Matrix mRot = Matrix.RotationYawPitchRoll(
+            //                (float)MainWindow.Ms.Yaw.angleWanted.RadFromDefault + (float)Math.PI,
+            //                (float)MainWindow.Ms.Pitch.angleWanted.RadFromDefault,
+            //                (float)MainWindow.Ms.Roll.angleWanted.RadFromDefault
+            //                );
+
+            Matrix mTransl = Matrix.Translation(0, 0, -10);
+            //cameraBasicEffect.World = Matrix.Identity
+            //            * Matrix.Scaling(1f)
+            //    //* Matrix.RotationX(time * 4)
+            //            * mTransl
+            //            * mRot
+            //            //* Matrix.RotationZ(time * 4)
+            //            //* Matrix.RotationAxis(
+            //            //* -mTransl
+            //            ;
+
+            float scaling = 5;
+            var world = Matrix.Scaling(scaling)
+                        //* Matrix.RotationY(time)
+                        * mTransl
+                        * mRot
+                //* mTransl
+                        ;
+
+            cameraBasicEffect.Projection = projection;
+            cameraBasicEffect.View = view;
+            cameraBasicEffect.World = world;
+
+            
+            // Disable Cull only for the plane primitive, otherwise use standard culling
+            //GraphicsDevice.SetRasterizerState(i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack);
+
+
+
+            model.Draw(GraphicsDevice, Matrix.Scaling(0.001f / scaling) * world, view, projection);
+
             // Draw the primitive using BasicEffect
             cameraSurface.Draw(cameraBasicEffect);
         }
@@ -164,12 +185,12 @@ namespace EyeOut_Telepresence
         {
             if (config.ReadCameraStream == true)
             {
-                if (config.streamController.Camera == null)
-                {
-                    // add camear
-                    config.streamController.
-                }
-                config.streamController.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+                //if (config.streamController.Camera == null)
+                //{
+                //    // add camear
+                //    config.streamController.
+                //}
+                //config.streamController.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
                 //config.imageViewer.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
             }
             cameraSurfaceX = 0.0f;
@@ -186,47 +207,9 @@ namespace EyeOut_Telepresence
             //cameraTexture = Content.Load<Texture2D>("speaker");
             cameraTexture = Content.Load<Texture2D>("cameraDefault_2015-04-20_09-34-31");
             
-            
             //cameraTexture = Texture2D.New(GraphicsDevice, width, height, PixelFormat.B8G8R8A8.UNorm);
             cameraBasicEffect.Texture = cameraTexture;
             cameraBasicEffect.TextureEnabled = true;
-        }
-        void ConvertTexture()
-        {
-            //http://sharpdx.org/forum/5-api-usage/3214-d3d11-surface-datastream-to-bitmap
-            //using (var stagingTexture = CreateStagingTexture())
-            //{
-            //    _deviceContext.CopyResource(renderToTextureRtv.Resource, stagingTexture);
-
-            //    DataStream stream;
-            //    var wb = new WriteableBitmap(Width, Height);
-
-            //    try
-            //    {
-            //        var dataBox = _deviceContext.MapSubresource(stagingTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None, out stream);
-            //        var line = new byte[Width * 4];
-
-            //        using (var s = wb.PixelBuffer.AsStream())
-            //        {
-            //            for (int i = 0; i < Height; i++)
-            //            {
-            //                stream.Seek(i * dataBox.RowPitch, System.IO.SeekOrigin.Begin);
-            //                stream.Read(line, 0, line.Length);
-
-            //                s.Seek(i * Width * 4, System.IO.SeekOrigin.Begin);
-            //                s.Write(line, 0, line.Length);
-            //            }
-            //        }
-            //    }
-            //    finally
-            //    {
-            //        if (stream != null)
-            //            stream.Dispose();
-            //        _deviceContext.UnmapSubresource(stagingTexture, 0);
-            //        wb.Invalidate();
-            //    }
-            //    return wb;
-            //}        
         }
     }
 }

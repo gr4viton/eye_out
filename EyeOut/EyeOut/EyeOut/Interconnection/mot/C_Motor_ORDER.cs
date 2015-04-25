@@ -58,10 +58,6 @@ namespace EyeOut
         #region SET move and speed 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        public void ORDER_moveAllAtOnce()
-        {
-            //3-5-7 SYNC WRITE  - cannot read at the same time as it is broadcasted
-        }
         // move with speed 
         public void ORDER_move()
         {

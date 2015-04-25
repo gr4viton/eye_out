@@ -25,24 +25,38 @@ namespace EyeOut_Telepresence
     public partial class TelepresenceSystem : Game
     {
 
+        //public C_CounterDown readPosition = new C_CounterDown(10);
+        int iReadMotor = 0;
         public void CONTROL_motors()
         {
-            ORDER_motors();
+            POSITION_motors();
             if (config.ReadCameraStream == true)
             {
                 CAPTURE_cameraImage();
             }
             if (config.READ_dataFromMotors == true)
             {
-                //MainWindow.Ms.Yaw.READ_position();
 
+                //MainWindow.Ms.Yaw.READ_position();
+                //readPosition(
                 //foreach (C_Motor mot in MainWindow.Ms)
                 //{
-                //    mot.ORDER_getPosition();
+                //    mot.READ_positionSpeed();
                 //}
+
+                if (C_State.FURTHER(e_stateProg.initialized))
+                {
+                    MainWindow.Ms[iReadMotor].READ_positionSpeed();
+
+                    iReadMotor++;
+                    if (iReadMotor >= 3)
+                    {
+                        iReadMotor = 0;
+                    }
+                }
             }
         }
-        public void ORDER_motors()
+        public void POSITION_motors()
         {
             LOG("start order motors");
             // background worker - if it takes too long

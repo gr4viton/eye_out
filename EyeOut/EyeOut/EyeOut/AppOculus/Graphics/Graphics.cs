@@ -45,9 +45,6 @@ namespace EyeOut_Telepresence
             // Clear the screen
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            Draw_SoundGraphicalEffects();
-
-
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {
                 EyeType eye = hmd.EyeRenderOrder[eyeIndex];
@@ -58,7 +55,7 @@ namespace EyeOut_Telepresence
                 //TrackingState outTrack = hmd.GetTrackingState(0);
 
                 //PoseF[] outEyePoses = new PoseF[2];
-
+                
                 //// hmdToEyeViewOffset[2] can be ovrEyeRenderDesc.HmdToEyeViewOffset returned
                 ////     from ovrHmd_ConfigureRendering or ovrHmd_GetRenderDesc. 
                 //FovPort fov = renderDesc.Fov;
@@ -81,24 +78,29 @@ namespace EyeOut_Telepresence
                 // Calculate view matrix                
                 var rollPitchYaw = Matrix.RotationY(bodyYaw);
                 var finalRollPitchYaw = rollPitchYaw * pose.Orientation.GetMatrix();
+
                 var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
                 var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
                 var shiftedEyePos = headPos + rollPitchYaw.Transform(pose.Position);
+
                 view = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
                     //.ViewAdjust 
                      * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 
                 // Calculate projection matrix
-                projection = OVR.MatrixProjection(renderDesc.Fov, 0.001f, -1000.0f, true);
+                projection = OVR.MatrixProjection(renderDesc.Fov, 0.0001f, -10000.0f, true);
                 projection.Transpose();
 
                 // Set Viewport for our eye
                 GraphicsDevice.SetViewport(renderViewport.ToViewportF());
 
                 // Perform the actual drawing
-                Draw_Model(gameTime);
                 Draw_BaslerCamera(gameTime);
+                Draw_Model(gameTime);
                 //DrawFonts((int)eye);
+
+                Draw_SoundGraphicalEffects();
+
             }
 
             BeginDraw_Font();
@@ -122,7 +124,7 @@ namespace EyeOut_Telepresence
                      * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 
                 // Calculate projection matrix
-                projection = OVR.MatrixProjection(renderDesc.Fov, 0.001f, -1000.0f, true);
+                projection = OVR.MatrixProjection(renderDesc.Fov, 0.0001f, -10000.0f, true);
                 projection.Transpose();
 
                 // Set Viewport for our eye
@@ -156,13 +158,20 @@ namespace EyeOut_Telepresence
             // ------------------------------------------------------------------------
             // Draw the 3d model
             // ------------------------------------------------------------------------
-            var world = Matrix.Scaling(0.003f) *
-                        Matrix.RotationY(time) *
-                        Matrix.Translation(0, -1.5f, -10.0f);
+
+            Matrix mRot = Matrix.RotationY(time * 1);
+            Matrix mTransl = Matrix.Translation(0, -1.5f, -10.0f);
+
+            var world = Matrix.Scaling(0.003f) 
+                        * Matrix.RotationY(time) 
+                        * mTransl
+                        * mRot
+                        //* mTransl
+                        ;
+
 
 
             model.Draw(GraphicsDevice, world, view, projection);
-
             //BasicEffect.EnableDefaultLighting(model, true);
             //GraphicsDevice.BackBuffer.Dispose();
 

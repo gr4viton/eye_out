@@ -43,6 +43,8 @@ namespace EyeOut
 
         private double decLast; //?
 
+        public double zeroAddition = 0;
+        public double zeroMultiplication = 1;
 
         private object lock_dec = new object();
         private object lock_hex = new object();
@@ -95,6 +97,8 @@ namespace EyeOut
             decMax = _val.decMax;
             hexMin = _val.hexMin;
             hexMax = _val.hexMax;
+            zeroAddition = _val.zeroAddition;
+            zeroMultiplication = _val.zeroMultiplication;
             Dec = _val.Dec;
             decDefault = Dec;
         }
@@ -107,8 +111,11 @@ namespace EyeOut
             decMax = _val.decMax;
             hexMin = _val.hexMin;
             hexMax = _val.hexMax;
+            zeroAddition = _val.zeroAddition;
+            zeroMultiplication = _val.zeroMultiplication;
             Dec = _dec;
             decDefault = Dec;
+            
         }
 
         public C_Value(C_Value _val) // because of search motor
@@ -120,6 +127,8 @@ namespace EyeOut
             decMax = _val.decMax;
             hexMin = _val.hexMin;
             hexMax = _val.hexMax;
+            zeroAddition = _val.zeroAddition;
+            zeroMultiplication = _val.zeroMultiplication;
             Dec = _val.Dec;
             decDefault = Dec;
         }
@@ -245,6 +254,18 @@ namespace EyeOut
             }
         }
 
+        public double RadFromDefault // <-pi;pi>
+        {
+            get
+            {
+                return CONV_deg2rad(Dec_FromDefaultZero);
+            }
+            set
+            {
+                Dec_FromDefaultZero = CONV_deg2rad(value);
+            }
+        }
+
         public double Dec_interval_piHalfPiHalf // <-pi/2;pi/2>
         {
             get
@@ -309,6 +330,18 @@ namespace EyeOut
             set
             {
                 Dec = GET_bounded_decLimits(value + decDefault);
+            }
+        }
+
+        public double Dec_FromDefaultZero // <decLimitMin; decLimitMax>
+        {
+            get
+            {
+                return (dec - decDefault + zeroAddition )* zeroMultiplication;
+            }
+            set
+            {
+                Dec = GET_bounded_decLimits( (value/zeroMultiplication) - zeroAddition + decDefault);
             }
         }
 

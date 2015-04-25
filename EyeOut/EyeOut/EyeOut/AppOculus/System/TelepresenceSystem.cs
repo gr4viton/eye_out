@@ -67,7 +67,7 @@ namespace EyeOut_Telepresence
         private PoseF[] renderPose = new PoseF[2];
 
         
-        private Vector3 headPos = new Vector3(0f, 0f, -5f);
+        private Vector3 headPos = new Vector3(0f, 0f, 0f);
         private float bodyYaw = 3.141592f;
 
         uint frameIndex = 0;

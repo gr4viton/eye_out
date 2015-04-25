@@ -138,6 +138,9 @@ namespace EyeOut
             angleSent = new C_Value(C_Value.angleFull);
             speedSent = new C_Value(C_Value.speedFull);
 
+            angleSeen.zeroAddition = angleSent.zeroAddition = angleWanted.zeroAddition;
+            angleSeen.zeroMultiplication = angleSent.zeroMultiplication = angleWanted.zeroMultiplication;
+
         }
         public C_Motor(e_rot _rot, byte _id, C_Value _angle, C_Value _speed) 
         {
@@ -151,6 +154,9 @@ namespace EyeOut
             speedSeen = new C_Value(C_Value.speedFull);
             angleSent = new C_Value(C_Value.angleFull);
             speedSent = new C_Value(C_Value.speedFull);
+
+            angleSeen.zeroAddition = angleSent.zeroAddition = angleWanted.zeroAddition;
+            angleSeen.zeroMultiplication = angleSent.zeroMultiplication = angleWanted.zeroMultiplication;
 
 
             rotMotor = _rot;
