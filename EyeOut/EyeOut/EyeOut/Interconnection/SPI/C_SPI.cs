@@ -260,7 +260,7 @@ namespace EyeOut
                         if (C_SPI.WRITE_instructionPacket(thisInstructionPacket) == false)
                         {
                             LOG_err(string.Format(
-                                "Cannot open the serial port. Tried [{0}]-times", openConnection.ValDef
+                                "Cannot open the serial port {0}. Tried [{1}]-times", spi.PortName, openConnection.ValDef
                                 ));
                             return;
                         }

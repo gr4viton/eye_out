@@ -73,7 +73,7 @@ namespace EyeOut_Telepresence
         uint frameIndex = 0;
 
         private BasicEffect basicEffect;
-        private Texture2D primitiveTexture;
+        //private Texture2D primitiveTexture;
 
         public TelepresenceSystemConfiguration config;
 

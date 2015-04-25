@@ -168,7 +168,7 @@ namespace EyeOut
 
             // Motor Yaw
             Yaw = new C_Motor(e_rot.yaw, 1, // id
-                    new C_Value(C_Value.angleFull, 0, 360, 200), // angle
+                    new C_Value(C_Value.angleFull, 0, 360, 180), // angle
                     new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
             // Motor Pitch
@@ -185,22 +185,25 @@ namespace EyeOut
 
 
         public static void ACTUALIZE_motorRegister(e_rot rot, e_regByteType type, List<byte> pars)
-        {            
-            byte addressByte = pars[0];
-            byte[] parValues = pars.Skip(1).ToArray();
-
-            C_Packet.LOG_statusPacket(string.Format(
-                "Status OK - actualizing mot[{0}] register type[{1}]: From address[{2}]=[{3}], these values[{4}]",
-                rot, type, addressByte, MainWindow.Ms[rot].Reg.GET_name(addressByte),
-                C_CONV.byteArray2strHex_space( parValues ) ));
-            foreach (byte byteValue in parValues)
+        {
+            if (pars.Count > 0)
             {
-                C_SPI.LOG_unimportant(string.Format(
-                    "going to acualize mot[{0}] register on address [{1}]",
-                    rot, addressByte
-                    ));
-                MainWindow.Ms[rot].ACTUALIZE_register(addressByte, byteValue, type);
-                addressByte++;
+                byte addressByte = pars[0];
+                byte[] parValues = pars.Skip(1).ToArray();
+
+                C_Packet.LOG_statusPacket(string.Format(
+                    "Status OK - actualizing mot[{0}] register type[{1}]: From address[{2}]=[{3}], these values[{4}]",
+                    rot, type, addressByte, MainWindow.Ms[rot].Reg.GET_name(addressByte),
+                    C_CONV.byteArray2strHex_space(parValues)));
+                foreach (byte byteValue in parValues)
+                {
+                    C_SPI.LOG_unimportant(string.Format(
+                        "going to acualize mot[{0}] register on address [{1}]",
+                        rot, addressByte
+                        ));
+                    MainWindow.Ms[rot].ACTUALIZE_register(addressByte, byteValue, type);
+                    addressByte++;
+                }
             }
         }
 

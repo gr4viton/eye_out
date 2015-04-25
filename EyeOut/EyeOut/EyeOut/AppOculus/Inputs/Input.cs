@@ -136,7 +136,7 @@ namespace EyeOut_Telepresence
             }
 
 
-            if (keyboardState.IsKeyPressed(Keys.H))
+            if (keyboardState.IsKeyPressed(Keys.K))
             {
                 tiles[3].PlayDelegate();
                 return;
@@ -186,6 +186,13 @@ namespace EyeOut_Telepresence
             {
                 //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
                 cameraImage.Description.Format = cameraImage.Description.Format -3;
+                return;
+            }
+
+            if (keyboardState.IsKeyPressed(Keys.H) && keyboardState.IsKeyDown(Keys.Control))
+            {
+                //config.READ_dataFromMotors ^= true; // toggle
+                config.SHOW_helpText = !config.SHOW_helpText;
                 return;
             }
 

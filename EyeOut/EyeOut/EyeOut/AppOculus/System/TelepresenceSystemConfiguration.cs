@@ -38,10 +38,13 @@ namespace EyeOut_Telepresence
         public C_HUD hud;
         public bool WRITE_dataToMotors = false;
         public bool READ_dataFromMotors = false;
+        public bool SHOW_helpText = true;
 
         public bool ReadCameraStream = false;
         public C_DrawGazeMark gazeMark;
 
+
+        public bool firstPass = true;
 
         public ImageViewer imageViewer;
         public StreamController streamController;

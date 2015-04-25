@@ -49,89 +49,89 @@ namespace EyeOut_Telepresence
             //if (maxRepeats < 1)
             {
                 //maxRepeats = 10;
-                int ieye = 0;
+                //int ieye = 0;
 
-                //Matrix ori = renderPose[ieye].Orientation.GetMatrix();
-                //Matrix ori = renderPose[ieye].Orientation.Axis;
+                ////Matrix ori = renderPose[ieye].Orientation.GetMatrix();
+                ////Matrix ori = renderPose[ieye].Orientation.Axis;
 
-                //Vector3 pos = renderPose[ieye].Position;
-                //float[] posArr = pos.ToArray();
+                ////Vector3 pos = renderPose[ieye].Position;
+                ////float[] posArr = pos.ToArray();
 
-                StringBuilder msg = new StringBuilder();
-                int q = 0;
-                /*
-                for(q=0;q<3;q++)
-                {
-                    msg.AppendLine(string.Format("{0}\t{1}\t{2}", ori[q+0], ori[q+1], ori[q+2]));
-                }*/
+                //StringBuilder msg = new StringBuilder();
+                //int q = 0;
+                ///*
+                //for(q=0;q<3;q++)
+                //{
+                //    msg.AppendLine(string.Format("{0}\t{1}\t{2}", ori[q+0], ori[q+1], ori[q+2]));
+                //}*/
 
-                //float yaw, pitch, roll;
-                float[] yawPitchRoll = new float[3];
+                ////float yaw, pitch, roll;
+                //float[] yawPitchRoll = new float[3];
 
-                //var pose = renderPose[(int)eye] = hmd.GetHmdPosePerEye(eye); 
-                Quaternion Q = hmd.GetHmdPosePerEye((SharpOVR.EyeType)ieye).Orientation; // .GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
-                    //Quaternion a;
-                //a.Angle
+                ////var pose = renderPose[(int)eye] = hmd.GetHmdPosePerEye(eye); 
+                //Quaternion Q = hmd.GetHmdPosePerEye((SharpOVR.EyeType)ieye).Orientation; // .GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
+                //    //Quaternion a;
+                ////a.Angle
 
 
                 
 
-                StringBuilder str = new StringBuilder();
-                Q.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
+                //StringBuilder str = new StringBuilder();
+                //Q.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
 
-                double[] yawPitchRoll_d = new double[3];
-                for (q = 0; q < 3; q++)
-                {
-                    yawPitchRoll_d[q] = C_Value.CONV_rad2deg(((double)yawPitchRoll[q]));
-                    //yawPitchRoll_d[q] = (double)yawPitchRoll[q] * C_Value.rad2deg;
-                    yawPitchRoll_d[q] = (double)yawPitchRoll[q] * 57.0;
-                }
+                //double[] yawPitchRoll_d = new double[3];
+                //for (q = 0; q < 3; q++)
+                //{
+                //    yawPitchRoll_d[q] = C_Value.CONV_rad2deg(((double)yawPitchRoll[q]));
+                //    //yawPitchRoll_d[q] = (double)yawPitchRoll[q] * C_Value.rad2deg;
+                //    yawPitchRoll_d[q] = (double)yawPitchRoll[q] * 57.0;
+                //}
 
 
-                //str.AppendLine(string.Format("X[{0}]Y[{1}]Z[{2}]W[{3}]", Q.X, Q.Y, Q.Z, Q.W));
-                str.AppendLine(string.Format("Angle[{0}] Axis[{1}]", Q.Angle, Q.Axis));
-                //str.AppendLine(string.Format("YawPitchRoll[rad] [{0,7:0.0000}|{1,7:0.0000}|{2,7:0.0000}]",
-                //    yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]
-                //    ));
+                ////str.AppendLine(string.Format("X[{0}]Y[{1}]Z[{2}]W[{3}]", Q.X, Q.Y, Q.Z, Q.W));
+                //str.AppendLine(string.Format("Angle[{0}] Axis[{1}]", Q.Angle, Q.Axis));
                 ////str.AppendLine(string.Format("YawPitchRoll[rad] [{0,7:0.0000}|{1,7:0.0000}|{2,7:0.0000}]",
-                ////    (double)(yawPitchRoll[0]), (double)(yawPitchRoll[1]), (double)(yawPitchRoll[2])
+                ////    yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]
                 ////    ));
+                //////str.AppendLine(string.Format("YawPitchRoll[rad] [{0,7:0.0000}|{1,7:0.0000}|{2,7:0.0000}]",
+                //////    (double)(yawPitchRoll[0]), (double)(yawPitchRoll[1]), (double)(yawPitchRoll[2])
+                //////    ));
 
-                ////str.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                ////    (double)(yawPitchRoll[0]) * 57, (double)(yawPitchRoll[1]) * C_Value.deg2rad, (double)(yawPitchRoll[2]) * (double)57
-                ////    ));
-                ////float pif = 3.141592f;
-                ////double pid = (double)pif;
-                ////str.AppendLine(string.Format("{0}f == {1}d", pif,pid ));
-                str.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                    yawPitchRoll_d[0], yawPitchRoll_d[1], yawPitchRoll_d[2]
-                    ));
-                //str.AppendLine(string.Format("{0}|{1}", C_Value.rad2deg, C_Value.deg2rad   ));
+                //////str.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                //////    (double)(yawPitchRoll[0]) * 57, (double)(yawPitchRoll[1]) * C_Value.deg2rad, (double)(yawPitchRoll[2]) * (double)57
+                //////    ));
+                //////float pif = 3.141592f;
+                //////double pid = (double)pif;
+                //////str.AppendLine(string.Format("{0}f == {1}d", pif,pid ));
+                //str.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                //    yawPitchRoll_d[0], yawPitchRoll_d[1], yawPitchRoll_d[2]
+                //    ));
+                ////str.AppendLine(string.Format("{0}|{1}", C_Value.rad2deg, C_Value.deg2rad   ));
 
-                str.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
-                str.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
-                if (cameraImage != null)
-                //if(false)
-                {
-                    str.AppendLine(string.Format("{0}={1}",cameraImage.Description.Format.ToString(),cameraImage.Description.Format));
+                //str.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
+                //str.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
+                //if (cameraImage != null)
+                ////if(false)
+                //{
+                //    str.AppendLine(string.Format("{0}={1}",cameraImage.Description.Format.ToString(),cameraImage.Description.Format));
 
-                    //str.AppendLine(string.Format("len={0},wid*hei={1},data=",
-                    //    pixelData.Length,
-                    //    cameraImage.Description.Width * cameraImage.Description.Height
-                    //    ));
-                    int width = cameraImage.Description.Width;
-                    for (int y = 0; y < 1; y++)
-                    {
-                        for (q = 0; q < 6; q++)
-                        {
-                            str.Append(string.Format("{0,4:0}", rgbPixelData[q + y * (width - 1)].ToString()));
-                        }
-                        str.Append("\n");
-                    }
-                }
+                //    //str.AppendLine(string.Format("len={0},wid*hei={1},data=",
+                //    //    pixelData.Length,
+                //    //    cameraImage.Description.Width * cameraImage.Description.Height
+                //    //    ));
+                //    int width = cameraImage.Description.Width;
+                //    for (int y = 0; y < 1; y++)
+                //    {
+                //        for (q = 0; q < 6; q++)
+                //        {
+                //            str.Append(string.Format("{0,4:0}", pixelData[q + y * (width - 1)].ToString()));
+                //        }
+                //        str.Append("\n");
+                //    }
+                //}
 
-                str.Append(string.Format("cam position:{0}|{1}, keyboardStateW={2}", cameraSurfaceX, cameraSurfaceY, keyboardState.IsKeyPressed(Keys.U)));
-                text = str.ToString();
+                //str.Append(string.Format("cam position:{0}|{1}, keyboardStateW={2}", cameraSurfaceX, cameraSurfaceY, keyboardState.IsKeyPressed(Keys.U)));
+                //text = str.ToString();
                 //q = 0;
                 //msg.Append(string.Format("YAW={0,5:0.00}°\tPITCH={1,5:0.00}°\tROLL={2,5:0.00}°", yawPitchRoll_d[q + 0], yawPitchRoll_d[q + 1], yawPitchRoll_d[q + 2]));
 
@@ -141,13 +141,24 @@ namespace EyeOut_Telepresence
 
                 if (config.WRITE_dataToMotors == true)
                 {
-                    foreach (C_Motor mot in MainWindow.Ms)
+                    //C_MotorControl ms = MainWindow.Ms;
+                    //C_Motor.SEND_packetToAll(C_DynAdd.INS_SYNC_WRITE, new List<object> {
+                    //    C_DynAdd.GOAL_POS_H, 4,
+                    //    ms.Yaw.id, ms.Yaw.angleWanted.Hex, ms.Yaw.speedWanted.Hex, 
+                    //    ms.Pitch.id, ms.Pitch.angleWanted.Hex, ms.Pitch.speedWanted.Hex, 
+                    //    ms.Roll.id, ms.Roll.angleWanted.Hex, ms.Roll.speedWanted.Hex, 
+                    //});
+
+                    //if (false)
                     {
-                        mot.angleWanted.Dec_FromDefault = yawPitchRoll_d[(int)mot.rotMotor];
-                        //mot.speedWanted.Dec = mot.speedWanted.DecMax;
-                        mot.speedWanted.Dec = C_DynVal.SET_MOV_SPEED_NOCONTROL;
-                        mot.ORDER_move();
-                        //mot.REGISTER_move();
+                        foreach (C_Motor mot in MainWindow.Ms)
+                        {
+                            mot.angleWanted.Dec_FromDefault = yawPitchRoll_d[(int)mot.rotMotor];
+                            mot.speedWanted.Dec = mot.speedWanted.DecMax;
+                            //mot.speedWanted.Dec = C_DynVal.SET_MOV_SPEED_NOCONTROL;
+                            mot.ORDER_move();
+                            //mot.REGISTER_move();
+                        }
                     }
                     //C_Motor.ORDER_ActionToAll();
                 }

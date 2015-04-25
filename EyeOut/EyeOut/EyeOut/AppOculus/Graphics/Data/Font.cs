@@ -73,8 +73,12 @@ namespace EyeOut_Telepresence
             var dim = fontDefault.MeasureString(text);
             int diff = -452; // for DK1
             int x = 620 + eye * diff, y = 1020; // for DK1
-            spriteBatch.Draw(colorTexture, new SharpDX.Rectangle(x, y, (int)dim.X, (int)dim.Y), SharpDX.Color.White);
-            spriteBatch.DrawString(fontDefault, text, new SharpDX.Vector2(x, y), SharpDX.Color.Black);
+
+            if (config.SHOW_helpText == true)
+            {
+                spriteBatch.Draw(colorTexture, new SharpDX.Rectangle(x, y, (int)dim.X, (int)dim.Y), SharpDX.Color.White);
+                spriteBatch.DrawString(fontDefault, text, new SharpDX.Vector2(x, y), SharpDX.Color.Black);
+            }
 
 
             // Update the FPS text

@@ -11,7 +11,7 @@ namespace EyeOut
 {
     // some helping functions
 
-    class C_CounterDown
+    public class C_CounterDown
     {
         private int val;
         private int valDef;

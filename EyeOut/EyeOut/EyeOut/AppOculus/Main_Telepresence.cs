@@ -63,7 +63,14 @@ namespace EyeOut
 
                 streamController = guiStreamController,
                 imageViewer = guiImageViewer
+                //imageViewer = new Basler.Pylon.Controls.WPF.ImageViewer()
             };
+
+            //TP_config.streamController.SetBinding(
+            //TP_config.imageViewer.SetBinding(
+            //guiStreamController.ActiveViewer = TP_config.imageViewer;
+            //TP_config.imageViewer.
+
             TP_config.hud.time = true;
 
             KILL_allNotNeededGui();
