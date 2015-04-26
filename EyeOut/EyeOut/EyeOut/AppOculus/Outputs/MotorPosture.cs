@@ -73,6 +73,14 @@ namespace EyeOut_Telepresence
             LOG("order motors - get euler angles");
             Q.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
 
+
+            config.player.SetRotation(
+                 yawPitchRoll[1] , // pitch
+                 yawPitchRoll[0] , // yaw
+                 yawPitchRoll[2]  // roll
+                );
+
+
             for (q = 0; q < 3; q++)
             {
                 yawPitchRoll_d[q] = C_Value.CONV_rad2deg(((double)yawPitchRoll[q]));
@@ -86,9 +94,13 @@ namespace EyeOut_Telepresence
             HUD.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
             HUD.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
 
-            Vector3 pos = config.player.position.GetPosition();
+            Vector3 pos = config.player.GetPosition();
             HUD.AppendLine(string.Format("Player position [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
                 pos[0],pos[1],pos[2]
+                ));
+            Vector3 rot = config.player.GetRotation();
+            HUD.AppendLine(string.Format("Player rotation [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                rot[0], rot[1], rot[2]
                 ));
 
             //str.Append(string.Format("cam position:{0}|{1}, keyboardStateW={2}", cameraSurfaceX, cameraSurfaceY, keyboardState.IsKeyPressed(Keys.U)));

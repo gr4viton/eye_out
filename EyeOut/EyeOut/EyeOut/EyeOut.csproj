@@ -143,6 +143,7 @@
     <Compile Include="AppOculus\Graphics\Cameras\BaslerCamera.cs" />
     <Compile Include="AppOculus\Graphics\Graphics.cs" />
     <Compile Include="AppOculus\Graphics\Models\SkySurface.cs" />
+    <Compile Include="AppOculus\Inputs\Player.cs" />
     <Compile Include="AppOculus\Outputs\MotorPosture.cs" />
     <Compile Include="AppOculus\System\TelepresenceSystemConfiguration.cs" />
     <Compile Include="Interconnection\mot\C_Value.cs" />
@@ -208,6 +209,8 @@
     <ToolkitTexture Include="Content\Demo\ShipDiffuse.dds" />
     <ToolkitAudio Include="Content\Demo\TestBank.xwb" />
     <ToolkitAudio Include="Content\Demo\TestBankXbox.xwb" />
+    <ToolkitModel Include="Content\Demo\skybox\dome.blend" />
+    <ToolkitModel Include="Content\Demo\skybox\untitled.x" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -247,6 +250,13 @@
     <Content Include="Content\Demo\MiniTri.fx" />
     <ToolkitTexture Include="Content\Demo\speaker.png" />
     <ToolkitTexture Include="Content\Demo\vut_grid.png" />
+    <ToolkitTexture Include="Content\Demo\skybox\skybox0.png" />
+    <ToolkitTexture Include="Content\Demo\skybox\skybox1.jpg" />
+    <ToolkitTexture Include="Content\Demo\skybox\skybox2.png" />
+    <ToolkitTexture Include="Content\Demo\skybox\skybox3.png" />
+    <ToolkitTexture Include="Content\Demo\skybox\skybox4.jpg" />
+    <ToolkitTexture Include="Content\Demo\skybox\Skybox_ground.png" />
+    <ToolkitTexture Include="Content\Demo\skybox\SkyDome-Cloud-Few-Dawn.png" />
     <Content Include="Content\mot\registerByteDefault.txt" />
     <Resource Include="Content\about\notUsedAfterall.txt" />
     <Content Include="Content\mot\cmdInEx.txt">

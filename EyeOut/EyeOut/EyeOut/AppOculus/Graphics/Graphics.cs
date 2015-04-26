@@ -82,7 +82,10 @@ namespace EyeOut_Telepresence
 
                 var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
                 var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
+
+                headPos = config.player.GetPosition();
                 var shiftedEyePos = headPos + rollPitchYaw.Transform(pose.Position);
+
 
                 eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
                     //.ViewAdjust 
@@ -92,8 +95,7 @@ namespace EyeOut_Telepresence
                 eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.0001f, -1000.0f, true);
                 eyeProjection.Transpose();
 
-                eyeWorld = Matrix.Identity 
-                    * Matrix.Translation( config.player.position.GetPosition() );
+                eyeWorld = Matrix.Identity ;
                     ;// *config.player.position;
                 // Set Viewport for our eye
                 GraphicsDevice.SetViewport(renderViewport.ToViewportF());
@@ -101,7 +103,7 @@ namespace EyeOut_Telepresence
                 // Perform the actual drawing
                 Draw_BaslerCamera(gameTime);
                 Draw_Model(gameTime);
-                //Draw_SkySurface(gameTime);
+                Draw_SkySurface(gameTime);
                 //DrawFonts((int)eye);
 
                 Draw_SoundGraphicalEffects();
@@ -125,6 +127,8 @@ namespace EyeOut_Telepresence
                 var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
                 var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
                 var shiftedEyePos = headPos + rollPitchYaw.Transform(pose.Position);
+
+
                 eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
                     //.ViewAdjust 
                      * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
@@ -177,7 +181,7 @@ namespace EyeOut_Telepresence
 
 
 
-            model.Draw(GraphicsDevice, world, eyeView, eyeProjection);
+            modelAirplane.Draw(GraphicsDevice, world, eyeView, eyeProjection);
             //BasicEffect.EnableDefaultLighting(model, true);
             //GraphicsDevice.BackBuffer.Dispose();
 

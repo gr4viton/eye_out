@@ -554,6 +554,16 @@ namespace EyeOut
         {
             return rad * rad2deg;
         }
+
+        public static float CONV_deg2rad(float deg)
+        {
+            return deg * (float)deg2rad;
+        }
+
+        public static float CONV_rad2deg(float rad)
+        {
+            return rad * (float)rad2deg;
+        }
     }
 
 }

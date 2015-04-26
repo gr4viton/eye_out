@@ -85,3 +85,12 @@ C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\obj\Debug\EyeOut.csprojResolveAssemblyR
 C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\cameraDefault_2015-04-20_09-34-31.tkb
 C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\vut_grid.tkb
 C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\grid.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\skybox\skybox0.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\skybox\skybox1.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\skybox\skybox2.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\skybox\skybox3.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\skybox\skybox4.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\skybox\dome.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\skybox\Skybox_ground.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\skybox\SkyDome-Cloud-Few-Dawn.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\skybox\untitled.tkb

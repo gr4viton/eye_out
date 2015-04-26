@@ -137,16 +137,30 @@ namespace EyeOut_Telepresence
 
             List<Matrix> roboticArmTransformations = new List<Matrix>()
             {
-                Matrix.Identity,
                 translation_HeadCenter2Desk,
                 translation_Desk2RollAxis,
-                //Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefaultZero),
-                //translation_RollAxis2PitchAxis,
+                
+                Matrix.Translation(0, -y_RollAxis2PitchAxis, 0),
+                Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefaultZero),
+                //Matrix.Translation(0, y_RollAxis2PitchAxis, 0)
+                
                 //Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault),
                 //translation_PitchAxis2YawAxisTop,
-                //Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero + (float)Math.PI),
-                translation_YawAxisTop2Sensor,
-                translation_Sensor2CameraTexture
+                ////Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero + (float)Math.PI),
+                //translation_YawAxisTop2Sensor,
+                //translation_Sensor2CameraTexture,
+
+                
+                //translation_Sensor2CameraTexture,
+                //translation_YawAxisTop2Sensor,
+                ////Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero + (float)Math.PI),
+                //translation_PitchAxis2YawAxisTop,
+                ////Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault),
+                //translation_RollAxis2PitchAxis,
+                ////Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefaultZero),
+                //translation_Desk2RollAxis,
+                //translation_HeadCenter2Desk,
+                //Matrix.Identity
             };
 
             //Matrix.Translation(0, y_Desk2RollAxis, 0);
@@ -163,12 +177,14 @@ namespace EyeOut_Telepresence
             int qmax = roboticArmTransformations.Count;
             for (int q = 0; q < qmax; q++)
             {
+                float brightness = (float)q / (float)qmax;
                 worldLocal *= roboticArmTransformations[q];
-                roboticArmEffect.SpecularColor = new Vector3(255 * q / qmax, 0, 0);
-                roboticArmEffect.AmbientLightColor = new Vector3(255 * q / qmax, 0, 0);
+                roboticArmEffect.SpecularColor = new Vector3(brightness, 0, 0);
+                roboticArmEffect.AmbientLightColor = new Vector3(brightness, 0, 0);
                 roboticArmEffect.LightingEnabled = true;
 
-                roboticArmEffect.World = worldLocal * Matrix.Scaling(scaling);
+                //roboticArmEffect.World = worldLocal * Matrix.Scaling(scaling);
+                roboticArmEffect.World = worldLocal;
                 roboticArmParts[q].Draw(roboticArmEffect);
             }
 
@@ -198,10 +214,10 @@ namespace EyeOut_Telepresence
 
 
 
-            model.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * eyeWorld, eyeView, eyeProjection);
+            modelAirplane.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * eyeWorld, eyeView, eyeProjection);
 
             // Draw the primitive using BasicEffect
-            cameraSurface.Draw(cameraBasicEffect);
+            //cameraSurface.Draw(cameraBasicEffect);
         }
 
         public void Constructor_BaslerCamera()

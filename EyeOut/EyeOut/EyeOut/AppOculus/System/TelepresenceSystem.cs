@@ -55,7 +55,7 @@ namespace EyeOut_Telepresence
         private Matrix eyeWorld;
 
 
-        private Model model;
+        private Model modelAirplane;
 
         private HMD hmd;
         private Rect[] eyeRenderViewport;
@@ -245,10 +245,10 @@ namespace EyeOut_Telepresence
         {
             // Load a 3D model
             // The [Ship.fbx] file is defined with the build action [ToolkitModel] in the project
-            model = Content.Load<Model>("Ship");
+            modelAirplane = Content.Load<Model>("Ship");
 
             // Enable default lighting on model.
-            BasicEffect.EnableDefaultLighting(model, true);
+            BasicEffect.EnableDefaultLighting(modelAirplane, true);
 
 
 

@@ -757,7 +757,7 @@
                             </GroupBox>
                             <GroupBox Header="Anti-sickness">
                                 <StackPanel>
-                                    <CheckBox Content="Skybox" IsEnabled="False"/>
+                                    <CheckBox x:Name="cbTelepresence_Skybox" Content="Skybox - scene background" IsChecked="True"/>
                                     <CheckBox Content="Virtual Nose" IsEnabled="False"/>
                                 </StackPanel>
                             </GroupBox>

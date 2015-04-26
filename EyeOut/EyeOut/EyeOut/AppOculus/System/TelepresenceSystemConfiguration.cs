@@ -34,51 +34,6 @@ namespace EyeOut_Telepresence
         public bool MotorPostureSeen = true;
     }
 
-    public class C_Player
-    {
-        public Player position = new Player();
-        //public Matrix position;
-        //float positionStep = 0.05f;
-
-        //public void forward()
-        //{
-        //    position *= positionStep * Matrix.Translation(new Vector3(0, 0, 1));
-        //}
-
-        //public void back()
-        //{
-        //    position *= positionStep * Matrix.Translation(new Vector3(0, 0, -1));
-
-        //}
-
-        //public void up()
-        //{
-        //    position *= positionStep * Matrix.Translation(new Vector3(0, 1, 0));
-        //}
-
-        //public void down()
-        //{
-        //    position *= positionStep * Matrix.Translation(new Vector3(0, -1, 0));
-
-        //}
-
-        //public void sidestepLeft()
-        //{
-        //    position *= positionStep * Matrix.Translation(new Vector3(1, 0, 0));
-
-        //}
-        
-        //public void sidestepRight()
-        //{
-        //    position *= positionStep * Matrix.Translation(new Vector3(-1, 0, -0));
-
-        //}
-
-        //public C_Player()
-        //{
-        //}
-    }
-
     // telepresence configurations
     public class TelepresenceSystemConfiguration
     {
@@ -86,6 +41,7 @@ namespace EyeOut_Telepresence
         public bool WRITE_dataToMotors = false;
         public bool READ_dataFromMotors = false;
         public bool SHOW_helpText = true;
+        public bool drawSkySurface = true;
 
         public bool ReadCameraStream = false;
         public C_DrawGazeMark gazeMark;
@@ -96,7 +52,7 @@ namespace EyeOut_Telepresence
         public ImageViewer imageViewer;
         public StreamController streamController;
 
-        public C_Player player = new C_Player();
+        public Player player = new Player();
 
         public TelepresenceSystemConfiguration() { }
     }

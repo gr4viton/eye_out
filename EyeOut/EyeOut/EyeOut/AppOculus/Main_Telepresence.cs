@@ -61,6 +61,9 @@ namespace EyeOut
                     motorPosture = cbHudMotorPosture.IsChecked.Value
                 },
 
+                drawSkySurface = cbTelepresence_Skybox.IsChecked.Value,
+
+
                 streamController = guiStreamController,
                 imageViewer = guiImageViewer
                 //imageViewer = new Basler.Pylon.Controls.WPF.ImageViewer()
