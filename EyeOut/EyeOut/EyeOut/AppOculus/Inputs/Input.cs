@@ -168,11 +168,6 @@ namespace EyeOut_Telepresence
             config.player.SetupSpeed(keyboardState.IsKeyDown(Keys.Shift), keyboardState.IsKeyDown(Keys.Control));
 
             
-            if (keyboardState.IsKeyPressed(Keys.J) && keyboardState.IsKeyDown(Keys.Alt))
-            {
-                SkySurface_SetNextSurface();
-            }
-            
             if (keyboardState.IsKeyPressed(Keys.J) && keyboardState.IsKeyDown(Keys.Control))
             {
                 config.drawSkySurface = !config.drawSkySurface;

@@ -39,6 +39,8 @@ namespace EyeOut_Telepresence
         private float positionX, positionY, positionZ;
         private float rotationX, rotationY, rotationZ;
 
+        private float bodyRotationX, bodyRotationY, bodyRotationZ; 
+
         private float forwardSpeed, backwardSpeed;
         private float upwardSpeed, downwardSpeed;
 
@@ -52,6 +54,12 @@ namespace EyeOut_Telepresence
         #endregion
 
         #region Public Methods
+
+        public Player()
+        {
+            //bodyRotationY = (float)Math.PI;
+            bodyRotationY = (float)Math.PI;
+        }
 
         public void SetPosition(float x, float y, float z)
         {
@@ -75,6 +83,7 @@ namespace EyeOut_Telepresence
             SetRotation(rotation.X, rotation.Y, rotation.Z);
         }
 
+
         public Vector3 GetPosition()
         {
             return new Vector3(positionX, positionY, positionZ);
@@ -95,6 +104,11 @@ namespace EyeOut_Telepresence
             x = rotationX;
             y = rotationY;
             z = rotationZ;
+        }
+
+        public float GetBodyRotationY()
+        {
+            return bodyRotationY;
         }
 
         public void SetupSpeed(bool speedKeyDown, bool slowKeyDown)

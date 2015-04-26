@@ -69,8 +69,8 @@ namespace EyeOut_Telepresence
         private PoseF[] renderPose = new PoseF[2];
 
         
-        private Vector3 headPos = new Vector3(0f, 0f, 0f);
-        private float bodyYaw = 3.141592f;
+        //private Vector3 headPos = new Vector3(0f, 0f, 0f);
+        //private float bodyYaw = 3.141592f;
 
         uint frameIndex = 0;
 
@@ -224,6 +224,8 @@ namespace EyeOut_Telepresence
                 swapChain.SetFullscreenState(true, hmdOutput);
             }
 
+            //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullBack);
+            GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullFront);
             base.Initialize();
         }
         #region LoadContent
@@ -252,16 +254,16 @@ namespace EyeOut_Telepresence
 
 
 
-            // Creates a basic effect
-            basicEffect = ToDisposeContent(new BasicEffect(GraphicsDevice)
-            {
-                View = Matrix.LookAtRH(new Vector3(0, 0, 5), new Vector3(0, 0, 0), Vector3.UnitY),
-                Projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f),
-                World = Matrix.Identity
-            });
+            //// Creates a basic effect
+            //basicEffect = ToDisposeContent(new BasicEffect(GraphicsDevice)
+            //{
+            //    View = Matrix.LookAtRH(new Vector3(0, 0, 5), new Vector3(0, 0, 0), Vector3.UnitY),
+            //    Projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 1000.0f),
+            //    World = Matrix.Identity
+            //});
 
-            basicEffect.PreferPerPixelLighting = true;
-            basicEffect.EnableDefaultLighting();
+            //basicEffect.PreferPerPixelLighting = true;
+            //basicEffect.EnableDefaultLighting();
 
             //// Creates all primitives
             //primitives = new List<GeometricPrimitive>

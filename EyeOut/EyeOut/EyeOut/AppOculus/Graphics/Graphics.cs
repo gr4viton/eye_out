@@ -77,14 +77,13 @@ namespace EyeOut_Telepresence
                 //OVR.MatrixProjection(renderDesc.Fov);
 
                 // Calculate view matrix                
-                var rollPitchYaw = Matrix.RotationY(bodyYaw);
+                var rollPitchYaw = Matrix.RotationY(config.player.GetBodyRotationY());
                 var finalRollPitchYaw = rollPitchYaw * pose.Orientation.GetMatrix();
 
                 var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
                 var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
 
-                headPos = config.player.GetPosition();
-                var shiftedEyePos = headPos + rollPitchYaw.Transform(pose.Position);
+                var shiftedEyePos = config.player.GetPosition() + rollPitchYaw.Transform(pose.Position);
 
 
                 eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
@@ -92,21 +91,23 @@ namespace EyeOut_Telepresence
                      * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 
                 // Calculate projection matrix
-                eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.0001f, -1000.0f, true);
+                eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.0001f, -100.0f, true);
                 eyeProjection.Transpose();
 
                 eyeWorld = Matrix.Identity ;
-                    ;// *config.player.position;
+
                 // Set Viewport for our eye
                 GraphicsDevice.SetViewport(renderViewport.ToViewportF());
 
                 // Perform the actual drawing
-                Draw_BaslerCamera(gameTime);
+                //Draw_BaslerCamera(gameTime);
                 Draw_Model(gameTime);
-                Draw_SkySurface(gameTime);
+                //Draw_SkySurface(gameTime);
+
+
                 //DrawFonts((int)eye);
 
-                Draw_SoundGraphicalEffects();
+                //Draw_SoundGraphicalEffects();
 
                 HUD.AppendLine("hmd latency = " + hmd.GetMeasuredLatency());
             }
@@ -122,11 +123,11 @@ namespace EyeOut_Telepresence
                 var pose = renderPose[(int)eye] = hmd.GetHmdPosePerEye(eye);
 
                 // Calculate view matrix                
-                var rollPitchYaw = Matrix.RotationY(bodyYaw);
+                var rollPitchYaw = Matrix.RotationY(config.player.GetBodyRotationY());
                 var finalRollPitchYaw = rollPitchYaw * pose.Orientation.GetMatrix();
                 var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
                 var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
-                var shiftedEyePos = headPos + rollPitchYaw.Transform(pose.Position);
+                var shiftedEyePos = config.player.GetPosition() + rollPitchYaw.Transform(pose.Position);
 
 
                 eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
@@ -134,7 +135,7 @@ namespace EyeOut_Telepresence
                      * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 
                 // Calculate projection matrix
-                eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.0001f, -10000.0f, true);
+                eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.001f, -1000.0f, true);
                 eyeProjection.Transpose();
 
                 // Set Viewport for our eye
