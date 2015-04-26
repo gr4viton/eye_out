@@ -15,6 +15,8 @@ using System.ComponentModel; // description
 using System.Reflection; // fieldInfo  - description
 using EyeOut;
 
+using SharpOVR;
+
 namespace EyeOut_Telepresence
 {
 
@@ -44,6 +46,12 @@ namespace EyeOut_Telepresence
         private float forwardSpeed, backwardSpeed;
         private float upwardSpeed, downwardSpeed;
 
+        public PoseF lastPose;
+        public float angleX { get { return yawPitchRoll[1]; } }
+        public float angleY { get { return yawPitchRoll[0]; } }
+        public float angleZ { get { return yawPitchRoll[2]; } }
+        public float[] yawPitchRoll;
+
 
         public float acceleration = 0.5f;
         public float accelerationNegative = 0.7f;
@@ -57,15 +65,35 @@ namespace EyeOut_Telepresence
 
         public Player()
         {
-            //bodyRotationY = (float)Math.PI;
             bodyRotationY = (float)Math.PI;
+            //bodyRotationY = 0f;
+            yawPitchRoll = new float[3];
         }
 
+        public void ResetPosition()
+        {
+            positionX = positionY = positionZ = 0f;
+        }
+
+        public void ResetBodyRotationY()
+        {
+            bodyRotationY = angleY;
+        }
+
+        public void UPDATE_hmdOrientation(Quaternion Q)
+        {
+            Q.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
+            SetRotation(
+                 yawPitchRoll[1], // pitch
+                 yawPitchRoll[0], // yaw
+                 yawPitchRoll[2]  // roll
+                );
+        }
         public void SetPosition(float x, float y, float z)
         {
-            positionX = x;
-            positionY = y;
-            positionZ = z;
+            positionX = x ;
+            positionY = y ;
+            positionZ = z ;
         }
         public void SetPosition(Vector3 position)
         {
@@ -74,9 +102,9 @@ namespace EyeOut_Telepresence
 
         public void SetRotation(float x, float y, float z)
         {
-            rotationX = x;
-            rotationY = y;
-            rotationZ = z;
+            rotationX = x + bodyRotationX;
+            rotationY = y + bodyRotationY;
+            rotationZ = z + bodyRotationZ;
         }
         public void SetRotation(Vector3 rotation)
         {

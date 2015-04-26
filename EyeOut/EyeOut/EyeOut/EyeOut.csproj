@@ -166,8 +166,6 @@
     <Compile Include="Interconnection\mot\C_EulerAngles.cs" />
     <Compile Include="Interconnection\SPI\C_Packet.cs" />
     <Compile Include="Interconnection\mot\Main_MotorData.cs" />
-    <Compile Include="AppOculus\not_used_C_Telepresence_INIT.cs" />
-    <Compile Include="AppOculus\not_used_C_Telepresence.cs" />
     <Compile Include="AppOculus\Main_Telepresence.cs" />
     <Compile Include="AppGui\other\C_State.cs" />
     <Compile Include="Interconnection\SPI\Main_SPI.cs" />
@@ -185,7 +183,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppOculus\not_used_Demo_RiftGame.cs" />
     <Compile Include="AppGui\other\Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

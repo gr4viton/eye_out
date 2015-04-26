@@ -56,34 +56,18 @@ namespace EyeOut_Telepresence
                 }
             }
         }
+
         public void POSITION_motors()
         {
-            LOG("start order motors");
             // background worker - if it takes too long
-            int ieye = 0;
+
+            UpdateFromHmd(0);
+
             int q = 0;
-            float[] yawPitchRoll = new float[3];
             double[] yawPitchRoll_d = new double[3];
-            StringBuilder str = new StringBuilder();
-
-            LOG("order motors - get quaternion of orientation");
-            //var pose = renderPose[(int)eye] = hmd.GetHmdPosePerEye(eye); 
-            Quaternion Q = hmd.GetHmdPosePerEye((SharpOVR.EyeType)ieye).Orientation;
-
-            LOG("order motors - get euler angles");
-            Q.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
-
-
-            config.player.SetRotation(
-                 yawPitchRoll[1] , // pitch
-                 yawPitchRoll[0] , // yaw
-                 yawPitchRoll[2]  // roll
-                );
-
-
             for (q = 0; q < 3; q++)
             {
-                yawPitchRoll_d[q] = C_Value.CONV_rad2deg(((double)yawPitchRoll[q]));
+                yawPitchRoll_d[q] = C_Value.CONV_rad2deg(((double)config.player.yawPitchRoll[q]));
             }
 
             LOG("order motors - build message");

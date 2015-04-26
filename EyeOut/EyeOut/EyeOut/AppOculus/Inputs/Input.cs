@@ -13,6 +13,9 @@ using SharpDX.Toolkit.Input;
 using System.ComponentModel; // description
 using System.Reflection; // fieldInfo  - description
 using EyeOut;
+
+using SharpOVR;
+
 namespace EyeOut_Telepresence
 {
     
@@ -125,7 +128,7 @@ namespace EyeOut_Telepresence
                 tiles[3].StopDelegate();
             }
 
-            if (keyboardState.IsKeyPressed(Keys.Q))
+            if (keyboardState.IsKeyPressed(Keys.O))
             {
                 tiles[4].PlayDelegate();
             }
@@ -133,11 +136,13 @@ namespace EyeOut_Telepresence
             {
                 tiles[4].StopDelegate();
             }
+
             if (keyboardState.IsKeyPressed(Keys.H) && keyboardState.IsKeyDown(Keys.Control))
             {
                 //config.READ_dataFromMotors ^= true; // toggle
                 config.SHOW_helpText = !config.SHOW_helpText;
             }
+
             if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Control))
             {
                 //config.READ_dataFromMotors ^= true; // toggle
@@ -148,6 +153,14 @@ namespace EyeOut_Telepresence
                 //config.READ_dataFromMotors ^= true; // toggle
                 config.READ_dataFromMotors = !config.READ_dataFromMotors;
             }
+
+            if (keyboardState.IsKeyPressed(Keys.R) )
+            {
+                config.player.ResetPosition();
+                //config.player.ResetBodyRotationY();
+            }
+
+
 
             HUD.AppendLine(string.Format(
                 "W{0}|A{1}|S{2}",
@@ -190,6 +203,43 @@ namespace EyeOut_Telepresence
             //        return;
             //    }
             //}
+        }
+
+
+        public void UpdateFromHmd(EyeType eye)
+        {
+
+            //TrackingState outTrack = hmd.GetTrackingState(0);
+
+            //PoseF[] outEyePoses = new PoseF[2];
+
+            //// hmdToEyeViewOffset[2] can be ovrEyeRenderDesc.HmdToEyeViewOffset returned
+            ////     from ovrHmd_ConfigureRendering or ovrHmd_GetRenderDesc. 
+            //FovPort fov = renderDesc.Fov;
+
+            //Vector3 hmdToEyeViewOffset1 = hmd.GetRenderDesc(eye, fov).HmdToEyeViewOffset;
+            //Vector3 hmdToEyeViewOffset2 = hmd.GetRenderDesc(eye, fov).HmdToEyeViewOffset;
+
+            //Vector3[] hmdToEyeViewOffset = new Vector3[] { hmdToEyeViewOffset1, hmdToEyeViewOffset2 };
+
+            //hmd.GetEyePoses(frameIndex, hmdToEyeViewOffset, outEyePoses, ref outTrack);
+            //var pose = renderPose[(int)eye] = outTrack.CameraPose; 
+            //hmd.GetHmdPosePerEye(eye); // obsolete in 0.4.4
+            //hmd.GetEyePose(eye); // 0.4.1
+
+            //var orientation = renderPose[(int)eye].Orientation;
+
+            //OVR.MatrixProjection(renderDesc.Fov);
+
+            var pose = hmd.GetHmdPosePerEye(eye);
+            config.player.lastPose = pose;
+            config.player.UPDATE_hmdOrientation(pose.Orientation);
+
+        }
+
+        public void UpdateFromHmd(int ieye)
+        {
+            UpdateFromHmd((EyeType)ieye);
         }
     }
 

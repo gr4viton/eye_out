@@ -22,23 +22,25 @@ namespace EyeOut_Telepresence
     public partial class TelepresenceSystem : Game
     {
 
-        private PrimitiveBatch<VertexPositionColor> primitiveBatch;
-        private BasicEffect primitiveBatchEffect;
+        //private PrimitiveBatch<VertexPositionColor> primitiveBatch;
+        //private BasicEffect primitiveBatchEffect;
 
-        private SpriteBatch spriteBatch;
+        private SpriteBatch fontSpriteBatch;
 
         void LoadContent_Sprite()
         {
             // Instantiate a SpriteBatch
-            spriteBatch = ToDisposeContent(new SpriteBatch(GraphicsDevice));
-            colorTexture = ToDisposeContent(Texture2D.New(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8.UNorm, new[] { Color.White }));
+            fontSpriteBatch = ToDisposeContent(new SpriteBatch(GraphicsDevice));
+
+            //colorTexture = ToDisposeContent(Texture2D.New(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8.UNorm, new[] { Color.White}));
+            colorTexture = ToDisposeContent(Texture2D.New(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8.UNorm, new[] { new Color(255,255,255,128) }));
         }
 
         void UnloadContent_Sprites()
         {
-            Utilities.Dispose(ref spriteBatch);
-            Utilities.Dispose(ref primitiveBatch);
-            Utilities.Dispose(ref primitiveBatchEffect);
+            Utilities.Dispose(ref fontSpriteBatch);
+            //Utilities.Dispose(ref primitiveBatch);
+            //Utilities.Dispose(ref primitiveBatchEffect);
 
         }
     }

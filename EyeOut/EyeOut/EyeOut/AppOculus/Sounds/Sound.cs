@@ -103,11 +103,7 @@ namespace EyeOut_Telepresence
             geometryEffect.TextureEnabled = true;
 
         }
-        void Draw_SoundGraphicalEffects()
-        {   
-            if (play3D)
-                DrawAudio3D(gameTime);
-        }
+
         void Update_Sound()
         {
             if (play3D)
@@ -216,58 +212,6 @@ namespace EyeOut_Telepresence
             audio3DEffectInstance.Apply3D(listener, listenerVelocity, emitter, emitterVelocity);
         }
 
-        private void DrawAudio3D(GameTime gameTime)
-        {
-            geometryEffect.Texture = listenerTexture;
-            geometryEffect.World = listener;
-            cube.Draw(geometryEffect);
-
-            geometryEffect.Texture = emitterTexture;
-            geometryEffect.World = emitter;
-            cube.Draw(geometryEffect);
-
-        }
-
-        private void DrawTiles()
-        {
-            primitiveBatchEffect.Projection = Matrix.OrthoOffCenterRH(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0, 1);
-            primitiveBatchEffect.CurrentTechnique.Passes[0].Apply();
-            primitiveBatch.Begin();
-            foreach (var tile in tiles)
-            {
-                DrawTileBorder(tile);
-            }
-            primitiveBatch.End();
-
-            spriteBatch.Begin();
-            foreach (var tile in tiles)
-            {
-                spriteBatch.DrawString(defaultFont, tile.Label, (Vector2)tile.Border.TopLeft + SoundTile.Padding, tile.BorderColor);
-            }
-            spriteBatch.End();
-        }
-
-        private void DrawTileBorder(SoundTile tile)
-        {
-            var v1 = new VertexPositionColor { Color = tile.BorderColor };
-            var v2 = new VertexPositionColor { Color = tile.BorderColor };
-
-            v1.Position = new Vector3(tile.Border.TopLeft, 0);
-            v2.Position = new Vector3(tile.Border.TopRight, 0);
-            primitiveBatch.DrawLine(v1, v2);
-
-            v1.Position = new Vector3(tile.Border.TopRight, 0);
-            v2.Position = new Vector3(tile.Border.BottomRight, 0);
-            primitiveBatch.DrawLine(v1, v2);
-
-            v1.Position = new Vector3(tile.Border.BottomRight, 0);
-            v2.Position = new Vector3(tile.Border.BottomLeft, 0);
-            primitiveBatch.DrawLine(v1, v2);
-
-            v1.Position = new Vector3(tile.Border.BottomLeft, 0);
-            v2.Position = new Vector3(tile.Border.TopLeft, 0);
-            primitiveBatch.DrawLine(v1, v2);
-        }
 
         class SoundTile
         {

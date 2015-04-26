@@ -32,7 +32,7 @@ namespace EyeOut
     public partial class MainWindow : Window
     {
         public static TelepresenceSystemConfiguration TP_config;
-        public static C_Telepresence TP_program;
+        public static TelepresenceSystem TP_program;
 
         public void INIT_TelepresenceConfigAndPrepareGui()
         {
@@ -63,6 +63,7 @@ namespace EyeOut
 
                 drawSkySurface = cbTelepresence_Skybox.IsChecked.Value,
 
+                //hmdType = HMDType.DK1,
 
                 streamController = guiStreamController,
                 imageViewer = guiImageViewer
@@ -93,7 +94,7 @@ namespace EyeOut
             INIT_TelepresenceConfigAndPrepareGui();
 
 
-            C_Telepresence.LOG("Starting EyeOut telepresence\nby Daniel Davídek 2015");
+            TelepresenceSystem.LOG("Starting EyeOut telepresence\nby Daniel Davídek 2015");
             if (cbSafe_Warning.IsChecked == true)
             {
                 if (MessageBox.Show("I hereby confirm?\n" +
@@ -101,7 +102,7 @@ namespace EyeOut
                     "[x] No-one is standing in the dangerous distance!",
                     "Safety warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
                 {
-                    C_Telepresence.LOG("Starting canceled.");
+                    TelepresenceSystem.LOG("Starting canceled.");
                     tbtToggleTP.IsChecked = false;
                     return;
                 }
@@ -118,7 +119,7 @@ namespace EyeOut
 
         public void START_TP(TelepresenceSystemConfiguration TP_config)
         {
-            HMDType hmdType = HMDType.DK1;
+            
             // send active config
             //using (TP_program = new C_Telepresence(C_Camera.actualId, hmdType))
             //{
@@ -126,9 +127,9 @@ namespace EyeOut
             //    TP_program.Run();
             //}
 
-            using (var program = new TelepresenceSystem(TP_config))
+            using (TP_program = new TelepresenceSystem(TP_config))
             {
-                program.Run();
+                TP_program.Run();
             }
         }
 
@@ -140,28 +141,14 @@ namespace EyeOut
                 {
                     TP_program.Exit();
                     System.Windows.Forms.Cursor.Show(); // not working
-                    C_Telepresence.LOG("The Telepresence session is stopped");
+                    TelepresenceSystem.LOG("The Telepresence session is stopped");
                     return;
                 }
             }
-            C_Telepresence.LOG_err("The Telepresence session is not running");
+            TelepresenceSystem.LOG_err("The Telepresence session is not running");
         }
 
-        public void START_TP_Demo()
-        {
-            //RiftGame.LOG("Starting Demo of Oculus w/SharpDX & SharpOVR libraries\nby Guy Godin 2014");
-            //using (var TP_Demo_program = new RiftGame())
-            //{
-            //    TP_Demo_program.Run();
-            //}
-        }
-
-        private void btnStartOculusDemo_Click(object sender, RoutedEventArgs e)
-        {
-            START_TP_Demo();
-        }
-
-
+        
         private void tbtToggleTP_Click(object sender, RoutedEventArgs e)
         {
             if (tbtToggleTP.IsChecked == true)
