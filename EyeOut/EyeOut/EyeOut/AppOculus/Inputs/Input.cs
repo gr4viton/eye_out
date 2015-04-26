@@ -94,7 +94,8 @@ namespace EyeOut_Telepresence
     public partial class TelepresenceSystem : Game
     {
 
-        private readonly KeyboardManager keyboardManager; // we will process keyboard input here
+        private KeyboardManager keyboardManager; // we will process keyboard input here
+        //private readonly KeyboardManager keyboardManager; // we will process keyboard input here
 
         private KeyboardState keyboardState;
         
@@ -105,6 +106,9 @@ namespace EyeOut_Telepresence
         void Update_Input()
         {
             // update keyboard state
+            //keyboardState = new KeyboardState();
+            keyboardManager.Update(gameTime);
+            //keyboardManager = new KeyboardManager(this);
             keyboardState = keyboardManager.GetState();
 
             // if Esc is pressed - quit program
@@ -114,6 +118,30 @@ namespace EyeOut_Telepresence
                 return;
             }
 
+            HUD.AppendLine( string.Format(
+                "W{0}|A{1}|S{2}", 
+                keyboardState.IsKeyDown(Keys.W), 
+                keyboardState.IsKeyDown(Keys.A), 
+                keyboardState.IsKeyDown(Keys.S)
+                ));
+
+            config.player.position.FrameTime = gameTime.ElapsedGameTime.Milliseconds;
+
+            config.player.position.MoveForward(keyboardState.IsKeyDown(Keys.W));
+            config.player.position.TurnLeft(keyboardState.IsKeyDown(Keys.A));
+            config.player.position.MoveBackward(keyboardState.IsKeyDown(Keys.S));
+            config.player.position.TurnRight(keyboardState.IsKeyDown(Keys.D));
+            config.player.position.MoveUpward(keyboardState.IsKeyDown(Keys.Q));
+            config.player.position.MoveDownward(keyboardState.IsKeyDown(Keys.E));
+
+            config.player.position.SetupSpeed(keyboardState.IsKeyDown(Keys.Shift));
+
+            //if (keyboardState.IsKeyPressed(Keys.W)) { config.player.position.MoveForward(true); }
+            //if (keyboardState.IsKeyPressed(Keys.A)) { config.player.position.TurnLeft(true); }
+            //if (keyboardState.IsKeyPressed(Keys.S)) { config.player.position.MoveBackward(true); }
+            //if (keyboardState.IsKeyPressed(Keys.D)) { config.player.position.TurnRight(true); }
+            //if (keyboardState.IsKeyPressed(Keys.Q)) { config.player.position.MoveUpward(true); }
+            //if (keyboardState.IsKeyPressed(Keys.E)) { config.player.position.MoveDownward(true); }
 
             if (keyboardState.IsKeyPressed(Keys.K))
             {
@@ -141,32 +169,6 @@ namespace EyeOut_Telepresence
                 return;
             }
 
-            if (keyboardState.IsKeyPressed(Keys.T))
-            {
-                //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
-                cameraImage.Description.Format = cameraImage.Description.Format + 1;
-                return;
-            }
-
-            if (keyboardState.IsKeyPressed(Keys.Y))
-            {
-                //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
-                cameraImage.Description.Format = cameraImage.Description.Format -1;
-                return;
-            }
-            if (keyboardState.IsKeyPressed(Keys.U))
-            {
-                //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
-                cameraImage.Description.Format = cameraImage.Description.Format + 3;
-                return;
-            }
-
-            if (keyboardState.IsKeyPressed(Keys.I))
-            {
-                //cameraImage.Description.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
-                cameraImage.Description.Format = cameraImage.Description.Format -3;
-                return;
-            }
 
             if (keyboardState.IsKeyPressed(Keys.H) && keyboardState.IsKeyDown(Keys.Control))
             {
@@ -208,4 +210,284 @@ namespace EyeOut_Telepresence
         }
     }
 
+
+    public class Player : ICloneable // Rastertek Terrain Tutorials in SharpDX 
+    {
+        #region Structures / Enums
+        private enum Movement
+        {
+            Forward,
+            Backward,
+            Upward,
+            Downward,
+            LeftTurn,
+            RightTurn,
+            LookUp,
+            LookDown
+        }
+        #endregion
+        #region Properties / Variables
+        public float FrameTime { get; set; }
+
+        private float positionX, positionY, positionZ;
+        private float rotationX, rotationY, rotationZ;
+
+        private float forwardSpeed, backwardSpeed;
+        private float upwardSpeed, downwardSpeed;
+        private float leftTurnSpeed, rightTurnSpeed;
+        private float lookUpSpeed, lookDownSpeed;
+
+            
+        public float acceleration = 0.001f;
+        public float accelerationNegative = 0.07f;
+        public float actualVelocityMax = 0.003f;
+        public float velocityMaxSlow = 0.003f;
+        public float velocityMaxFast = 0.03f;
+        #endregion
+
+        #region Public Methods
+        public void SetupSpeed(bool keydown)
+        {
+            if(keydown)
+                actualVelocityMax = velocityMaxFast;
+            else
+                actualVelocityMax = velocityMaxSlow;
+        }
+
+        public void SetPosition(float x, float y, float z)
+        {
+            positionX = x;
+            positionY = y;
+            positionZ = z;
+        }
+        public void SetPosition(Vector3 position)
+        {
+            SetPosition(position.X, position.Y, position.Z);
+        }
+
+        public void SetRotation(float x, float y, float z)
+        {
+            rotationX = x;
+            rotationY = y;
+            rotationZ = z;
+        }
+        public void SetRotation(Vector3 rotation)
+        {
+            SetRotation(rotation.X, rotation.Y, rotation.Z);
+        }
+
+        public Vector3 GetPosition()
+        {
+            return new Vector3(positionX, positionY, positionZ);
+        }
+        public void GetPosition(out float x, out float y, out float z)
+        {
+            x = positionX;
+            y = positionY;
+            z = positionZ;
+        }
+
+        public Vector3 GetRotation()
+        {
+            return new Vector3(rotationX, rotationY, rotationZ);
+        }
+        public void GetRotation(out float x, out float y, out float z)
+        {
+            x = rotationX;
+            y = rotationY;
+            z = rotationZ;
+        }
+
+        public void MoveForward(bool keydown)
+        {
+            // Update the forward speed movement based on the frame time and whether the user is holding the key down or not.
+            if (keydown)
+            {
+                forwardSpeed += FrameTime * acceleration;
+                if (forwardSpeed > FrameTime * actualVelocityMax)
+                    forwardSpeed = FrameTime * actualVelocityMax;
+            }
+            else
+            {
+                forwardSpeed -= FrameTime * accelerationNegative;
+                if (forwardSpeed < 0)
+                    forwardSpeed = 0;
+            }
+
+            // Convert degrees to radians.
+            var radians = rotationY * 0.0174532925f;
+
+            // Update the position.
+            positionX += (float)Math.Sin(radians) * forwardSpeed;
+            positionZ += (float)Math.Cos(radians) * forwardSpeed;
+        }
+
+        public void MoveBackward(bool keydown)
+        {
+            // Update the backward speed movement based on the frame time and whether the user is holding the key down or not.
+            if (keydown)
+            {
+                backwardSpeed += FrameTime * acceleration;
+                if (backwardSpeed > FrameTime * actualVelocityMax)
+                    backwardSpeed = FrameTime * actualVelocityMax;
+            }
+            else
+            {
+                backwardSpeed -= FrameTime * accelerationNegative;
+                if (backwardSpeed < 0)
+                    backwardSpeed = 0;
+            }
+
+            // Convert degrees to radians.
+            var radians = rotationY * 0.0174532925f;
+
+            // Update the position.
+            positionX -= (float)Math.Sin(radians) * backwardSpeed;
+            positionZ -= (float)Math.Cos(radians) * backwardSpeed;
+        }
+
+        public void MoveUpward(bool keydown)
+        {
+            // Update the upward speed movement based on the frame time and whether the user is holding the key down or not.
+            if (keydown)
+            {
+                upwardSpeed += FrameTime * 0.003f;
+                if (upwardSpeed > FrameTime * actualVelocityMax)
+                    upwardSpeed = FrameTime * actualVelocityMax;
+            }
+            else
+            {
+                upwardSpeed -= FrameTime * 0.0002f;
+                if (upwardSpeed < 0)
+                    upwardSpeed = 0;
+            }
+
+            // Update the height position.
+            positionY += upwardSpeed;
+        }
+
+        public void MoveDownward(bool keydown)
+        {
+            // Update the upward speed movement based on the frame time and whether the user is holding the key down or not.
+            if (keydown)
+            {
+                downwardSpeed += FrameTime * 0.003f;
+                if (downwardSpeed > FrameTime * actualVelocityMax)
+                    downwardSpeed = FrameTime * actualVelocityMax;
+            }
+            else
+            {
+                downwardSpeed -= FrameTime * 0.0002f;
+                if (downwardSpeed < 0)
+                    downwardSpeed = 0;
+            }
+
+            // Update the height position.
+            positionY -= downwardSpeed;
+        }
+
+        public void TurnLeft(bool keydown)
+        {
+            // If the key is pressed increase the speed at which the camera turns left. If not slow down the turn speed.
+            if (keydown)
+            {
+                leftTurnSpeed += FrameTime * 0.01f;
+                if (leftTurnSpeed > FrameTime * 0.15f)
+                    leftTurnSpeed = FrameTime * 0.15f;
+            }
+            else
+            {
+                leftTurnSpeed -= FrameTime * 0.005f;
+                if (leftTurnSpeed < 0)
+                    leftTurnSpeed = 0;
+            }
+
+            // Update the rotation using the turning speed.
+            rotationY -= leftTurnSpeed;
+
+            // Keep the rotation in the 0 to 360
+            if (rotationY < 0)
+                rotationY += 360;
+        }
+
+        public void TurnRight(bool keydown)
+        {
+            // If the key is pressed increase the speed at which the camera turns right. If not slow down the turn speed.
+            if (keydown)
+            {
+                rightTurnSpeed += FrameTime * 0.01f;
+                if (rightTurnSpeed > FrameTime * 0.15)
+                    rightTurnSpeed = FrameTime * 0.15f;
+            }
+            else
+            {
+                rightTurnSpeed -= FrameTime * 0.005f;
+                if (rightTurnSpeed < 0)
+                    rightTurnSpeed = 0;
+            }
+
+            // Update the rotation using the turning speed.
+            rotationY += rightTurnSpeed;
+
+            // Keep the rotation in the range 0 to 360 range.
+            if (rotationY > 360)
+                rotationY -= 360;
+        }
+
+        public void LookUpward(bool keydown)
+        {
+            // If the key is pressed increase the speed at which the camera turns up. If not slow down the turn speed.
+            if (keydown)
+            {
+                lookUpSpeed += FrameTime * 0.01f;
+                if (lookUpSpeed > FrameTime * 0.15)
+                    lookUpSpeed = FrameTime * 0.15f;
+            }
+            else
+            {
+                lookUpSpeed -= FrameTime * 0.005f;
+                if (lookUpSpeed < 0)
+                    lookUpSpeed = 0;
+            }
+
+            // Update the rotation using the turning speed.
+            rotationX -= lookUpSpeed;
+
+            // Keep the rotation maximum 90 degrees.
+            if (rotationX > 90)
+                rotationX = 90;
+        }
+
+        public void LookDownward(bool keydown)
+        {
+            // If the key is pressed increase the speed at which the camera turns down. If not slow down the turn speed.
+            if (keydown)
+            {
+                lookDownSpeed += FrameTime * 0.01f;
+                if (lookDownSpeed > FrameTime * 0.15)
+                    lookDownSpeed = FrameTime * 0.15f;
+            }
+            else
+            {
+                lookDownSpeed -= FrameTime * 0.005f;
+                if (lookDownSpeed < 0)
+                    lookDownSpeed = 0;
+            }
+
+            // Update the rotation using the turning speed.
+            rotationX += lookDownSpeed;
+
+            // Keep the rotation maximum 90 degrees
+            if (rotationX < -90)
+                rotationX = -90;
+        }
+        #endregion
+
+        #region Override Methods
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
+        #endregion
+    }
 }

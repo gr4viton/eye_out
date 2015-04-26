@@ -79,30 +79,20 @@ namespace EyeOut_Telepresence
             }
 
             LOG("order motors - build message");
-            str.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+            HUD.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
                 yawPitchRoll_d[0], yawPitchRoll_d[1], yawPitchRoll_d[2]
                 ));
 
-            str.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
-            str.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
-            if (cameraImage != null)
-            //if(false)
-            {
-                str.AppendLine(string.Format("{0}={1}",cameraImage.Description.Format.ToString(),cameraImage.Description.Format));
+            HUD.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
+            HUD.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
 
-                int width = cameraImage.Description.Width;
-                for (int y = 0; y < 1; y++)
-                {
-                    for (q = 0; q < 6; q++)
-                    {
-                        str.Append(string.Format("{0,4:0}", pixelData[q + y * (width - 1)].ToString()));
-                    }
-                    str.Append("\n");
-                }
-            }
+            Vector3 pos = config.player.position.GetPosition();
+            HUD.AppendLine(string.Format("Player position [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                pos[0],pos[1],pos[2]
+                ));
 
             //str.Append(string.Format("cam position:{0}|{1}, keyboardStateW={2}", cameraSurfaceX, cameraSurfaceY, keyboardState.IsKeyPressed(Keys.U)));
-            text = str.ToString();
+
 
             if (config.WRITE_dataToMotors == true)
             {

@@ -41,7 +41,7 @@ namespace EyeOut_Telepresence
 
 
         Basler.Pylon.IImage baslerImage;
-        ToolkitImage cameraImage;
+        //ToolkitImage cameraImage;
         PixelFormat cameraPixelFormat = PixelFormat.R8G8B8A8.UNorm;
         //PixelFormat cameraPixelFormat = PixelFormat.R8;
         private BasicEffect cameraBasicEffect;
@@ -50,6 +50,7 @@ namespace EyeOut_Telepresence
         private GeometricPrimitive cameraSurface;
 
         private List<GeometricPrimitive> roboticArmParts;
+        private Texture2D roboticArmTexture;
         
         //Basler.Pylon.PixelDataConverter pixelDataConverter;
         int width;
@@ -128,42 +129,46 @@ namespace EyeOut_Telepresence
             //    ;
 
 
-            text = text + string.Format("\nREAD YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+            HUD.AppendLine(string.Format("READ YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
                 (float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero,
                 (float)MainWindow.Ms.Pitch.angleSeen.Dec_FromDefaultZero,
                 (float)MainWindow.Ms.Roll.angleSeen.Dec_FromDefaultZero
-                );
+                ));
 
             List<Matrix> roboticArmTransformations = new List<Matrix>()
             {
                 Matrix.Identity,
-
-
-                translation_Sensor2CameraTexture,
-                translation_YawAxisTop2Sensor,
-                Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero + (float)Math.PI),
-                translation_PitchAxis2YawAxisTop,
-                Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault),
-                translation_RollAxis2PitchAxis,
-                Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefaultZero),
+                translation_HeadCenter2Desk,
                 translation_Desk2RollAxis,
-                translation_HeadCenter2Desk
+                //Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefaultZero),
+                //translation_RollAxis2PitchAxis,
+                //Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault),
+                //translation_PitchAxis2YawAxisTop,
+                //Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero + (float)Math.PI),
+                translation_YawAxisTop2Sensor,
+                translation_Sensor2CameraTexture
             };
 
-            float scaling = 0.005f;
-            roboticArmEffect.Projection = projection;
-            roboticArmEffect.View = view;
+            //Matrix.Translation(0, y_Desk2RollAxis, 0);
 
-            cameraBasicEffect.Projection = projection;
-            cameraBasicEffect.View = view;
-            Matrix world = Matrix.Identity;
+            float scaling = 0.005f;
+            //float scaling = 0.05f;
+            roboticArmEffect.Projection = eyeProjection;
+            roboticArmEffect.View = eyeView;
+
+            cameraBasicEffect.Projection = eyeProjection;
+            cameraBasicEffect.View = eyeView;
+            Matrix worldLocal = eyeWorld;
 
             int qmax = roboticArmTransformations.Count;
             for (int q = 0; q < qmax; q++)
             {
-                world *= roboticArmTransformations[q];
+                worldLocal *= roboticArmTransformations[q];
                 roboticArmEffect.SpecularColor = new Vector3(255 * q / qmax, 0, 0);
-                roboticArmEffect.World = world * Matrix.Scaling(scaling);
+                roboticArmEffect.AmbientLightColor = new Vector3(255 * q / qmax, 0, 0);
+                roboticArmEffect.LightingEnabled = true;
+
+                roboticArmEffect.World = worldLocal * Matrix.Scaling(scaling);
                 roboticArmParts[q].Draw(roboticArmEffect);
             }
 
@@ -185,7 +190,7 @@ namespace EyeOut_Telepresence
             //            * Matrix.Scaling(scaling)
                 //* mTransl
                         ;
-            cameraBasicEffect.World = world;
+            cameraBasicEffect.World = worldLocal;
 
             
             // Disable Cull only for the plane primitive, otherwise use standard culling
@@ -193,7 +198,7 @@ namespace EyeOut_Telepresence
 
 
 
-            model.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * world, view, projection);
+            model.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * eyeWorld, eyeView, eyeProjection);
 
             // Draw the primitive using BasicEffect
             cameraSurface.Draw(cameraBasicEffect);
@@ -238,7 +243,7 @@ namespace EyeOut_Telepresence
             roboticArmEffect = ToDisposeContent(new BasicEffect(GraphicsDevice));
 
             roboticArmEffect.AmbientLightColor = new Color3(255, 0, 255);
-            roboticArmEffect.TextureEnabled = false;
+            roboticArmEffect.TextureEnabled = true;
 
             roboticArmParts = new List<GeometricPrimitive>();
             int qmax = 10;
@@ -248,6 +253,8 @@ namespace EyeOut_Telepresence
                 //cameraSurface = ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice, sizeX, sizeY));
             }
 
+            roboticArmTexture = Content.Load<Texture2D>("vut_grid");
+            roboticArmEffect.Texture = roboticArmTexture;
         }
     }
 }

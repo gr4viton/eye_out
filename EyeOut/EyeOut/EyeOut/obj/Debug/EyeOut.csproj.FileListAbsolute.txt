@@ -83,3 +83,5 @@ C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\obj\Debug\EyeOut.exe
 C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\obj\Debug\EyeOut.pdb
 C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\obj\Debug\EyeOut.csprojResolveAssemblyReference.cache
 C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\cameraDefault_2015-04-20_09-34-31.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\vut_grid.tkb
+C:\DAN\_DIP\dip_dev\EyeOut\EyeOut\EyeOut\bin\Debug\Content\Demo\grid.tkb

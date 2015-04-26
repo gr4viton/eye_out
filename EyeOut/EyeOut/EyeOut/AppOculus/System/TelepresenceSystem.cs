@@ -50,8 +50,10 @@ namespace EyeOut_Telepresence
     {
         private GraphicsDeviceManager graphicsDeviceManager;
 
-        private Matrix view;
-        private Matrix projection;
+        private Matrix eyeView;
+        private Matrix eyeProjection;
+        private Matrix eyeWorld;
+
 
         private Model model;
 
@@ -128,29 +130,7 @@ namespace EyeOut_Telepresence
         }
 
 
-
-        void INIT_cameraImage(Basler.Pylon.IImage baslerImage)
-        {
-            if (baslerImage != null)
-            {
-                if (cameraImage == null)
-                {
-                    // not defined yet
-                    cameraImage = ToolkitImage.New2D(baslerImage.Width, baslerImage.Height, 1, cameraPixelFormat);
-                }
-                else
-                {
-                    // only redefine if something changed
-                    if ((cameraImage.Description.Width != baslerImage.Width)
-                        ||
-                        (cameraImage.Description.Height != baslerImage.Height))
-                    {
-                        cameraImage = ToolkitImage.New2D(baslerImage.Width, baslerImage.Height, 1, cameraPixelFormat);
-                    }
-                }
-            }
-        }
-
+        
         protected override void Initialize()
         {
             //            INIT_TP_window();
@@ -254,6 +234,7 @@ namespace EyeOut_Telepresence
             LoadContent_Font();
             LoadContent_Sound();
             LoadContent_BaslerCamera();
+            LoadContent_SkySurface();
 
             base.LoadContent();
 
@@ -311,8 +292,8 @@ namespace EyeOut_Telepresence
             base.Update(gameTime);
 
             // Calculates the world and the view based on the model size
-            view = Matrix.LookAtRH(new Vector3(0.0f, 0.0f, 7.0f), new Vector3(0, 0.0f, 0), Vector3.UnitY);
-            projection = Matrix.PerspectiveFovRH(0.9f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);
+            eyeView = Matrix.LookAtRH(new Vector3(0.0f, 0.0f, 7.0f), new Vector3(0, 0.0f, 0), Vector3.UnitY);
+            eyeProjection = Matrix.PerspectiveFovRH(0.9f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 1000.0f);
 
             
             Update_Sound();

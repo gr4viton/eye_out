@@ -142,6 +142,7 @@
     </Compile>
     <Compile Include="AppOculus\Graphics\Cameras\BaslerCamera.cs" />
     <Compile Include="AppOculus\Graphics\Graphics.cs" />
+    <Compile Include="AppOculus\Graphics\Models\SkySurface.cs" />
     <Compile Include="AppOculus\Outputs\MotorPosture.cs" />
     <Compile Include="AppOculus\System\TelepresenceSystemConfiguration.cs" />
     <Compile Include="Interconnection\mot\C_Value.cs" />
@@ -221,7 +222,6 @@
     <Resource Include="Content\pic\eyeout.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AppOculus\Graphics\Models\" />
     <Folder Include="AppOculus\Graphics\Shaders\" />
   </ItemGroup>
   <ItemGroup>
@@ -242,9 +242,11 @@
     <ToolkitTexture Include="Content\Demo\listen.png" />
     <ToolkitFont Include="Content\Demo\MicrosoftSansSerif10.xml" />
     <ToolkitTexture Include="Content\Demo\cameraDefault_2015-04-20_09-34-31.png" />
+    <ToolkitTexture Include="Content\Demo\grid.png" />
     <Content Include="Content\Demo\MiniCubeTexture.fx" />
     <Content Include="Content\Demo\MiniTri.fx" />
     <ToolkitTexture Include="Content\Demo\speaker.png" />
+    <ToolkitTexture Include="Content\Demo\vut_grid.png" />
     <Content Include="Content\mot\registerByteDefault.txt" />
     <Resource Include="Content\about\notUsedAfterall.txt" />
     <Content Include="Content\mot\cmdInEx.txt">

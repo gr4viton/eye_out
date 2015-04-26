@@ -16,7 +16,40 @@ using System.Threading.Tasks;
 
 namespace EyeOut_Telepresence
 {
+
     using SharpDX.Toolkit.Graphics;
+
+
+    public class HUD
+    {
+        private StringBuilder str;
+        public string text
+        {
+            get{
+                return str.ToString();
+            }
+        }
+
+        public void Append(string msg)
+        {
+            str.Append(msg);
+        }
+        public void AppendLine(string msg)
+        {
+            str.AppendLine(msg);
+        }
+
+        public void Clear()
+        {
+            str = new StringBuilder();
+        }
+        public HUD()
+        {
+            str = new StringBuilder();
+        }
+    }
+
+
     /// <summary>
     /// Font part
     /// </summary>
@@ -33,7 +66,9 @@ namespace EyeOut_Telepresence
         private SpriteFont fontDefault;
         private Texture2D colorTexture;
 
-        public string text;
+        //public string text;
+
+        public HUD HUD = new HUD();
 
         void LoadContent_Font()
         {
@@ -64,13 +99,13 @@ namespace EyeOut_Telepresence
                 GraphicsDevice.BlendStates.NonPremultiplied);  // Use NonPremultiplied, as this sprite texture is not premultiplied
             // Render the text
             //var text = String.Format("{0}{0}{0}", "Hello World - EyeOut is comming to town!\n");
-            if (text == null)
-            {
-                text = String.Format("{0}{0}{0}", "Hello World - EyeOut is comming to town!\n");
-            }
+            //if (text == null)
+            //{
+            //    text = String.Format("{0}{0}{0}", "Hello World - EyeOut is comming to town!\n");
+            //}
 
             //var dim = fontDefault.MeasureString(text);
-            var dim = fontDefault.MeasureString(text);
+            var dim = fontDefault.MeasureString(HUD.text);
             //int diff = -452; // for DK1
             int diff = 0*152; // for DK2
             int x = 620 + eye * diff, y = 1020; // for DK1
@@ -78,7 +113,7 @@ namespace EyeOut_Telepresence
             if (config.SHOW_helpText == true)
             {
                 spriteBatch.Draw(colorTexture, new SharpDX.Rectangle(x, y, (int)dim.X, (int)dim.Y), SharpDX.Color.White);
-                spriteBatch.DrawString(fontDefault, text, new SharpDX.Vector2(x, y), SharpDX.Color.Black);
+                spriteBatch.DrawString(fontDefault, HUD.text, new SharpDX.Vector2(x, y), SharpDX.Color.Black);
             }
 
 
@@ -140,6 +175,7 @@ namespace EyeOut_Telepresence
         public void EndDraw_Font()
         {
             //spriteBatch.End();
+            HUD.Clear();
         }
     }
 
