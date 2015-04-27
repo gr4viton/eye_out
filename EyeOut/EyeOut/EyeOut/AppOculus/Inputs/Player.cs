@@ -21,13 +21,23 @@ namespace EyeOut_Telepresence
 {
     public class PostureF
     {
-        public Quaternion Orientation;
-        public Vector3 Position;
-
-        public void ahoj()
+        private PoseF poseF;
+        public PoseF PoseF
         {
-            
+            get{return poseF;}
+            set{poseF = value;}
         }
+        public Quaternion Orientation
+        {
+            get { return poseF.Orientation; }
+            set { poseF.Orientation = value; }
+        }
+        public Vector3 Position
+        {
+            get { return poseF.Position; }
+            set { poseF.Position = value; }
+        }
+
         public Matrix Rotation
         {
             get
@@ -37,9 +47,39 @@ namespace EyeOut_Telepresence
             set
             {
                 Orientation = Quaternion.RotationMatrix(value);
+                //Orientation = value * Orientation ;
             }
         }
+
+        public Vector3 YawPitchRoll
+        {
+            get
+            {
+                Orientation.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
+                return new Vector3(yawPitchRoll);
+            }
+            set
+            {
+                Rotation = Matrix.RotationYawPitchRoll( value[0], value[1], value[2] );
+            }
+        }
+
+        private float[] yawPitchRoll;
+
+
+        public PostureF()
+        {
+            yawPitchRoll = new float[3];
+        }
+
+        public static Vector3 CONV_RotationMatrix_2_YawPitchRollVector3(Matrix rotation)
+        {
+            var yawPitchRoll = new float[3];
+            Quaternion.RotationMatrix(rotation).GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
+            return new Vector3(yawPitchRoll);
+        }
     }
+
     public class Player : ICloneable // based on Rastertek Terrain Tutorials in SharpDX 
     {
         #region Structures / Enums
@@ -58,41 +98,55 @@ namespace EyeOut_Telepresence
         #region Properties / Variables
         public float FrameTime { get; set; }
 
-        private PostureF player;
-        private PostureF hmd;
-        private PostureF body;
+        public PostureF scout; // where is the scout relative to body default position - when free moving around in scene
+        public PostureF hmd; // where the user with hmd is looking at and standing relative to oculus camera head pose tracking
+        public PostureF body; // default position and look in scene - for north setting 
 
-        private Vector3 playerRotation;
-        private Vector3 bodyRotation;
+        //public float[] hmdYawPitchRoll;
 
-        public Vector3 Rotation
+        public Matrix Rotation
         {
             get
             {
-                return playerRotation + bodyRotation;
-            }
-            set
-            {
-                playerRotation = value ;
+                return body.Rotation * hmd.Rotation;
             }
         }
-        public float posX { get { return playerPosition[0]; } set { playerPosition[0] = value; } }
-        public float posY { get { return playerPosition[1]; } set { playerPosition[1] = value; } }
-        public float posZ { get { return playerPosition[2]; } set { playerPosition[2] = value; } }
 
-        public float rotX { get { return playerRotation[0]; } set { playerRotation[0] = value; } }
-        public float rotY { get { return playerRotation[1]; } set { playerRotation[1] = value; } }
-        public float rotZ { get { return playerRotation[2]; } set { playerRotation[2] = value; } }
+        public Vector3 YawPitchRoll
+        {
+            get
+            {
+                return PostureF.CONV_RotationMatrix_2_YawPitchRollVector3(Rotation);
+            }
+        }
 
+        public Vector3 Position
+        {
+            get
+            {
+                return body.Position + hmd.Position + scout.Position;
+            }
+        }
+
+        //public float posX { get { return playerPosition[0]; } set { playerPosition[0] = value; } }
+        //public float posY { get { return playerPosition[1]; } set { playerPosition[1] = value; } }
+        //public float posZ { get { return playerPosition[2]; } set { playerPosition[2] = value; } }
+
+        //public float rotX { get { return playerRotation[0]; } set { playerRotation[0] = value; } }
+        //public float rotY { get { return playerRotation[1]; } set { playerRotation[1] = value; } }
+        //public float rotZ { get { return playerRotation[2]; } set { playerRotation[2] = value; } }
+
+
+        private Matrix forward = Matrix.Translation(Vector3.UnitZ);
+        private Matrix rightward = Matrix.Translation(Vector3.UnitX);
+        private Matrix upward = Matrix.Translation(Vector3.UnitY);
 
         private float forwardSpeed, backwardSpeed;
         private float upwardSpeed, downwardSpeed;
 
-        public PoseF lastPose;
-        public float angleX { get { return hmdYawPitchRoll[1]; } }
-        public float angleY { get { return hmdYawPitchRoll[0]; } }
-        public float angleZ { get { return hmdYawPitchRoll[2]; } }
-        public float[] hmdYawPitchRoll;
+        public float hmd_angleX { get { return hmd.YawPitchRoll[1]; } }
+        public float hmd_angleY { get { return hmd.YawPitchRoll[0]; } }
+        public float hmd_angleZ { get { return hmd.YawPitchRoll[2]; } }
 
         
 
@@ -108,38 +162,51 @@ namespace EyeOut_Telepresence
 
         public Player()
         {
-            bodyRotation = new Vector3(0 , (float)Math.PI , 0);
-            playerPosition = new Vector3(0, 0, 0);
-            playerRotation = new Vector3(0, 0, 0);
-            //bodyRotationY = 0f;
-            hmdYawPitchRoll = new float[3];
+            body = new PostureF()
+            {
+                Rotation = Matrix.RotationYawPitchRoll((float)Math.PI, 0, 0)
+            };
+
+            hmd = new PostureF();
+            scout = new PostureF();
+            //hmdYawPitchRoll = new float[3];
         }
+
 
         public void ResetPosition()
         {
-            playerPosition = new Vector3(0, 0, 0);
+            scout.Position = new Vector3(0, 0, 0);
         }
 
         public void ResetBodyRotationY()
         {
-            bodyRotation[1] = angleY + (float)Math.PI;
+            scout.Rotation = Matrix.RotationY(hmd_angleY);
+        }
+        
+
+
+        public void UPDATE_hmdPosture(PoseF hmdPoseF)
+        {
+            UPDATE_hmdPosition(hmdPoseF.Position);
+            UPDATE_hmdOrientation(hmdPoseF.Orientation);
         }
 
+        public void UPDATE_hmdPosition(Vector3 hmdPosition)
+        {
+            hmd.Position = hmdPosition;
+        }
+        
         public void UPDATE_hmdOrientation(Quaternion Q)
         {
-            Q.GetEulerAngles(out hmdYawPitchRoll[0], out hmdYawPitchRoll[1], out hmdYawPitchRoll[2]);
-            Rotation = new Vector3(
-                 hmdYawPitchRoll[1], // pitch
-                 hmdYawPitchRoll[0], // yaw
-                 hmdYawPitchRoll[2]  // roll
-                );
+            hmd.Orientation = Q;
+            //Q.GetEulerAngles(out hmdYawPitchRoll[0], out hmdYawPitchRoll[1], out hmdYawPitchRoll[2]);
+            //hmd.Rotation = Matrix.RotationYawPitchRoll(
+            //     hmdYawPitchRoll[0], 
+            //     hmdYawPitchRoll[1], 
+            //     hmdYawPitchRoll[2]  
+            //    );
         }
-        
-        
-        public float GetBodyRotationY()
-        {
-            return bodyRotation[1];
-        }
+
 
         public void SetupSpeed(bool speedKeyDown, bool slowKeyDown)
         {
@@ -151,6 +218,10 @@ namespace EyeOut_Telepresence
                 actualVelocityMax = velocityMaxNormal;
         }
 
+        public void Move(float speed, Matrix directionFromHmdView )
+        {
+            scout.Position += (Rotation * directionFromHmdView * speed).TranslationVector;
+        }
         public void MoveForward(bool keydown)
         {
             // Update the forward speed movement based on the frame time and whether the user is holding the key down or not.
@@ -167,9 +238,7 @@ namespace EyeOut_Telepresence
                     forwardSpeed = 0;
             }
 
-            // Update the position.
-            posX += (float)Math.Sin(rotY) * forwardSpeed;
-            posZ += (float)Math.Cos(rotY) * forwardSpeed;
+            Move(forwardSpeed, forward);
         }
 
         public void MoveBackward(bool keydown)
@@ -188,13 +257,10 @@ namespace EyeOut_Telepresence
                     backwardSpeed = 0;
             }
 
-
-            // Update the position.
-            posX -= (float)Math.Sin(rotY) * backwardSpeed;
-            posZ -= (float)Math.Cos(rotY) * backwardSpeed;
+            Move(backwardSpeed, -forward);
         }
 
-        public void MoveSideStep(bool keydown, bool right)
+        public void MoveSideStep(bool keydown, bool _right)
         {
             // Update the forward speed movement based on the frame time and whether the user is holding the key down or not.
             if (keydown)
@@ -210,15 +276,11 @@ namespace EyeOut_Telepresence
                     forwardSpeed = 0;
             }
 
-            float coef;
-            if (right)
-                coef = +(float)Math.PI/2;
+            if (_right)
+                Move(forwardSpeed, rightward);
             else
-                coef = -(float)Math.PI/2;
+                Move(forwardSpeed, -rightward);
 
-            // Update the position.
-            posX -= (float)Math.Sin(rotY + coef) * forwardSpeed;
-            posZ -= (float)Math.Cos(rotY + coef) * forwardSpeed;
         }
 
         public void MoveUpward(bool keydown)
@@ -238,7 +300,7 @@ namespace EyeOut_Telepresence
             }
 
             // Update the height position.
-            posY += upwardSpeed;
+            scout.Position += new Vector3(0,0,upwardSpeed);
         }
 
         public void MoveDownward(bool keydown)
@@ -258,7 +320,7 @@ namespace EyeOut_Telepresence
             }
 
             // Update the height position.
-            posY -= downwardSpeed;
+            scout.Position -= new Vector3(0, 0, upwardSpeed);
         }
 
 

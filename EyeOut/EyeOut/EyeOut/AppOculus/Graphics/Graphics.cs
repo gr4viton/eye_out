@@ -39,6 +39,37 @@ namespace EyeOut_Telepresence
             return true;
         }
 
+        public void UpdateFromHmd(EyeType eye)
+        {
+
+            //TrackingState outTrack = hmd.GetTrackingState(0);
+
+            //PoseF[] outEyePoses = new PoseF[2];
+
+            //// hmdToEyeViewOffset[2] can be ovrEyeRenderDesc.HmdToEyeViewOffset returned
+            ////     from ovrHmd_ConfigureRendering or ovrHmd_GetRenderDesc. 
+            //FovPort fov = renderDesc.Fov;
+
+            //Vector3 hmdToEyeViewOffset1 = hmd.GetRenderDesc(eye, fov).HmdToEyeViewOffset;
+            //Vector3 hmdToEyeViewOffset2 = hmd.GetRenderDesc(eye, fov).HmdToEyeViewOffset;
+
+            //Vector3[] hmdToEyeViewOffset = new Vector3[] { hmdToEyeViewOffset1, hmdToEyeViewOffset2 };
+
+            //hmd.GetEyePoses(frameIndex, hmdToEyeViewOffset, outEyePoses, ref outTrack);
+            //var pose = renderPose[(int)eye] = outTrack.CameraPose; 
+            //hmd.GetHmdPosePerEye(eye); // obsolete in 0.4.4
+            //hmd.GetEyePose(eye); // 0.4.1
+
+            //var orientation = renderPose[(int)eye].Orientation;
+
+            //OVR.MatrixProjection(renderDesc.Fov);
+
+            config.player.UPDATE_hmdPosture(hmd.GetHmdPosePerEye(eye));
+            //var pose = hmd.GetHmdPosePerEye(eye);
+            //config.player.lastPose = pose;
+            //config.player.UPDATE_hmdOrientation(pose.Orientation);
+
+        }
         #region Draw
         protected override void Draw(GameTime gameTime)
         {
@@ -52,18 +83,25 @@ namespace EyeOut_Telepresence
                 Rect renderViewport = eyeRenderViewport[(int)eye];
 
                 UpdateFromHmd(eye);
-                renderPose[(int)eye] = config.player.lastPose;
-                
-                // Calculate view matrix                
-                var rollPitchYaw = Matrix.RotationY(config.player.GetBodyRotationY());
+                renderPose[(int)eye] = config.player.hmd.PoseF;
 
-                //var rollPitchYaw = Matrix.RotationY(0f);
-                var finalRollPitchYaw = rollPitchYaw * config.player.lastPose.Orientation.GetMatrix();
+                // Calculate view matrix                
+                var finalRollPitchYaw = config.player.Rotation;
+
+                var rot = PostureF.CONV_RotationMatrix_2_YawPitchRollVector3(config.player.Rotation);
+                HUD.AppendLine(string.Format("config.player.Rotation YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                    rot[0], rot[1], rot[2]
+                    ));
+                rot = PostureF.CONV_RotationMatrix_2_YawPitchRollVector3(finalRollPitchYaw);
+                HUD.AppendLine(string.Format("finalRollPitchYaw YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                    rot[0], rot[1], rot[2]
+                    ));
+                //if(finallRollPitchYaw)
 
                 var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
                 var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
 
-                var shiftedEyePos = config.player.Position + rollPitchYaw.Transform(config.player.lastPose.Position);
+                var shiftedEyePos = config.player.Position;
                 
                 eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
                      * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
@@ -90,40 +128,44 @@ namespace EyeOut_Telepresence
                 HUD.AppendLine("hmd latency = " + hmd.GetMeasuredLatency());
             }
 
-            BeginDraw_Font();
-            for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
-            {
+            //BeginDraw_Font();
+            //for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
+            //{
+
+            //    EyeType eye = hmd.EyeRenderOrder[eyeIndex];
+            //    EyeRenderDesc renderDesc = eyeRenderDesc[(int)eye];
+            //    Rect renderViewport = eyeRenderViewport[(int)eye];
+            //    var pose = renderPose[(int)eye] = hmd.GetHmdPosePerEye(eye);
+
+            //    // Calculate view matrix                
+            //    var bodyYaw = (float)Math.PI;
+            //    var rollPitchYaw = Matrix.RotationY(bodyYaw);
+            //    var finalRollPitchYaw = rollPitchYaw * pose.Orientation.GetMatrix();
+
+            //    var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
+            //    var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
+
+            //    var shiftedEyePos = config.player.Position;//+ rollPitchYaw.Transform(pose.Position);
 
 
-                EyeType eye = hmd.EyeRenderOrder[eyeIndex];
-                EyeRenderDesc renderDesc = eyeRenderDesc[(int)eye];
-                Rect renderViewport = eyeRenderViewport[(int)eye];
-                var pose = renderPose[(int)eye] = hmd.GetHmdPosePerEye(eye);
+            //    eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
+            //         * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 
-                // Calculate view matrix                
-                var rollPitchYaw = Matrix.RotationY(config.player.GetBodyRotationY());
-                var finalRollPitchYaw = rollPitchYaw * pose.Orientation.GetMatrix();
-                var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
-                var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
-                var shiftedEyePos = config.player.Position + rollPitchYaw.Transform(pose.Position);
+            //    // Calculate projection matrix
+            //    eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.001f, -1000.0f, true);
+            //    eyeProjection.Transpose();
+
+            //    eyeWorld = Matrix.Identity;
 
 
-                eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
-                    //.ViewAdjust 
-                     * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+            //    // Set Viewport for our eye
+            //    GraphicsDevice.SetViewport(renderViewport.ToViewportF());
 
-                // Calculate projection matrix
-                eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.01f, -1000.0f, true);
-                eyeProjection.Transpose();
-
-                // Set Viewport for our eye
-                GraphicsDevice.SetViewport(renderViewport.ToViewportF());
-
-                Draw_Font((int)eye);
-            }
-            //DrawFonts(0);
-            //DrawFonts(1);
-            EndDraw_Font();
+            //    Draw_Font((int)eye);
+            //}
+            ////DrawFonts(0);
+            ////DrawFonts(1);
+            //EndDraw_Font();
 
 
             CONTROL_motors();

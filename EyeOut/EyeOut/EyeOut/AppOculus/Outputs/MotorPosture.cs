@@ -67,7 +67,7 @@ namespace EyeOut_Telepresence
             double[] yawPitchRoll_d = new double[3];
             for (q = 0; q < 3; q++)
             {
-                yawPitchRoll_d[q] = C_Value.CONV_rad2deg(((double)config.player.hmdYawPitchRoll[q]));
+                yawPitchRoll_d[q] = C_Value.CONV_rad2deg(((double)config.player.hmd.YawPitchRoll[q]));
             }
 
             HUD.AppendLine(string.Format("YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
@@ -77,12 +77,35 @@ namespace EyeOut_Telepresence
             HUD.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
             HUD.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
 
-            Vector3 pos = config.player.Position;
+            Vector3 pos;
+            Vector3 rot;
+            pos = config.player.scout.Position;
+            HUD.AppendLine(string.Format("scout position [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                pos[0], pos[1], pos[2]
+                ));
+
+            rot = config.player.scout.YawPitchRoll;
+            HUD.AppendLine(string.Format("scout YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                rot[0], rot[1], rot[2]
+                ));
+
+            pos = config.player.hmd.Position;
+            HUD.AppendLine(string.Format("hmd position [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                pos[0], pos[1], pos[2]
+                ));
+
+            rot = config.player.hmd.YawPitchRoll;
+            HUD.AppendLine(string.Format("hmd YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                rot[0], rot[1], rot[2]
+                ));
+
+
+            pos = config.player.Position;
             HUD.AppendLine(string.Format("Player position [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
                 pos[0],pos[1],pos[2]
                 ));
-            Vector3 rot = config.player.Rotation;
-            HUD.AppendLine(string.Format("Player rotation [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+            rot = config.player.YawPitchRoll;
+            HUD.AppendLine(string.Format("Player YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
                 rot[0], rot[1], rot[2]
                 ));
 

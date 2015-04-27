@@ -206,36 +206,6 @@ namespace EyeOut_Telepresence
         }
 
 
-        public void UpdateFromHmd(EyeType eye)
-        {
-
-            //TrackingState outTrack = hmd.GetTrackingState(0);
-
-            //PoseF[] outEyePoses = new PoseF[2];
-
-            //// hmdToEyeViewOffset[2] can be ovrEyeRenderDesc.HmdToEyeViewOffset returned
-            ////     from ovrHmd_ConfigureRendering or ovrHmd_GetRenderDesc. 
-            //FovPort fov = renderDesc.Fov;
-
-            //Vector3 hmdToEyeViewOffset1 = hmd.GetRenderDesc(eye, fov).HmdToEyeViewOffset;
-            //Vector3 hmdToEyeViewOffset2 = hmd.GetRenderDesc(eye, fov).HmdToEyeViewOffset;
-
-            //Vector3[] hmdToEyeViewOffset = new Vector3[] { hmdToEyeViewOffset1, hmdToEyeViewOffset2 };
-
-            //hmd.GetEyePoses(frameIndex, hmdToEyeViewOffset, outEyePoses, ref outTrack);
-            //var pose = renderPose[(int)eye] = outTrack.CameraPose; 
-            //hmd.GetHmdPosePerEye(eye); // obsolete in 0.4.4
-            //hmd.GetEyePose(eye); // 0.4.1
-
-            //var orientation = renderPose[(int)eye].Orientation;
-
-            //OVR.MatrixProjection(renderDesc.Fov);
-
-            var pose = hmd.GetHmdPosePerEye(eye);
-            config.player.lastPose = pose;
-            config.player.UPDATE_hmdOrientation(pose.Orientation);
-
-        }
 
         public void UpdateFromHmd(int ieye)
         {
