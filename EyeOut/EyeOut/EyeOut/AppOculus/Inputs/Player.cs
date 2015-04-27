@@ -221,23 +221,16 @@ namespace EyeOut_Telepresence
 
 
 
-        public void Move(float speed, Vector3 _vec)
+        public void Move(float speed, Vector3 vector)
         {
-            //scout.Position += speed * (Matrix.Translation(Vector3.) * Rotation).TranslationVector;
-
-            //// somehow working
-            //Matrix rot = Rotation;
-            //Matrix rot = hmd.Rotation;
-            //scout.Position += speed * (Matrix.Translation(Vector3.ForwardLH) * rot).TranslationVector * new Vector3(-1, 1, 1) ;
-
-
-            //Vector3 vec = hmd.Rotation.Transform(Vector3.ForwardLH);
-            Vector3 vec = Rotation.Transform(_vec);
-            scout.Position += speed * vec * new Vector3(1, 1, 1);
-
-                //PostureF.CONV_RotationMatrix_2_AngleXYZVector3(Rotation);
-            //hmd.Axis
+            MoveAbsolute(speed, Rotation.Transform(vector));
         }
+
+        public void MoveAbsolute(float speed, Vector3 absoluteVector)
+        {
+            scout.Position += speed * absoluteVector * new Vector3(1, 1, 1);
+        }
+
         public void MoveForward(bool keydown)
         {
             // Update the forward speed movement based on the frame time and whether the user is holding the key down or not.
@@ -317,7 +310,7 @@ namespace EyeOut_Telepresence
             }
 
             // Update the height position.
-            scout.Position += new Vector3(0,upwardSpeed,0);
+            MoveAbsolute(upwardSpeed, Vector3.Up);
         }
 
         public void MoveDownward(bool keydown)
@@ -337,7 +330,7 @@ namespace EyeOut_Telepresence
             }
 
             // Update the height position.
-            scout.Position -= new Vector3(0, upwardSpeed, 0);
+            MoveAbsolute(downwardSpeed, Vector3.Down);
         }
 
 
