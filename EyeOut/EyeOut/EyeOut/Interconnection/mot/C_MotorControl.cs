@@ -168,28 +168,17 @@ namespace EyeOut
 
             // Motor Yaw
             Yaw = new C_Motor(e_rot.yaw, 1, // id
-                    new C_Value(C_Value.angleFull, 0, 360, 180)
-                    {
-                        zeroMultiplication = 1,
-                        zeroAddition = 0//-180
-                    }, // angle
+                    new C_Value(C_Value.angleFull, 0, 360, 180), // angle
                     new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
             // Motor Pitch
             Pitch = new C_Motor(e_rot.pitch, 2, // id
-                    new C_Value(C_Value.angleFull, 111, 292, 200){ 
-                        zeroMultiplication = 1,
-                        zeroAddition = 0//- 200 
-                    }, // angle
+                    new C_Value(C_Value.angleFull, 111, 292, 200), // angle
                     new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
             // Motor Roll
             Roll = new C_Motor(e_rot.roll, 3, // id
-                    new C_Value(C_Value.angleFull, 156, 248, 205)
-                    {
-                        zeroMultiplication = 1,
-                        zeroAddition = 0//-205
-                    }, // angle
+                    new C_Value(C_Value.angleFull, 156, 248, 205), // angle
                     new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
         }

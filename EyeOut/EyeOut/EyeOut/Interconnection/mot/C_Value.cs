@@ -43,8 +43,6 @@ namespace EyeOut
 
         private double decLast; //?
 
-        public double zeroAddition = 0;
-        public double zeroMultiplication = 1;
 
         private object lock_dec = new object();
         private object lock_hex = new object();
@@ -97,8 +95,6 @@ namespace EyeOut
             decMax = _val.decMax;
             hexMin = _val.hexMin;
             hexMax = _val.hexMax;
-            zeroAddition = _val.zeroAddition;
-            zeroMultiplication = _val.zeroMultiplication;
             Dec = _val.Dec;
             decDefault = Dec;
         }
@@ -111,8 +107,6 @@ namespace EyeOut
             decMax = _val.decMax;
             hexMin = _val.hexMin;
             hexMax = _val.hexMax;
-            zeroAddition = _val.zeroAddition;
-            zeroMultiplication = _val.zeroMultiplication;
             Dec = _dec;
             decDefault = Dec;
             
@@ -127,10 +121,7 @@ namespace EyeOut
             decMax = _val.decMax;
             hexMin = _val.hexMin;
             hexMax = _val.hexMax;
-            zeroAddition = _val.zeroAddition;
-            zeroMultiplication = _val.zeroMultiplication;
             Dec = _val.Dec;
-            decDefault = Dec;
         }
 
         public C_Value(double _decMin, double _decMax, double _decDefault, UInt16 _hexMin, UInt16 _hexMax)
@@ -143,7 +134,6 @@ namespace EyeOut
             hexMin = _hexMin;
             hexMax = _hexMax;
             Dec = 0;
-            decDefault = Dec;
         }
 
         public C_Value(double _decLimitMin, double _decLimitMax, double _decMin, double _decMax, UInt16 _hexMin, UInt16 _hexMax)
@@ -321,17 +311,6 @@ namespace EyeOut
             }
         }
 
-        public double Dec_FromDefaultZero // <decLimitMin; decLimitMax>
-        {
-            get
-            {
-                return AngleIn_180to180((dec + zeroAddition) * zeroMultiplication);
-            }
-            set
-            {
-                Dec = GET_bounded_decLimits( (value/zeroMultiplication) - zeroAddition + decDefault);
-            }
-        }
 
 
         public double RadFromDefault // <-pi;pi>
@@ -346,17 +325,6 @@ namespace EyeOut
             }
         }
 
-        public double RadFromDefaultZero // <-pi;pi>
-        {
-            get
-            {
-                return CONV_deg2rad(Dec_FromDefaultZero);
-            }
-            set
-            {
-                Dec_FromDefaultZero = CONV_deg2rad(value);
-            }
-        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public byte[] Hex // hex[0] = LOW, hex[1] = HIGH
         {
