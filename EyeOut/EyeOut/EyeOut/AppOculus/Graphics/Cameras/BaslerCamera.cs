@@ -58,9 +58,15 @@ namespace EyeOut_Telepresence
 
         public void CAPTURE_cameraImage()
         {
-            
-            pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
-            cameraTexture.SetData<byte>(pixelData);
+            if (C_State.FURTHER(e_stateBaslerCam.initialized))
+            {
+                pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
+                cameraTexture.SetData<byte>(pixelData);
+            }
+            else
+            {
+                SETUP_BaslerCamera();
+            }
         }
 
 
@@ -79,11 +85,27 @@ namespace EyeOut_Telepresence
             cameraSurface.Draw(cameraBasicEffect);
         }
 
+        public void START_streaming()
+        {
+            config.streamController.StartStreaming();
+            if(C_State.FURTHER(e_stateBaslerCam.initialized))
+            {
+                C_State.SET_state( e_stateBaslerCam.streaming );
+            }
+        }
+
+        public void STOP_streaming()
+        {
+            config.streamController.StartStreaming();
+            if(C_State.FURTHER(e_stateBaslerCam.initialized))
+            {
+                C_State.SET_state(e_stateBaslerCam.notStreaming);
+            }
+        }
+
         public void SETUP_BaslerCamera()
         {
-            //C_State.
-            config.streamController.StartStreaming();
-
+            START_streaming();
             cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
 
             //baslerImage.PixelTypeValue = Basler.Pylon.PixelType.BGR8packed;
@@ -97,6 +119,7 @@ namespace EyeOut_Telepresence
                     height = config.imageViewer.CaptureImage().Height;
 
                     cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
+                    C_State.SET_state(e_stateBaslerCam.initialized);
                 }
             }
         }
@@ -104,7 +127,8 @@ namespace EyeOut_Telepresence
         {
             if (config.ReadCameraStream == true)
             {
-                config.streamController.StartStreaming();
+                SETUP_BaslerCamera();
+                //config.streamController.StartStreaming();
                 //if (config.streamController.Camera == null)
                 //{
                 //    // add camear

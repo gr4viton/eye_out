@@ -26,13 +26,25 @@ namespace EyeOut
         ready = 2
     }
 
-    //public enum e_stateWebCam
-    //{
-    //    [Description("Not initialized yet")]
-    //    initializing = 0,
-    //    [Description("TimCam and webcamera capture is ready")]
-    //    ready = 1
-    //}
+    public enum e_stateWebCam
+    {
+        [Description("Not initialized yet")]
+        initializing = 0,
+        [Description("TimCam and webcamera capture is ready")]
+        ready = 1
+    }
+
+    public enum e_stateBaslerCam
+    {
+        [Description("not initialized yet")]
+        initializing = 0,
+        [Description("initialized")]
+        initialized = 1,
+        [Description("ready but not streaming")]
+        notStreaming = 1,        
+        [Description("streaming image data")]
+        streaming = 2
+    }
 
     public enum e_stateSPI
     {
@@ -54,10 +66,10 @@ namespace EyeOut
         
         public static e_stateProg prog;
         public static e_stateMotor mot;
-        //public static e_stateWebCam cam;
+        public static e_stateBaslerCam baslerCam;
+        public static e_stateWebCam webCam;
         private static e_stateSPI spi;
-        
-        //public bool spi_tryToConnect = true;
+
 
         public static event EventHandler SpiChanged;
 
@@ -66,7 +78,6 @@ namespace EyeOut
             get { return spi; }
             set {
                 spi = value;
-                //tslConnected
                 EventHandler handler = SpiChanged;
                 if (handler != null)
                     handler(null, EventArgs.Empty);
@@ -78,7 +89,8 @@ namespace EyeOut
             prog = e_stateProg.started;
             mot = e_stateMotor.initializing;
             Spi = e_stateSPI.disconnected;
-            cam = e_stateWebCam.initializing;
+            //cam = e_stateWebCam.initializing;
+            baslerCam = e_stateBaslerCam.initializing;
         }
 
         public static void CLOSE_program()
@@ -109,9 +121,13 @@ namespace EyeOut
             return FURTHER((object)_comparedState, (object)mot);
         }
 
+        public static bool FURTHER(e_stateBaslerCam _comparedState)
+        {
+            return FURTHER((object)_comparedState, (object)baslerCam);
+        }
         public static bool FURTHER(e_stateWebCam _comparedState)
         {
-            return FURTHER((object)_comparedState, (object)cam);
+            return FURTHER((object)_comparedState, (object)webCam);
         }
 
         public static bool FURTHER(e_stateProg _comparedState)
@@ -124,8 +140,26 @@ namespace EyeOut
         {
             return ((int)_actualState >= (int)_comparedState);
         }
-        
 
+        public static void SET_state(object _state)
+        {
+            if (_state is e_stateBaslerCam)
+            {
+                baslerCam = (e_stateBaslerCam)_state;
+            }
+            else if (_state is e_stateMotor)
+            {
+                mot = (e_stateMotor)_state;
+            }
+            else if (_state is e_stateProg)
+            {
+                prog = (e_stateProg)_state;
+            }
+            else if (_state is e_stateSPI)
+            {
+                Spi = (e_stateSPI)_state;
+            }
+        }
     }
 
 

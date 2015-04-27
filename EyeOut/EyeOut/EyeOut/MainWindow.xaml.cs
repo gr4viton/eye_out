@@ -58,6 +58,7 @@ namespace EyeOut
 
         public void HOTKEY_StartTelepresence()
         {
+            tbtToggleTP.IsChecked = true;
             START_TP_withCaution();
         }
         private void CanExecute(object sender, CanExecuteRoutedEventArgs e)

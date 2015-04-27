@@ -44,7 +44,7 @@ namespace EyeOut
         private void INIT_cam()
         {
             INIT_allSources();
-            C_State.cam = e_stateWebCam.ready;
+            C_State.webCam = e_stateWebCam.ready;
         }
 
         private void INIT_timCam()

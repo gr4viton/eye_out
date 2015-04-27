@@ -119,17 +119,10 @@ namespace EyeOut
 
         public void START_TP(TelepresenceSystemConfiguration TP_config)
         {
-            
-            // send active config
-            //using (TP_program = new C_Telepresence(C_Camera.actualId, hmdType))
-            //{
-            //    //TP_program.config = TP_config;
-            //    TP_program.Run();
-            //}
-
             using (TP_program = new TelepresenceSystem(TP_config))
             {
                 TP_program.Run();
+                END_TPsettings();
             }
         }
 
@@ -140,14 +133,19 @@ namespace EyeOut
                 if (TP_program.IsRunning)
                 {
                     TP_program.Exit();
-                    System.Windows.Forms.Cursor.Show(); // not working
-                    TelepresenceSystem.LOG("The Telepresence session is stopped");
+                    END_TPsettings();
                     return;
                 }
             }
             TelepresenceSystem.LOG_err("The Telepresence session is not running");
         }
 
+        public void END_TPsettings()
+        {
+            System.Windows.Forms.Cursor.Show(); // not working
+            TelepresenceSystem.LOG("The Telepresence session is stopped");
+            tbtToggleTP.IsChecked = false;
+        }
         
         private void tbtToggleTP_Click(object sender, RoutedEventArgs e)
         {
@@ -160,6 +158,7 @@ namespace EyeOut
                 STOP_TP();
                 tbtToggleTP.Content = "Start Telepresence";
                 tbtToggleTP.Background = System.Windows.Media.Brushes.GreenYellow;
+                System.Windows.Forms.Cursor.Show();
             }
         }
 
