@@ -171,15 +171,15 @@ namespace EyeOut
                     new C_Value(C_Value.angleFull, 0, 360, 180)
                     {
                         zeroMultiplication = 1,
-                        zeroAddition = 0
+                        zeroAddition = 0//-180
                     }, // angle
                     new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
             // Motor Pitch
             Pitch = new C_Motor(e_rot.pitch, 2, // id
                     new C_Value(C_Value.angleFull, 111, 292, 200){ 
-                        zeroMultiplication = 1,
-                        zeroAddition = 0
+                        zeroMultiplication = -1,
+                        zeroAddition = 0//- 200 
                     }, // angle
                     new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
@@ -188,7 +188,7 @@ namespace EyeOut
                     new C_Value(C_Value.angleFull, 156, 248, 205)
                     {
                         zeroMultiplication = 1,
-                        zeroAddition = 180-205
+                        zeroAddition = 0//-205
                     }, // angle
                     new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );

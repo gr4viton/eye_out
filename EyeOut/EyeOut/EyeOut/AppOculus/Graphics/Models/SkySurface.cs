@@ -43,9 +43,9 @@ namespace EyeOut_Telepresence
 
             if (config.drawSkySurface == true)
             {
-                var world = Matrix.Scaling(300f)
+                var world = Matrix.Scaling(3000f)
                             * Matrix.RotationY(0)
-                            * Matrix.Translation(config.player.GetPosition())
+                            * Matrix.Translation(config.player.Position)
                             ;
 
                 modelSky.Draw(GraphicsDevice, world, eyeView, eyeProjection);

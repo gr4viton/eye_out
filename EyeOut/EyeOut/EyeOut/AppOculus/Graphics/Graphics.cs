@@ -56,13 +56,14 @@ namespace EyeOut_Telepresence
                 
                 // Calculate view matrix                
                 var rollPitchYaw = Matrix.RotationY(config.player.GetBodyRotationY());
+
                 //var rollPitchYaw = Matrix.RotationY(0f);
                 var finalRollPitchYaw = rollPitchYaw * config.player.lastPose.Orientation.GetMatrix();
 
                 var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
                 var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
 
-                var shiftedEyePos = config.player.GetPosition() + rollPitchYaw.Transform(config.player.lastPose.Position);
+                var shiftedEyePos = config.player.Position + rollPitchYaw.Transform(config.player.lastPose.Position);
                 
                 eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
                      * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
@@ -104,7 +105,7 @@ namespace EyeOut_Telepresence
                 var finalRollPitchYaw = rollPitchYaw * pose.Orientation.GetMatrix();
                 var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
                 var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
-                var shiftedEyePos = config.player.GetPosition() + rollPitchYaw.Transform(pose.Position);
+                var shiftedEyePos = config.player.Position + rollPitchYaw.Transform(pose.Position);
 
 
                 eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)

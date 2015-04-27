@@ -38,20 +38,52 @@ namespace EyeOut_Telepresence
         #region Properties / Variables
         public float FrameTime { get; set; }
 
-        private float positionX, positionY, positionZ;
-        private float rotationX, rotationY, rotationZ;
+        private Vector3 playerPosition;
+        private Vector3 playerRotation;
+        private Vector3 bodyRotation;
 
-        private float bodyRotationX, bodyRotationY, bodyRotationZ; 
+        public Vector3 Position
+        {
+            get
+            {
+                return playerPosition;
+            }
+            set
+            {
+                playerPosition = value;
+            }
+        }
+
+        public Vector3 Rotation
+        {
+            get
+            {
+                return playerRotation + bodyRotation;
+            }
+            set
+            {
+                playerRotation = value ;
+            }
+        }
+        public float posX { get { return playerPosition[0]; } set { playerPosition[0] = value; } }
+        public float posY { get { return playerPosition[1]; } set { playerPosition[1] = value; } }
+        public float posZ { get { return playerPosition[2]; } set { playerPosition[2] = value; } }
+
+        public float rotX { get { return playerRotation[0]; } set { playerRotation[0] = value; } }
+        public float rotY { get { return playerRotation[1]; } set { playerRotation[1] = value; } }
+        public float rotZ { get { return playerRotation[2]; } set { playerRotation[2] = value; } }
+
 
         private float forwardSpeed, backwardSpeed;
         private float upwardSpeed, downwardSpeed;
 
         public PoseF lastPose;
-        public float angleX { get { return yawPitchRoll[1]; } }
-        public float angleY { get { return yawPitchRoll[0]; } }
-        public float angleZ { get { return yawPitchRoll[2]; } }
-        public float[] yawPitchRoll;
+        public float angleX { get { return hmdYawPitchRoll[1]; } }
+        public float angleY { get { return hmdYawPitchRoll[0]; } }
+        public float angleZ { get { return hmdYawPitchRoll[2]; } }
+        public float[] hmdYawPitchRoll;
 
+        
 
         public float acceleration = 0.5f;
         public float accelerationNegative = 0.7f;
@@ -65,78 +97,37 @@ namespace EyeOut_Telepresence
 
         public Player()
         {
-            bodyRotationY = (float)Math.PI;
+            bodyRotation = new Vector3(0 , (float)Math.PI , 0);
+            playerPosition = new Vector3(0, 0, 0);
+            playerRotation = new Vector3(0, 0, 0);
             //bodyRotationY = 0f;
-            yawPitchRoll = new float[3];
+            hmdYawPitchRoll = new float[3];
         }
 
         public void ResetPosition()
         {
-            positionX = positionY = positionZ = 0f;
+            playerPosition = new Vector3(0, 0, 0);
         }
 
         public void ResetBodyRotationY()
         {
-            bodyRotationY = angleY;
+            bodyRotation[1] = angleY + (float)Math.PI;
         }
 
         public void UPDATE_hmdOrientation(Quaternion Q)
         {
-            Q.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
-            SetRotation(
-                 yawPitchRoll[1], // pitch
-                 yawPitchRoll[0], // yaw
-                 yawPitchRoll[2]  // roll
+            Q.GetEulerAngles(out hmdYawPitchRoll[0], out hmdYawPitchRoll[1], out hmdYawPitchRoll[2]);
+            Rotation = new Vector3(
+                 hmdYawPitchRoll[1], // pitch
+                 hmdYawPitchRoll[0], // yaw
+                 hmdYawPitchRoll[2]  // roll
                 );
         }
-        public void SetPosition(float x, float y, float z)
-        {
-            positionX = x ;
-            positionY = y ;
-            positionZ = z ;
-        }
-        public void SetPosition(Vector3 position)
-        {
-            SetPosition(position.X, position.Y, position.Z);
-        }
-
-        public void SetRotation(float x, float y, float z)
-        {
-            rotationX = x + bodyRotationX;
-            rotationY = y + bodyRotationY;
-            rotationZ = z + bodyRotationZ;
-        }
-        public void SetRotation(Vector3 rotation)
-        {
-            SetRotation(rotation.X, rotation.Y, rotation.Z);
-        }
-
-
-        public Vector3 GetPosition()
-        {
-            return new Vector3(positionX, positionY, positionZ);
-        }
-        public void GetPosition(out float x, out float y, out float z)
-        {
-            x = positionX;
-            y = positionY;
-            z = positionZ;
-        }
-
-        public Vector3 GetRotation()
-        {
-            return new Vector3(rotationX, rotationY, rotationZ);
-        }
-        public void GetRotation(out float x, out float y, out float z)
-        {
-            x = rotationX;
-            y = rotationY;
-            z = rotationZ;
-        }
-
+        
+        
         public float GetBodyRotationY()
         {
-            return bodyRotationY;
+            return bodyRotation[1];
         }
 
         public void SetupSpeed(bool speedKeyDown, bool slowKeyDown)
@@ -166,8 +157,8 @@ namespace EyeOut_Telepresence
             }
 
             // Update the position.
-            positionX += (float)Math.Sin(rotationY) * forwardSpeed;
-            positionZ += (float)Math.Cos(rotationY) * forwardSpeed;
+            posX += (float)Math.Sin(rotY) * forwardSpeed;
+            posZ += (float)Math.Cos(rotY) * forwardSpeed;
         }
 
         public void MoveBackward(bool keydown)
@@ -188,8 +179,8 @@ namespace EyeOut_Telepresence
 
 
             // Update the position.
-            positionX -= (float)Math.Sin(rotationY) * backwardSpeed;
-            positionZ -= (float)Math.Cos(rotationY) * backwardSpeed;
+            posX -= (float)Math.Sin(rotY) * backwardSpeed;
+            posZ -= (float)Math.Cos(rotY) * backwardSpeed;
         }
 
         public void MoveSideStep(bool keydown, bool right)
@@ -215,8 +206,8 @@ namespace EyeOut_Telepresence
                 coef = -(float)Math.PI/2;
 
             // Update the position.
-            positionX -= (float)Math.Sin(rotationY + coef) * forwardSpeed;
-            positionZ -= (float)Math.Cos(rotationY + coef) * forwardSpeed;
+            posX -= (float)Math.Sin(rotY + coef) * forwardSpeed;
+            posZ -= (float)Math.Cos(rotY + coef) * forwardSpeed;
         }
 
         public void MoveUpward(bool keydown)
@@ -236,7 +227,7 @@ namespace EyeOut_Telepresence
             }
 
             // Update the height position.
-            positionY += upwardSpeed;
+            posY += upwardSpeed;
         }
 
         public void MoveDownward(bool keydown)
@@ -256,7 +247,7 @@ namespace EyeOut_Telepresence
             }
 
             // Update the height position.
-            positionY -= downwardSpeed;
+            posY -= downwardSpeed;
         }
 
 

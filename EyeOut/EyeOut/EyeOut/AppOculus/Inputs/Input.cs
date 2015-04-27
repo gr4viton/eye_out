@@ -157,7 +157,7 @@ namespace EyeOut_Telepresence
             if (keyboardState.IsKeyPressed(Keys.R) )
             {
                 config.player.ResetPosition();
-                //config.player.ResetBodyRotationY();
+                config.player.ResetBodyRotationY();
             }
 
 

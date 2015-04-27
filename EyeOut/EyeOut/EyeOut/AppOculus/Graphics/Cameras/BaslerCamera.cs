@@ -101,24 +101,31 @@ namespace EyeOut_Telepresence
 
             // robotic arm dimensions
             // in [mm]
-            float y_Desk2RollAxis = 140f;
-            float y_RollAxis2PitchAxis = 82.3f;
-            float y_PitchAxis2YawAxisTop = 74.5f;
-            float y_YawAxisTop2SensorMiddle = 39f;
+            float y_AB = 140f; // y_Desk2RollAxis
+            float y_BC = 82.3f; // y_RollAxis2PitchAxis
+            float y_CD = 74.5f; // y_PitchAxis2YawAxisTop
+            float y_DE = 39f; // y_YawAxisTop2SensorMiddle
 
             //float y_HeadCenter2Desk = -335.8f; // sum of previous
-            float y_HeadCenter2Desk = -180f;
+            //float y_HeadCenter2Desk = -180f; // y_HeadCenter2Desk
 
-            float z_YawAxis2SensorSurface = -30.526f;
-            float z_Sensor2CameraTexture = 10;
+            float z_DE = -30.526f; // z_YawAxis2SensorSurface
+            float z_EF = 10; // z_Sensor2CameraTexture
 
 
-            Matrix translation_HeadCenter2Desk = Matrix.Translation(0, y_HeadCenter2Desk, 0);
-            Matrix translation_Desk2RollAxis = Matrix.Translation(0, y_Desk2RollAxis, 0);
-            Matrix translation_RollAxis2PitchAxis = Matrix.Translation(0,y_RollAxis2PitchAxis,0);
-            Matrix translation_PitchAxis2YawAxisTop = Matrix.Translation(0, y_PitchAxis2YawAxisTop, 0);
-            Matrix translation_YawAxisTop2Sensor = Matrix.Translation(0, y_YawAxisTop2SensorMiddle, z_YawAxis2SensorSurface);
-            Matrix translation_Sensor2CameraTexture = Matrix.Translation(0, 0, z_Sensor2CameraTexture);
+            //Matrix translation_HeadCenter2Desk = Matrix.Translation(0, y_HeadCenter2Desk, 0);
+            Matrix t_AB = Matrix.Translation(0, y_AB, 0);
+            Matrix t_BC = Matrix.Translation(0, y_BC,0);
+            Matrix t_CD = Matrix.Translation(0, y_CD, 0);
+            Matrix t_DE = Matrix.Translation(0, y_DE, z_DE);
+            Matrix t_EF = Matrix.Translation(0, 0, z_EF);
+
+            Matrix t_BA = Matrix.Invert(t_AB);
+            Matrix t_CB = Matrix.Invert(t_BC);
+            Matrix t_DC = Matrix.Invert(t_CD);
+            Matrix t_ED = Matrix.Invert(t_DE);
+            Matrix t_FE = Matrix.Invert(t_EF);
+
 
             //Matrix HeadCenter2CameraTexture = Matrix.Identity
             //    * translation_HeadCenter2Desk
@@ -128,22 +135,140 @@ namespace EyeOut_Telepresence
             //    * translation_YawAxisTop2Sensor * translation_Sensor2CameraTexture
             //    ;
 
+            Matrix r_B = Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefault);
+            Matrix r_C = Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault);
+            Matrix r_D = Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefault);
 
             HUD.AppendLine(string.Format("READ YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                (float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero,
-                (float)MainWindow.Ms.Pitch.angleSeen.Dec_FromDefaultZero,
-                (float)MainWindow.Ms.Roll.angleSeen.Dec_FromDefaultZero
+                (float)MainWindow.Ms.Yaw.angleSeen.Dec_FromDefault,
+                (float)MainWindow.Ms.Pitch.angleSeen.Dec_FromDefault,
+                (float)MainWindow.Ms.Roll.angleSeen.Dec_FromDefault
                 ));
+            
+            List<Matrix> roboticArmTransformations = new List<Matrix>();
+            // A - good
+            roboticArmTransformations.Add(Matrix.Identity);
 
-            List<Matrix> roboticArmTransformations = new List<Matrix>()
+            // B - good
+            roboticArmTransformations.Add(Matrix.Identity
+                * t_AB
+                );
+
+            // B with rotation - good
+            roboticArmTransformations.Add(Matrix.Identity
+                * r_B
+                * t_AB
+                );
+
+            // C
+            roboticArmTransformations.Add(Matrix.Identity
+                * t_BC
+                * r_B
+                * t_AB
+                );
+
+            // C with rotation
+            roboticArmTransformations.Add(Matrix.Identity
+                * r_C
+                * t_BC
+                * r_B
+                * t_AB
+                );
+
+            // D
+            roboticArmTransformations.Add(Matrix.Identity
+                * t_CD
+                * r_C
+                * t_BC
+                * r_B
+                * t_AB
+                );
+
+            // D with rotation
+            roboticArmTransformations.Add(Matrix.Identity
+                * r_D
+                * t_CD
+                * r_C
+                * t_BC
+                * r_B
+                * t_AB
+                );
+
+            // E
+            roboticArmTransformations.Add(Matrix.Identity
+                * t_DE
+                * r_D
+                * t_CD
+                * r_C
+                * t_BC
+                * r_B
+                * t_AB
+                );
+
+            // F
+            roboticArmTransformations.Add(Matrix.Identity
+                * t_EF
+                * t_DE
+                * r_D
+                * t_CD
+                * r_C
+                * t_BC
+                * r_B
+                * t_AB
+                );
+
+            //roboticArmTransformations.Add(Matrix.Identity
+            //    * t_CB
+            //    * r_C
+            //    * t_BC
+            //    * t_BA
+            //    * r_B
+            //    * t_AB
+            //    );
+
+            //roboticArmTransformations.Add(Matrix.Identity
+            //    * r_D
+            //    * t_CB
+            //    * r_C
+            //    * t_BC
+            //    * t_BA
+            //    * r_B
+            //    * t_AB
+            //    );
+
+            //roboticArmTransformations.Add(Matrix.Identity
+            //    * t_DC
+            //    * r_D
+            //    * t_CD
+            //    * t_CB
+            //    * r_C
+            //    * t_BC
+            //    * t_BA
+            //    * r_B
+            //    * t_AB
+            //    );
+
+            //roboticArmTransformations.Add(Matrix.Identity
+            //    * t_BC
+            //    * r_BC
+            //    * t_CD
+            //    );
+
+            //roboticArmTransformations.Add(Matrix.Identity
+            //    * t_BC
+            //    * r_BC
+            //    * t_CD
+            //    * r_CD
+            //    );
+
             {
-                translation_HeadCenter2Desk,
-                translation_Desk2RollAxis,
+                //Matrix.Identity,
+                ////translation_HeadCenter2Desk,
+                ////translation_Desk2RollAxis,
                 
-                Matrix.Translation(0, -y_RollAxis2PitchAxis, 0),
-                Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefaultZero),
-                //Matrix.Translation(0, y_RollAxis2PitchAxis, 0)
-                
+                //rotateAroundRollPivot,
+                //rotateAroundPitchPivot,
+                //rotateAroundPitchPivot * Matrix.Scaling(0.5f),
                 //Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault),
                 //translation_PitchAxis2YawAxisTop,
                 ////Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero + (float)Math.PI),
@@ -177,15 +302,14 @@ namespace EyeOut_Telepresence
             int qmax = roboticArmTransformations.Count;
             for (int q = 0; q < qmax; q++)
             {
-                float brightness = (float)q / (float)qmax;
-                worldLocal *= roboticArmTransformations[q];
-                roboticArmEffect.SpecularColor = new Vector3(brightness, 0, 0);
-                roboticArmEffect.AmbientLightColor = new Vector3(brightness, 0, 0);
+                float brightness = (float)q / (float)(qmax -1);
+                roboticArmEffect.AmbientLightColor = brightness * (new Vector3(1, 1, 1));
                 roboticArmEffect.LightingEnabled = true;
 
-                //roboticArmEffect.World = worldLocal * Matrix.Scaling(scaling);
-                roboticArmEffect.World = worldLocal;
+                roboticArmEffect.World = roboticArmTransformations[q];
+                //roboticArmEffect.World = Matrix.Invert(roboticArmTransformations[q]);
                 roboticArmParts[q].Draw(roboticArmEffect);
+                //modelAirplane.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * roboticArmEffect.World, eyeView, eyeProjection);
             }
 
             cameraBasicEffect.World = roboticArmEffect.World;
@@ -262,10 +386,13 @@ namespace EyeOut_Telepresence
             roboticArmEffect.TextureEnabled = true;
 
             roboticArmParts = new List<GeometricPrimitive>();
+            float sizeX = 50;
+            float sizeY = 30;
             int qmax = 10;
             for (int q = 0; q < qmax; q++)
             {
-                roboticArmParts.Add(ToDisposeContent(GeometricPrimitive.Cylinder.New(GraphicsDevice, 10, 10)));
+                //roboticArmParts.Add(ToDisposeContent(GeometricPrimitive.Cylinder.New(GraphicsDevice, sizeX, sizeY)));
+                roboticArmParts.Add(ToDisposeContent(GeometricPrimitive.Teapot.New(GraphicsDevice, sizeX)));
                 //cameraSurface = ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice, sizeX, sizeY));
             }
 

@@ -349,7 +349,7 @@ namespace EyeOut
         {
             get
             {
-                return (dec - decDefault + zeroAddition )* zeroMultiplication;
+                return AngleIn_180to180((dec + zeroAddition) * zeroMultiplication);
             }
             set
             {
@@ -421,6 +421,23 @@ namespace EyeOut
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #region bounds
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        private double AngleIn0to360(double angle)
+        {
+            if (angle > 360)
+                return angle % 360;
+            if (angle < 0)
+                return angle % 360 + 360;
+            return angle;
+        }
+
+        private double AngleIn_180to180(double angle)
+        {
+            angle = AngleIn0to360(angle);
+            if (angle > 180)
+                return angle -360;
+            return angle;
+        }
         /*
         private e_bounds NOTIN_bounds(double num, double min, double max)
         {
