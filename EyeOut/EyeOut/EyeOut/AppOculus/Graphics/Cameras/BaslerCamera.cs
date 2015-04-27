@@ -109,8 +109,8 @@ namespace EyeOut_Telepresence
             //float y_HeadCenter2Desk = -335.8f; // sum of previous
             //float y_HeadCenter2Desk = -180f; // y_HeadCenter2Desk
 
-            float z_DE = -30.526f; // z_YawAxis2SensorSurface
-            float z_EF = 10; // z_Sensor2CameraTexture
+            float z_DE = 30.526f; // z_YawAxis2SensorSurface
+            float z_EF = -100; // z_Sensor2CameraTexture
 
 
             //Matrix translation_HeadCenter2Desk = Matrix.Translation(0, y_HeadCenter2Desk, 0);
@@ -127,14 +127,6 @@ namespace EyeOut_Telepresence
             Matrix t_FE = Matrix.Invert(t_EF);
 
 
-            //Matrix HeadCenter2CameraTexture = Matrix.Identity
-            //    * translation_HeadCenter2Desk
-            //    * translation_Desk2RollAxis * Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefault)
-            //    * translation_RollAxis2PitchAxis * Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault)
-            //    * translation_PitchAxis2YawAxisTop * Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefault + (float)Math.PI)
-            //    * translation_YawAxisTop2Sensor * translation_Sensor2CameraTexture
-            //    ;
-
             Matrix r_B = Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefault);
             Matrix r_C = Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault);
             Matrix r_D = Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefault);
@@ -144,149 +136,19 @@ namespace EyeOut_Telepresence
                 (float)MainWindow.Ms.Pitch.angleSeen.Dec_FromDefault,
                 (float)MainWindow.Ms.Roll.angleSeen.Dec_FromDefault
                 ));
-            
-            List<Matrix> roboticArmTransformations = new List<Matrix>();
-            // A - good
-            roboticArmTransformations.Add(Matrix.Identity);
 
-            // B - good
-            roboticArmTransformations.Add(Matrix.Identity
-                * t_AB
-                );
-
-            // B with rotation - good
-            roboticArmTransformations.Add(Matrix.Identity
-                * r_B
-                * t_AB
-                );
-
-            // C
-            roboticArmTransformations.Add(Matrix.Identity
-                * t_BC
-                * r_B
-                * t_AB
-                );
-
-            // C with rotation
-            roboticArmTransformations.Add(Matrix.Identity
-                * r_C
-                * t_BC
-                * r_B
-                * t_AB
-                );
-
-            // D
-            roboticArmTransformations.Add(Matrix.Identity
-                * t_CD
-                * r_C
-                * t_BC
-                * r_B
-                * t_AB
-                );
-
-            // D with rotation
-            roboticArmTransformations.Add(Matrix.Identity
-                * r_D
-                * t_CD
-                * r_C
-                * t_BC
-                * r_B
-                * t_AB
-                );
-
-            // E
-            roboticArmTransformations.Add(Matrix.Identity
-                * t_DE
-                * r_D
-                * t_CD
-                * r_C
-                * t_BC
-                * r_B
-                * t_AB
-                );
-
-            // F
-            roboticArmTransformations.Add(Matrix.Identity
-                * t_EF
-                * t_DE
-                * r_D
-                * t_CD
-                * r_C
-                * t_BC
-                * r_B
-                * t_AB
-                );
-
-            //roboticArmTransformations.Add(Matrix.Identity
-            //    * t_CB
-            //    * r_C
-            //    * t_BC
-            //    * t_BA
-            //    * r_B
-            //    * t_AB
-            //    );
-
-            //roboticArmTransformations.Add(Matrix.Identity
-            //    * r_D
-            //    * t_CB
-            //    * r_C
-            //    * t_BC
-            //    * t_BA
-            //    * r_B
-            //    * t_AB
-            //    );
-
-            //roboticArmTransformations.Add(Matrix.Identity
-            //    * t_DC
-            //    * r_D
-            //    * t_CD
-            //    * t_CB
-            //    * r_C
-            //    * t_BC
-            //    * t_BA
-            //    * r_B
-            //    * t_AB
-            //    );
-
-            //roboticArmTransformations.Add(Matrix.Identity
-            //    * t_BC
-            //    * r_BC
-            //    * t_CD
-            //    );
-
-            //roboticArmTransformations.Add(Matrix.Identity
-            //    * t_BC
-            //    * r_BC
-            //    * t_CD
-            //    * r_CD
-            //    );
-
-            {
-                //Matrix.Identity,
-                ////translation_HeadCenter2Desk,
-                ////translation_Desk2RollAxis,
-                
-                //rotateAroundRollPivot,
-                //rotateAroundPitchPivot,
-                //rotateAroundPitchPivot * Matrix.Scaling(0.5f),
-                //Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault),
-                //translation_PitchAxis2YawAxisTop,
-                ////Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero + (float)Math.PI),
-                //translation_YawAxisTop2Sensor,
-                //translation_Sensor2CameraTexture,
-
-                
-                //translation_Sensor2CameraTexture,
-                //translation_YawAxisTop2Sensor,
-                ////Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero + (float)Math.PI),
-                //translation_PitchAxis2YawAxisTop,
-                ////Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault),
-                //translation_RollAxis2PitchAxis,
-                ////Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefaultZero),
-                //translation_Desk2RollAxis,
-                //translation_HeadCenter2Desk,
-                //Matrix.Identity
-            };
+            List<Matrix> roboticArmTransformations = new List<Matrix>()
+                {
+                    Matrix.Identity, // A
+                    t_AB,   // B
+                    r_B,    // B with rotation
+                    t_BC,   // C
+                    r_C,    // C with rotation
+                    t_CD,   // D
+                    r_D,    // D with rotation
+                    t_DE,   // E - surfaceOfSensor
+                    t_EF    // F - cameraImageSurface
+                };
 
             //Matrix.Translation(0, y_Desk2RollAxis, 0);
 
@@ -294,10 +156,8 @@ namespace EyeOut_Telepresence
             //float scaling = 0.05f;
             roboticArmEffect.Projection = eyeProjection;
             roboticArmEffect.View = eyeView;
+            roboticArmEffect.World = eyeWorld;
 
-            cameraBasicEffect.Projection = eyeProjection;
-            cameraBasicEffect.View = eyeView;
-            Matrix worldLocal = eyeWorld;
 
             int qmax = roboticArmTransformations.Count;
             for (int q = 0; q < qmax; q++)
@@ -306,31 +166,14 @@ namespace EyeOut_Telepresence
                 roboticArmEffect.AmbientLightColor = brightness * (new Vector3(1, 1, 1));
                 roboticArmEffect.LightingEnabled = true;
 
-                roboticArmEffect.World = roboticArmTransformations[q];
-                //roboticArmEffect.World = Matrix.Invert(roboticArmTransformations[q]);
+                roboticArmEffect.World = roboticArmTransformations[q] * roboticArmEffect.World;
                 roboticArmParts[q].Draw(roboticArmEffect);
                 //modelAirplane.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * roboticArmEffect.World, eyeView, eyeProjection);
             }
 
+            cameraBasicEffect.Projection = eyeProjection;
+            cameraBasicEffect.View = eyeView;
             cameraBasicEffect.World = roboticArmEffect.World;
-            //Matrix HeadCenter2CameraTexture = Matrix.Identity
-            //    * translation_Sensor2CameraTexture
-            //    * translation_YawAxisTop2Sensor
-            //    * Matrix.RotationY((float)MainWindow.Ms.Yaw.angleSeen.RadFromDefaultZero + (float)Math.PI)
-            //    * translation_PitchAxis2YawAxisTop
-            //    * Matrix.RotationX((float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault)
-            //    * translation_RollAxis2PitchAxis
-            //    * Matrix.RotationZ((float)MainWindow.Ms.Roll.angleSeen.RadFromDefaultZero)
-            //    * translation_Desk2RollAxis 
-            //    * translation_HeadCenter2Desk
-            //    ;
-                
-            //var world = Matrix.Identity
-            //            * HeadCenter2CameraTexture
-            //            * Matrix.Scaling(scaling)
-                //* mTransl
-                        ;
-            cameraBasicEffect.World = worldLocal;
 
             
             // Disable Cull only for the plane primitive, otherwise use standard culling
@@ -341,7 +184,7 @@ namespace EyeOut_Telepresence
             modelAirplane.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * eyeWorld, eyeView, eyeProjection);
 
             // Draw the primitive using BasicEffect
-            //cameraSurface.Draw(cameraBasicEffect);
+            cameraSurface.Draw(cameraBasicEffect);
         }
 
         public void Constructor_BaslerCamera()

@@ -254,30 +254,6 @@ namespace EyeOut
             }
         }
 
-        public double RadFromDefault // <-pi;pi>
-        {
-            get
-            {
-                return CONV_deg2rad(Dec_FromDefault);
-            }
-            set
-            {
-                Dec_FromDefault = CONV_deg2rad(value);
-            }
-        }
-
-        public double RadFromDefaultZero // <-pi;pi>
-        {
-            get
-            {
-                return CONV_deg2rad(Dec_FromDefaultZero);
-            }
-            set
-            {
-                Dec_FromDefaultZero = CONV_deg2rad(value);
-            }
-        }
-
         public double Dec_interval_piHalfPiHalf // <-pi/2;pi/2>
         {
             get
@@ -357,6 +333,30 @@ namespace EyeOut
             }
         }
 
+
+        public double RadFromDefault // <-pi;pi>
+        {
+            get
+            {
+                return CONV_deg2rad(Dec_FromDefault);
+            }
+            set
+            {
+                Dec_FromDefault = CONV_deg2rad(value);
+            }
+        }
+
+        public double RadFromDefaultZero // <-pi;pi>
+        {
+            get
+            {
+                return CONV_deg2rad(Dec_FromDefaultZero);
+            }
+            set
+            {
+                Dec_FromDefaultZero = CONV_deg2rad(value);
+            }
+        }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         public byte[] Hex // hex[0] = LOW, hex[1] = HIGH
         {
