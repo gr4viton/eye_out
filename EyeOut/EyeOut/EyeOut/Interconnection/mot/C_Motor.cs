@@ -133,13 +133,13 @@ namespace EyeOut
             angleWanted = new C_Value();
             //angleWanted.DecDefault = C_Value.angleFull.DecDefault;
             speedWanted = new C_Value();
+            C_Value.angleFull.DecDefault = angleWanted.DecDefault;
+
             angleSeen = new C_Value(C_Value.angleFull);
             speedSeen = new C_Value(C_Value.speedFull);
             angleSent = new C_Value(C_Value.angleFull);
             speedSent = new C_Value(C_Value.speedFull);
 
-            angleSeen.DecDefault = angleWanted.DecDefault;
-            angleSent.DecDefault = angleSent.DecDefault;
             angleSeen.zeroAddition = angleSent.zeroAddition = angleWanted.zeroAddition;
             angleSeen.zeroMultiplication = angleSent.zeroMultiplication = angleWanted.zeroMultiplication;
 
@@ -151,14 +151,13 @@ namespace EyeOut
 
             angleWanted = _angle;
             speedWanted = _speed;
-            //angleWanted.DecDefault = C_Value.angleFull.DecDefault;
+
+            C_Value.angleFull.DecDefault = angleWanted.DecDefault;
             angleSeen = new C_Value(C_Value.angleFull);
             speedSeen = new C_Value(C_Value.speedFull);
             angleSent = new C_Value(C_Value.angleFull);
             speedSent = new C_Value(C_Value.speedFull);
 
-            angleSeen.DecDefault = angleWanted.DecDefault;
-            angleSent.DecDefault = angleSent.DecDefault;
             angleSeen.zeroAddition = angleSent.zeroAddition = angleWanted.zeroAddition;
             angleSeen.zeroMultiplication = angleSent.zeroMultiplication = angleWanted.zeroMultiplication;
 

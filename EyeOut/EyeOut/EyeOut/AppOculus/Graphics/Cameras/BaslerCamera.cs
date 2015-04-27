@@ -175,12 +175,6 @@ namespace EyeOut_Telepresence
             cameraBasicEffect.View = eyeView;
             cameraBasicEffect.World = roboticArmEffect.World;
 
-            
-            // Disable Cull only for the plane primitive, otherwise use standard culling
-            //GraphicsDevice.SetRasterizerState(i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack);
-
-
-
             modelAirplane.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * eyeWorld, eyeView, eyeProjection);
 
             // Draw the primitive using BasicEffect
