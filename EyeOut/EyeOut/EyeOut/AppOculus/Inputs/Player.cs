@@ -43,6 +43,9 @@ namespace EyeOut_Telepresence
             get
             {
                 return Orientation.GetMatrix();
+                
+                //Orientation.GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
+                //return Matrix.RotationYawPitchRoll( yawPitchRoll[1], yawPitchRoll[2], yawPitchRoll[0] );
             }
             set
             {
@@ -78,8 +81,17 @@ namespace EyeOut_Telepresence
             Quaternion.RotationMatrix(rotation).GetEulerAngles(out yawPitchRoll[0], out yawPitchRoll[1], out yawPitchRoll[2]);
             return new Vector3(yawPitchRoll);
         }
+
+        //public static Vector3 CONV_RotationMatrix_2_AngleXYZVector3(Matrix rotation)
+        //{
+        //    var element = new float[3];
+        //    Quaternion.RotationMatrix(rotation).GetEulerAngles(out element[2], out element[0], out element[1]);
+        //    return new Vector3(element);
+        //}
     }
 
+
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     public class Player : ICloneable // based on Rastertek Terrain Tutorials in SharpDX 
     {
         #region Structures / Enums
@@ -127,7 +139,18 @@ namespace EyeOut_Telepresence
                 return body.Position + hmd.Position + scout.Position;
             }
         }
-
+          
+        public Matrix LookAtRH
+        {
+            get
+            {
+                var finalRotation = Rotation;
+                var finalUp = finalRotation.Transform(Vector3.UnitY); 
+                var finalForward = finalRotation.Transform(-Vector3.UnitZ);
+                var shiftedEyePos = Position;
+                return Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+            }
+        }
         //public float posX { get { return playerPosition[0]; } set { playerPosition[0] = value; } }
         //public float posY { get { return playerPosition[1]; } set { playerPosition[1] = value; } }
         //public float posZ { get { return playerPosition[2]; } set { playerPosition[2] = value; } }
@@ -137,12 +160,12 @@ namespace EyeOut_Telepresence
         //public float rotZ { get { return playerRotation[2]; } set { playerRotation[2] = value; } }
 
 
-        private Matrix forward = Matrix.Translation(Vector3.UnitZ);
+        private Matrix forward = Matrix.Translation(Vector3.UnitX);
         private Matrix rightward = Matrix.Translation(Vector3.UnitX);
         private Matrix upward = Matrix.Translation(Vector3.UnitY);
 
         private float forwardSpeed, backwardSpeed;
-        private float upwardSpeed, downwardSpeed;
+        public float upwardSpeed, downwardSpeed;
 
         public float hmd_angleX { get { return hmd.YawPitchRoll[1]; } }
         public float hmd_angleY { get { return hmd.YawPitchRoll[0]; } }
@@ -185,28 +208,6 @@ namespace EyeOut_Telepresence
         
 
 
-        public void UPDATE_hmdPosture(PoseF hmdPoseF)
-        {
-            UPDATE_hmdPosition(hmdPoseF.Position);
-            UPDATE_hmdOrientation(hmdPoseF.Orientation);
-        }
-
-        public void UPDATE_hmdPosition(Vector3 hmdPosition)
-        {
-            hmd.Position = hmdPosition;
-        }
-        
-        public void UPDATE_hmdOrientation(Quaternion Q)
-        {
-            hmd.Orientation = Q;
-            //Q.GetEulerAngles(out hmdYawPitchRoll[0], out hmdYawPitchRoll[1], out hmdYawPitchRoll[2]);
-            //hmd.Rotation = Matrix.RotationYawPitchRoll(
-            //     hmdYawPitchRoll[0], 
-            //     hmdYawPitchRoll[1], 
-            //     hmdYawPitchRoll[2]  
-            //    );
-        }
-
 
         public void SetupSpeed(bool speedKeyDown, bool slowKeyDown)
         {
@@ -218,9 +219,24 @@ namespace EyeOut_Telepresence
                 actualVelocityMax = velocityMaxNormal;
         }
 
-        public void Move(float speed, Matrix directionFromHmdView )
+
+
+        public void Move(float speed, Vector3 _vec)
         {
-            scout.Position += (Rotation * directionFromHmdView * speed).TranslationVector;
+            //scout.Position += speed * (Matrix.Translation(Vector3.) * Rotation).TranslationVector;
+
+            //// somehow working
+            //Matrix rot = Rotation;
+            //Matrix rot = hmd.Rotation;
+            //scout.Position += speed * (Matrix.Translation(Vector3.ForwardLH) * rot).TranslationVector * new Vector3(-1, 1, 1) ;
+
+
+            //Vector3 vec = hmd.Rotation.Transform(Vector3.ForwardLH);
+            Vector3 vec = Rotation.Transform(_vec);
+            scout.Position += speed * vec * new Vector3(1, 1, 1);
+
+                //PostureF.CONV_RotationMatrix_2_AngleXYZVector3(Rotation);
+            //hmd.Axis
         }
         public void MoveForward(bool keydown)
         {
@@ -238,7 +254,8 @@ namespace EyeOut_Telepresence
                     forwardSpeed = 0;
             }
 
-            Move(forwardSpeed, forward);
+            //scout.Position -= Rotation.Forward * forwardSpeed;
+            Move(forwardSpeed, Vector3.ForwardRH);
         }
 
         public void MoveBackward(bool keydown)
@@ -257,7 +274,7 @@ namespace EyeOut_Telepresence
                     backwardSpeed = 0;
             }
 
-            Move(backwardSpeed, -forward);
+            Move(backwardSpeed, Vector3.BackwardRH);
         }
 
         public void MoveSideStep(bool keydown, bool _right)
@@ -277,9 +294,9 @@ namespace EyeOut_Telepresence
             }
 
             if (_right)
-                Move(forwardSpeed, rightward);
+                Move(forwardSpeed, Vector3.Right);
             else
-                Move(forwardSpeed, -rightward);
+                Move(forwardSpeed, Vector3.Left);
 
         }
 
@@ -300,7 +317,7 @@ namespace EyeOut_Telepresence
             }
 
             // Update the height position.
-            scout.Position += new Vector3(0,0,upwardSpeed);
+            scout.Position += new Vector3(0,upwardSpeed,0);
         }
 
         public void MoveDownward(bool keydown)
@@ -320,7 +337,7 @@ namespace EyeOut_Telepresence
             }
 
             // Update the height position.
-            scout.Position -= new Vector3(0, 0, upwardSpeed);
+            scout.Position -= new Vector3(0, upwardSpeed, 0);
         }
 
 

@@ -64,110 +64,76 @@ namespace EyeOut_Telepresence
 
             //OVR.MatrixProjection(renderDesc.Fov);
 
-            config.player.UPDATE_hmdPosture(hmd.GetHmdPosePerEye(eye));
+            config.player.hmd.PoseF = hmd.GetHmdPosePerEye(eye);
             //var pose = hmd.GetHmdPosePerEye(eye);
             //config.player.lastPose = pose;
             //config.player.UPDATE_hmdOrientation(pose.Orientation);
 
         }
         #region Draw
+
+        private void SETUP_eyeRender(int eyeIndex)
+        {
+            GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.Default);
+            EyeType eye = hmd.EyeRenderOrder[eyeIndex];
+            EyeRenderDesc renderDesc = eyeRenderDesc[(int)eye];
+            Rect renderViewport = eyeRenderViewport[(int)eye];
+
+            UpdateFromHmd(eye);
+            renderPose[(int)eye] = config.player.hmd.PoseF;
+
+            // Calculate view matrix                
+            var finalRollPitchYaw = config.player.Rotation;
+
+            var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
+            //var finalUp = Vector3.UnitY
+            var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
+
+            var shiftedEyePos = config.player.Position;
+
+            eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset) * config.player.LookAtRH;
+
+            // Calculate projection matrix
+            eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.001f, -1000.0f, true);
+            eyeProjection.Transpose();
+
+            eyeWorld = Matrix.Identity;
+
+            // Set Viewport for our eye
+            GraphicsDevice.SetViewport(renderViewport.ToViewportF());
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             // Clear the screen
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            //BeginDraw_Font();
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {
-                EyeType eye = hmd.EyeRenderOrder[eyeIndex];
-                EyeRenderDesc renderDesc = eyeRenderDesc[(int)eye];
-                Rect renderViewport = eyeRenderViewport[(int)eye];
-
-                UpdateFromHmd(eye);
-                renderPose[(int)eye] = config.player.hmd.PoseF;
-
-                // Calculate view matrix                
-                var finalRollPitchYaw = config.player.Rotation;
-
-                var rot = PostureF.CONV_RotationMatrix_2_YawPitchRollVector3(config.player.Rotation);
-                HUD.AppendLine(string.Format("config.player.Rotation YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                    rot[0], rot[1], rot[2]
-                    ));
-                rot = PostureF.CONV_RotationMatrix_2_YawPitchRollVector3(finalRollPitchYaw);
-                HUD.AppendLine(string.Format("finalRollPitchYaw YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                    rot[0], rot[1], rot[2]
-                    ));
-                //if(finallRollPitchYaw)
-
-                var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
-                var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
-
-                var shiftedEyePos = config.player.Position;
-                
-                eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
-                     * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
-
-                // Calculate projection matrix
-                eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.001f, -1000.0f, true);
-                eyeProjection.Transpose();
-
-                eyeWorld = Matrix.Identity ;
-
-                // Set Viewport for our eye
-                GraphicsDevice.SetViewport(renderViewport.ToViewportF());
+                SETUP_eyeRender(eyeIndex);
 
                 // Perform the actual drawing
-                Draw_BaslerCamera(gameTime);
-                Draw_Model(gameTime);
                 Draw_SkySurface(gameTime);
+                Draw_Model(gameTime);
+                Draw_BaslerCamera(gameTime);
 
-
-                //DrawFonts((int)eye);
-
+                //Draw_Font((int)eye);
                 //Draw_SoundGraphicalEffects();
 
-                HUD.AppendLine("hmd latency = " + hmd.GetMeasuredLatency());
             }
-
-            //BeginDraw_Font();
-            //for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
-            //{
-
-            //    EyeType eye = hmd.EyeRenderOrder[eyeIndex];
-            //    EyeRenderDesc renderDesc = eyeRenderDesc[(int)eye];
-            //    Rect renderViewport = eyeRenderViewport[(int)eye];
-            //    var pose = renderPose[(int)eye] = hmd.GetHmdPosePerEye(eye);
-
-            //    // Calculate view matrix                
-            //    var bodyYaw = (float)Math.PI;
-            //    var rollPitchYaw = Matrix.RotationY(bodyYaw);
-            //    var finalRollPitchYaw = rollPitchYaw * pose.Orientation.GetMatrix();
-
-            //    var finalUp = finalRollPitchYaw.Transform(Vector3.UnitY);
-            //    var finalForward = finalRollPitchYaw.Transform(-Vector3.UnitZ);
-
-            //    var shiftedEyePos = config.player.Position;//+ rollPitchYaw.Transform(pose.Position);
-
-
-            //    eyeView = Matrix.Translation(renderDesc.HmdToEyeViewOffset)
-            //         * Matrix.LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
-
-            //    // Calculate projection matrix
-            //    eyeProjection = OVR.MatrixProjection(renderDesc.Fov, 0.001f, -1000.0f, true);
-            //    eyeProjection.Transpose();
-
-            //    eyeWorld = Matrix.Identity;
-
-
-            //    // Set Viewport for our eye
-            //    GraphicsDevice.SetViewport(renderViewport.ToViewportF());
-
-            //    Draw_Font((int)eye);
-            //}
-            ////DrawFonts(0);
-            ////DrawFonts(1);
             //EndDraw_Font();
 
+            BeginDraw_Font();
+            for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++) // need second loop as font drawing uses stencil buffer
+            {
+                SETUP_eyeRender(eyeIndex); // ask for the values from hmd again as they may have changed from the point where other models were drown
 
+                Draw_Font(eyeIndex);
+            }
+            EndDraw_Font();
+
+            HUD.AppendLine("hmd latency = " + hmd.GetMeasuredLatency());
             CONTROL_motors();
         }
 

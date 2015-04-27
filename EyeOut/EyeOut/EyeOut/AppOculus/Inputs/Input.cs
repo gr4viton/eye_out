@@ -175,8 +175,8 @@ namespace EyeOut_Telepresence
             config.player.MoveSideStep(keyboardState.IsKeyDown(Keys.A), false);
             config.player.MoveBackward(keyboardState.IsKeyDown(Keys.S));
             config.player.MoveSideStep(keyboardState.IsKeyDown(Keys.D), true);
-            config.player.MoveUpward(keyboardState.IsKeyDown(Keys.Q));
-            config.player.MoveDownward(keyboardState.IsKeyDown(Keys.E));
+            config.player.MoveUpward(keyboardState.IsKeyDown(Keys.E));
+            config.player.MoveDownward(keyboardState.IsKeyDown(Keys.Q));
 
             config.player.SetupSpeed(keyboardState.IsKeyDown(Keys.Shift), keyboardState.IsKeyDown(Keys.Control));
 
