@@ -19,7 +19,27 @@ using SharpOVR;
 
 namespace EyeOut_Telepresence
 {
+    public class PostureF
+    {
+        public Quaternion Orientation;
+        public Vector3 Position;
 
+        public void ahoj()
+        {
+            
+        }
+        public Matrix Rotation
+        {
+            get
+            {
+                return Orientation.GetMatrix();
+            }
+            set
+            {
+                Orientation = Quaternion.RotationMatrix(value);
+            }
+        }
+    }
     public class Player : ICloneable // based on Rastertek Terrain Tutorials in SharpDX 
     {
         #region Structures / Enums
@@ -29,30 +49,21 @@ namespace EyeOut_Telepresence
             Backward,
             Upward,
             Downward,
+            SidestepLeft,
+            SidestepRight,
             LeftTurn,
             RightTurn,
-            LookUp,
-            LookDown
         }
         #endregion
         #region Properties / Variables
         public float FrameTime { get; set; }
 
-        private Vector3 playerPosition;
+        private PostureF player;
+        private PostureF hmd;
+        private PostureF body;
+
         private Vector3 playerRotation;
         private Vector3 bodyRotation;
-
-        public Vector3 Position
-        {
-            get
-            {
-                return playerPosition;
-            }
-            set
-            {
-                playerPosition = value;
-            }
-        }
 
         public Vector3 Rotation
         {
