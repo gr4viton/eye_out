@@ -26,13 +26,13 @@ namespace EyeOut
         ready = 2
     }
 
-    public enum e_stateWebCam
-    {
-        [Description("Not initialized yet")]
-        initializing = 0,
-        [Description("TimCam and webcamera capture is ready")]
-        ready = 1
-    }
+    //public enum e_stateWebCam
+    //{
+    //    [Description("Not initialized yet")]
+    //    initializing = 0,
+    //    [Description("TimCam and webcamera capture is ready")]
+    //    ready = 1
+    //}
 
     public enum e_stateSPI
     {
@@ -54,7 +54,7 @@ namespace EyeOut
         
         public static e_stateProg prog;
         public static e_stateMotor mot;
-        public static e_stateWebCam cam;
+        //public static e_stateWebCam cam;
         private static e_stateSPI spi;
         
         //public bool spi_tryToConnect = true;

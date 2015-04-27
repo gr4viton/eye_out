@@ -142,6 +142,7 @@
     </Compile>
     <Compile Include="AppOculus\Graphics\Cameras\BaslerCamera.cs" />
     <Compile Include="AppOculus\Graphics\Graphics.cs" />
+    <Compile Include="AppOculus\Graphics\Models\RoboticArm.cs" />
     <Compile Include="AppOculus\Graphics\Models\SkySurface.cs" />
     <Compile Include="AppOculus\Inputs\Player.cs" />
     <Compile Include="AppOculus\Outputs\MotorPosture.cs" />

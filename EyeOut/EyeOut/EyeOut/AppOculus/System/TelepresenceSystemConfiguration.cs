@@ -47,7 +47,6 @@ namespace EyeOut_Telepresence
         public C_DrawGazeMark gazeMark;
 
         
-        public bool firstPass = true;
 
         public ImageViewer imageViewer;
         public StreamController streamController;

@@ -109,9 +109,13 @@ namespace EyeOut_Telepresence
                 rot[0], rot[1], rot[2]
                 ));
 
-            HUD.AppendLine(string.Format("Player upward: {0,7:0.00}",
-                config.player.upwardSpeed
+
+
+            rot = config.player.body.YawPitchRoll;
+            HUD.AppendLine(string.Format("body YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                rot[0], rot[1], rot[2]
                 ));
+
 
             //str.Append(string.Format("cam position:{0}|{1}, keyboardStateW={2}", cameraSurfaceX, cameraSurfaceY, keyboardState.IsKeyPressed(Keys.U)));
 

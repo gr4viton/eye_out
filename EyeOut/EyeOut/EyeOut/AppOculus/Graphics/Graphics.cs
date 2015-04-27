@@ -108,21 +108,17 @@ namespace EyeOut_Telepresence
             // Clear the screen
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            //BeginDraw_Font();
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {
                 SETUP_eyeRender(eyeIndex);
 
-                // Perform the actual drawing
                 Draw_SkySurface(gameTime);
                 Draw_Model(gameTime);
                 Draw_BaslerCamera(gameTime);
-
+                Draw_RoboticArm();
                 //Draw_Font((int)eye);
                 //Draw_SoundGraphicalEffects();
-
             }
-            //EndDraw_Font();
 
             BeginDraw_Font();
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++) // need second loop as font drawing uses stencil buffer

@@ -236,6 +236,7 @@ namespace EyeOut_Telepresence
             LoadContent_Font();
             LoadContent_Sound();
             LoadContent_BaslerCamera();
+            LoadContent_RoboticArm();
             LoadContent_SkySurface();
 
             base.LoadContent();

@@ -185,10 +185,11 @@ namespace EyeOut_Telepresence
 
         public Player()
         {
-            body = new PostureF()
-            {
-                Rotation = Matrix.RotationYawPitchRoll((float)Math.PI, 0, 0)
-            };
+            body = new PostureF();
+            //{
+            //    Rotation = Matrix.RotationYawPitchRoll((float)Math.PI, 0, 0)
+            //};
+            body.Rotation = Matrix.RotationYawPitchRoll(0.0001f, 0, 0);
 
             hmd = new PostureF();
             scout = new PostureF();
@@ -196,19 +197,24 @@ namespace EyeOut_Telepresence
         }
 
 
+        public void ResetPositionAndBodyYaw()
+        {
+            ResetPosition();
+            ResetBodyYaw();
+        }
+        
+
         public void ResetPosition()
         {
             scout.Position = new Vector3(0, 0, 0);
         }
 
-        public void ResetBodyRotationY()
+        public void ResetBodyYaw()
         {
-            scout.Rotation = Matrix.RotationY(hmd_angleY);
+            body.Rotation = Matrix.RotationY(  - hmd.YawPitchRoll[0]);//Matrix.RotationY(hmd_angleY);
+            //TelepresenceSystem.LOG(hmd.YawPitchRoll[0].ToString());
         }
         
-
-
-
         public void SetupSpeed(bool speedKeyDown, bool slowKeyDown)
         {
             if (speedKeyDown)

@@ -137,7 +137,7 @@ namespace EyeOut_Telepresence
                 tiles[4].StopDelegate();
             }
 
-            if (keyboardState.IsKeyPressed(Keys.H) && keyboardState.IsKeyDown(Keys.Control))
+            if (keyboardState.IsKeyPressed(Keys.F1))
             {
                 //config.READ_dataFromMotors ^= true; // toggle
                 config.SHOW_helpText = !config.SHOW_helpText;
@@ -154,13 +154,24 @@ namespace EyeOut_Telepresence
                 config.READ_dataFromMotors = !config.READ_dataFromMotors;
             }
 
-            if (keyboardState.IsKeyPressed(Keys.R) )
+            if (keyboardState.IsKeyPressed(Keys.R) && keyboardState.IsKeyDown(Keys.Control))
             {
                 config.player.ResetPosition();
-                config.player.ResetBodyRotationY();
+            }
+            else if (keyboardState.IsKeyPressed(Keys.R) && keyboardState.IsKeyDown(Keys.Shift))
+            {
+                config.player.ResetBodyYaw();
+            }
+            else if (keyboardState.IsKeyPressed(Keys.R))
+            {
+                config.player.ResetPositionAndBodyYaw();
             }
 
 
+            if (keyboardState.IsKeyPressed(Keys.C) && keyboardState.IsKeyDown(Keys.Shift))
+            {
+                config.ReadCameraStream = !config.ReadCameraStream;
+            }
 
             HUD.AppendLine(string.Format(
                 "W{0}|A{1}|S{2}",
