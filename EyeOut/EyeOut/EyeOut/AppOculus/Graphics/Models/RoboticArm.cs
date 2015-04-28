@@ -31,6 +31,12 @@ namespace EyeOut_Telepresence
     using SharpDX.Toolkit.Graphics;
     using SharpDX.DXGI;
 
+    public enum e_valueType
+    {
+        wantedValue,
+        sentValue,    
+        seenValue   
+    }
 
     public enum e_RoboticArmPart
     {
@@ -102,7 +108,6 @@ namespace EyeOut_Telepresence
 
     class RoboticArm
     {
-
         public List<RoboticArmPart> parts;
         public Matrix baseProjection;
         public Matrix baseView;
@@ -120,6 +125,8 @@ namespace EyeOut_Telepresence
         float z_DE = 30.526f; // z_YawAxis - SensorSurface
         float z_EF = -100; // z_Sensor - CameraTexture
 
+        public e_valueType angleType = e_valueType.wantedValue;
+
         public RoboticArmPart this[int i] 
         {
             get{ return parts[i]; }
@@ -129,6 +136,23 @@ namespace EyeOut_Telepresence
         {
             get{ return parts[(int)type]; }
         }
+
+        public float this[e_rot mot]
+        {
+            get 
+            {
+                return YawPitchRoll[(int)mot];
+            }
+            set 
+            {
+                YawPitchRoll[(int)mot] = value;
+            }
+        }
+
+        public List<float> YawPitchRoll;
+        public float YawRad { get { return this[e_rot.yaw]; } set { this[e_rot.yaw] = value; } }
+        public float PitchRad { get { return this[e_rot.pitch]; } set { this[e_rot.pitch] = value; } }
+        public float RollRad { get { return this[e_rot.roll]; } set { this[e_rot.roll] = value; } }
 
         //Matrix translation_HeadCenter2Desk = Matrix.Translation(0, y_HeadCenter2Desk, 0);
         public Matrix t_AB ;
@@ -156,19 +180,33 @@ namespace EyeOut_Telepresence
             parts.Add(new RoboticArmPart (partType++, Matrix.Identity )); // rD
             parts.Add(new RoboticArmPart (partType++, t_DE ));
             parts.Add(new RoboticArmPart (partType++, t_EF ));
-            
+
+
+            YawPitchRoll = new List<float>() { 0, 0, 0 };
         }
 
-        public void UPDATE_PartRotation( float yaw, float pitch, float roll )
+
+        public void UPDATE_PartRotation(float yawMotorRad, float pitchMotorRad, float rollMotorRad)
         {
-            this[e_RoboticArmPart.r_D_yaw].transformation = Matrix.RotationY(yaw);
-            this[e_RoboticArmPart.r_C_pitch].transformation = Matrix.RotationX(pitch);
-            this[e_RoboticArmPart.r_B_roll].transformation = Matrix.RotationZ(roll);
+            this[e_RoboticArmPart.r_D_yaw].transformation = Matrix.RotationY(yawMotorRad);
+            this[e_RoboticArmPart.r_C_pitch].transformation = Matrix.RotationX(pitchMotorRad);
+            this[e_RoboticArmPart.r_B_roll].transformation = Matrix.RotationZ(rollMotorRad);
         }
 
-        public void UPDATE_PartRotationAndWorldMatrix(float yaw, float pitch, float roll)
+        public void CONV_hmdRotationToPartRotation(Matrix playerRotation)
         {
-            UPDATE_PartRotation(yaw, pitch, roll);
+            // converts the head orientation to individual motor angles (Yaw, Pitch, Roll)
+            // later inverse kinematics 
+            Vector3 values = PostureF.CONV_RotationMatrix_2_YawPitchRollVector3(playerRotation);
+            YawRad = -values[0];
+            PitchRad = -values[1];
+            RollRad = -values[2];
+        }
+
+        public void UPDATE_PartRotationAndWorldMatrix(float yawMotorRad, float pitchMotorRad, float rollMotorRad)
+        {
+            UPDATE_PartRotation(yawMotorRad, pitchMotorRad, rollMotorRad);
+
             Matrix root = baseWorld;
             foreach (RoboticArmPart p in parts)
             {
@@ -204,21 +242,42 @@ namespace EyeOut_Telepresence
     public partial class TelepresenceSystem : Game
     {
         RoboticArm ra;
-
-        public void Update_RoboticArm()
+        public void Update_RobotArmWantedAnglesFromPlayer()
+        {
+            ra.CONV_hmdRotationToPartRotation(config.player.Rotation);
+        }
+        public void Update_RoboticArmDrawnPosture()
         {
             ra.UPDATE_matrices(eyeProjection, eyeView, eyeWorld);
 
+            List<C_Value> yawPitchRoll;
+
+            switch (ra.angleType)
+            {
+                case (e_valueType.wantedValue):
+                    yawPitchRoll = new List<C_Value>(){ MainWindow.Ms.Yaw.angleWanted, MainWindow.Ms.Pitch.angleWanted, MainWindow.Ms.Roll.angleWanted };
+                    break;
+                case (e_valueType.sentValue):
+                    yawPitchRoll = new List<C_Value>() { MainWindow.Ms.Yaw.angleSent, MainWindow.Ms.Pitch.angleSent, MainWindow.Ms.Roll.angleSent };
+                    break;
+                case(e_valueType.seenValue):
+                    yawPitchRoll = new List<C_Value>() { MainWindow.Ms.Yaw.angleSeen, MainWindow.Ms.Pitch.angleSeen, MainWindow.Ms.Roll.angleSeen };
+                    break;
+                default:
+                    return;
+            }
+
+
             ra.UPDATE_PartRotationAndWorldMatrix(
-                (float)MainWindow.Ms.Yaw.angleSeen.RadFromDefault,
-                (float)MainWindow.Ms.Pitch.angleSeen.RadFromDefault,
-                (float)MainWindow.Ms.Roll.angleSeen.RadFromDefault
+                (float)yawPitchRoll[0].Rad_FromDefault,
+                (float)yawPitchRoll[1].Rad_FromDefault,
+                (float)yawPitchRoll[2].Rad_FromDefault                
                 );
 
             HUD.AppendLine(string.Format("READ YawPitchRoll[deg] [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                (float)MainWindow.Ms.Yaw.angleSeen.Dec_FromDefault,
-                (float)MainWindow.Ms.Pitch.angleSeen.Dec_FromDefault,
-                (float)MainWindow.Ms.Roll.angleSeen.Dec_FromDefault
+                (float)yawPitchRoll[0].Dec_FromDefault,
+                (float)yawPitchRoll[1].Dec_FromDefault,
+                (float)yawPitchRoll[2].Dec_FromDefault
                 ));
         }
         public void Draw_RoboticArm()
@@ -232,7 +291,7 @@ namespace EyeOut_Telepresence
         {
             ra = new RoboticArm();
             
-            float sizeX = 10;
+            float sizeX = 5;
             var roboticArmPartDefaultTexture = Content.Load<Texture2D>("vut_grid");
             Color[] cols = new Color[]
             {               

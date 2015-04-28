@@ -139,14 +139,26 @@ namespace EyeOut_Telepresence
 
             if (keyboardState.IsKeyPressed(Keys.F1))
             {
-                //config.READ_dataFromMotors ^= true; // toggle
                 config.hud.helpMenu ^= true;
             }
             if (keyboardState.IsKeyPressed(Keys.F2))
             {
-                //config.READ_dataFromMotors ^= true; // toggle
                 config.hud.toolStrip ^= true;
             }
+
+            if (keyboardState.IsKeyPressed(Keys.F5))
+            {
+                ra.angleType = e_valueType.wantedValue;
+            }
+            if (keyboardState.IsKeyPressed(Keys.F6))
+            {
+                ra.angleType = e_valueType.sentValue;
+            }
+            if (keyboardState.IsKeyPressed(Keys.F7))
+            {
+                ra.angleType = e_valueType.seenValue;
+            }
+
             
             if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Control))
             {
@@ -244,7 +256,7 @@ namespace EyeOut_Telepresence
 
 
 
-        public void UpdateFromHmd(int ieye)
+        public void Update_PlayerFromHmd(int ieye)
         {
             UpdateFromHmd((EyeType)ieye);
         }

@@ -242,10 +242,10 @@ namespace EyeOut_Telepresence
 
         public void MoveAbsolute(float speed, Vector3 absoluteVector)
         {
-            if (PositionLockActive == false)
-            {
+            //if (PositionLockActive == false)
+            //{
                 scout.Position += speed * absoluteVector; // *new Vector3(1, 1, 1);
-            }
+            //}
         }
 
         public void MoveForward(bool keydown)

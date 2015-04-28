@@ -312,8 +312,19 @@ namespace EyeOut
         }
 
 
+        public double Rad // <-pi;pi>
+        {
+            get
+            {
+                return CONV_deg2rad(Dec);
+            }
+            set
+            {
+                Dec = CONV_rad2deg(value);
+            }
+        }
 
-        public double RadFromDefault // <-pi;pi>
+        public double Rad_FromDefault // <-pi;pi>
         {
             get
             {
@@ -321,7 +332,7 @@ namespace EyeOut
             }
             set
             {
-                Dec_FromDefault = CONV_deg2rad(value);
+                Dec_FromDefault = CONV_rad2deg(value);
             }
         }
 
