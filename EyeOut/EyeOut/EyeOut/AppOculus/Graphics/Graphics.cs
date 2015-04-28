@@ -107,7 +107,8 @@ namespace EyeOut_Telepresence
         protected override void Draw(GameTime gameTime)
         {
             // Clear the screen
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(new Color(41,51,86));
 
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {

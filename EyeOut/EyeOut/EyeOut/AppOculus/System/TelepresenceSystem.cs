@@ -269,13 +269,14 @@ namespace EyeOut_Telepresence
             Update_Sound();
             Update_Input();
 
+            Update_ScoutPosition();
             SETUP_eyeRender(0);
             //Update_PlayerFromHmd(0);
+            
             Update_RobotArmWantedAnglesFromPlayer();
             Update_MotorWantedAnglesFromRobotArmWantedAngles();
             Update_RoboticArmDrawnPosture();
             
-            Update_ScoutPosition();
 
             Update_helpText();
         }
@@ -307,7 +308,36 @@ namespace EyeOut_Telepresence
                 ra.angleType
                 ));
             HUD.AppendLine("");
+            HUD.AppendLine(string.Format("Status: [Camera={0}][Motors={1}][SPI={2}]",
+                C_State.baslerCam,
+                C_State.mot,
+                C_State.Spi
+                ));
 
+            // may be in config constructor
+            string name = "No camera connected - please connect the camera and restart telepresence!";
+            if(C_State.FURTHER(e_stateBaslerCam.initializing))
+            {
+                name = config.streamController.Camera.CameraInfo[Basler.Pylon.CameraInfoKey.DeviceType] + " " +
+                    config.streamController.Camera.CameraInfo[Basler.Pylon.CameraInfoKey.ModelName]
+                    ;
+                HUD.AppendLine("Camera: " + name);
+                HUD.AppendLine(string.Format(
+                    "StreamControler: [Init={0}]",
+                    config.streamController.IsInitialized
+                    ));
+                HUD.AppendLine(string.Format(
+                    "ImageViewer: [Init={0}]",
+                    config.imageViewer.IsInitialized
+                    ));
+                HUD.AppendLine(string.Format(
+                    "Camera: [Connected={0}], [Open={1}], [Grabbing={2}]",
+                    config.imageViewer.Camera.IsConnected, config.imageViewer.Camera.IsOpen, 
+                    config.imageViewer.Camera.StreamGrabber.IsGrabbing
+                    ));
+            }
+
+            HUD.AppendLine("");
             Vector3 pos;
             Vector3 rot;
 

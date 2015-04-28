@@ -24,6 +24,9 @@ using ToolkitImage = SharpDX.Toolkit.Graphics.Image;
 //using ToolkitTexture = SharpDX.Toolkit.Graphics.Texture2D;
 //using SharpDX.Toolkit.Graphics;
 
+using StreamController = Basler.Pylon.Controls.WPF.StreamController;
+using ImageViewer = Basler.Pylon.Controls.WPF.ImageViewer;
+
 namespace EyeOut_Telepresence
 {
     // Use these namespaces here to override SharpDX.Direct3D11
@@ -38,7 +41,8 @@ namespace EyeOut_Telepresence
     {
         
         //private List<GeometricPrimitive> primitives;
-
+        StreamController streamController;
+        ImageViewer imageViewer;
 
         Basler.Pylon.IImage baslerImage;
         //ToolkitImage cameraImage;
@@ -56,12 +60,20 @@ namespace EyeOut_Telepresence
         byte[] pixelData;
 
 
+
         public void CAPTURE_cameraImage()
         {
             if (C_State.FURTHER(e_stateBaslerCam.initialized))
             {
-                pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
-                cameraTexture.SetData<byte>(pixelData);
+                START_streaming();
+                //baslerImage = config.streamController.Camera.StreamGrabber();
+                baslerImage = config.imageViewer.CaptureImage();
+
+                if (baslerImage != null)
+                {
+                    pixelData = (byte[])baslerImage.PixelData;
+                    cameraTexture.SetData<byte>(pixelData);
+                }
             }
             else
             {
@@ -80,14 +92,17 @@ namespace EyeOut_Telepresence
             cameraBasicEffect.View = eyeView;
             cameraBasicEffect.World = ra.cameraSurfaceWorld;
             
-
             // Draw the primitive using BasicEffect
             cameraSurface.Draw(cameraBasicEffect);
         }
 
         public void START_streaming()
         {
-            config.streamController.StartStreaming();
+            if (config.streamController.Camera.StreamGrabber.IsGrabbing == false)
+            {
+                config.streamController.StartStreaming();
+                SETUP_BaslerCamera();
+            }
             if(C_State.FURTHER(e_stateBaslerCam.initialized))
             {
                 C_State.SET_state( e_stateBaslerCam.streaming );
@@ -96,7 +111,7 @@ namespace EyeOut_Telepresence
 
         public void STOP_streaming()
         {
-            config.streamController.StartStreaming();
+            config.streamController.StopStreaming();
             if(C_State.FURTHER(e_stateBaslerCam.initialized))
             {
                 C_State.SET_state(e_stateBaslerCam.notStreaming);
@@ -119,12 +134,31 @@ namespace EyeOut_Telepresence
                     height = config.imageViewer.CaptureImage().Height;
 
                     cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
-                    C_State.SET_state(e_stateBaslerCam.initialized);
+
+                    cameraTexture.SetData<byte>(pixelData);
+
+                    if (C_State.FURTHER(e_stateBaslerCam.initialized) == false)
+                    {
+                        C_State.SET_state(e_stateBaslerCam.initialized);
+                    }
                 }
             }
         }
         public void Constructor_BaslerCamera()
         {
+            //streamController = new StreamController();
+            //imageViewer = new ImageViewer();
+
+
+            //streamController.
+
+            //config.streamController = streamController;
+            //config.imageViewer = imageViewer;
+
+            if (config.streamController.Camera != null)
+            {
+                C_State.SET_state(e_stateBaslerCam.initializing);
+            }
             if (config.ReadCameraStream == true)
             {
                 SETUP_BaslerCamera();

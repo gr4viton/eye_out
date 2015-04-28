@@ -21,6 +21,10 @@ using TelepresenceSystem = EyeOut_Telepresence.TelepresenceSystem;
 using TelepresenceSystemConfiguration = EyeOut_Telepresence.TelepresenceSystemConfiguration;
 using EyeOut_Telepresence;
 
+using StreamController = Basler.Pylon.Controls.WPF.StreamController;
+using ImageViewer = Basler.Pylon.Controls.WPF.ImageViewer;
+
+
 namespace EyeOut
 {
     /// <summary>
@@ -39,8 +43,6 @@ namespace EyeOut
             lsLogSrcSelction.UnselectAll();
             LOG_filterIn(e_LogMsgSource.oculus);
             LOG_filterIn(e_LogMsgSource.oculus_err);
-
-            
 
             TP_config = new TelepresenceSystemConfiguration()
             {
@@ -75,18 +77,81 @@ namespace EyeOut
 
                 streamController = guiStreamController,
                 imageViewer = guiImageViewer
+                //imageViewer = new ImageViewer()
                 //imageViewer = new Basler.Pylon.Controls.WPF.ImageViewer()
             };
 
-            //TP_config.streamController.SetBinding(
-            //TP_config.imageViewer.SetBinding(
-            //guiStreamController.ActiveViewer = TP_config.imageViewer;
-            //TP_config.imageViewer.
+
+            //TP_config.imageViewer = new ImageViewer();
+            //TP_config.streamController = new StreamController();
+
+            //TP_config.streamController.BeginInit();
+            //TP_config.imageViewer.BeginInit();
+            if (guiStreamController.Camera != null)
+            {
+                // take selected camera
+                TP_config.streamController.Camera = guiStreamController.Camera;
+            }
+            else
+            {
+                if (cameraListener.Camera != null)
+                {
+                    // take selected camera
+                    TP_config.streamController.Camera = cameraListener.Camera;
+                }
+                else
+                {
+                    int res = 0;
+                    foreach (var cameraModel in cameraListener.CameraList)
+                    {
+                        
+                        if(res == 0)
+                        {
+                            TP_config.streamController.Camera = cameraModel.Camera;
+                        }
+                        res++;
+                    }
+                    if (TP_config.streamController.Camera != null)
+                    {
+                        // inform that this telepresence will use the first camera from connected camera list
+                        if (cbSafe_NoCameraSelectedWarning.IsChecked.Value == true)
+                        {
+                            MessageBox.Show("No Basler camera selected in 'Basler camera' tab!\nThis telepresence session will use the first one from the camera list:\n"
+                            + TP_config.streamController.Camera.CameraInfo.ToString());
+                        }
+                    }
+                    if (res == 0) // no cameras found
+                    {
+                        // inform that the camera is not going to be assigned in this telepresence settings as the camera is not connected
+                        MessageBox.Show("No Basler camera found!\nThere will be no streamed camera image in this telepresence session!\n"
+                            + "Please connect Basler camera to some port (USB3.0 for Basler acA2040-90uc) and check whether it is found in 'Basler camera' tab!",
+                            "No Basler camera found!", MessageBoxButton.OK);
+                    }
+                }
+            }
+
+            TP_config.imageViewer.Camera = TP_config.streamController.Camera;
+            TP_config.streamController.ActiveViewer = TP_config.imageViewer;
+
+            TP_config.streamController.Camera.Open();
+
+            
+            //Basler.Pylon.Controls.WPF.IRenderer renderer;
+            //TP_config.imageViewer.Renderer = renderer;
+            TP_config.imageViewer.SnapsToDevicePixels = true;
+                //Basler.Pylon.Controls.WPF.InteropBitmapRenderer
+
+            //TP_config.streamController.EndInit();
+            //TP_config.imageViewer.EndInit();
+
 
             TP_config.hud.time = true;
 
             KILL_allNotNeededGui();
         }
+
+
+
 
         public void KILL_allNotNeededGui()
         {
@@ -99,7 +164,9 @@ namespace EyeOut
             guiImageViewer.IsEnabled = false;
 
             // unload Basler camera gui elements not to interfere with the telepresence ones
-            guiImageViewer.Visibility = System.Windows.Visibility.Hidden;
+            //guiImageViewer.Visibility = System.Windows.Visibility.Hidden;
+            guiImageViewer.IsEnabled = false;
+            guiStreamController.IsEnabled = false;
         }
         public void START_TP_withCaution()
         {

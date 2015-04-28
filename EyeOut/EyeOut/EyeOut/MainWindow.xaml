@@ -569,11 +569,14 @@
                         
                         <!--controls the stream of video from camera-->
                         <basler:StreamController x:Name="guiStreamController"
-                                                 DockPanel.Dock="Top" Height="50"  VerticalAlignment="Top" ActiveViewer="{Binding ., ElementName=guiImageViewer}" Camera="{Binding Camera, ElementName=cameraListener}"/>
+                                                 DockPanel.Dock="Top" Height="50"  VerticalAlignment="Top" 
+                                                 ActiveViewer="{Binding ., ElementName=guiImageViewer}" 
+                                                 Camera="{Binding Camera, ElementName=cameraListener}"/>
 
                         <!--shows the stream of video from camera-->
                         <basler:ImageViewer x:Name="guiImageViewer"
-                                            DockPanel.Dock="Top" MinHeight="100" VerticalAlignment="Stretch" Camera="{Binding Camera, ElementName=cameraListener}"/>
+                                            DockPanel.Dock="Top" MinHeight="100" VerticalAlignment="Stretch" 
+                                            Camera="{Binding Camera, ElementName=cameraListener}"/>
                     </DockPanel>
                     <!--when some cammera is selected it shows which parameters can be changed-->
                     <basler:ParameterTreeControl
@@ -791,6 +794,7 @@
                             <GroupBox Header="Safety">
                                 <StackPanel>
                                     <CheckBox x:Name="cbSafe_Warning" Content="Safety warning before every telepresention" IsChecked="False"/>
+                                    <CheckBox x:Name="cbSafe_NoCameraSelectedWarning" Content="Warning when starting telepresence with no camera selected in 'Basler camera' tab - uses the first one if availible" IsChecked="False"/>
                                     <CheckBox Content="Don't change the motor angle limits inside motors" IsChecked="True" IsEnabled="False"/>
                                 </StackPanel>
                             </GroupBox>

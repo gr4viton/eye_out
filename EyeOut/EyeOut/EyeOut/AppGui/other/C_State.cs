@@ -36,8 +36,10 @@ namespace EyeOut
 
     public enum e_stateBaslerCam
     {
+        [Description("camera not used in this session as it wasn't connected on telepresention start")]
+        notConnectedOnStartOfTelepresence = 0,
         [Description("not initialized yet")]
-        initializing = 0,
+        initializing = 1,
         [Description("initialized")]
         initialized = 1,
         [Description("ready but not streaming")]

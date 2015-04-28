@@ -35,6 +35,10 @@ namespace EyeOut_Telepresence
             {
                 CAPTURE_cameraImage();
             }
+            else
+            {
+                STOP_streaming();
+            }
             if (config.READ_dataFromMotors == true)
             {
 
