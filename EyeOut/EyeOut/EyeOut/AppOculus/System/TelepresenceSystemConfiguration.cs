@@ -59,6 +59,7 @@ namespace EyeOut_Telepresence
 
         public Player player = new Player();
 
+        public System.Windows.Threading.Dispatcher guiDispatcher;
         public TelepresenceSystemConfiguration() { }
     }
 }

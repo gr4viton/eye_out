@@ -53,6 +53,7 @@ namespace EyeOut
             //INIT_Telepresence();
             INIT_about();
             INIT_keyMapping();
+
             C_State.prog = e_stateProg.initialized;
         }
 

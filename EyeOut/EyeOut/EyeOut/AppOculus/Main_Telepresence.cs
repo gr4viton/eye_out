@@ -76,17 +76,20 @@ namespace EyeOut
                 //hmdType = HMDType.DK1,
 
                 streamController = guiStreamController,
-                imageViewer = guiImageViewer
+                imageViewer = guiImageViewer,
                 //imageViewer = new ImageViewer()
                 //imageViewer = new Basler.Pylon.Controls.WPF.ImageViewer()
+                guiDispatcher = guiImageViewer.Dispatcher
             };
+            
 
+            //guiStreamController.Dispose();
 
             //TP_config.imageViewer = new ImageViewer();
             //TP_config.streamController = new StreamController();
 
-            //TP_config.streamController.BeginInit();
-            //TP_config.imageViewer.BeginInit();
+            TP_config.streamController.BeginInit();
+            TP_config.imageViewer.BeginInit();
             if (guiStreamController.Camera != null)
             {
                 // take selected camera
@@ -141,16 +144,21 @@ namespace EyeOut
             //TP_config.imageViewer.SnapsToDevicePixels = true;
                 //Basler.Pylon.Controls.WPF.InteropBitmapRenderer
 
-            //TP_config.streamController.EndInit();
-            //TP_config.imageViewer.EndInit();
 
+            TP_config.streamController.EndInit();
+            TP_config.imageViewer.EndInit();
+
+            TP_config.streamController.Camera.StreamGrabber.GrabStarted += grabStarted();
 
             TP_config.hud.time = true;
 
             KILL_allNotNeededGui();
         }
 
-
+        public EventHandler<EventArgs> grabStarted()
+        {
+            return null;
+        }
 
 
         public void KILL_allNotNeededGui()

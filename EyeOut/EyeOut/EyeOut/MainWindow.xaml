@@ -786,7 +786,7 @@
                                     </GroupBox>
                                     <GroupBox Header="Other 3d objects">
                                         <StackPanel>
-                                            <CheckBox x:Name="cbTelepresence_RoboticArm" Content="Robotic arm structure" IsChecked="True"/>
+                                            <CheckBox x:Name="cbTelepresence_RoboticArm" Content="Robotic arm structure" IsChecked="False"/>
                                         </StackPanel>
                                     </GroupBox>
                                 </StackPanel>

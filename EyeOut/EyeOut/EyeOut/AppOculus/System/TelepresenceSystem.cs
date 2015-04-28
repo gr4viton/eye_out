@@ -225,6 +225,8 @@ namespace EyeOut_Telepresence
 
             //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullBack);
             GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullFront);
+
+
             base.Initialize();
         }
         #region LoadContent

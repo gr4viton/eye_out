@@ -290,7 +290,8 @@ namespace EyeOut_Telepresence
         private void LoadContent_RoboticArm()
         {
             ra = new RoboticArm();
-            
+            ra.draw = config.draw.RoboticArm;
+
             float sizeX = 5;
             var roboticArmPartDefaultTexture = Content.Load<Texture2D>("vut_grid");
             Color[] cols = new Color[]

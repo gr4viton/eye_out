@@ -59,6 +59,7 @@ namespace EyeOut_Telepresence
         int height;
         byte[] pixelData;
 
+        object locker_pixelData = new object();
 
 
         public void CAPTURE_cameraImage_new()
@@ -90,40 +91,53 @@ namespace EyeOut_Telepresence
 
 
         public bool firstPass = true;
+        public int pixelDataSize;
         public void CAPTURE_cameraImage()
         {
-            if (firstPass == true)
+            lock (locker_pixelData)
             {
-                if (config.streamController.Camera.IsOpen == false)
+                if (firstPass == true)
                 {
-                    config.streamController.Camera.Open();
-                }
-
-                config.streamController.StartStreaming();
-
-                cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
-
-                if (config.imageViewer != null)
-                {
-                    baslerImage = config.imageViewer.CaptureImage();
-                    if (baslerImage != null)
+                    if (config.streamController.Camera.IsOpen == false)
                     {
-                        pixelData = (byte[])baslerImage.PixelData;
-                        width = config.imageViewer.CaptureImage().Width;
-                        height = config.imageViewer.CaptureImage().Height;
+                        config.streamController.Camera.Open();
+                    }
 
-                        cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
-                        firstPass = false;
+                    config.streamController.StartStreaming();
+                    //config.streamController.TakeSingleSnapshot();
+
+                    cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
+
+                    if (config.imageViewer != null)
+                    {
+                        baslerImage = config.imageViewer.CaptureImage();
+                        if (baslerImage != null)
+                        {
+                            pixelData = (byte[])baslerImage.PixelData;
+                            width = config.imageViewer.CaptureImage().Width;
+                            height = config.imageViewer.CaptureImage().Height;
+                            pixelDataSize = width*height*4;
+                            cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
+                            firstPass = false;
+                            
+                        }
                     }
                 }
-            }
-            else
-            {
-                pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
-                cameraTexture.SetData<byte>(pixelData);
+                else
+                {
+                    //config.streamController.TakeSingleSnapshot();
+                    //config.guiDispatcher.Thread.Suspend();
+                    //pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
+                    //byte[] thisPixelData = new byte[pixelDataSize];
+                    //thisPixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
+                    //((byte[])baslerImage.PixelData).CopyTo(thisPixelData, 0);
+                    cameraTexture.SetData<byte>((byte[])config.imageViewer.CaptureImage().PixelData);
+                    //cameraTexture.SetData<byte>(thisPixelData);
+                    //config.guiDispatcher.Thread.Resume();
 
+                }
+            
             }
-
         }
 
         protected virtual void Draw_BaslerCamera(GameTime _gameTime)
@@ -166,14 +180,20 @@ namespace EyeOut_Telepresence
         {
             START_streaming();
             cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
-
             //baslerImage.PixelTypeValue = Basler.Pylon.PixelType.BGR8packed;
             if (config.imageViewer != null)
             {
+
+//                config.guiDispatcher.DisableProcessing();
+                
+                //config.guiDispatcher.Thread.Abort();
                 baslerImage = config.imageViewer.CaptureImage();
+                
                 if (baslerImage != null)
                 {
-                    pixelData = (byte[])baslerImage.PixelData;
+                    //pixelData = (byte[])baslerImage.PixelData;
+                    ((byte[])baslerImage.PixelData).CopyTo(pixelData, 0);
+                    
                     width = config.imageViewer.CaptureImage().Width;
                     height = config.imageViewer.CaptureImage().Height;
 
@@ -186,6 +206,7 @@ namespace EyeOut_Telepresence
                         C_State.SET_state(e_stateBaslerCam.initialized);
                     }
                 }
+                //config.guiDispatcher.Thread.Resume();
             }
         }
         public void Constructor_BaslerCamera()
