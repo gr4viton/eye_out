@@ -61,7 +61,7 @@ namespace EyeOut_Telepresence
 
 
 
-        public void CAPTURE_cameraImage()
+        public void CAPTURE_cameraImage_new()
         {
             if (C_State.FURTHER(e_stateBaslerCam.initialized))
             {
@@ -88,6 +88,43 @@ namespace EyeOut_Telepresence
             }
         }
 
+
+        public bool firstPass = true;
+        public void CAPTURE_cameraImage()
+        {
+            if (firstPass == true)
+            {
+                if (config.streamController.Camera.IsOpen == false)
+                {
+                    config.streamController.Camera.Open();
+                }
+
+                config.streamController.StartStreaming();
+
+                cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
+
+                if (config.imageViewer != null)
+                {
+                    baslerImage = config.imageViewer.CaptureImage();
+                    if (baslerImage != null)
+                    {
+                        pixelData = (byte[])baslerImage.PixelData;
+                        width = config.imageViewer.CaptureImage().Width;
+                        height = config.imageViewer.CaptureImage().Height;
+
+                        cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
+                        firstPass = false;
+                    }
+                }
+            }
+            else
+            {
+                pixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
+                cameraTexture.SetData<byte>(pixelData);
+
+            }
+
+        }
 
         protected virtual void Draw_BaslerCamera(GameTime _gameTime)
         {
