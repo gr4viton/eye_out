@@ -78,7 +78,7 @@ namespace EyeOut_Telepresence
 
             cameraBasicEffect.Projection = eyeProjection;
             cameraBasicEffect.View = eyeView;
-            cameraBasicEffect.World = ra.cameraWorld;
+            cameraBasicEffect.World = ra.cameraSurfaceWorld;
             
 
             // Draw the primitive using BasicEffect

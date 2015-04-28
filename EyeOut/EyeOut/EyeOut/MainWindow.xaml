@@ -98,7 +98,8 @@
     </Window.CommandBindings>
 
     <Window.InputBindings>
-        <KeyBinding Command="Help" Key="T" Modifiers="Ctrl"/>
+        <KeyBinding Command="Help" Key="F5"/>
+        <!--Modifiers="Ctrl"/>-->
     </Window.InputBindings>
 
 
@@ -243,7 +244,7 @@
                                                             </GroupBox>
 
                                                             <GroupBox Header="Select which data to read">
-                                                                <ListBox SelectionMode="Single">
+                                                                <ListBox SelectionMode="Single" MouseDoubleClick="lsReadMotorDataPart_MouseDoubleClick">
                                                                     <ListBoxItem x:Name="lsiActualPostionEtc"
                                                                     Content="Actual Postion Speed Load etc."
                                                                              IsSelected="True">
@@ -688,13 +689,13 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
+                            <RowDefinition Height="0"/>
                             <RowDefinition Height="5"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <GridSplitter Grid.Row="1"  Height="5" VerticalAlignment="Stretch"/>
-                        <GroupBox Grid.Row="0" Header="Actual camera preview">
-                            <StackPanel>
+                        <GroupBox Grid.Row="0" Header="Actual camera preview" Visibility="Collapsed">
+                            <StackPanel >
                                 
 
                                 <StackPanel Visibility="Collapsed">
@@ -708,11 +709,26 @@
                                 </StackPanel>
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox  Grid.Row="2" Header="Acquisition data">
-                            <ListBox>
-                                <ListBoxItem Content="Oculus Acc data"/>
-                                <ListBoxItem Content="Motor data"/>
-                            </ListBox>
+                        <GroupBox Header="Information" Grid.Row="2">
+                            <StackPanel>
+                                <GroupBox Header="Good to know">
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="Wrap" ><Run Text="You are advised not to touch any GUI controls when the telepresence is started"/></TextBlock>
+                                        <TextBlock TextWrapping="Wrap" ><Run Text="Altough all controlls are fully functional (but the timers are stopped)"/></TextBlock>
+                                        <TextBlock TextWrapping="Wrap" ><Run Text=" -> so if you want to setup the motor PUNCH, COMPLIANCE Margin and Slope - you are free to do so"/></TextBlock>
+                                        <TextBlock TextWrapping="Wrap" ><Run Text=" -> and if the reading data from motors is active in telepresence you can also see the read values in the shadow register"/></TextBlock>
+                                        <TextBlock TextWrapping="Wrap" ><Run Text=" -> you can read parts register by doubleclicking the 'Select which data to read' listbox item "/></TextBlock>
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header="Controls">
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="Wrap" ><Run Text="[F1] shows the help menu"/></TextBlock>
+                                        <TextBlock TextWrapping="Wrap" ><Run Text="[F2] shows FPS and tool strip"/></TextBlock>
+                                        <TextBlock TextWrapping="Wrap" ><Run Text="[R] reset position and orientation"/></TextBlock>
+                                        <TextBlock TextWrapping="Wrap" ><Run Text="[Esc] Ends the telepresence"/></TextBlock>
+                                    </StackPanel>
+                                </GroupBox>
+                            </StackPanel>
                         </GroupBox>
                     </Grid>
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
@@ -727,13 +743,6 @@
                         </GroupBox.Resources>
 
                         <StackPanel>
-                            <GroupBox Header="HUD">
-                                <StackPanel>
-                                    <CheckBox x:Name="cbHudTime" Content="Time" IsEnabled="False"/>
-                                    <CheckBox x:Name="cbHudCompas" Content="Radar" IsEnabled="False"/>
-                                    <CheckBox x:Name="cbHudMotorPosture" Content="Motor posture" IsEnabled="False"/>
-                                </StackPanel>
-                            </GroupBox>
 
                             <GroupBox Header="Camera Data">
                                 <StackPanel>
@@ -748,17 +757,35 @@
                                 </StackPanel>
                             </GroupBox>
 
-                            <GroupBox Header="Gaze and Posture mark visibility">
+                            <GroupBox Header="Scene drawing">
                                 <StackPanel>
-                                    <CheckBox x:Name="cbDrawOculusGaze" Content="Oculus gaze" IsChecked="True"/>
-                                    <CheckBox x:Name="cbDrawMotorPostureSent" Content="Posture sent to motors" IsChecked="True"/>
-                                    <CheckBox x:Name="cbDrawMotorPostureSeen" Content="Motor posture read-out" IsChecked="True"/>
-                                </StackPanel>
-                            </GroupBox>
-                            <GroupBox Header="Anti-sickness">
-                                <StackPanel>
-                                    <CheckBox x:Name="cbTelepresence_Skybox" Content="Skybox - scene background" IsChecked="True"/>
-                                    <CheckBox Content="Virtual Nose" IsEnabled="False"/>
+                                    <GroupBox Header="HUD">
+                                        <StackPanel>
+                                            <CheckBox x:Name="cbHudTime" Content="Time" IsEnabled="False"/>
+                                            <CheckBox x:Name="cbHudCompas" Content="Radar" IsEnabled="False"/>
+                                            <CheckBox x:Name="cbHudMotorPosture" Content="Motor posture" IsEnabled="False"/>
+                                            <CheckBox x:Name="cbHudHelpMenu" Content="Help menu" IsChecked="False"/>
+                                            <CheckBox x:Name="cbHudToolStrip" Content="Tool strip" IsChecked="True"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Gaze and Posture mark visibility">
+                                        <StackPanel>
+                                            <CheckBox x:Name="cbDrawOculusGaze" Content="Oculus gaze" IsEnabled="False" IsChecked="False"/>
+                                            <CheckBox x:Name="cbDrawMotorPostureSent" Content="Posture sent to motors" IsEnabled="False" IsChecked="False"/>
+                                            <CheckBox x:Name="cbDrawMotorPostureSeen" Content="Motor posture read-out" IsEnabled="False" IsChecked="False"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Anti-sickness">
+                                        <StackPanel>
+                                            <CheckBox x:Name="cbTelepresence_SkySurface" Content="Skybox - scene background" IsChecked="True"/>
+                                            <CheckBox Content="Virtual Nose" IsEnabled="False"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Other 3d objects">
+                                        <StackPanel>
+                                            <CheckBox x:Name="cbTelepresence_RoboticArm" Content="Robotic arm structure" IsChecked="True"/>
+                                        </StackPanel>
+                                    </GroupBox>
                                 </StackPanel>
                             </GroupBox>
                             <GroupBox Header="Safety">

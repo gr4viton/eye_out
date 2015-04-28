@@ -107,7 +107,7 @@ namespace EyeOut_Telepresence
             int diff = 0*152; // for DK2
             int x = 620 + eye * diff, y = 820; // for DK1
 
-            if (config.SHOW_helpText == true)
+            if (config.hud.helpMenu == true)
             {
                 fontSpriteBatch.Draw(colorTexture, new SharpDX.Rectangle(x, y, (int)dim.X, (int)dim.Y), SharpDX.Color.White);
 
@@ -123,8 +123,16 @@ namespace EyeOut_Telepresence
                 fpsClock.Restart();
             }
 
-            fontSpriteBatch.DrawString(fontDefault, fpsText, new Vector2(x, y + 200), Color.Black);
+            if (config.hud.toolStrip == true)
+            {
+                fontSpriteBatch.DrawString(fontDefault, fpsText, new Vector2(x, y - 50), Color.White);
+            }
 
+            // toolstrip info - zkratky vysvětleni ikon
+            // keybindings
+            // compas
+            // statuses
+            
             fontSpriteBatch.End();
         }
 

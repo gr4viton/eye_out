@@ -48,20 +48,28 @@ namespace EyeOut
 
                 WRITE_dataToMotors = cbWriteMotorData.IsChecked.Value,
                 READ_dataFromMotors = cbReadMotorData.IsChecked.Value,
-                gazeMark = new C_DrawGazeMark()
-                {
-                    Oculus = (bool)cbDrawOculusGaze.IsChecked,
-                    MotorPostureSent = cbDrawMotorPostureSent.IsChecked.Value,
-                    MotorPostureSeen = cbDrawMotorPostureSeen.IsChecked.Value,
-                },
                 hud = new C_HUD()
                 {
                     time = cbHudTime.IsChecked.Value,
                     compas = cbHudCompas.IsChecked.Value,
-                    motorPosture = cbHudMotorPosture.IsChecked.Value
+                    motorPosture = cbHudMotorPosture.IsChecked.Value,
+
+                    helpMenu = cbHudHelpMenu.IsChecked.Value,                    
+                    toolStrip = cbHudToolStrip.IsChecked.Value,                    
+
+                    gazeMark = new C_gazeMark()
+                    {
+                        Oculus = cbDrawOculusGaze.IsChecked.Value,
+                        MotorPostureSent = cbDrawMotorPostureSent.IsChecked.Value,
+                        MotorPostureSeen = cbDrawMotorPostureSeen.IsChecked.Value,
+                    }
                 },
 
-                drawSkySurface = cbTelepresence_Skybox.IsChecked.Value,
+                draw = new C_SceneDraw()
+                {
+                    SkySurface = cbTelepresence_SkySurface.IsChecked.Value,
+                    RoboticArm = cbTelepresence_RoboticArm.IsChecked.Value
+                },
 
                 //hmdType = HMDType.DK1,
 
@@ -88,6 +96,10 @@ namespace EyeOut
             }
             timMotorDataRead.Stop();
             timSim.Stop();
+            guiImageViewer.IsEnabled = false;
+
+            // unload Basler camera gui elements not to interfere with the telepresence ones
+            guiImageViewer.Visibility = System.Windows.Visibility.Hidden;
         }
         public void START_TP_withCaution()
         {

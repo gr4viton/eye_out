@@ -90,23 +90,27 @@ namespace EyeOut_Telepresence
         //}
     }
 
-
+    public enum e_positionLock 
+    {
+        cameraSensor = 0,
+        desk = 1
+    }
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     public class Player : ICloneable // based on Rastertek Terrain Tutorials in SharpDX 
     {
-        #region Structures / Enums
-        private enum Movement
-        {
-            Forward,
-            Backward,
-            Upward,
-            Downward,
-            SidestepLeft,
-            SidestepRight,
-            LeftTurn,
-            RightTurn,
-        }
-        #endregion
+        //#region Structures / Enums
+        //private enum Movement
+        //{
+        //    Forward,
+        //    Backward,
+        //    Upward,
+        //    Downward,
+        //    SidestepLeft,
+        //    SidestepRight,
+        //    LeftTurn,
+        //    RightTurn,
+        //}
+        //#endregion
         #region Properties / Variables
         public float FrameTime { get; set; }
 
@@ -115,6 +119,10 @@ namespace EyeOut_Telepresence
         public PostureF body; // default position and look in scene - for north setting 
 
         //public float[] hmdYawPitchRoll;
+        public bool PositionLockActive = false; 
+        // if true the scout position is always adjusted to the actualPosition updated from outside 
+        // - also the internal control of scout position by user is disabled
+        public e_positionLock PositionLock;
 
         public Matrix Rotation
         {
@@ -234,7 +242,10 @@ namespace EyeOut_Telepresence
 
         public void MoveAbsolute(float speed, Vector3 absoluteVector)
         {
-            scout.Position += speed * absoluteVector * new Vector3(1, 1, 1);
+            if (PositionLockActive == false)
+            {
+                scout.Position += speed * absoluteVector; // *new Vector3(1, 1, 1);
+            }
         }
 
         public void MoveForward(bool keydown)

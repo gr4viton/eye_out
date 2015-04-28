@@ -112,7 +112,6 @@ namespace EyeOut_Telepresence
 
             Constructor_Sound();
 
-
             // Setup the relative directory to the executable directory 
             // for loading contents with the ContentManager
             Content.RootDirectory = @"Content\Demo";
@@ -232,7 +231,7 @@ namespace EyeOut_Telepresence
         protected override void LoadContent()
         {
             LoadContent_Sprite();
-            LoadContent_Models();
+            LoadContent_Airplane();
             LoadContent_Font();
             LoadContent_Sound();
             LoadContent_BaslerCamera();
@@ -244,7 +243,7 @@ namespace EyeOut_Telepresence
             tiles[4].PlayDelegate();
         }
 
-        void LoadContent_Models()
+        void LoadContent_Airplane()
         {
             // Load a 3D model
             // The [Ship.fbx] file is defined with the build action [ToolkitModel] in the project
@@ -252,38 +251,6 @@ namespace EyeOut_Telepresence
 
             // Enable default lighting on model.
             BasicEffect.EnableDefaultLighting(modelAirplane, true);
-
-
-
-            //// Creates a basic effect
-            //basicEffect = ToDisposeContent(new BasicEffect(GraphicsDevice)
-            //{
-            //    View = Matrix.LookAtRH(new Vector3(0, 0, 5), new Vector3(0, 0, 0), Vector3.UnitY),
-            //    Projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 1000.0f),
-            //    World = Matrix.Identity
-            //});
-
-            //basicEffect.PreferPerPixelLighting = true;
-            //basicEffect.EnableDefaultLighting();
-
-            //// Creates all primitives
-            //primitives = new List<GeometricPrimitive>
-            //                 {
-            //                     ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice)),
-            //                     ToDisposeContent(GeometricPrimitive.Cube.New(GraphicsDevice)),
-            //                     ToDisposeContent(GeometricPrimitive.Sphere.New(GraphicsDevice)),
-            //                     ToDisposeContent(GeometricPrimitive.GeoSphere.New(GraphicsDevice)),
-            //                     ToDisposeContent(GeometricPrimitive.Torus.New(GraphicsDevice)),
-            //                     ToDisposeContent(GeometricPrimitive.Cylinder.New(GraphicsDevice)),
-            //                     ToDisposeContent(GeometricPrimitive.Teapot.New(GraphicsDevice))
-            //                 };
-
-
-            //// Load the texture
-            ////cameraTexture = Content.Load<Texture2D>("speaker");
-            //primitiveTexture = Content.Load<Texture2D>("speaker");
-            //basicEffect.Texture = primitiveTexture;
-            //basicEffect.TextureEnabled = true;
         }
 
         #endregion LoadContent
@@ -298,14 +265,24 @@ namespace EyeOut_Telepresence
             eyeView = Matrix.LookAtRH(new Vector3(0.0f, 0.0f, 7.0f), new Vector3(0, 0.0f, 0), Vector3.UnitY);
             eyeProjection = Matrix.PerspectiveFovRH(0.9f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 1000.0f);
 
-            
             Update_Sound();
             Update_Input();
+            Update_RoboticArm();
+            Update_ScoutPosition();
         }
-
-        
         #endregion Update
 
+
+        public void Update_ScoutPosition()
+        {
+            if (config.player.PositionLockActive)
+            {
+                if (config.player.PositionLock == e_positionLock.cameraSensor)
+                {
+                    config.player.scout.Position = ra[e_RoboticArmPart.t_DE].effect.World.TranslationVector;
+                }
+            }
+        }
 
         protected override void Dispose(bool disposeManagedResources)
         {

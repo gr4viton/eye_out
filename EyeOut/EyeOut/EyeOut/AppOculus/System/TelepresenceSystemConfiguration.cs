@@ -19,34 +19,41 @@ namespace EyeOut_Telepresence
         doubl value
     }
      */
-    public class C_HUD
-    {
-        public bool time;
-        public bool compas;
-        public bool motorPosture;
-        public C_HUD() { }
-    }
-
-    public class C_DrawGazeMark
+    public class C_gazeMark
     {
         public bool Oculus = true;
         public bool MotorPostureSent = true;
         public bool MotorPostureSeen = true;
     }
 
+    public class C_HUD
+    {
+        public bool time;
+        public bool compas;
+        public bool motorPosture;
+
+        public bool helpMenu = true;
+        public bool toolStrip = true;
+        public C_gazeMark gazeMark;
+        public C_HUD() { }
+    }
+
+    public class C_SceneDraw
+    {
+        public bool SkySurface = true;
+        public bool RoboticArm = true;
+    }
+
     // telepresence configurations
     public class TelepresenceSystemConfiguration
     {
         public C_HUD hud;
+        public C_SceneDraw draw;
         public bool WRITE_dataToMotors = false;
         public bool READ_dataFromMotors = false;
-        public bool SHOW_helpText = true;
-        public bool drawSkySurface = true;
 
         public bool ReadCameraStream = false;
-        public C_DrawGazeMark gazeMark;
 
-        
         public ImageViewer imageViewer;
         public StreamController streamController;
 

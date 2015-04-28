@@ -140,18 +140,23 @@ namespace EyeOut_Telepresence
             if (keyboardState.IsKeyPressed(Keys.F1))
             {
                 //config.READ_dataFromMotors ^= true; // toggle
-                config.SHOW_helpText = !config.SHOW_helpText;
+                config.hud.helpMenu ^= true;
             }
-
+            if (keyboardState.IsKeyPressed(Keys.F2))
+            {
+                //config.READ_dataFromMotors ^= true; // toggle
+                config.hud.toolStrip ^= true;
+            }
+            
             if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Control))
             {
                 //config.READ_dataFromMotors ^= true; // toggle
-                config.WRITE_dataToMotors = !config.WRITE_dataToMotors;
+                config.WRITE_dataToMotors ^= true;
             }
             if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Shift))
             {
                 //config.READ_dataFromMotors ^= true; // toggle
-                config.READ_dataFromMotors = !config.READ_dataFromMotors;
+                config.READ_dataFromMotors ^= true;
             }
 
             if (keyboardState.IsKeyPressed(Keys.R) && keyboardState.IsKeyDown(Keys.Control))
@@ -167,11 +172,32 @@ namespace EyeOut_Telepresence
                 config.player.ResetPositionAndBodyYaw();
             }
 
+            if (keyboardState.IsKeyPressed(Keys.F))
+            {
+                config.draw.RoboticArm ^= true;
+                ra.draw = config.draw.RoboticArm;
+            }
 
             if (keyboardState.IsKeyPressed(Keys.C) && keyboardState.IsKeyDown(Keys.Shift))
             {
-                config.ReadCameraStream = !config.ReadCameraStream;
+                config.ReadCameraStream ^= true;
             }
+
+
+            if (keyboardState.IsKeyPressed(Keys.D1))
+            {
+                config.player.PositionLock = e_positionLock.cameraSensor;
+            }
+
+            if (keyboardState.IsKeyPressed(Keys.D2))
+            {
+                config.player.PositionLock = e_positionLock.desk;
+            }
+            if (keyboardState.IsKeyPressed(Keys.Tab))
+            {
+                config.player.PositionLockActive ^= true;
+            }
+
 
             HUD.AppendLine(string.Format(
                 "W{0}|A{1}|S{2}",
@@ -194,7 +220,7 @@ namespace EyeOut_Telepresence
             
             if (keyboardState.IsKeyPressed(Keys.J) && keyboardState.IsKeyDown(Keys.Control))
             {
-                config.drawSkySurface = !config.drawSkySurface;
+                config.draw.SkySurface ^= true;
             }
 
 

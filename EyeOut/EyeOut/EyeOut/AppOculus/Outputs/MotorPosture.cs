@@ -30,6 +30,7 @@ namespace EyeOut_Telepresence
         public void CONTROL_motors()
         {
             POSITION_motors();
+
             if (config.ReadCameraStream == true)
             {
                 CAPTURE_cameraImage();
@@ -75,46 +76,45 @@ namespace EyeOut_Telepresence
                 ));
 
             HUD.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
-            HUD.AppendLine(string.Format("Motor: [^M]Control={0}|[+M]Read={1}", config.WRITE_dataToMotors, config.READ_dataFromMotors));
+            HUD.AppendLine(string.Format("Control: [^M]otor={0}|", config.WRITE_dataToMotors));
+            HUD.AppendLine(string.Format("Read: [+M]otor={0}|[+C]amera={1}", config.READ_dataFromMotors, config.ReadCameraStream));
+            HUD.AppendLine(string.Format("PositionLock: [Tab]={0}|[numbers]={1}:{2}", 
+                config.player.PositionLockActive, 
+                (int)config.player.PositionLock, config.player.PositionLock
+                ));
+            HUD.AppendLine("");
 
             Vector3 pos;
             Vector3 rot;
+
             pos = config.player.scout.Position;
-            HUD.AppendLine(string.Format("scout position [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+            HUD.AppendLine(string.Format("scout [XYZ]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
                 pos[0], pos[1], pos[2]
                 ));
-
-            rot = config.player.scout.YawPitchRoll;
-            HUD.AppendLine(string.Format("scout YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                rot[0], rot[1], rot[2]
-                ));
-
-            pos = config.player.hmd.Position;
-            HUD.AppendLine(string.Format("hmd position [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                pos[0], pos[1], pos[2]
-                ));
-
-            rot = config.player.hmd.YawPitchRoll;
-            HUD.AppendLine(string.Format("hmd YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                rot[0], rot[1], rot[2]
-                ));
-
-
-            pos = config.player.Position;
-            HUD.AppendLine(string.Format("Player position [Fwd|Up|Right]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                pos[0],pos[1],pos[2]
-                ));
-            rot = config.player.YawPitchRoll;
-            HUD.AppendLine(string.Format("Player YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
-                rot[0], rot[1], rot[2]
-                ));
-
-
-
             rot = config.player.body.YawPitchRoll;
             HUD.AppendLine(string.Format("body YawPitchRoll [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
                 rot[0], rot[1], rot[2]
                 ));
+
+            pos = config.player.hmd.Position;
+            HUD.AppendLine(string.Format("hmd [XYZ]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                pos[0], pos[1], pos[2]
+                ));
+            rot = config.player.hmd.YawPitchRoll;
+            HUD.AppendLine(string.Format("hmd [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                rot[0], rot[1], rot[2]
+                ));
+
+            pos = config.player.Position;
+            HUD.AppendLine(string.Format("Player [XYZ]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                pos[0],pos[1],pos[2]
+                ));
+            rot = config.player.YawPitchRoll;
+            HUD.AppendLine(string.Format("Player [Yaw|Pitch|Roll]: [{0,7:0.00}|{1,7:0.00}|{2,7:0.00}]",
+                rot[0], rot[1], rot[2]
+                ));
+
+
 
 
             //str.Append(string.Format("cam position:{0}|{1}, keyboardStateW={2}", cameraSurfaceX, cameraSurfaceY, keyboardState.IsKeyPressed(Keys.U)));

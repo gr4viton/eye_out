@@ -79,7 +79,8 @@ namespace EyeOut_Telepresence
             EyeRenderDesc renderDesc = eyeRenderDesc[(int)eye];
             Rect renderViewport = eyeRenderViewport[(int)eye];
 
-            UpdateFromHmd(eye);
+            UpdateFromHmd(eye); 
+
             renderPose[(int)eye] = config.player.hmd.PoseF;
 
             // Calculate view matrix                
@@ -129,8 +130,9 @@ namespace EyeOut_Telepresence
             }
             EndDraw_Font();
 
-            HUD.AppendLine("hmd latency = " + hmd.GetMeasuredLatency());
             CONTROL_motors();
+
+            HUD.AppendLine("hmd latency = " + hmd.GetMeasuredLatency());
         }
 
         #endregion Draw

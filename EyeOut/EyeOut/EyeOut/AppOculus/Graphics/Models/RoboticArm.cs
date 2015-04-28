@@ -89,6 +89,15 @@ namespace EyeOut_Telepresence
                 effect.Texture = texture;
             }
         }
+        public void Draw(Matrix view, Matrix projection)
+        {
+            if (draw)
+            {
+                effect.View = view;
+                effect.Projection = projection;
+                anchorBody.Draw(effect);
+            }
+        }
     }
 
     class RoboticArm
@@ -98,7 +107,9 @@ namespace EyeOut_Telepresence
         public Matrix baseProjection;
         public Matrix baseView;
         public Matrix baseWorld; // first node = root
-        public Matrix cameraWorld; // the last node = camera image surface
+        public Matrix cameraSurfaceWorld; // the last node = camera image surface
+
+        public bool draw = true;
 
         // height in [mm]
         float y_AB = 140f; // y_Desk - RollAxis
@@ -163,7 +174,7 @@ namespace EyeOut_Telepresence
             {
                 root = p.effect.World = p.transformation * root;
             }
-            cameraWorld = root;
+            cameraSurfaceWorld = root;
         }
 
         public void UPDATE_matrices(Matrix eyeProjection, Matrix eyeView, Matrix eyeWorld)
@@ -175,11 +186,12 @@ namespace EyeOut_Telepresence
 
         public void Draw()
         {
-            foreach (RoboticArmPart p in parts)
+            if (draw)
             {
-                p.effect.View = baseView;
-                p.effect.Projection = baseProjection;
-                p.anchorBody.Draw(p.effect);
+                foreach (RoboticArmPart p in parts)
+                {
+                    p.Draw(baseView, baseProjection);
+                }
             }
             //float scaling = 0.005f;
             //modelAirplane.Draw(GraphicsDevice, Matrix.Scaling(0.0001f / scaling) * eyeWorld, eyeView, eyeProjection);
@@ -193,9 +205,8 @@ namespace EyeOut_Telepresence
     {
         RoboticArm ra;
 
-        public void Draw_RoboticArm()
+        public void Update_RoboticArm()
         {
-
             ra.UPDATE_matrices(eyeProjection, eyeView, eyeWorld);
 
             ra.UPDATE_PartRotationAndWorldMatrix(
@@ -209,6 +220,10 @@ namespace EyeOut_Telepresence
                 (float)MainWindow.Ms.Pitch.angleSeen.Dec_FromDefault,
                 (float)MainWindow.Ms.Roll.angleSeen.Dec_FromDefault
                 ));
+        }
+        public void Draw_RoboticArm()
+        {
+
 
             ra.Draw();
         }
@@ -217,7 +232,7 @@ namespace EyeOut_Telepresence
         {
             ra = new RoboticArm();
             
-            float sizeX = 50;
+            float sizeX = 10;
             var roboticArmPartDefaultTexture = Content.Load<Texture2D>("vut_grid");
             Color[] cols = new Color[]
             {               

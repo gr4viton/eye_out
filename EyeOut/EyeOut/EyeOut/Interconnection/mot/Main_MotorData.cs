@@ -83,11 +83,21 @@ namespace EyeOut
         }
         private void timMotorDataRefresh_Tick(object sender, EventArgs e)
         {
+            READ_selectedData();
+        }
+
+        private void lsReadMotorDataPart_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            READ_selectedData();
+        }
+
+        private void READ_selectedData()
+        {
             if (C_State.FURTHER(e_stateProg.initialized))
             {
-                foreach( int index in lsReadPresentPositionMotors.SelectedItems)
+                foreach (int index in lsReadPresentPositionMotors.SelectedItems)
                 {
-                    if( lsiWholeRegister.IsSelected == true )
+                    if (lsiWholeRegister.IsSelected == true)
                     {
                         Ms[index].READ_wholeRegister();
                     }

@@ -41,7 +41,7 @@ namespace EyeOut_Telepresence
         protected void Draw_SkySurface(GameTime _gameTime)
         {
 
-            if (config.drawSkySurface == true)
+            if (config.draw.SkySurface == true)
             {
                 var world = Matrix.Scaling(3000f)
                             * Matrix.RotationY(0)
