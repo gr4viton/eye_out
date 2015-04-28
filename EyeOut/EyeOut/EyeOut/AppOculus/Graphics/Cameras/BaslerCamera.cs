@@ -72,7 +72,14 @@ namespace EyeOut_Telepresence
                 if (baslerImage != null)
                 {
                     pixelData = (byte[])baslerImage.PixelData;
-                    cameraTexture.SetData<byte>(pixelData);
+                    if (pixelData.Length != cameraTexture.Width * cameraTexture.Height * 4)
+                    {
+                        SETUP_BaslerCamera();
+                    }
+                    else
+                    {
+                        cameraTexture.SetData<byte>(pixelData);
+                    }
                 }
             }
             else

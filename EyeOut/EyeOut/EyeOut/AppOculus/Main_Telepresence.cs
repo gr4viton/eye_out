@@ -138,7 +138,7 @@ namespace EyeOut
             
             //Basler.Pylon.Controls.WPF.IRenderer renderer;
             //TP_config.imageViewer.Renderer = renderer;
-            TP_config.imageViewer.SnapsToDevicePixels = true;
+            //TP_config.imageViewer.SnapsToDevicePixels = true;
                 //Basler.Pylon.Controls.WPF.InteropBitmapRenderer
 
             //TP_config.streamController.EndInit();
@@ -161,7 +161,6 @@ namespace EyeOut
             }
             timMotorDataRead.Stop();
             timSim.Stop();
-            guiImageViewer.IsEnabled = false;
 
             // unload Basler camera gui elements not to interfere with the telepresence ones
             //guiImageViewer.Visibility = System.Windows.Visibility.Hidden;
