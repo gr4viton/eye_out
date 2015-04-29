@@ -81,8 +81,14 @@ namespace EyeOut_Telepresence
             foreach (C_Motor mot in MainWindow.Ms)
             {
                 mot.angleWanted.Dec_FromDefault = C_Value.CONV_rad2deg(ra[mot.rotMotor]);
-                mot.speedWanted.Dec = mot.speedWanted.DecMax;
-                //mot.speedWanted.Dec = C_DynVal.SET_MOV_SPEED_NOCONTROL;
+                if (config.motorSpeedControl == true)
+                {
+                    mot.speedWanted.Dec = mot.speedWanted.DecMax;
+                }
+                else
+                {
+                    mot.speedWanted.Dec = C_DynVal.SET_MOV_SPEED_NOCONTROL;
+                }
             }
         }
 

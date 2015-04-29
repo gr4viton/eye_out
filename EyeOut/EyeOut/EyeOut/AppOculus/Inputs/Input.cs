@@ -165,10 +165,14 @@ namespace EyeOut_Telepresence
                 //config.READ_dataFromMotors ^= true; // toggle
                 config.WRITE_dataToMotors ^= true;
             }
-            if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Shift))
+            else if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Shift))
             {
                 //config.READ_dataFromMotors ^= true; // toggle
                 config.READ_dataFromMotors ^= true;
+            }
+            else if (keyboardState.IsKeyPressed(Keys.M))
+            {
+                config.motorSpeedControl ^= true;
             }
 
             if (keyboardState.IsKeyPressed(Keys.R) && keyboardState.IsKeyDown(Keys.Control))

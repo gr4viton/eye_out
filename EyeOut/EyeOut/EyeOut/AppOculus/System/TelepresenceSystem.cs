@@ -315,6 +315,8 @@ namespace EyeOut_Telepresence
                 C_State.mot,
                 C_State.Spi
                 ));
+            HUD.AppendLine(string.Format("MotorSpeedControl: [M]{0}", config.motorSpeedControl)); 
+            
 
             // may be in config constructor
             string name = "No camera connected - please connect the camera and restart telepresence!";
@@ -330,12 +332,12 @@ namespace EyeOut_Telepresence
                     ));
                 HUD.AppendLine(string.Format(
                     "ImageViewer: [Init={0}]",
-                    config.imageViewer.IsInitialized
+                    config.ImageViewer.IsInitialized
                     ));
                 HUD.AppendLine(string.Format(
                     "Camera: [Connected={0}], [Open={1}], [Grabbing={2}]",
-                    config.imageViewer.Camera.IsConnected, config.imageViewer.Camera.IsOpen, 
-                    config.imageViewer.Camera.StreamGrabber.IsGrabbing
+                    config.ImageViewer.Camera.IsConnected, config.ImageViewer.Camera.IsOpen, 
+                    config.ImageViewer.Camera.StreamGrabber.IsGrabbing
                     ));
             }
 

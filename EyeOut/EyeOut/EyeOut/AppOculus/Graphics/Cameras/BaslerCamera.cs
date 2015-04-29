@@ -27,6 +27,9 @@ using ToolkitImage = SharpDX.Toolkit.Graphics.Image;
 using StreamController = Basler.Pylon.Controls.WPF.StreamController;
 using ImageViewer = Basler.Pylon.Controls.WPF.ImageViewer;
 
+using System.Threading;
+
+
 namespace EyeOut_Telepresence
 {
     // Use these namespaces here to override SharpDX.Direct3D11
@@ -34,6 +37,34 @@ namespace EyeOut_Telepresence
     using SharpDX.Toolkit.Graphics;
     using SharpDX.DXGI;
 
+
+
+    public class StreamControllerThreadSafe : StreamController
+    {
+
+    }
+
+    public class BaslerCameraInterface
+    {
+    //    public override void 
+        Basler.Pylon.Camera cam;
+        //Basler.Pylon.CameraFinder camFinder;
+        StreamController strc;
+        //Basler.Pylon.
+
+        public BaslerCameraInterface()
+        {
+            //strc.Camera.StreamGrabber.GrabStopping
+            //camFinder = new Basler.Pylon.CameraFinder.
+        }
+    }
+
+    //public class grabResult : IGrab
+    //public class ImageViewerThreadSafe : ImageViewer
+    //{
+
+    //    public override void 
+    //}
     /// <summary>
     /// Basler camera part
     /// </summary>
@@ -41,8 +72,8 @@ namespace EyeOut_Telepresence
     {
         
         //private List<GeometricPrimitive> primitives;
-        StreamController streamController;
-        ImageViewer imageViewer;
+        //StreamController streamController;
+        //ImageViewer imageViewer;
 
         Basler.Pylon.IImage baslerImage;
         //ToolkitImage cameraImage;
@@ -50,7 +81,27 @@ namespace EyeOut_Telepresence
         //PixelFormat cameraPixelFormat = PixelFormat.R8;
         private BasicEffect cameraBasicEffect;
 
+        private object locker_cameraTexture = new object();
+        
         private Texture2D cameraTexture;
+        private Texture2D CameraTexture
+        {
+            get
+            {
+                lock (locker_cameraTexture)
+                {
+                    return cameraTexture;
+                }
+            }
+            set
+            {
+                lock (locker_cameraTexture)
+                {
+                    cameraTexture = value;
+                }
+            }
+        }
+
         private GeometricPrimitive cameraSurface;
 
         
@@ -62,39 +113,62 @@ namespace EyeOut_Telepresence
         object locker_pixelData = new object();
 
 
-        public void CAPTURE_cameraImage_new()
-        {
-            if (C_State.FURTHER(e_stateBaslerCam.initialized))
-            {
-                START_streaming();
-                //baslerImage = config.streamController.Camera.StreamGrabber();
-                baslerImage = config.imageViewer.CaptureImage();
+        //public void CAPTURE_cameraImage_new()
+        //{
+        //    if (C_State.FURTHER(e_stateBaslerCam.initialized))
+        //    {
+        //        START_streaming();
+        //        //baslerImage = config.streamController.Camera.StreamGrabber();
+        //        baslerImage = config.ImageViewer.CaptureImage();
 
-                if (baslerImage != null)
-                {
-                    pixelData = (byte[])baslerImage.PixelData;
-                    if (pixelData.Length != cameraTexture.Width * cameraTexture.Height * 4)
-                    {
-                        SETUP_BaslerCamera();
-                    }
-                    else
-                    {
-                        cameraTexture.SetData<byte>(pixelData);
-                    }
-                }
-            }
-            else
-            {
-                SETUP_BaslerCamera();
-            }
-        }
+        //        if (baslerImage != null)
+        //        {
+        //            pixelData = (byte[])baslerImage.PixelData;
+        //            if (pixelData.Length != CameraTexture.Width * CameraTexture.Height * 4)
+        //            {
+        //                SETUP_BaslerCamera();
+        //            }
+        //            else
+        //            {
+        //                CameraTexture.SetData<byte>(pixelData);
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        SETUP_BaslerCamera();
+        //    }
+        //}
 
+        
 
         public bool firstPass = true;
         public int pixelDataSize;
         public void CAPTURE_cameraImage()
         {
+            LOG("CAPTURE_cameraImage start");
+
+            //if( config.streamController.Camera.StreamGrabber.IsGrabbing
+
+            //      This method throws exceptions on timeout Basler.Pylon.TimeoutHandling.
+            //     Grabbing single images using a software trigger (see Basler.Pylon.Configuration.SoftwareTrigger(System.Object,System.EventArgs))
+            //     is recommended if you want to maximize frame rate.  This is because the overhead
+            //     per grabbed image is reduced compared to single frame acquisition (see Basler.Pylon.Configuration.AcquireSingleFrame(System.Object,System.EventArgs)).
+            //      The grabbing can be started using Basler.Pylon.IStreamGrabber.Start(Basler.Pylon.GrabStrategy,Basler.Pylon.GrabLoop).
+            //      Images are grabbed using the Basler.Pylon.ICamera.WaitForFrameTriggerReady(System.Int32,Basler.Pylon.TimeoutHandling),
+            //     Basler.Pylon.ICamera.ExecuteSoftwareTrigger(), and Basler.Pylon.IStreamGrabber.RetrieveResult(System.Int32,Basler.Pylon.TimeoutHandling)
+            //     methods instead of using Basler.Pylon.IStreamGrabber.GrabOne(System.Int32).
+            //      Grabbing can be stopped using Basler.Pylon.IStreamGrabber.Stop() when done.
+
+            //config.streamController.StartStreaming();
+
+            //config.ImageViewer.Camera.WaitForFrameTriggerReady(1, Basler.Pylon.TimeoutHandling.Return);
+            //config.ImageViewer.Camera.ExecuteSoftwareTrigger();
+            //Basler.Pylon.IGrabResult res = config.ImageViewer.Camera.StreamGrabber.RetrieveResult(1, Basler.Pylon.TimeoutHandling.Return); // another stream is waiting for the result
+            //HUD.AppendLine(res.PixelTypeValue.ToString());
+
             lock (locker_pixelData)
+            //if(false)
             {
                 if (firstPass == true)
                 {
@@ -103,24 +177,35 @@ namespace EyeOut_Telepresence
                         config.streamController.Camera.Open();
                     }
 
+                    //config.streamController.Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped;
+                    //config.streamController.Camera.StreamGrabber.GrabStarting += StreamGrabber_GrabStarting;
+                    //config.streamController.Camera.StreamGrabber.GrabStarted += StreamGrabber_GrabStarted;
+
                     config.streamController.StartStreaming();
                     //config.streamController.TakeSingleSnapshot();
 
                     cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
 
-                    if (config.imageViewer != null)
+                    if (config.ImageViewer != null)
                     {
-                        baslerImage = config.imageViewer.CaptureImage();
-                        if (baslerImage != null)
+                        Basler.Pylon.IImage thisBaslerImage = config.ImageViewer.CaptureImage();
+                        //config.imageViewer.Visibility = System.Windows.Visibility.Hidden;
+                        if (thisBaslerImage != null)
                         {
-                            pixelData = (byte[])baslerImage.PixelData;
-                            width = config.imageViewer.CaptureImage().Width;
-                            height = config.imageViewer.CaptureImage().Height;
+                            pixelData = (byte[])thisBaslerImage.PixelData;
+                            width = config.ImageViewer.CaptureImage().Width;
+                            height = config.ImageViewer.CaptureImage().Height;
                             pixelDataSize = width*height*4;
-                            cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
-                            firstPass = false;
+                            CameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, 
+                                
+                                TextureFlags.ShaderResource, ResourceUsage.Dynamic);
+
                             
+                            firstPass = false;
+
                         }
+                        //config.streamController
+                        //config.imageViewer.Visibility = System.Windows.Visibility.Visible;
                     }
                 }
                 else
@@ -131,18 +216,80 @@ namespace EyeOut_Telepresence
                     //byte[] thisPixelData = new byte[pixelDataSize];
                     //thisPixelData = (byte[])config.imageViewer.CaptureImage().PixelData;
                     //((byte[])baslerImage.PixelData).CopyTo(thisPixelData, 0);
-                    cameraTexture.SetData<byte>((byte[])config.imageViewer.CaptureImage().PixelData);
+
+                    //LOG("reading data start");
+                    //byte[] thisPixelData = new byte[pixelDataSize];
+                    //byte[] thisPixelData2 = new byte[pixelDataSize];
+                    ////config.ImageViewer.Camera.StreamGrabber.GrabResultWaitHandle.WaitOne(10);
+                    //config.ImageViewer.Camera.StreamGrabber.Stop();
+                    //thisPixelData = (byte[])config.ImageViewer.CaptureImage().PixelData;
+                    //LOG("reading data end");
+                    //LOG("copying byte array start");
+
+                    ////config.ImageViewer.Camera.StreamGrabber.GrabStopWaitHandle.WaitOne(10);
+
+                    //thisPixelData.CopyTo(thisPixelData2,0);
+                    //config.ImageViewer.Camera.StreamGrabber.Start();
+
+                    //LOG("setting texture start");
+                    //CameraTexture.SetData<byte>(thisPixelData2);
+                    //LOG("setting texture end");
+
+
+
+                    if (config.ImageViewer != null)
+                    {
+                        WaitHandle[] events = new WaitHandle[]{ 
+                            config.streamController.Camera.StreamGrabber.GrabResultWaitHandle
+                            
+                            //config.streamController.Camera.StreamGrabber.GrabStopWaitHandle
+                        };
+                        
+                        //LOG("IsGrabbing="+
+                        //    config.streamController.Camera.StreamGrabber.IsGrabbing.ToString()
+                        //);
+                        Basler.Pylon.IImage thisBaslerImage = config.ImageViewer.CaptureImage();
+
+                        //config.imageViewer.Visibility = System.Windows.Visibility.Hidden;
+                        if (thisBaslerImage != null)
+                        {
+
+                            pixelData = (byte[])thisBaslerImage.PixelData;
+                            //cameraTexture.SetData<byte>((byte[])config.ImageViewer.CaptureImage().PixelData);
+                            WaitHandle.WaitAll(events);
+                            cameraTexture.SetData<byte>(pixelData);
+                        }
+                    }
                     //cameraTexture.SetData<byte>(thisPixelData);
                     //config.guiDispatcher.Thread.Resume();
+
+
 
                 }
             
             }
+            LOG("CAPTURE_cameraImage end");
         }
+
+        //void StreamGrabber_GrabStarted(object sender, EventArgs e)
+        //{
+        //    LOG("StreamGrabber_GrabStarted");
+        //}
+
+        //void StreamGrabber_GrabStarting(object sender, EventArgs e)
+        //{
+        //    LOG("StreamGrabber_GrabStarting");
+        //}
+
+        //void StreamGrabber_GrabStopped(object sender, Basler.Pylon.GrabStopEventArgs e)
+        //{
+        //    //throw new NotImplementedException();
+        //    LOG("StreamGrabber_GrabStopped");
+        //}
 
         protected virtual void Draw_BaslerCamera(GameTime _gameTime)
         {
-            cameraBasicEffect.Texture = cameraTexture;
+            cameraBasicEffect.Texture = CameraTexture;
 
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
 
@@ -181,25 +328,25 @@ namespace EyeOut_Telepresence
             START_streaming();
             cameraPixelFormat = PixelFormat.B8G8R8X8.UNorm;
             //baslerImage.PixelTypeValue = Basler.Pylon.PixelType.BGR8packed;
-            if (config.imageViewer != null)
+            if (config.ImageViewer != null)
             {
 
 //                config.guiDispatcher.DisableProcessing();
                 
                 //config.guiDispatcher.Thread.Abort();
-                baslerImage = config.imageViewer.CaptureImage();
+                baslerImage = config.ImageViewer.CaptureImage();
                 
                 if (baslerImage != null)
                 {
                     //pixelData = (byte[])baslerImage.PixelData;
                     ((byte[])baslerImage.PixelData).CopyTo(pixelData, 0);
                     
-                    width = config.imageViewer.CaptureImage().Width;
-                    height = config.imageViewer.CaptureImage().Height;
+                    width = config.ImageViewer.CaptureImage().Width;
+                    height = config.ImageViewer.CaptureImage().Height;
 
-                    cameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
+                    CameraTexture = Texture2D.New(GraphicsDevice, width, height, cameraPixelFormat, pixelData, TextureFlags.ShaderResource, ResourceUsage.Dynamic);
 
-                    cameraTexture.SetData<byte>(pixelData);
+                    CameraTexture.SetData<byte>(pixelData);
 
                     if (C_State.FURTHER(e_stateBaslerCam.initialized) == false)
                     {
@@ -244,16 +391,16 @@ namespace EyeOut_Telepresence
             cameraBasicEffect = ToDisposeContent(new BasicEffect(GraphicsDevice));
 
             // size of imaginary camera picture plane [mm]
-            float sizeX = 100; // [mm]
-            float sizeY = 100; // [mm]
+            float sizeX = 250; // [mm]
+            float sizeY = 250; // [mm]
             cameraSurface = ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice, sizeX, sizeY));
             
             // Load the texture
             //cameraTexture = Content.Load<Texture2D>("speaker");
-            cameraTexture = Content.Load<Texture2D>("cameraDefault_2015-04-20_09-34-31");
+            CameraTexture = Content.Load<Texture2D>("cameraDefault_2015-04-20_09-34-31");
             
             //cameraTexture = Texture2D.New(GraphicsDevice, width, height, PixelFormat.B8G8R8A8.UNorm);
-            cameraBasicEffect.Texture = cameraTexture;
+            cameraBasicEffect.Texture = CameraTexture;
             cameraBasicEffect.TextureEnabled = true;
         }
 

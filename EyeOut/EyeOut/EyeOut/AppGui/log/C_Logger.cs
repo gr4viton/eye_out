@@ -148,6 +148,16 @@ namespace EyeOut
             ADD_toList(new C_LogMsg { src = _src, msg = _msg, type = _type });
         }
 
+        private string filePath = @"log.txt";
+        private System.IO.StreamWriter file;
+        private bool fileIsOpen = false;
+        public void OPEN_file(string filePath)
+        {
+            file = new System.IO.StreamWriter(filePath,true);
+            file.Close();
+            file = new System.IO.StreamWriter(filePath, true);
+            fileIsOpen = true;
+        }
         public void ADD_toList(C_LogMsg _logMsg)
         {
 #if (!DEBUG)
@@ -159,6 +169,11 @@ namespace EyeOut
                 return;
             }
 #endif
+            //if (fileIsOpen == false)
+            //{
+            //    OPEN_file(filePath);
+            //}
+
             lock (itemList_locker)
             {
                 try
@@ -168,9 +183,15 @@ namespace EyeOut
                         _logMsg.queue = msgList.Last().queue + 1;
                     }
                     msgList.Add(_logMsg);
+                    //file.WriteLine(_logMsg.ToString());
+
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(filePath, true))
+                    {
+                        file.WriteLine(_logMsg.ToString());
+                    }
+
                     if( trimMsgBuffer == true)
                     {
-
                         if (logMsgCount > logMsgCountMaximum)
                         {
                             msgList = new ObservableCollection<C_LogMsg>(
@@ -228,6 +249,10 @@ namespace EyeOut
             time = DateTime.UtcNow;
             type = e_LogMsgType.info;
             queue = 0;
+        }
+        public override string ToString()
+        {
+            return string.Format("{0}\t|{1}\t|{2}\t|{3}\t|{4}", time, queue, type, src, msg);
         }
     }
 }

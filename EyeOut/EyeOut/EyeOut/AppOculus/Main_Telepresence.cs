@@ -59,6 +59,7 @@ namespace EyeOut
                     helpMenu = cbHudHelpMenu.IsChecked.Value,                    
                     toolStrip = cbHudToolStrip.IsChecked.Value,                    
 
+
                     gazeMark = new C_gazeMark()
                     {
                         Oculus = cbDrawOculusGaze.IsChecked.Value,
@@ -76,20 +77,24 @@ namespace EyeOut
                 //hmdType = HMDType.DK1,
 
                 streamController = guiStreamController,
-                imageViewer = guiImageViewer,
+                ImageViewer = guiImageViewer,
                 //imageViewer = new ImageViewer()
                 //imageViewer = new Basler.Pylon.Controls.WPF.ImageViewer()
                 guiDispatcher = guiImageViewer.Dispatcher
             };
-            
 
+            if (cbStickToCameraData.IsChecked.Value == true)
+            {
+                TP_config.player.PositionLockActive = true;
+                TP_config.player.PositionLock = e_positionLock.cameraSensor;
+            }
             //guiStreamController.Dispose();
 
             //TP_config.imageViewer = new ImageViewer();
             //TP_config.streamController = new StreamController();
 
             TP_config.streamController.BeginInit();
-            TP_config.imageViewer.BeginInit();
+            TP_config.ImageViewer.BeginInit();
             if (guiStreamController.Camera != null)
             {
                 // take selected camera
@@ -133,8 +138,8 @@ namespace EyeOut
                 }
             }
 
-            TP_config.imageViewer.Camera = TP_config.streamController.Camera;
-            TP_config.streamController.ActiveViewer = TP_config.imageViewer;
+            TP_config.ImageViewer.Camera = TP_config.streamController.Camera;
+            TP_config.streamController.ActiveViewer = TP_config.ImageViewer;
 
             TP_config.streamController.Camera.Open();
 
@@ -146,9 +151,13 @@ namespace EyeOut
 
 
             TP_config.streamController.EndInit();
-            TP_config.imageViewer.EndInit();
+            TP_config.ImageViewer.EndInit();
 
-            TP_config.streamController.Camera.StreamGrabber.GrabStarted += grabStarted();
+           // TP_config.streamController.Camera.StreamGrabber.ImageGrabbed += grabStarted();
+
+
+            // on image changed -> stop / pause the running background worker which is copying data from me - byte by byte - stop before he tries to read now writing data
+            //TP_config.ImageViewer.Camera.StreamGrabber.GrabStopWaitHandle.WaitOne(1);
 
             TP_config.hud.time = true;
 
@@ -173,6 +182,7 @@ namespace EyeOut
             // unload Basler camera gui elements not to interfere with the telepresence ones
             //guiImageViewer.Visibility = System.Windows.Visibility.Hidden;
             guiImageViewer.IsEnabled = false;
+            guiStreamController.Visibility = System.Windows.Visibility.Hidden;
             guiStreamController.IsEnabled = false;
         }
         public void START_TP_withCaution()
