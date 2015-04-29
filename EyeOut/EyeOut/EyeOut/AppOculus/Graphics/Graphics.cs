@@ -108,7 +108,8 @@ namespace EyeOut_Telepresence
         {
             // Clear the screen
             //GraphicsDevice.Clear(Color.CornflowerBlue);
-            GraphicsDevice.Clear(new Color(41,51,86));
+            //GraphicsDevice.Clear(new Color(41,51,86));
+            GraphicsDevice.Clear(Color.White);
 
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {
@@ -133,7 +134,7 @@ namespace EyeOut_Telepresence
 
             CONTROL_motors();
 
-            HUD.AppendLine("hmd latency = " + hmd.GetMeasuredLatency());
+            HUD.AppendLine(string.Format("hmd latency = {0,7:0.00000000}", hmd.GetMeasuredLatency()));
         }
 
         #endregion Draw
@@ -143,6 +144,12 @@ namespace EyeOut_Telepresence
             // Cancel original EndDraw() as the Present call is made through hmd.EndFrame()
             
             //base.EndDraw();
+
+            //// waiing loop
+            //if (config.wantedDelay != 0)
+            //{
+            //    System.Threading.Thread.Sleep(config.wantedDelay);
+            //}
             hmd.EndFrame(renderPose, eyeTexture);
         }
 

@@ -214,6 +214,31 @@ namespace EyeOut_Telepresence
                 config.player.PositionLockActive ^= true;
             }
 
+            if (keyboardState.IsKeyPressed(Keys.F8))
+            {
+                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[0]);
+            }
+
+            if (keyboardState.IsKeyPressed(Keys.F9))
+            {
+                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[1]);
+            }
+
+            if (keyboardState.IsKeyPressed(Keys.F10))
+            {
+                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[2]);
+            }
+
+            if (keyboardState.IsKeyPressed(Keys.F11))
+            {
+                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[3]);
+            }
+
+            if (keyboardState.IsKeyPressed(Keys.F12))
+            {
+                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[4]);
+            }
+            
 
             HUD.AppendLine(string.Format(
                 "W{0}|A{1}|S{2}",

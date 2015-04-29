@@ -269,7 +269,7 @@ namespace EyeOut
                     {
 #if (!DEBUG)
                         throw new InvalidOperationException(
-                            "An error occured when tried to send data!\nThe queue of data to send was empty!");
+                            "An error occured when tried to send data!\nThe queue of data to send was empty!");rr
 #endif
                         LOG_err("Packet queue is empty! Cannot send packet");
                         return;

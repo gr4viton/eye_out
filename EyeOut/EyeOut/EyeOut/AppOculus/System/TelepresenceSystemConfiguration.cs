@@ -8,6 +8,7 @@ using StreamController = Basler.Pylon.Controls.WPF.StreamController;
 using ImageViewer = Basler.Pylon.Controls.WPF.ImageViewer;
 
 using SharpDX;
+using EyeOut;
 
 namespace EyeOut_Telepresence
 {
@@ -81,6 +82,8 @@ namespace EyeOut_Telepresence
 
         public Player player = new Player();
 
+        public int[] cameraFrameQueueLengthList = new int[] { 1, 2, 3, 5, 10, 20 };
+        public int cameraFrameQueueLength = 1;
         public System.Windows.Threading.Dispatcher guiDispatcher;
         public TelepresenceSystemConfiguration() { }
     }
