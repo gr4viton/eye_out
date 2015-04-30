@@ -48,11 +48,9 @@ namespace EyeOut
                 ));
 
             converter = new PixelDataConverter();
-            converter.OutputPixelFormat = PixelType.RGB8planar;
-            
-
-
-            
+            //converter.OutputPixelFormat = PixelType.RGB8planar; // planar BBBBB ??
+            converter.OutputPixelFormat = PixelType.RGB8packed; // planar BBBBB ??
+                        
             //// Close the connection to the camera device.
             //camera.Close();
 
