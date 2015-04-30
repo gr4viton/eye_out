@@ -216,27 +216,27 @@ namespace EyeOut_Telepresence
 
             if (keyboardState.IsKeyPressed(Keys.F8))
             {
-                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[0]);
+                config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[0];
             }
 
             if (keyboardState.IsKeyPressed(Keys.F9))
             {
-                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[1]);
+                config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[1];
             }
 
             if (keyboardState.IsKeyPressed(Keys.F10))
             {
-                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[2]);
+                config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[2];
             }
 
             if (keyboardState.IsKeyPressed(Keys.F11))
             {
-                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[3]);
+                config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[3];
             }
 
             if (keyboardState.IsKeyPressed(Keys.F12))
             {
-                config.cameraFrameQueueLength = new C_CounterDown(config.cameraFrameQueueLengthList[4]);
+                config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[4];
             }
             
 

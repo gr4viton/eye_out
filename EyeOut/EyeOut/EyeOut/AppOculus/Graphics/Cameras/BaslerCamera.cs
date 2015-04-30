@@ -54,7 +54,7 @@ namespace EyeOut_Telepresence
         //Basler.Pylon.CameraFinder camFinder;
         StreamController strc;
         //Basler.Pylon.
-        Queue<byte[]> queuePixelData = new Queue<byte[]>();
+        
 
         public BaslerCameraInterface()
         {
@@ -74,7 +74,9 @@ namespace EyeOut_Telepresence
     /// </summary>
     public partial class TelepresenceSystem : Game
     {
-        
+
+        Queue<byte[]> queuePixelData = new Queue<byte[]>();
+
         //private List<GeometricPrimitive> primitives;
         //StreamController streamController;
         //ImageViewer imageViewer;
@@ -197,6 +199,7 @@ namespace EyeOut_Telepresence
                         if (thisBaslerImage != null)
                         {
                             pixelData = (byte[])thisBaslerImage.PixelData;
+                            
                             width = config.ImageViewer.CaptureImage().Width;
                             height = config.ImageViewer.CaptureImage().Height;
                             pixelDataSize = width*height*4;
@@ -259,9 +262,17 @@ namespace EyeOut_Telepresence
                         {
 
                             pixelData = (byte[])thisBaslerImage.PixelData;
+
+                            byte[] pixelDataToAdd = new byte[pixelDataSize];
+                            pixelData.CopyTo(pixelDataToAdd, 0);
+                            
+                            queuePixelData.Enqueue(pixelDataToAdd);
                             //cameraTexture.SetData<byte>((byte[])config.ImageViewer.CaptureImage().PixelData);
-                            WaitHandle.WaitAll(events);
-                            cameraTexture.SetData<byte>(pixelData);
+                            //WaitHandle.WaitAll(events);
+                            if (queuePixelData.Count == config.cameraFrameQueueLength )
+                            {
+                                cameraTexture.SetData<byte>(queuePixelData.Dequeue());
+                            }
                         }
                     }
                     //cameraTexture.SetData<byte>(thisPixelData);

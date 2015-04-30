@@ -310,6 +310,7 @@ namespace EyeOut_Telepresence
                 ra.angleType
                 ));
             HUD.AppendLine("");
+            HUD.AppendLine("actual queue frame length = " + queuePixelData.Count().ToString());
             HUD.AppendLine(string.Format("Status: [Camera={0}][Motors={1}][SPI={2}]",
                 C_State.baslerCam,
                 C_State.mot,

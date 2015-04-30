@@ -55,6 +55,7 @@ namespace EyeOut
             INIT_keyMapping();
 
             C_State.prog = e_stateProg.initialized;
+
         }
 
         public void HOTKEY_StartTelepresence()

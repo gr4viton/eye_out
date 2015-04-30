@@ -82,8 +82,8 @@ namespace EyeOut_Telepresence
 
         public Player player = new Player();
 
-        public int[] cameraFrameQueueLengthList = new int[] { 1, 2, 3, 5, 10, 20 };
-        public int cameraFrameQueueLength = 1;
+        public int[] cameraFrameQueueLengthList = new int[] { 1, 2, 5, 12, 20, 50 };
+        public int cameraFrameQueueLength = 12;
         public System.Windows.Threading.Dispatcher guiDispatcher;
         public TelepresenceSystemConfiguration() { }
     }
