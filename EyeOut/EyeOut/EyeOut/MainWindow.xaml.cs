@@ -320,12 +320,16 @@ namespace EyeOut
         }
 
 
-        C_cameraTry camTry;
+        C_BaslerCamera camTry;
         private void btnStartBaslerCameraImageAcquisition_Click(object sender, RoutedEventArgs e)
         {
+            if (guiCameraLister.Camera != null)
+            {
+                guiCameraLister.Camera.Close();
+            }
             if(camTry == null)
-                camTry = new C_cameraTry(guiStreamController, guiImageViewer, guiCameraLister);
-            camTry.StartGrabbing();
+                camTry = new C_BaslerCamera(guiStreamController, guiImageViewer, guiCameraLister);
+            camTry.StartGrabbingLoop();
         }
 
 
@@ -344,7 +348,7 @@ namespace EyeOut
         private void btnStartCaptureLoop_Click(object sender, RoutedEventArgs e)
         {
             if (camTry != null)
-                camTry.StartCapturing();
+                camTry.StartCapturingLoop();
         }
 
 
