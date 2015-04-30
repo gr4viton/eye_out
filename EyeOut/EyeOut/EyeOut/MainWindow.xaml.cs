@@ -320,6 +320,33 @@ namespace EyeOut
         }
 
 
+        C_cameraTry camTry;
+        private void btnStartBaslerCameraImageAcquisition_Click(object sender, RoutedEventArgs e)
+        {
+            if(camTry == null)
+                camTry = new C_cameraTry(guiStreamController, guiImageViewer, guiCameraLister);
+            camTry.StartGrabbing();
+        }
+
+
+        private void btnAcquireImage_Click(object sender, RoutedEventArgs e)
+        {
+            if (camTry != null)
+                camTry.CaptureImage();
+        }
+
+        private void btnStopBaslerCameraImageAcquisition_Click(object sender, RoutedEventArgs e)
+        {
+            if (camTry != null)
+                camTry.StopGrabbing();
+        }
+
+        private void btnStartCaptureLoop_Click(object sender, RoutedEventArgs e)
+        {
+            if (camTry != null)
+                camTry.StartCapturing();
+        }
+
 
 
 

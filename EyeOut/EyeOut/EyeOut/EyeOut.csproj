@@ -147,6 +147,7 @@
     <Compile Include="AppOculus\Inputs\Player.cs" />
     <Compile Include="AppOculus\Outputs\MotorPosture.cs" />
     <Compile Include="AppOculus\System\TelepresenceSystemConfiguration.cs" />
+    <Compile Include="Interconnection\cam\C_cameraTry.cs" />
     <Compile Include="Interconnection\mot\C_Value.cs" />
     <Compile Include="Interconnection\SPI\C_SPI_READ.cs" />
     <Compile Include="AppOculus\Graphics\Data\Font.cs" />
@@ -157,7 +158,7 @@
     <Compile Include="AppOculus\System\TelepresenceSystem.cs" />
     <Compile Include="Interconnection\cam\C_WebCamera.cs" />
     <Compile Include="Interconnection\cam\C_WebCameraCapture.cs" />
-    <Compile Include="Interconnection\cam\Main_Camera.cs" />
+    <Compile Include="Interconnection\cam\Main_WebCamera.cs" />
     <Compile Include="AppGui\about\Main_About.cs" />
     <Compile Include="AppGui\log\C_Packet_LOG.cs" />
     <Compile Include="Interconnection\mot\C_ByteRegister.cs" />

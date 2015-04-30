@@ -558,29 +558,33 @@
                                 <ListBoxItem Content="Take single snapshot"/>
                                 <!--<ListBoxItem Content="Capture single image"/>-->
                             </ListBox>
+                            <Button Content="StartGrabberLoop" x:Name="btnStartBaslerCameraImageAcquisition" Click="btnStartBaslerCameraImageAcquisition_Click"/>
+                            <Button Content="StopGrabberLoop" x:Name="btnStopBaslerCameraImageAcquisition" Click="btnStopBaslerCameraImageAcquisition_Click"/>
+                            <Button Content="Capture" x:Name="btnAcquireImage" Click="btnAcquireImage_Click"/>
+                            <Button Content="StartCaptureLoop" x:Name="btnStartCaptureLoop" Click="btnStartCaptureLoop_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <!--listens to cameras connected to usb-->
-                    <basler:CameraLister x:Name="cameraListener" 
+                    <basler:CameraLister x:Name="guiCameraLister" 
                         DockPanel.Dock="Left"
                         VerticalAlignment="Stretch"/>
-                    
+
                     <DockPanel Width="500">
-                        
+
                         <!--controls the stream of video from camera-->
                         <basler:StreamController x:Name="guiStreamController"
                                                  DockPanel.Dock="Top" Height="50"  VerticalAlignment="Top" 
                                                  ActiveViewer="{Binding ., ElementName=guiImageViewer}" 
-                                                 Camera="{Binding Camera, ElementName=cameraListener}"/>
+                                                 Camera="{Binding Camera, ElementName=guiCameraLister}"/>
 
                         <!--shows the stream of video from camera-->
                         <basler:ImageViewer x:Name="guiImageViewer"
                                             DockPanel.Dock="Top" MinHeight="100" VerticalAlignment="Stretch" 
-                                            Camera="{Binding Camera, ElementName=cameraListener}"/>
+                                            Camera="{Binding Camera, ElementName=guiCameraLister}"/>
                     </DockPanel>
                     <!--when some cammera is selected it shows which parameters can be changed-->
                     <basler:ParameterTreeControl
-                        DockPanel.Dock="Right" VerticalAlignment="Stretch" Camera="{Binding Camera, ElementName=cameraListener}"/>
+                        DockPanel.Dock="Right" VerticalAlignment="Stretch" Camera="{Binding Camera, ElementName=guiCameraLister}"/>
 
                 </DockPanel>
             </TabItem>
@@ -699,16 +703,16 @@
                         <GridSplitter Grid.Row="1"  Height="5" VerticalAlignment="Stretch"/>
                         <GroupBox Grid.Row="0" Header="Actual camera preview" Visibility="Collapsed">
                             <StackPanel >
-                                
+
 
                                 <StackPanel Visibility="Collapsed">
-                                <ToggleButton Content="Active preview" 
+                                    <ToggleButton Content="Active preview" 
                                           IsChecked="{Binding IsChecked, ElementName=tbtActivePreviewActual}"
                                           >
-                                    <!--binding to other tbtActivePreviewActual-->
+                                        <!--binding to other tbtActivePreviewActual-->
 
-                                </ToggleButton>
-                                <Image x:Name="imgMain_TP" Stretch="Fill"/>
+                                    </ToggleButton>
+                                    <Image x:Name="imgMain_TP" Stretch="Fill"/>
                                 </StackPanel>
                             </StackPanel>
                         </GroupBox>

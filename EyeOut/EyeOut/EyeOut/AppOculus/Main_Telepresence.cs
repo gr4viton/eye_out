@@ -102,15 +102,15 @@ namespace EyeOut
             }
             else
             {
-                if (cameraListener.Camera != null)
+                if (guiCameraLister.Camera != null)
                 {
                     // take selected camera
-                    TP_config.streamController.Camera = cameraListener.Camera;
+                    TP_config.streamController.Camera = guiCameraLister.Camera;
                 }
                 else
                 {
                     int res = 0;
-                    foreach (var cameraModel in cameraListener.CameraList)
+                    foreach (var cameraModel in guiCameraLister.CameraList)
                     {
                         
                         if(res == 0)
