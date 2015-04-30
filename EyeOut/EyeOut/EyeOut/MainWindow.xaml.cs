@@ -353,7 +353,8 @@ namespace EyeOut
 
         private void btnCloseCamera_Click(object sender, RoutedEventArgs e)
         {
-            camTry.CloseCamera();
+            if (camTry != null)
+                camTry.CloseCamera();
         }
 
 

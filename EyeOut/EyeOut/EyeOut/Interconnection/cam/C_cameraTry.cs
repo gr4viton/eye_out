@@ -251,12 +251,12 @@ namespace EyeOut
 
         public static void LOG(string _msg)
         {
-            C_Logger.Instance.LOG(e_LogMsgSource.cam, _msg);
+            //C_Logger.Instance.LOG(e_LogMsgSource.cam, _msg);
         }
 
         public static void LOG_err(string _msg)
         {
-            C_Logger.Instance.LOG_err(e_LogMsgSource.cam, _msg);
+            //C_Logger.Instance.LOG_err(e_LogMsgSource.cam, _msg);
         }
 
 

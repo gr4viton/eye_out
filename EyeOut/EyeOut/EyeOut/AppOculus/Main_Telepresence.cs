@@ -181,9 +181,20 @@ namespace EyeOut
 
             // unload Basler camera gui elements not to interfere with the telepresence ones
             //guiImageViewer.Visibility = System.Windows.Visibility.Hidden;
-            guiImageViewer.IsEnabled = false;
-            guiStreamController.Visibility = System.Windows.Visibility.Hidden;
-            guiStreamController.IsEnabled = false;
+            //guiImageViewer.IsEnabled = false;
+            //guiStreamController.Visibility = System.Windows.Visibility.Hidden;
+            //guiStreamController.IsEnabled = false;
+
+
+            if (guiCameraLister.Camera != null)
+            {
+                guiCameraLister.Camera.Close();
+            }
+            if (camTry != null)
+            {
+                camTry.StopGrabbing();
+                camTry.CloseCamera();
+            }
         }
         public void START_TP_withCaution()
         {

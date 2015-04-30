@@ -54,7 +54,11 @@ namespace EyeOut
         //private DataTable dataTable;
         private ObservableCollection<C_LogMsg> msgList { get; set; }
 
-        private static object itemList_locker = new object();
+        //private List<C_LogMsg> msgListBuffer { get; set; } 
+        private int trimTriggerCount = 50; // trim the log only after its count is logMsgCount + trimTriggerCount = to be easy on collection event handlers
+
+
+        private static object msgList_locker = new object();
 
         private static byte errorAntiLoopCounter = 0;
         private const byte errorAntiLoopCounter_max = 10; 
@@ -110,6 +114,7 @@ namespace EyeOut
         private C_Logger()
         {
             msgList = new ObservableCollection<C_LogMsg>();
+            //msgListBuffer = new List<C_LogMsg>();
             //dataTable = new DataTable();
 
             //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,22 +135,22 @@ namespace EyeOut
 
         public void LOG(C_LogMsg _msg)
         {
-            ADD_toList(_msg);
+            ADD_toBuffer(_msg);
         }
 
         public void LOG(e_LogMsgSource _src, string _msg)
         {
-            ADD_toList(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.info });
+            ADD_toBuffer(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.info });
         }
 
         public void LOG_err(e_LogMsgSource _src, string _msg)
         {
-            ADD_toList(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.error });
+            ADD_toBuffer(new C_LogMsg { src = _src, msg = _msg, type = e_LogMsgType.error });
         }
 
         public void LOG_type(e_LogMsgSource _src, string _msg, e_LogMsgType _type)
         {
-            ADD_toList(new C_LogMsg { src = _src, msg = _msg, type = _type });
+            ADD_toBuffer(new C_LogMsg { src = _src, msg = _msg, type = _type });
         }
 
         private string filePath = @"log.txt";
@@ -158,7 +163,11 @@ namespace EyeOut
             file = new System.IO.StreamWriter(filePath, true);
             fileIsOpen = true;
         }
-        public void ADD_toList(C_LogMsg _logMsg)
+        public void ADD_bufferToList()
+        {
+
+        }
+        public void ADD_toBuffer(C_LogMsg _logMsg)
         {
 #if (!DEBUG)
             // don't log unimportant and log msgs when not debugging
@@ -176,16 +185,18 @@ namespace EyeOut
 
             // loger must trigger its collection update after some reasonable intervals - otherwise the program stops due to too quick collection updates triggers and handlers
 
-            lock (itemList_locker)
+            lock (msgList_locker)
             {
                 try
                 {
                     if (msgList.Last().time == _logMsg.time) // multiple at the same time
                     {
                         _logMsg.queue = msgList.Last().queue + 1;
+                        //_logMsg.queue = msgListBuffer.Last().queue + 1;
                     }
 
                     msgList.Add(_logMsg);
+                    //msgListBuffer.Add(_logMsg);
 
 
                     using (System.IO.StreamWriter file = new System.IO.StreamWriter(filePath, true))
@@ -195,7 +206,7 @@ namespace EyeOut
 
                     if( trimMsgBuffer == true)
                     {
-                        if (logMsgCount > logMsgCountMaximum)
+                        if (logMsgCount > logMsgCountMaximum + trimTriggerCount)
                         {
                             msgList = new ObservableCollection<C_LogMsg>(
                                 msgList.Skip((int)(logMsgCountMaximum - logMsgCount))
