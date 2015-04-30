@@ -562,6 +562,7 @@
                             <Button Content="StopGrabberLoop" x:Name="btnStopBaslerCameraImageAcquisition" Click="btnStopBaslerCameraImageAcquisition_Click"/>
                             <Button Content="Capture" x:Name="btnAcquireImage" Click="btnAcquireImage_Click"/>
                             <Button Content="StartCaptureLoop" x:Name="btnStartCaptureLoop" Click="btnStartCaptureLoop_Click"/>
+                            <Button Content="CloseCamera" x:Name="btnCloseCamera" Click="btnCloseCamera_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <!--listens to cameras connected to usb-->

@@ -32,8 +32,8 @@ namespace EyeOut
         
         
 
-        static bool gotLastShot = true;
-        static object gotLastShot_locker = new object();
+        static int executedShots = 0;
+        static object executedShots_locker = new object();
         static bool initialized = false;
         static object initialize_locker = new object();
 
@@ -41,8 +41,6 @@ namespace EyeOut
         {
             camera = new BaslerCamera(CameraSelectionStrategy.FirstFound); 
             
-            // Set the acquisition mode to software triggered continuous acquisition when the camera is opened.
-            camera.CameraOpened += Configuration.SoftwareTrigger;
 
             OpenCamera();
 
@@ -68,7 +66,7 @@ namespace EyeOut
             // to GrabLoop.ProvidedByStreamGrabber. The grab results are delivered to the image event handler OnImageGrabbed.
             // The default grab strategy (GrabStrategy_OneByOne) is used.
             //camera.StreamGrabber.Start(GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
-            camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+            StartGrabbing();
 
             bool GrabImages = true ;
 
@@ -77,28 +75,29 @@ namespace EyeOut
             {
                 if (camera.StreamGrabber.IsGrabbing)
                 {
-                    lock (gotLastShot_locker)
+                    lock (executedShots_locker)
                     {
-                        if (gotLastShot == true)
+                        if (executedShots == 0)
                         {
                             // Execute the software trigger. Wait up to 100 ms until the camera is ready for trigger.
                             //if (camera.WaitForFrameTriggerReady(5000, TimeoutHandling.ThrowException))
-                            if (camera.WaitForFrameTriggerReady(200, TimeoutHandling.Return) == true)
+                            if (camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return) == true)
                             {
                                 camera.ExecuteSoftwareTrigger();
                                 LOG("Executed Shoot softwared trigger!");
-                                gotLastShot = false;
+                                executedShots++;
+                                //Thread.Sleep(100);
+                                //GrabImages = false;
                             }
                             else
                             {
                                 LOG("WaitForFrameTriggerReady didn't waited enaugh");
                             }
                         }
-                        else
-                        {
-                            // still waiting for shot 
-                            LOG("Never happens!");
-                        }
+                        //else
+                        //{
+                        //    LOG("Sent more shot Executions than received, waiting for recieving grab result from last shot!");
+                        //}
                     }
                 }
                 else
@@ -145,16 +144,16 @@ namespace EyeOut
         static void OnImageGrabbed(Object sender, ImageGrabbedEventArgs e)
         {
             LOG("OnImageGrabbed started");
-            lock (gotLastShot_locker)
+            IGrabResult grabResult = e.GrabResult;
+            // Image grabbed successfully?
+            if (grabResult.GrabSucceeded)
             {
-                if (gotLastShot == false)
+                lock (executedShots_locker)
                 {
-                    gotLastShot = true;
-                    LOG("gotLastShot !");
-                    IGrabResult grabResult = e.GrabResult;
-                    // Image grabbed successfully?
-                    if (grabResult.GrabSucceeded)
+                    if (executedShots > 0)
                     {
+                        executedShots--;
+                        LOG("gotLastShot ! executedShots = "+executedShots.ToString());
                         // Access the image data.
                         LOG(string.Format("GrabbedImage XY={0}|{1} ", grabResult.Width, grabResult.Height));
 
@@ -175,14 +174,16 @@ namespace EyeOut
                     }
                     else
                     {
-                        LOG_err(string.Format("Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription));
+                        LOG("Got some shot, but gotLastShot was already true!");
                     }
                 }
-                else
-                {
-                    LOG("Got some shot, but gotLastShot was already true!");
-                }
             }
+            else
+            {
+                LOG_err(string.Format("Unsuccessfull grab - Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription));
+                executedShots--;
+            }
+            
          
         }
 
@@ -206,6 +207,7 @@ namespace EyeOut
             if (camera.StreamGrabber.IsGrabbing)
             {
                 camera.StreamGrabber.Stop();
+                LOG("grabbing stopped");
             }
         }
 
@@ -213,7 +215,10 @@ namespace EyeOut
         {
             if (camera.StreamGrabber.IsGrabbing == false)
             {
-                camera.StreamGrabber.Start();
+                executedShots = 0;
+                camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                LOG("grabbing started");
+                //camera.StreamGrabber.Start();
             }
         }
 
@@ -221,7 +226,11 @@ namespace EyeOut
         {
             if (camera.IsOpen == false)
             {
+                // Set the acquisition mode to software triggered continuous acquisition when the camera is opened.
+                //camera.CameraOpened += Configuration.SoftwareTrigger;
+
                 camera.Open();
+                LOG("camera opened");
                 camera.Parameters[PLCamera.ExposureMode].SetValue(PLCamera.ExposureMode.Timed);
                 camera.Parameters[PLCamera.ExposureTime].SetValue(10000); // in [us]
                 lock (initialize_locker)
@@ -235,6 +244,7 @@ namespace EyeOut
             if (camera.IsOpen == true)
             {
                 camera.Close();
+                LOG("camera closed");
             }
         }
 

@@ -351,6 +351,11 @@ namespace EyeOut
                 camTry.StartCapturingLoop();
         }
 
+        private void btnCloseCamera_Click(object sender, RoutedEventArgs e)
+        {
+            camTry.CloseCamera();
+        }
+
 
 
 

@@ -174,6 +174,8 @@ namespace EyeOut
             //    OPEN_file(filePath);
             //}
 
+            // loger must trigger its collection update after some reasonable intervals - otherwise the program stops due to too quick collection updates triggers and handlers
+
             lock (itemList_locker)
             {
                 try
@@ -182,8 +184,9 @@ namespace EyeOut
                     {
                         _logMsg.queue = msgList.Last().queue + 1;
                     }
+
                     msgList.Add(_logMsg);
-                    //file.WriteLine(_logMsg.ToString());
+
 
                     using (System.IO.StreamWriter file = new System.IO.StreamWriter(filePath, true))
                     {
