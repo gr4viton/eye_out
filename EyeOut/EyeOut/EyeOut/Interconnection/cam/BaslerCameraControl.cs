@@ -22,6 +22,7 @@ namespace EyeOut
 {
     public class BaslerCameraControl
     {
+        public StreamController streamController;
         public BaslerCamera camera;
         public static PixelDataConverter converter;
         public static long destinationBufferSize;
@@ -42,8 +43,16 @@ namespace EyeOut
 
         public BaslerCameraControl()//StreamController guiStreamController, ImageViewer guiImageViewer, CameraLister guiCameraLister)
         {
-            camera = new BaslerCamera(CameraSelectionStrategy.FirstFound); 
-            
+            camera = new BaslerCamera(CameraSelectionStrategy.FirstFound);
+            streamController = new StreamController();
+
+
+            converter = new PixelDataConverter();
+            //converter.OutputPixelFormat = PixelType.RGB8planar; // planar BBBBB ??
+            converter.OutputPixelFormat = PixelType.RGB8packed; // RGB?
+
+
+            camera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
 
             OpenCamera();
 
@@ -53,10 +62,6 @@ namespace EyeOut
             LOG(string.Format("Model: {0}",
                 camera.Parameters[PLCamera.DeviceModelName].GetValue()
                 ));
-
-            converter = new PixelDataConverter();
-            //converter.OutputPixelFormat = PixelType.RGB8planar; // planar BBBBB ??
-            converter.OutputPixelFormat = PixelType.RGB8packed; // RGB?
         }
 
 
@@ -76,25 +81,12 @@ namespace EyeOut
         {
             if (camera.StreamGrabber.IsGrabbing)
             {
-                lock (executedShots_locker)
-                {
-                    if (executedShots > 20)
-                    {
-                        return;
-                    }
-                }
-                //if (camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return) == true)
-                {
-                    camera.ExecuteSoftwareTrigger();
-                    LOG("Executed Shoot softwared trigger!");
-                    executedShots++;
-                    //Thread.Sleep(200);
-                    //GrabImages = false;
-                }
+                streamController.StopStreaming();
             }
             else
             {
-                ShooterTimer.Dispose();
+                streamController.StartStreaming();
+                //ShooterTimer.Dispose();
             }
         }
 
@@ -202,56 +194,85 @@ namespace EyeOut
         }
 
         // Example of an image event handler.
-        static void OnImageGrabbed(Object sender, ImageGrabbedEventArgs e)
+        void OnImageGrabbed(Object sender, ImageGrabbedEventArgs e)
         {
             LOG("OnImageGrabbed started");
             IGrabResult grabResult = e.GrabResult;
             // Image grabbed successfully?
             if (grabResult.GrabSucceeded)
             {
-                lock (executedShots_locker)
-                {
-                    if (executedShots > 0)
-                    {
-                        executedShots--;
-                        LOG("gotLastShot ! executedShots = "+executedShots.ToString());
+                //lock (executedShots_locker)
+                //{
+                //    if (executedShots > 0)
+                //    {
+                        //executedShots--;
+                        //LOG("gotLastShot ! executedShots = "+executedShots.ToString());
                         // Access the image data.
                         LOG(string.Format("GrabbedImage XY={0}|{1} ", grabResult.Width, grabResult.Height));
 
                         lock (storedGrabResult_locker)
                         {
-                            storedGrabResult = grabResult.Clone();
-                            LOG("Stored grabbed result copy!");
-                            lock (initialize_locker)
-                            {
-                                if (initialized == false)
-                                {
-                                    //destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
-                                    destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
-                                    initialized = true;
-                                    LOG("destinationBufferSize initialized!");
-                                }
-                            }
+                            LOG("Started to store grabbed result copy!");
+
+                                //storedGrabResult = grabResult.Clone();
+
+                            var bg = new BackgroundWorker { WorkerSupportsCancellation = true };
+                            bg.DoWork += StoreGrabResult;
+
+                            //const int Timeout = 20;
+                            //Action a = () =>
+                            //{
+                            //    Thread.Sleep(Timeout);
+                            //    //bg.CancelAsync();
+                            //    bg.Dispose();
+                            //};
+                            //a.BeginInvoke(delegate { }, null);
+
+                            bg.RunWorkerAsync(grabResult);
+
+                            Thread.Sleep(20);
+                            bg.Dispose();
+
+                            //LOG("Stored grabbed result copy!");
+                            //lock (initialize_locker)
+                            //{
+                            //    if (initialized == false)
+                            //    {
+                            //        //destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
+                            //        destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
+                            //        initialized = true;
+                            //        LOG("destinationBufferSize initialized!");
+                            //    }
+                            //}
+
+                            //grabResult.Dispose();
                         }
-                    }
-                    else
-                    {
-                        LOG("Got some shot, but gotLastShot was already true!");
-                    }
-                }
+                //    }
+                //    else
+                //    {
+                //        LOG("Got some shot, but gotLastShot was already true!");
+                //    }
+                //}
             }
             else
             {
                 LOG_err(string.Format("Unsuccessfull grab - Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription));
 
-                lock (executedShots_locker)
-                {
-                    if (executedShots > 1)
-                        executedShots--;
-                }
+            } 
+        }
+
+        void StoreGrabResult(object sender, DoWorkEventArgs e)
+        {
+            IGrabResult grabResult = (IGrabResult)e.Argument;
+            try
+            {
+                storedGrabResult = grabResult.Clone();
+            }
+            catch (Exception ex)
+            {
+                LOG_err("exception");
             }
             
-         
         }
 
 
@@ -263,37 +284,30 @@ namespace EyeOut
             bw.RunWorkerAsync();
             return true;
         }
-        public bool StartGrabbingLoop()
+
+
+
+        public bool StartGrabbing()
         {
-            StartShooterTimer();
-            /*
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += ShooterLoop_DoWork;
-            bw.RunWorkerAsync();
-             * */
-            return true;
+            if (camera.StreamGrabber.IsGrabbing == false)
+            {
+                camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                //camera.StreamGrabber.Start();
+                //streamController.StartStreaming();
+                //StartShooterTimer();
+                LOG("grabbing started");
+                return true;
+            }
+            return false;
         }
 
         public bool StopGrabbing()
         {
             if (camera.StreamGrabber.IsGrabbing)
             {
+                //streamController.StopStreaming();
                 camera.StreamGrabber.Stop();
                 LOG("grabbing stopped");
-                return true;
-            }
-            return false;
-        }
-
-        public bool StartGrabbing()
-        {
-            if (camera.StreamGrabber.IsGrabbing == false)
-            {
-                executedShots = 0;
-                camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
-                //camera.StreamGrabber.Start();
-                LOG("grabbing started");
-                //camera.StreamGrabber.Start();
                 return true;
             }
             return false;
@@ -305,11 +319,24 @@ namespace EyeOut
             {
                 // Set the acquisition mode to software triggered continuous acquisition when the camera is opened.
                 //camera.CameraOpened += Configuration.SoftwareTrigger;
+                camera.CameraOpened += Configuration.AcquireContinuous;
 
                 camera.Open();
                 LOG("camera opened");
                 camera.Parameters[PLCamera.ExposureMode].SetValue(PLCamera.ExposureMode.Timed);
-                camera.Parameters[PLCamera.ExposureTime].SetValue(10000); // in [us]
+                camera.Parameters[PLCamera.ExposureTime].SetValue(100000); // in [us]
+                //camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
+
+
+                //bandwidth is insufficient
+
+                //camera.StreamGrabber.MaxNumBuffer =
+
+                //streamController.Camera = camera;
+
+                //streamController.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                //streamController.Camera.StreamGrabber.Stop();
+
                 //camera.Parameters[PLCamera.
                 lock (initialize_locker)
                 {

@@ -196,10 +196,7 @@ namespace EyeOut_Telepresence
 
         public void START_streaming()
         {
-            if (config.camera.StartGrabbing()
-                &&
-                config.camera.StartGrabbingLoop()
-                )
+            if (config.camera.StartGrabbing())
             {
                 if (C_State.FURTHER(e_stateBaslerCam.initialized))
                 {

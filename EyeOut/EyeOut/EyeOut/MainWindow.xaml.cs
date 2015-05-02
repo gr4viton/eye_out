@@ -329,7 +329,8 @@ namespace EyeOut
             }
             if (camTry == null)
                 camTry = new BaslerCameraControl();//(guiStreamController, guiImageViewer, guiCameraLister);
-            camTry.StartGrabbingLoop();
+
+            camTry.StartGrabbing();
         }
 
 
