@@ -570,7 +570,14 @@
                         DockPanel.Dock="Left"
                         VerticalAlignment="Stretch"/>
 
-                    <DockPanel Width="500">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                        <DockPanel Grid.Column="0">
 
                         <!--controls the stream of video from camera-->
                         <basler:StreamController x:Name="guiStreamController"
@@ -584,9 +591,10 @@
                                             Camera="{Binding Camera, ElementName=guiCameraLister}"/>
                     </DockPanel>
                     <!--when some cammera is selected it shows which parameters can be changed-->
-                    <basler:ParameterTreeControl
+                    <basler:ParameterTreeControl Grid.Column="2"
                         DockPanel.Dock="Right" VerticalAlignment="Stretch" Camera="{Binding Camera, ElementName=guiCameraLister}"/>
 
+                    </Grid>
                 </DockPanel>
             </TabItem>
             <TabItem x:Name="tiWebCamera" Header="Webcam" Background="GreenYellow" IsEnabled="False">

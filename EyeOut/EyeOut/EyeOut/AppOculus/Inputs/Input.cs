@@ -230,6 +230,10 @@ namespace EyeOut_Telepresence
             {
                 config.player.PositionLock = e_positionLock.desk;
             }
+            if (keyboardState.IsKeyPressed(Keys.D3))
+            {
+                config.player.PositionLock = e_positionLock.overDesk;
+            }
             if (keyboardState.IsKeyPressed(Keys.Tab))
             {
                 config.player.PositionLockActive ^= true;

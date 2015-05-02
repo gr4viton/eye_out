@@ -123,7 +123,7 @@ namespace EyeOut_Telepresence
         float y_DE = 39f; // y_YawAxisTop - SensorMiddle
         // width in [mm]
         float z_DE = 30.526f; // z_YawAxis - SensorSurface
-        float z_EF = -100; // z_Sensor - CameraTexture
+        float z_EF = 100; //z_Sensor - CameraTextureSurface .. recalculated in constructor
 
         public e_valueType angleType = e_valueType.wantedValue;
 
@@ -160,14 +160,20 @@ namespace EyeOut_Telepresence
         public Matrix t_CD ;
         public Matrix t_DE ;
         public Matrix t_EF ;
+        public Matrix overDeskTranslation;
 
-        public RoboticArm()
-        { 
+        public RoboticArm(float camTextureSizeX)
+        {
+            z_EF = -camTextureSizeX * 0.5913242f; // = camTextureSizeX * tan(hFOV/2)/2 = 0.5913242
+
             t_AB = Matrix.Translation(0, y_AB, 0);
             t_BC = Matrix.Translation(0, y_BC, 0);
             t_CD = Matrix.Translation(0, y_CD, 0);
             t_DE = Matrix.Translation(0, y_DE, z_DE);
             t_EF = Matrix.Translation(0, 0, z_EF);
+
+            float y_defaultView = y_AB + y_BC + y_CD + y_DE;
+            overDeskTranslation = Matrix.Translation(0, y_defaultView, 0);
 
             parts = new List<RoboticArmPart>();
             e_RoboticArmPart partType = 0;
@@ -287,9 +293,9 @@ namespace EyeOut_Telepresence
             ra.Draw();
         }
 
-        private void LoadContent_RoboticArm()
+        private void LoadContent_RoboticArm(float camTextureSizeX)
         {
-            ra = new RoboticArm();
+            ra = new RoboticArm(camTextureSizeX);
             ra.draw = config.draw.RoboticArm;
 
             float sizeX = 5;

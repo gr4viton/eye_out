@@ -236,8 +236,8 @@ namespace EyeOut_Telepresence
             LoadContent_Airplane();
             LoadContent_Font();
             LoadContent_Sound();
-            LoadContent_BaslerCamera();
-            LoadContent_RoboticArm();
+            float camTextureSizeX = LoadContent_BaslerCamera();
+            LoadContent_RoboticArm(camTextureSizeX);
             LoadContent_SkySurface();
 
             base.LoadContent();
@@ -289,9 +289,18 @@ namespace EyeOut_Telepresence
         {
             if (config.player.PositionLockActive)
             {
-                if (config.player.PositionLock == e_positionLock.cameraSensor)
+                switch(config.player.PositionLock)
                 {
-                    config.player.scout.Position = ra[e_RoboticArmPart.t_DE].effect.World.TranslationVector;
+                    case(e_positionLock.cameraSensor):
+                        config.player.scout.Position = ra[e_RoboticArmPart.t_DE].effect.World.TranslationVector;
+                        break;
+                    case(e_positionLock.desk):
+                        config.player.scout.Position = ra[e_RoboticArmPart.t_A].effect.World.TranslationVector;
+                        break;
+                        
+                    case(e_positionLock.overDesk):
+                        config.player.scout.Position = (ra[e_RoboticArmPart.t_A].effect.World * ra.overDeskTranslation).TranslationVector;
+                        break;
                 }
             }
         }
@@ -311,6 +320,7 @@ namespace EyeOut_Telepresence
                 ));
             HUD.AppendLine("");
             HUD.AppendLine("actual queue frame length = " + queuePixelData.Count().ToString());
+            HUD.AppendLine("setuped cameraFrameQueueLength = " + config.cameraFrameQueueLength.ToString());
             HUD.AppendLine(string.Format("Status: [Camera={0}][Motors={1}][SPI={2}]",
                 C_State.baslerCam,
                 C_State.mot,

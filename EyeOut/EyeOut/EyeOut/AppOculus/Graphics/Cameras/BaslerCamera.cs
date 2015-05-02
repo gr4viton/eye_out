@@ -314,7 +314,9 @@ namespace EyeOut_Telepresence
 
                 cameraBasicEffect.Projection = eyeProjection;
                 cameraBasicEffect.View = eyeView;
-                cameraBasicEffect.World = ra.cameraSurfaceWorld;
+
+                cameraBasicEffect.World = ra.cameraSurfaceWorld; //* Matrix.Translation(config.player.scout.Position);
+                cameraBasicEffect.World.Invert();
                 //cameraBasicEffect.World = Matrix.Identity ;
             
                 // Draw the primitive using BasicEffect
@@ -356,14 +358,15 @@ namespace EyeOut_Telepresence
             }
         }
 
-        public void LoadContent_BaslerCamera()
+        public float LoadContent_BaslerCamera()
         {
             //config.streamController.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
             cameraBasicEffect = ToDisposeContent(new BasicEffect(GraphicsDevice));
 
             // size of imaginary camera picture plane [mm]
-            float sizeX = 250; // [mm]
-            float sizeY = 250; // [mm]
+            float sizeX = 2040f; // [mm] - but pixels as it is auxilary - only depends on ratio 
+            float sizeY = 2046f; // [mm]
+
             cameraSurface = ToDisposeContent(GeometricPrimitive.Plane.New(GraphicsDevice, sizeX, sizeY));
             
             // Load the texture
@@ -377,6 +380,8 @@ namespace EyeOut_Telepresence
                 cameraBasicEffect.TextureEnabled = true;
                 cameraBasicEffect.LightingEnabled = false;
             }
+
+            return sizeX;
         }
 
     }

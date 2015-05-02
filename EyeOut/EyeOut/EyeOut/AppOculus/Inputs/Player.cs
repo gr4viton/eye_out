@@ -92,8 +92,9 @@ namespace EyeOut_Telepresence
 
     public enum e_positionLock 
     {
-        cameraSensor = 0,
-        desk = 1
+        cameraSensor = 0, // on the middle of CMOS photo-sensor position 
+        desk = 1, // on the bottom anchor of robotic arm
+        overDesk = 2, // in defined height over robotic arm
     }
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     public class Player : ICloneable // based on Rastertek Terrain Tutorials in SharpDX 
