@@ -207,6 +207,19 @@ namespace EyeOut_Telepresence
                 }
             }
 
+            if (keyboardState.IsKeyPressed(Keys.U) )
+            {
+                if (textureConversionAlgorithm == e_textureConversionAlgorithm.unsafeConversion_pointerForLoop)
+                {
+                    // last
+                    textureConversionAlgorithm = 0;
+                }
+                else
+                {
+                    textureConversionAlgorithm++;
+                }
+            }
+
 
             if (keyboardState.IsKeyPressed(Keys.D1))
             {

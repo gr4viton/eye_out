@@ -13,6 +13,8 @@ using SharpDX.Toolkit.Graphics;
 using SharpDX.Toolkit.Input;
 
 using System.Threading.Tasks;
+using System.Globalization; // cultureinfo time tostring
+
 
 namespace EyeOut_Telepresence
 {
@@ -69,6 +71,10 @@ namespace EyeOut_Telepresence
         private SpriteFont fontDefault;
         private Texture2D colorTexture;
 
+        private DateTime timeStartedStreaming;
+
+        float fpsDirectX = 0;
+
         //public string text;
 
         public HUD HUD;
@@ -118,10 +124,18 @@ namespace EyeOut_Telepresence
             frameCount++;
             if (fpsClock.ElapsedMilliseconds > 1000.0f)
             {
-                fpsText = string.Format("{0:F2} FPS", (float)frameCount * 1000 / fpsClock.ElapsedMilliseconds);
+                fpsDirectX = (float)frameCount * 1000 / fpsClock.ElapsedMilliseconds;
+
                 frameCount = 0;
                 fpsClock.Restart();
             }
+            TimeSpan timeInterval = DateTime.UtcNow.ToLocalTime().Subtract( timeStartedStreaming );
+                //DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+            fpsText = string.Format("FPS: [DirectX:{0:F2}Hz]|[-]\t{2}|{1}",
+                    fpsDirectX,
+                    DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
+                    timeInterval.ToString()
+                    );
 
             if (config.hud.toolStrip == true)
             {

@@ -323,24 +323,19 @@ namespace EyeOut_Telepresence
             string name = "No camera connected - please connect the camera and restart telepresence!";
             if(C_State.FURTHER(e_stateBaslerCam.initializing))
             {
-                //name = config.streamController.Camera.CameraInfo[Basler.Pylon.CameraInfoKey.DeviceType] + " " +
-                //    config.streamController.Camera.CameraInfo[Basler.Pylon.CameraInfoKey.ModelName]
-                //    ;
-                //HUD.AppendLine("Camera: " + name);
-                //HUD.AppendLine(string.Format(
-                //    "StreamControler: [Init={0}]",
-                //    config.streamController.IsInitialized
-                //    ));
-                //HUD.AppendLine(string.Format(
-                //    "ImageViewer: [Init={0}]",
-                //    config.ImageViewer.IsInitialized
-                //    ));
-                //HUD.AppendLine(string.Format(
-                //    "Camera: [Connected={0}], [Open={1}], [Grabbing={2}]",
-                //    config.ImageViewer.Camera.IsConnected, config.ImageViewer.Camera.IsOpen, 
-                //    config.ImageViewer.Camera.StreamGrabber.IsGrabbing
-                //    ));
+                name = config.cameraControl.camera.CameraInfo[Basler.Pylon.CameraInfoKey.DeviceType] + " " +
+                    config.cameraControl.camera.CameraInfo[Basler.Pylon.CameraInfoKey.ModelName]
+                    ;
+                HUD.AppendLine("Camera: " + name);
+                HUD.AppendLine(string.Format(
+                    "Camera: [Connected={0}], [Open={1}], [Grabbing={2}]",
+                    config.cameraControl.camera.IsConnected, 
+                    config.cameraControl.camera.IsOpen,
+                    config.cameraControl.camera.StreamGrabber.IsGrabbing
+                    ));
+                HUD.AppendLine(string.Format("[textureConversionAlgorithm={0}]", textureConversionAlgorithm));
             }
+
 
             HUD.AppendLine("");
             Vector3 pos;

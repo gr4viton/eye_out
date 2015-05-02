@@ -34,7 +34,7 @@ namespace EyeOut
 
 
         private int expositionTime = 10000; // in [us]
-        private int maxNumBuffer = 300; //50
+        private int maxNumBuffer = 100; //50
 
 
         public bool StoredNewGrabResult
@@ -47,13 +47,7 @@ namespace EyeOut
                 }
             }
         }
-
-        private static int executedShots = 0;
-        private static object executedShots_locker = new object();
-
-        private static Timer ShooterTimer;
-
-
+        
         public static bool initialized = false;
         public static object initialize_locker = new object();
 

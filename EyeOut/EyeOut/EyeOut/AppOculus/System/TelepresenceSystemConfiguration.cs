@@ -64,7 +64,7 @@ namespace EyeOut_Telepresence
         public int[] cameraFrameQueueLengthList = new int[] { 1, 2, 5, 12, 20, 50 };
         public int cameraFrameQueueLength = 1;
 
-        public BaslerCameraControl camera;
+        public BaslerCameraControl cameraControl;
         //public System.Windows.Threading.Dispatcher guiDispatcher;
         public TelepresenceSystemConfiguration() { }
     }

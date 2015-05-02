@@ -58,19 +58,26 @@ namespace EyeOut_Telepresence
     public partial class TelepresenceSystem : Game
     {
         private Queue<byte[]> queuePixelData = new Queue<byte[]>();
+        private object queuePixelData_locker = new object();
 
         //private Basler.Pylon.IImage baslerImage;
         //private PixelFormat cameraTexturePixelFormat = PixelFormat.R8G8B8A8.UNorm;
         private PixelFormat cameraTexturePixelFormat = PixelFormat.B8G8R8X8.UNorm;
         private BasicEffect cameraBasicEffect;
 
-        public e_textureConversionAlgorithm textureConversionAlgorithm;
+
+
+        public e_textureConversionAlgorithm textureConversionAlgorithm = e_textureConversionAlgorithm.unsafeConversion_pointerForLoop;
 
         BackgroundWorker UpdateTexture_worker;
 
         private long cameraTextureByteCount;
-
         private object cameraTexture_locker = new object();
+
+
+
+        private byte[] textureSizedBuffer;
+        private object textureSizedBuffer_locker = new object(); 
 
         private GeometricPrimitive cameraSurface;
         private Texture2D cameraTexture;
@@ -98,46 +105,46 @@ namespace EyeOut_Telepresence
         public void CAPTURE_cameraImage()
         {
             lock(initialize_locker)
-            //if(false)
             {
                 if (initialized == false)
                 {
-                    int width;
-                    int height;
-
-                    byte[] destinationBuffer = config.camera.ConvertStoredGrabResultToByteArray(out width, out height);
-
-                    if (destinationBuffer == null)
+                    lock (textureSizedBuffer_locker)
                     {
-                        return;
-                    }
-                    else
-                    {
-                        if (cameraTextureByteCount != destinationBuffer.Length)
+                        int width;
+                        int height;
+
+                        byte[] grabResultBuffer_RGB = config.cameraControl.ConvertStoredGrabResultToByteArray(out width, out height);
+
+                        if (grabResultBuffer_RGB == null)
                         {
-                            cameraTextureByteCount = width * height * cameraTexturePixelFormat.SizeInBytes;
-                            byte[] textureSizeBuffer = new byte[cameraTextureByteCount];
-                            destinationBuffer.CopyTo(textureSizeBuffer, 0);
-
-                            RealocateTexture(width, height, textureSizeBuffer);
-                            
+                            return;
                         }
                         else
                         {
-                            lock (cameraTexture_locker)
+                            if (cameraTextureByteCount != grabResultBuffer_RGB.Length)
                             {
-                                cameraTexture.SetData<byte>(destinationBuffer);
+                                cameraTextureByteCount = width * height * cameraTexturePixelFormat.SizeInBytes;
+                                textureSizedBuffer = new byte[cameraTextureByteCount];
+                                grabResultBuffer_RGB.CopyTo(textureSizedBuffer, 0);
+
+                                RealocateTexture(width, height, textureSizedBuffer);
+
                             }
+                            else
+                            {
+                                lock (cameraTexture_locker)
+                                {
+                                    cameraTexture.SetData<byte>(grabResultBuffer_RGB);
+                                }
+                            }
+                            initialized = true;
                         }
-                        initialized = true;
                     }
                 }
                 else
                 {
-
                     if (UpdateTexture_worker.IsBusy == false)
                     {
-                        //worker_SEND.RunWorkerAsync((object)echo);
                         UpdateTexture_worker.RunWorkerAsync((object)config.player.hmd);
                     }
 
@@ -147,92 +154,23 @@ namespace EyeOut_Telepresence
         }
 
 
-        public void UpdateTexture_DoWork(object sender, DoWorkEventArgs e)
+        public unsafe void RGBtoRGBA_Safe(ref byte[] Source, ref byte[] Target)
         {
-            if(config.camera.StoredNewGrabResult == false)
+            int num = Source.Length / 3;
+
+            int i_t = 0; // target index
+            int i_s = 0; // source index
+            for (int i = 0; i < num; i++)
             {
-                return;
+                Target[i_t] = Source[i_s];
+                Target[i_t + 1] = Source[i_s + 1];
+                Target[i_t + 2] = Source[i_s + 2];
+                Target[i_t + 3] = 255;
+                i_s += 3;
+                i_t += 4;
             }
-            byte[] destinationBuffer = config.camera.ConvertStoredGrabResultToByteArray();
 
-            //queuePixelData.Enqueue(destinationBuffer);
-            //if (queuePixelData.Count == config.cameraFrameQueueLength)
-            //{
-            //    cameraTexture.SetData<byte>(queuePixelData.Dequeue());
-            //}
-            if (cameraTextureByteCount != destinationBuffer.Length)
-            {
-                LOG("byte[] textureSizeBuffer = new byte[cameraTextureByteCount];");
-                byte[] textureSizeBuffer = new byte[cameraTextureByteCount];
-                //destinationBuffer.CopyTo(textureSizeBuffer, 0);
-
-                LOG("started recounting texture" + DateTime.UtcNow.ToString());
-
-                Stopwatch stopwatch = Stopwatch.StartNew();
-
-                int num = destinationBuffer.Length / 3;
-                int i;
-                int i_t=0; // target index
-                int i_s=0; // source index
-                for (i = 0; i < num; i++)
-                {
-                    textureSizeBuffer[i_t++] = destinationBuffer[i_s++];
-                    textureSizeBuffer[i_t++] = destinationBuffer[i_s++];
-                    textureSizeBuffer[i_t++] = destinationBuffer[i_s++];
-                    textureSizeBuffer[i_t++] = 255;
-                }
-
-                stopwatch.Stop();
-                LOG(string.Format("Recounting texture safe [i_t++] took [{0}] ms", stopwatch.Elapsed));
-
-                stopwatch = Stopwatch.StartNew();
-
-                num = destinationBuffer.Length / 3;
-                
-                i_t = 0; // target index
-                i_s = 0; // source index
-                for (i = 0; i < num; i++)
-                {
-                    textureSizeBuffer[i_t] = destinationBuffer[i_s];
-                    textureSizeBuffer[i_t+1] = destinationBuffer[i_s+1];
-                    textureSizeBuffer[i_t+2] = destinationBuffer[i_s+2];
-                    textureSizeBuffer[i_t+3] = 255;
-                    i_s += 3;
-                    i_t += 4;
-                }
-
-                stopwatch.Stop();
-
-
-                LOG(string.Format("Recounting texture safe [i_t+=4] took [{0}] ms", stopwatch.Elapsed));
-
-
-                //textureSizeBuffer
-                LOG("ended recounting texture");
-                LOG("cameraTexture.SetData<byte>(textureSizeBuffer);");
-                lock (cameraTexture_locker)
-                {
-                    try
-                    {
-                        cameraTexture.SetData<byte>(textureSizeBuffer);
-                    }
-                    catch (Exception ex)
-                    {
-                        LOG("Error while setting camera texture data : " + ex.Message);
-                    }
-                }
-                LOG("ended" + DateTime.UtcNow.ToString());
-            }
-            else
-            {
-                lock (cameraTexture_locker)
-                {
-                    cameraTexture.SetData<byte>(destinationBuffer);
-                }
-            }
         }
-
-
         public unsafe void RGBtoRGBA_Unsafe(ref byte[] Source, ref byte[] Target)
         {
             int num = Source.Length / 3;
@@ -243,7 +181,6 @@ namespace EyeOut_Telepresence
                 byte* ps = pSource + 0;
                 byte* pt = pTarget + 0;
 
-                // Copy the specified number of bytes from source to target. 
                 for (int i = 0; i < num; i++)
                 {
                     *(pt) = *(ps);
@@ -258,71 +195,95 @@ namespace EyeOut_Telepresence
 
 
 
-        public void UpdateTexture_DoWork_Unsafe(object sender, DoWorkEventArgs e)
+        public void UpdateTexture_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (config.camera.StoredNewGrabResult == false)
+            if (config.cameraControl.StoredNewGrabResult == false)
             {
                 return;
             }
-            byte[] grabResultBuffer_RGB = config.camera.ConvertStoredGrabResultToByteArray();
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            byte[] grabResultBuffer_RGB = config.cameraControl.ConvertStoredGrabResultToByteArray();
+            stopwatch.Stop();
+            LOG(string.Format("[Bayer BG8] to [RGB] byte array took [{0}]", stopwatch.Elapsed));
 
-            //queuePixelData.Enqueue(destinationBuffer);
-            //if (queuePixelData.Count == config.cameraFrameQueueLength)
-            //{
-            //    cameraTexture.SetData<byte>(queuePixelData.Dequeue());
-            //}
             if (cameraTextureByteCount != grabResultBuffer_RGB.Length)
             {
-                LOG("byte[] textureSizeBuffer = new byte[cameraTextureByteCount];");
-                byte[] textureSizedBuffer = new byte[cameraTextureByteCount];
-                //destinationBuffer.CopyTo(textureSizeBuffer, 0);
-
-                LOG("started recounting texture");
-
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                string type = "undefined";
-
-                if (textureConversionAlgorithm == e_textureConversionAlgorithm.unsafeConversion_pointerForLoop)
+                lock (textureSizedBuffer_locker)
                 {
-                    RGBtoRGBA_Unsafe(ref grabResultBuffer_RGB, ref textureSizedBuffer);
-                    type = "unsafe [pt+=4]";
-                }
-                else if (textureConversionAlgorithm == e_textureConversionAlgorithm.safeConversion_forLoop)
-                {
-                    RGBtoRGBA_Unsafe(ref grabResultBuffer_RGB, ref textureSizedBuffer);
-                    type = "safe [i_t+=4]";
+                    LOG("byte[] textureSizeBuffer = new byte[cameraTextureByteCount];");
+                    //textureSizedBuffer = new byte[cameraTextureByteCount];
+                    //destinationBuffer.CopyTo(textureSizeBuffer, 0);
 
-                }
-                stopwatch.Stop();
-                LOG(string.Format("Recounting texture {1} took [{0}] ms", stopwatch.Elapsed, type));
+                    LOG("started recounting texture");
 
+                    stopwatch = Stopwatch.StartNew();
+                    string type = "undefined";
 
-
-                //textureSizeBuffer
-                LOG("ended recounting texture");
-                LOG("cameraTexture.SetData<byte>(textureSizeBuffer);");
-                lock (cameraTexture_locker)
-                {
-                    try
+                    if (textureConversionAlgorithm == e_textureConversionAlgorithm.unsafeConversion_pointerForLoop)
                     {
-                        cameraTexture.SetData<byte>(textureSizedBuffer);
+                        RGBtoRGBA_Unsafe(ref grabResultBuffer_RGB, ref textureSizedBuffer);
+                        type = "unsafe [pt+=4]";
                     }
-                    catch(Exception ex)
+                    else if (textureConversionAlgorithm == e_textureConversionAlgorithm.safeConversion_forLoop)
                     {
-                        LOG("Error while setting camera texture data : " + ex.Message);
+                        RGBtoRGBA_Safe(ref grabResultBuffer_RGB, ref textureSizedBuffer);
+                        type = "safe [i_t+=4]";
+
                     }
+                    stopwatch.Stop();
+                    LOG(string.Format("RGB to RGBA texture conversion {1} took [{0}]", stopwatch.Elapsed, type));
+
+
+                    if (config.cameraFrameQueueLength == config.cameraFrameQueueLengthList[0])
+                    {
+                        SetTextureData(textureSizedBuffer);
+                    }
+                    else
+                    {
+                        lock (queuePixelData_locker)
+                        {
+                            queuePixelData.Enqueue(textureSizedBuffer);
+                            int queuePixelDataCount = queuePixelData.Count;
+                            if (queuePixelDataCount == config.cameraFrameQueueLength)
+                            {
+                                SetTextureData(queuePixelData.Dequeue());
+                            }
+                            else if (queuePixelDataCount > config.cameraFrameQueueLength)
+                            {
+                                // when cameraFrameQueueLength changed to smaller number
+                                while (queuePixelData.Count > config.cameraFrameQueueLength)
+                                {
+                                    queuePixelData.Dequeue(); // skip them
+                                }
+                            }
+
+                        }
+                    }
+                    LOG("ended recounting texture");
+                    LOG("cameraTexture.SetData<byte>(textureSizeBuffer);");
+                    LOG("ended" + DateTime.UtcNow.ToString());
                 }
-                LOG("ended" + DateTime.UtcNow.ToString());
             }
             else
             {
-                lock (cameraTexture_locker)
-                {
-                    cameraTexture.SetData<byte>(grabResultBuffer_RGB);
-                }
+                SetTextureData(grabResultBuffer_RGB);
             }
         }
 
+        private void SetTextureData(byte[] textureSizedBuffer)
+        {
+            lock (cameraTexture_locker)
+            {
+                try
+                {
+                    cameraTexture.SetData<byte>(textureSizedBuffer);
+                }
+                catch (Exception ex)
+                {
+                    LOG("Error while setting camera texture data : " + ex.Message);
+                }
+            }
+        }
         protected virtual void Draw_BaslerCamera(GameTime _gameTime)
         {
             lock (cameraTexture_locker)
@@ -342,8 +303,9 @@ namespace EyeOut_Telepresence
 
         public void START_streaming()
         {
-            if (config.camera.StartGrabbing())
+            if (config.cameraControl.StartGrabbing())
             {
+                timeStartedStreaming = DateTime.UtcNow.ToLocalTime();
                 if (C_State.FURTHER(e_stateBaslerCam.initialized))
                 {
                     C_State.SET_state(e_stateBaslerCam.streaming);
@@ -353,7 +315,7 @@ namespace EyeOut_Telepresence
 
         public void STOP_streaming()
         {
-            if(config.camera.StopGrabbing())
+            if(config.cameraControl.StopGrabbing())
             {
                 if(C_State.FURTHER(e_stateBaslerCam.initialized))
                 {

@@ -74,7 +74,7 @@ namespace EyeOut
                     RoboticArm = cbTelepresence_RoboticArm.IsChecked.Value
                 },
 
-                camera = new BaslerCameraControl()
+                cameraControl = new BaslerCameraControl()
 
                 //hmdType = HMDType.DK1,
             };

@@ -25,7 +25,6 @@ namespace EyeOut_Telepresence
         private string fpsText;
         private readonly Stopwatch fpsClock;
 
-
         void Constructor_FPS()
         {
             // Variable used for FPS
