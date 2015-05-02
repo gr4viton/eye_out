@@ -25,14 +25,19 @@ namespace EyeOut
         public StreamController streamController;
         public BaslerCamera camera;
         public static PixelDataConverter converter;
-        public static long destinationBufferSize;
+        public long destinationBufferSize;
         public static PixelType sourcePixelType = PixelType.BayerRG8;
 
         private static IGrabResult storedGrabResult;
         private static bool storedNewGrabResult = true;
         private static object storedGrabResult_locker = new object();
 
-        public static bool StoredNewGrabResult
+
+        private int expositionTime = 10000; // in [us]
+        private int maxNumBuffer = 300; //50
+
+
+        public bool StoredNewGrabResult
         {
             get
             {
@@ -82,11 +87,13 @@ namespace EyeOut
                 camera.CameraOpened += Configuration.AcquireContinuous;
                 //camera.CameraOpened += Configuration.;
 
+                
+
                 camera.Open();
                 LOG("camera opened");
                 camera.Parameters[PLCamera.ExposureMode].SetValue(PLCamera.ExposureMode.Timed);
-                camera.Parameters[PLCamera.ExposureTime].SetValue(10000); // in [us]
-                camera.Parameters[PLCameraInstance.MaxNumBuffer].SetValue(50);
+                camera.Parameters[PLCamera.ExposureTime].SetValue(expositionTime); // in [us]
+                camera.Parameters[PLCameraInstance.MaxNumBuffer].SetValue(maxNumBuffer);
 
                 //camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
 

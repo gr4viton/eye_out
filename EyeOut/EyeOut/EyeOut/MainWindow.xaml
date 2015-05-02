@@ -673,9 +673,11 @@
                             </ListBox>-->
                         </StackPanel>
                     </GroupBox>
-                    <GroupBox Header="Export" Grid.Column="2">
+                    <GroupBox Header="Logging to file on disk" Grid.Column="2">
                         <StackPanel>
-                            <Button Content="Export whole log to csv" IsEnabled="False"/>
+                            <TextBox x:Name="txLogFilePath">C:\log_eyeOut.txt</TextBox>
+                            <Button x:Name="btnSetLogFilePath" Content="Set file path" Click="btnSetLogFilePath_Click"/>
+                            <TextBlock TextWrapping="Wrap" ><Run Text="Relative path is relative to the directory where the program has been run -> in case of debugging it is Project/bin/Debug"/></TextBlock>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Information" Grid.Column="4">

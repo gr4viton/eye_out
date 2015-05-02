@@ -153,7 +153,8 @@ namespace EyeOut
             ADD_toBuffer(new C_LogMsg { src = _src, msg = _msg, type = _type });
         }
 
-        private string filePath = @"log.txt";
+        //public string filePath = @"log.txt";
+        public string filePath = @"C:\log_eyeOut.txt";
         private System.IO.StreamWriter file;
         private bool fileIsOpen = false;
         public void OPEN_file(string filePath)

@@ -57,7 +57,7 @@ namespace EyeOut_Telepresence
         //private PixelFormat cameraTexturePixelFormat = PixelFormat.R8G8B8A8.UNorm;
         private PixelFormat cameraTexturePixelFormat = PixelFormat.B8G8R8X8.UNorm;
         private BasicEffect cameraBasicEffect;
-
+        
         BackgroundWorker UpdateTexture_worker;
 
         private long cameraTextureByteCount;
@@ -96,7 +96,7 @@ namespace EyeOut_Telepresence
                 {
                     int width;
                     int height;
-                
+
                     byte[] destinationBuffer = config.camera.ConvertStoredGrabResultToByteArray(out width, out height);
 
                     if (destinationBuffer == null)

@@ -358,6 +358,11 @@ namespace EyeOut
                 camTry.CloseCamera();
         }
 
+        private void btnSetLogFilePath_Click(object sender, RoutedEventArgs e)
+        {
+            C_Logger.Instance.filePath = @txLogFilePath.Text;
+        }
+
 
 
 
