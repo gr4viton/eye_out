@@ -154,10 +154,13 @@ namespace EyeOut_Telepresence
             //}
             if (cameraTextureByteCount != destinationBuffer.Length)
             {
-
+                LOG("byte[] textureSizeBuffer = new byte[cameraTextureByteCount];");
                 byte[] textureSizeBuffer = new byte[cameraTextureByteCount];
                 //destinationBuffer.CopyTo(textureSizeBuffer, 0);
 
+                LOG("started recounting texture" + DateTime.UtcNow.ToString());
+
+                // 30ms
                 int num = destinationBuffer.Length / 3;
                 int i;
                 for (i = 0; i < num; i++)
@@ -167,9 +170,15 @@ namespace EyeOut_Telepresence
                     textureSizeBuffer[4 * i + 2] = destinationBuffer[3 * i + 2];
                     textureSizeBuffer[4 * i + 3] = 255;
                 }
-                //textureSizeBuffer
 
-                cameraTexture.SetData<byte>(textureSizeBuffer);
+                //textureSizeBuffer
+                LOG("ended recounting texture");
+                LOG("cameraTexture.SetData<byte>(textureSizeBuffer);");
+                lock (cameraTexture_locker)
+                {
+                    cameraTexture.SetData<byte>(textureSizeBuffer);
+                }
+                LOG("ended" + DateTime.UtcNow.ToString());
             }
             else
             {

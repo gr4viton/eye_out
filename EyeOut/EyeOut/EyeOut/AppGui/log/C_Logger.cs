@@ -19,7 +19,7 @@ using System.Windows.Shapes;
 //using System.Windows;
 using System.Data; //DataGrid
 using System.Collections.ObjectModel; // ObservableCollection
-
+using System.Globalization; // cultureinfo tostring
 
 namespace EyeOut
 {
@@ -33,13 +33,13 @@ namespace EyeOut
      */
     public enum e_LogMsgSource
     {
+        cam, cam_err,
+        oculus, oculus_err,
         packet, packInstruct, packStatus, 
         spi, spi_sent, spi_got, spi_err,
         gui, log, 
         mot, mot_yaw, mot_pitch, mot_roll,
         byteReg,
-        cam, cam_err,
-        oculus, oculus_err,
         valConv, debug, unimportant
     }
     public enum e_LogMsgType
@@ -261,13 +261,15 @@ namespace EyeOut
         public string msg { get; set; }
         public C_LogMsg()
         {
-            time = DateTime.UtcNow;
+            time = DateTime.UtcNow.ToLocalTime();
             type = e_LogMsgType.info;
             queue = 0;
         }
         public override string ToString()
         {
-            return string.Format("{0}\t|{1}\t|{2}\t|{3}\t|{4}", time, queue, type, src, msg);
+            return string.Format("{0}\t|{1}\t|{2}\t|{3}\t|{4}", 
+                time.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), 
+                queue, type, src, msg);
         }
     }
 }

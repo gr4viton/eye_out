@@ -41,7 +41,7 @@ namespace EyeOut
         public void INIT_TelepresenceConfigAndPrepareGui()
         {
             lsLogSrcSelction.UnselectAll();
-            LOG_filterIn(e_LogMsgSource.oculus);
+            //LOG_filterIn(e_LogMsgSource.oculus);
             LOG_filterIn(e_LogMsgSource.oculus_err);
 
             TP_config = new TelepresenceSystemConfiguration()
