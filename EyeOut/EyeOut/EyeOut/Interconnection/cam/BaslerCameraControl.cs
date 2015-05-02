@@ -25,7 +25,7 @@ namespace EyeOut
         public StreamController streamController;
         public BaslerCamera camera;
         public static PixelDataConverter converter;
-        public long destinationBufferSize;
+        public long grabResultBufferRGB_size;
         public static PixelType sourcePixelType = PixelType.BayerRG8;
 
         private static IGrabResult storedGrabResult;
@@ -153,7 +153,8 @@ namespace EyeOut
                     {
                         if (initialized == false)
                         {
-                            destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
+                            grabResultBufferRGB_size = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
+                            
                             initialized = true;
                             LOG("destinationBufferSize initialized!");
                         }
@@ -175,43 +176,18 @@ namespace EyeOut
             } 
         }
 
-        public byte[] ConvertGrabResultToByteArray(IGrabResult grabResult)
+        public void ConvertGrabResultToByteArray(IGrabResult grabResult, ref byte[] grabResultBufferRGB)
         {
-            byte[] destinationBuffer = new byte[destinationBufferSize];
-            converter.Convert<byte, byte>(destinationBuffer, (byte[])grabResult.PixelData,
+
+            //grabResultBufferRGB = new byte[grabResultBufferRGB_size];
+            converter.Convert<byte, byte>(grabResultBufferRGB, (byte[])grabResult.PixelData,
                 sourcePixelType, grabResult.Width, grabResult.Height,
                 grabResult.PaddingX, grabResult.Orientation);
             initialized = true;
-            return destinationBuffer;
         }
 
 
-        public bool StartCapturingLoop()
-        {
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += CaptureImageLoop_DoWork;
-            bw.RunWorkerAsync();
-            return true;
-        }
-
-        public void CaptureImage()
-        {
-            byte[] destinationBuffer = ConvertGrabResultToByteArray(storedGrabResult);
-            LOG(string.Format("RGB of first pixel: {0}|{1}|{2}", destinationBuffer[0], destinationBuffer[1], destinationBuffer[2]));
-        }
-
-        public void CaptureImageLoop_DoWork(object sender, DoWorkEventArgs e)
-        {
-            bool CaptureImages = true;
-            while (CaptureImages)
-            {
-                CaptureImage();
-                Thread.Sleep(1);
-            }
-        }
-        
-        
-        public byte[] ConvertStoredGrabResultToByteArray(out int GrabResultWidth, out int GrabResultHeight)
+        public void ConvertStoredGrabResultToByteArray(ref byte[] grabResultBufferRGB, out int GrabResultWidth, out int GrabResultHeight)
         {
             lock (storedGrabResult_locker)
             {
@@ -219,23 +195,22 @@ namespace EyeOut
                 {
                     GrabResultWidth = storedGrabResult.Width;
                     GrabResultHeight = storedGrabResult.Height;
-                    return ConvertGrabResultToByteArray(storedGrabResult);
+                    ConvertGrabResultToByteArray(storedGrabResult, ref grabResultBufferRGB);
+                    return;
                 }
             }
             GrabResultHeight = GrabResultWidth = 0;
-            return null;
         }
 
-        public byte[] ConvertStoredGrabResultToByteArray()
+        public void ConvertStoredGrabResultToByteArray(ref byte[] grabResultBufferRGB)
         {
             lock (storedGrabResult_locker)
             {
                 if (storedGrabResult != null)
                 {
-                    return ConvertGrabResultToByteArray(storedGrabResult);
+                    ConvertGrabResultToByteArray(storedGrabResult, ref grabResultBufferRGB);
                 }
             }
-            return null;
         }
 
 
@@ -281,7 +256,7 @@ namespace EyeOut
                         // Image grabbed successfully?
                         if (grabResult.GrabSucceeded)
                         {
-                            destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
+                            grabResultBufferRGB_size = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
 
                             lock (storedGrabResult_locker)
                             {

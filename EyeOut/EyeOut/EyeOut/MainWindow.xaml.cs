@@ -336,8 +336,8 @@ namespace EyeOut
 
         private void btnAcquireImage_Click(object sender, RoutedEventArgs e)
         {
-            if (camTry != null)
-                camTry.CaptureImage();
+            //if (camTry != null)
+            //    camTry.CaptureImage();
         }
 
         private void btnStopBaslerCameraImageAcquisition_Click(object sender, RoutedEventArgs e)
@@ -348,8 +348,8 @@ namespace EyeOut
 
         private void btnStartCaptureLoop_Click(object sender, RoutedEventArgs e)
         {
-            if (camTry != null)
-                camTry.StartCapturingLoop();
+            //if (camTry != null)
+            //    camTry.StartCapturingLoop();
         }
 
         private void btnCloseCamera_Click(object sender, RoutedEventArgs e)
