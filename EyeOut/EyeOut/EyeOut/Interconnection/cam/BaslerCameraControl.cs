@@ -16,6 +16,8 @@ using System.Threading;
 //using System.Windows.Threading;
 using System.ComponentModel;
 
+//using System.Timers;
+
 namespace EyeOut
 {
     public class BaslerCameraControl
@@ -31,6 +33,10 @@ namespace EyeOut
 
         private static int executedShots = 0;
         private static object executedShots_locker = new object();
+
+        private static Timer ShooterTimer;
+
+
         public static bool initialized = false;
         public static object initialize_locker = new object();
 
@@ -52,17 +58,51 @@ namespace EyeOut
             //converter.OutputPixelFormat = PixelType.RGB8planar; // planar BBBBB ??
             converter.OutputPixelFormat = PixelType.RGB8packed; // RGB?
         }
-        
+
+
+        void StartShooterTimer()
+        {
+            camera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
+            StartGrabbing();
+            ShooterTimer = new Timer(ShooterTimer_Elapsed, null, 10, 20);
+        }
+
+        void StopShooterTimer()
+        {
+            ShooterTimer.Dispose();
+        }
+
+        void ShooterTimer_Elapsed(object state)
+        {
+            if (camera.StreamGrabber.IsGrabbing)
+            {
+                lock (executedShots_locker)
+                {
+                    if (executedShots > 20)
+                    {
+                        return;
+                    }
+                }
+                //if (camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return) == true)
+                {
+                    camera.ExecuteSoftwareTrigger();
+                    LOG("Executed Shoot softwared trigger!");
+                    executedShots++;
+                    //Thread.Sleep(200);
+                    //GrabImages = false;
+                }
+            }
+            else
+            {
+                ShooterTimer.Dispose();
+            }
+        }
+
         public void ShooterLoop_DoWork(object sender, DoWorkEventArgs e)
         {
             LOG("ShooterLoop started");
-            // Set a handler for processing the images.
             camera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
 
-            // Start grabbing using the grab loop thread. This is done by setting the grabLoopType parameter
-            // to GrabLoop.ProvidedByStreamGrabber. The grab results are delivered to the image event handler OnImageGrabbed.
-            // The default grab strategy (GrabStrategy_OneByOne) is used.
-            //camera.StreamGrabber.Start(GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
             StartGrabbing();
 
             bool GrabImages = true ;
@@ -83,7 +123,7 @@ namespace EyeOut
                                 camera.ExecuteSoftwareTrigger();
                                 LOG("Executed Shoot softwared trigger!");
                                 executedShots++;
-                                Thread.Sleep(200);
+                                //Thread.Sleep(200);
                                 //GrabImages = false;
                             }
                             //else
@@ -225,9 +265,12 @@ namespace EyeOut
         }
         public bool StartGrabbingLoop()
         {
+            StartShooterTimer();
+            /*
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += ShooterLoop_DoWork;
             bw.RunWorkerAsync();
+             * */
             return true;
         }
 
@@ -247,8 +290,8 @@ namespace EyeOut
             if (camera.StreamGrabber.IsGrabbing == false)
             {
                 executedShots = 0;
-                //camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
-                camera.StreamGrabber.Start();
+                camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                //camera.StreamGrabber.Start();
                 LOG("grabbing started");
                 //camera.StreamGrabber.Start();
                 return true;
