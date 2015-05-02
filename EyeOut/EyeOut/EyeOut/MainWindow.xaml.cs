@@ -320,15 +320,15 @@ namespace EyeOut
         }
 
 
-        C_BaslerCamera camTry;
+        BaslerCameraControl camTry;
         private void btnStartBaslerCameraImageAcquisition_Click(object sender, RoutedEventArgs e)
         {
             if (guiCameraLister.Camera != null)
             {
                 guiCameraLister.Camera.Close();
             }
-            if(camTry == null)
-                camTry = new C_BaslerCamera(guiStreamController, guiImageViewer, guiCameraLister);
+            if (camTry == null)
+                camTry = new BaslerCameraControl();//(guiStreamController, guiImageViewer, guiCameraLister);
             camTry.StartGrabbingLoop();
         }
 

@@ -56,35 +56,16 @@ namespace EyeOut_Telepresence
 
         public bool ReadCameraStream = false;
 
-        private object locker_imageViewer = new object();
 
         public bool motorSpeedControl;
-
-        private ImageViewer imageViewer;
-        public ImageViewer ImageViewer
-        {
-            get
-            {
-                lock (locker_imageViewer)
-                {
-                    return imageViewer;
-                }
-            }
-            set
-            {
-                lock (locker_imageViewer)
-                {
-                    imageViewer = value;
-                }
-            }
-        }
-        public StreamController streamController;
-
+        
         public Player player = new Player();
 
         public int[] cameraFrameQueueLengthList = new int[] { 1, 2, 5, 12, 20, 50 };
-        public int cameraFrameQueueLength = 12;
-        public System.Windows.Threading.Dispatcher guiDispatcher;
+        public int cameraFrameQueueLength = 1;
+
+        public BaslerCameraControl camera;
+        //public System.Windows.Threading.Dispatcher guiDispatcher;
         public TelepresenceSystemConfiguration() { }
     }
 }

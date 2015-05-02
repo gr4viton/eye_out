@@ -74,13 +74,9 @@ namespace EyeOut
                     RoboticArm = cbTelepresence_RoboticArm.IsChecked.Value
                 },
 
-                //hmdType = HMDType.DK1,
+                camera = new BaslerCameraControl()
 
-                streamController = guiStreamController,
-                ImageViewer = guiImageViewer,
-                //imageViewer = new ImageViewer()
-                //imageViewer = new Basler.Pylon.Controls.WPF.ImageViewer()
-                guiDispatcher = guiImageViewer.Dispatcher
+                //hmdType = HMDType.DK1,
             };
 
             if (cbStickToCameraData.IsChecked.Value == true)
@@ -88,76 +84,6 @@ namespace EyeOut
                 TP_config.player.PositionLockActive = true;
                 TP_config.player.PositionLock = e_positionLock.cameraSensor;
             }
-            //guiStreamController.Dispose();
-
-            //TP_config.imageViewer = new ImageViewer();
-            //TP_config.streamController = new StreamController();
-
-            TP_config.streamController.BeginInit();
-            TP_config.ImageViewer.BeginInit();
-            if (guiStreamController.Camera != null)
-            {
-                // take selected camera
-                TP_config.streamController.Camera = guiStreamController.Camera;
-            }
-            else
-            {
-                if (guiCameraLister.Camera != null)
-                {
-                    // take selected camera
-                    TP_config.streamController.Camera = guiCameraLister.Camera;
-                }
-                else
-                {
-                    int res = 0;
-                    foreach (var cameraModel in guiCameraLister.CameraList)
-                    {
-                        
-                        if(res == 0)
-                        {
-                            TP_config.streamController.Camera = cameraModel.Camera;
-                        }
-                        res++;
-                    }
-                    if (TP_config.streamController.Camera != null)
-                    {
-                        // inform that this telepresence will use the first camera from connected camera list
-                        if (cbSafe_NoCameraSelectedWarning.IsChecked.Value == true)
-                        {
-                            MessageBox.Show("No Basler camera selected in 'Basler camera' tab!\nThis telepresence session will use the first one from the camera list:\n"
-                            + TP_config.streamController.Camera.CameraInfo.ToString());
-                        }
-                    }
-                    if (res == 0) // no cameras found
-                    {
-                        // inform that the camera is not going to be assigned in this telepresence settings as the camera is not connected
-                        MessageBox.Show("No Basler camera found!\nThere will be no streamed camera image in this telepresence session!\n"
-                            + "Please connect Basler camera to some port (USB3.0 for Basler acA2040-90uc) and check whether it is found in 'Basler camera' tab!",
-                            "No Basler camera found!", MessageBoxButton.OK);
-                    }
-                }
-            }
-
-            TP_config.ImageViewer.Camera = TP_config.streamController.Camera;
-            TP_config.streamController.ActiveViewer = TP_config.ImageViewer;
-
-            TP_config.streamController.Camera.Open();
-
-            
-            //Basler.Pylon.Controls.WPF.IRenderer renderer;
-            //TP_config.imageViewer.Renderer = renderer;
-            //TP_config.imageViewer.SnapsToDevicePixels = true;
-                //Basler.Pylon.Controls.WPF.InteropBitmapRenderer
-
-
-            TP_config.streamController.EndInit();
-            TP_config.ImageViewer.EndInit();
-
-           // TP_config.streamController.Camera.StreamGrabber.ImageGrabbed += grabStarted();
-
-
-            // on image changed -> stop / pause the running background worker which is copying data from me - byte by byte - stop before he tries to read now writing data
-            //TP_config.ImageViewer.Camera.StreamGrabber.GrabStopWaitHandle.WaitOne(1);
 
             TP_config.hud.time = true;
 

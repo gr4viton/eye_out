@@ -18,26 +18,23 @@ using System.ComponentModel;
 
 namespace EyeOut
 {
-    class C_BaslerCamera
+    public class BaslerCameraControl
     {
         public BaslerCamera camera;
-        static public PixelDataConverter converter;
-        static long destinationBufferSize;
-        static PixelType sourcePixelType = PixelType.BayerRG8;
+        public static PixelDataConverter converter;
+        public static long destinationBufferSize;
+        public static PixelType sourcePixelType = PixelType.BayerRG8;
 
-        static IGrabResult storedGrabResult;
-        static object storedGrabResult_locker = new object();
-        //static byte[] destinationBuffer;
-        //static bool initialized = false;
-        
-        
+        private static IGrabResult storedGrabResult;
+        private static object storedGrabResult_locker = new object();
 
-        static int executedShots = 0;
-        static object executedShots_locker = new object();
-        static bool initialized = false;
-        static object initialize_locker = new object();
 
-        public C_BaslerCamera(StreamController guiStreamController, ImageViewer guiImageViewer, CameraLister guiCameraLister)
+        private static int executedShots = 0;
+        private static object executedShots_locker = new object();
+        public static bool initialized = false;
+        public static object initialize_locker = new object();
+
+        public BaslerCameraControl()//StreamController guiStreamController, ImageViewer guiImageViewer, CameraLister guiCameraLister)
         {
             camera = new BaslerCamera(CameraSelectionStrategy.FirstFound); 
             
@@ -81,18 +78,18 @@ namespace EyeOut
                         {
                             // Execute the software trigger. Wait up to 100 ms until the camera is ready for trigger.
                             //if (camera.WaitForFrameTriggerReady(5000, TimeoutHandling.ThrowException))
-                            if (camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return) == true)
+                            //if (camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return) == true)
                             {
                                 camera.ExecuteSoftwareTrigger();
                                 LOG("Executed Shoot softwared trigger!");
                                 executedShots++;
-                                //Thread.Sleep(100);
+                                Thread.Sleep(200);
                                 //GrabImages = false;
                             }
-                            else
-                            {
-                                LOG("WaitForFrameTriggerReady didn't waited enaugh");
-                            }
+                            //else
+                            //{
+                            //    LOG("WaitForFrameTriggerReady didn't waited enaugh");
+                            //}
                         }
                         //else
                         //{
@@ -126,17 +123,41 @@ namespace EyeOut
             }
         }
 
-        public byte[] ConvertGrabResultToByteArray(IGrabResult grabResult)
+        public static byte[] ConvertStoredGrabResultToByteArray()
         {
-            byte[] destinationBuffer = new byte[destinationBufferSize];
             lock (storedGrabResult_locker)
             {
+                if (storedGrabResult != null)
+                {
+                    return ConvertGrabResultToByteArray(storedGrabResult);
+                }
+            }
+            return null;
+        }
+
+        public static byte[] ConvertStoredGrabResultToByteArray(out int GrabResultWidth, out int GrabResultHeight)
+        {
+            lock (storedGrabResult_locker)
+            {
+                if (storedGrabResult != null)
+                {
+                    GrabResultWidth = storedGrabResult.Width;
+                    GrabResultHeight = storedGrabResult.Height;
+                    return ConvertGrabResultToByteArray(storedGrabResult);
+                }
+            }
+            GrabResultHeight = GrabResultWidth = 0;
+            return null;
+        }
+
+        public static byte[] ConvertGrabResultToByteArray(IGrabResult grabResult)
+        {
+            byte[] destinationBuffer = new byte[destinationBufferSize];
                 converter.Convert<byte, byte>(destinationBuffer, (byte[])grabResult.PixelData,
                     sourcePixelType, grabResult.Width, grabResult.Height,
                     grabResult.PaddingX, grabResult.Orientation);
                 initialized = true;
                 LOG(string.Format("Camera input buffer initialized with dimensions XY={0}|{1} ", grabResult.Width, grabResult.Height));
-            }
             return destinationBuffer;
         }
 
@@ -165,6 +186,7 @@ namespace EyeOut
                             {
                                 if (initialized == false)
                                 {
+                                    //destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
                                     destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
                                     initialized = true;
                                     LOG("destinationBufferSize initialized!");
@@ -181,7 +203,12 @@ namespace EyeOut
             else
             {
                 LOG_err(string.Format("Unsuccessfull grab - Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription));
-                executedShots--;
+
+                lock (executedShots_locker)
+                {
+                    if (executedShots > 1)
+                        executedShots--;
+                }
             }
             
          
@@ -189,40 +216,47 @@ namespace EyeOut
 
 
 
-        public void StartCapturingLoop()
+        public bool StartCapturingLoop()
         {
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += CaptureImageLoop_DoWork;
             bw.RunWorkerAsync();
+            return true;
         }
-        public void StartGrabbingLoop()
+        public bool StartGrabbingLoop()
         {
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += ShooterLoop_DoWork;
             bw.RunWorkerAsync();
+            return true;
         }
 
-        public void StopGrabbing()
+        public bool StopGrabbing()
         {
             if (camera.StreamGrabber.IsGrabbing)
             {
                 camera.StreamGrabber.Stop();
                 LOG("grabbing stopped");
+                return true;
             }
+            return false;
         }
 
-        public void StartGrabbing()
+        public bool StartGrabbing()
         {
             if (camera.StreamGrabber.IsGrabbing == false)
             {
                 executedShots = 0;
-                camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                //camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                camera.StreamGrabber.Start();
                 LOG("grabbing started");
                 //camera.StreamGrabber.Start();
+                return true;
             }
+            return false;
         }
 
-        public void OpenCamera()
+        public bool OpenCamera()
         {
             if (camera.IsOpen == false)
             {
@@ -233,30 +267,35 @@ namespace EyeOut
                 LOG("camera opened");
                 camera.Parameters[PLCamera.ExposureMode].SetValue(PLCamera.ExposureMode.Timed);
                 camera.Parameters[PLCamera.ExposureTime].SetValue(10000); // in [us]
+                //camera.Parameters[PLCamera.
                 lock (initialize_locker)
                 {
                     initialized = false;
                 }
+                return true;
             }
+            return false;
         }
-        public void CloseCamera()
+        public bool CloseCamera()
         {
             if (camera.IsOpen == true)
             {
                 camera.Close();
                 LOG("camera closed");
+                return true;
             }
+            return false;
         }
 
 
         public static void LOG(string _msg)
         {
-            //C_Logger.Instance.LOG(e_LogMsgSource.cam, _msg);
+            C_Logger.Instance.LOG(e_LogMsgSource.cam, _msg);
         }
 
         public static void LOG_err(string _msg)
         {
-            //C_Logger.Instance.LOG_err(e_LogMsgSource.cam, _msg);
+            C_Logger.Instance.LOG_err(e_LogMsgSource.cam, _msg);
         }
 
 

@@ -197,6 +197,14 @@ namespace EyeOut_Telepresence
             if (keyboardState.IsKeyPressed(Keys.C) && keyboardState.IsKeyDown(Keys.Shift))
             {
                 config.ReadCameraStream ^= true;
+                if (config.ReadCameraStream)
+                {
+                    START_streaming();
+                }
+                else
+                {
+                    STOP_streaming();
+                }
             }
 
 
