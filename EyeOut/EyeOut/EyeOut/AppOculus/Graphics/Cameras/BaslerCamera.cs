@@ -97,7 +97,7 @@ namespace EyeOut_Telepresence
                     int width;
                     int height;
                 
-                    byte[] destinationBuffer = BaslerCameraControl.ConvertStoredGrabResultToByteArray(out width, out height);
+                    byte[] destinationBuffer = config.camera.ConvertStoredGrabResultToByteArray(out width, out height);
 
                     if (destinationBuffer == null)
                     {
@@ -141,7 +141,11 @@ namespace EyeOut_Telepresence
 
         public void UpdateTexture_DoWork(object sender, DoWorkEventArgs e)
         {
-            byte[] destinationBuffer = BaslerCameraControl.ConvertStoredGrabResultToByteArray();
+            if(config.camera.StoredNewGrabResult == false)
+            {
+                return;
+            }
+            byte[] destinationBuffer = config.camera.ConvertStoredGrabResultToByteArray();
 
             //queuePixelData.Enqueue(destinationBuffer);
             //if (queuePixelData.Count == config.cameraFrameQueueLength)

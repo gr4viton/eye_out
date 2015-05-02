@@ -29,8 +29,19 @@ namespace EyeOut
         public static PixelType sourcePixelType = PixelType.BayerRG8;
 
         private static IGrabResult storedGrabResult;
+        private static bool storedNewGrabResult = true;
         private static object storedGrabResult_locker = new object();
 
+        public static bool StoredNewGrabResult
+        {
+            get
+            {
+                lock (storedGrabResult_locker)
+                {
+                    return storedNewGrabResult;
+                }
+            }
+        }
 
         private static int executedShots = 0;
         private static object executedShots_locker = new object();
@@ -46,298 +57,43 @@ namespace EyeOut
             camera = new BaslerCamera(CameraSelectionStrategy.FirstFound);
             streamController = new StreamController();
 
-
             converter = new PixelDataConverter();
             //converter.OutputPixelFormat = PixelType.RGB8planar; // planar BBBBB ??
             converter.OutputPixelFormat = PixelType.RGB8packed; // RGB?
 
-
             camera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
 
             OpenCamera();
-
-            if (camera.IsOpen == false)
-                LOG("neni otevrena");
-
-            LOG(string.Format("Model: {0}",
-                camera.Parameters[PLCamera.DeviceModelName].GetValue()
-                ));
-        }
-
-
-        void StartShooterTimer()
-        {
-            camera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
-            StartGrabbing();
-            ShooterTimer = new Timer(ShooterTimer_Elapsed, null, 10, 20);
-        }
-
-        void StopShooterTimer()
-        {
-            ShooterTimer.Dispose();
-        }
-
-        void ShooterTimer_Elapsed(object state)
-        {
-            if (camera.StreamGrabber.IsGrabbing)
-            {
-                streamController.StopStreaming();
-            }
-            else
-            {
-                streamController.StartStreaming();
-                //ShooterTimer.Dispose();
-            }
-        }
-
-        public void ShooterLoop_DoWork(object sender, DoWorkEventArgs e)
-        {
-            LOG("ShooterLoop started");
-            camera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
+            LOG(string.Format("Model: {0}", camera.Parameters[PLCamera.DeviceModelName].GetValue() ));
 
             StartGrabbing();
 
-            bool GrabImages = true ;
+            ////if (camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return) == true)
+            //{
+            //    camera.ExecuteSoftwareTrigger();
 
-            // Software triggering is used to trigger the camera device.
-            while (GrabImages)
-            {
-                if (camera.StreamGrabber.IsGrabbing)
-                {
-                    lock (executedShots_locker)
-                    {
-                        if (executedShots == 0)
-                        {
-                            // Execute the software trigger. Wait up to 100 ms until the camera is ready for trigger.
-                            //if (camera.WaitForFrameTriggerReady(5000, TimeoutHandling.ThrowException))
-                            //if (camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return) == true)
-                            {
-                                camera.ExecuteSoftwareTrigger();
-                                LOG("Executed Shoot softwared trigger!");
-                                executedShots++;
-                                //Thread.Sleep(200);
-                                //GrabImages = false;
-                            }
-                            //else
-                            //{
-                            //    LOG("WaitForFrameTriggerReady didn't waited enaugh");
-                            //}
-                        }
-                        //else
-                        //{
-                        //    LOG("Sent more shot Executions than received, waiting for recieving grab result from last shot!");
-                        //}
-                    }
-                }
-                else
-                {
-                    GrabImages = false;
-                    LOG("Could not execute shooting, camera is not grabbing!");
-                }
-            }
-            LOG("ShooterLoop stopped");
-        }
-
-
-        public void CaptureImage()
-        {
-            byte[] destinationBuffer = ConvertGrabResultToByteArray(storedGrabResult);
-            LOG(string.Format("RGB of first pixel: {0}|{1}|{2}", destinationBuffer[0], destinationBuffer[1], destinationBuffer[2]));
-        }
-
-        public void CaptureImageLoop_DoWork(object sender, DoWorkEventArgs e)
-        {
-            bool CaptureImages = true;
-            while (CaptureImages)
-            {
-                CaptureImage();
-                Thread.Sleep(1);
-            }
-        }
-
-        public static byte[] ConvertStoredGrabResultToByteArray()
-        {
-            lock (storedGrabResult_locker)
-            {
-                if (storedGrabResult != null)
-                {
-                    return ConvertGrabResultToByteArray(storedGrabResult);
-                }
-            }
-            return null;
-        }
-
-        public static byte[] ConvertStoredGrabResultToByteArray(out int GrabResultWidth, out int GrabResultHeight)
-        {
-            lock (storedGrabResult_locker)
-            {
-                if (storedGrabResult != null)
-                {
-                    GrabResultWidth = storedGrabResult.Width;
-                    GrabResultHeight = storedGrabResult.Height;
-                    return ConvertGrabResultToByteArray(storedGrabResult);
-                }
-            }
-            GrabResultHeight = GrabResultWidth = 0;
-            return null;
-        }
-
-        public static byte[] ConvertGrabResultToByteArray(IGrabResult grabResult)
-        {
-            byte[] destinationBuffer = new byte[destinationBufferSize];
-                converter.Convert<byte, byte>(destinationBuffer, (byte[])grabResult.PixelData,
-                    sourcePixelType, grabResult.Width, grabResult.Height,
-                    grabResult.PaddingX, grabResult.Orientation);
-                initialized = true;
-                LOG(string.Format("Camera input buffer initialized with dimensions XY={0}|{1} ", grabResult.Width, grabResult.Height));
-            return destinationBuffer;
-        }
-
-        // Example of an image event handler.
-        void OnImageGrabbed(Object sender, ImageGrabbedEventArgs e)
-        {
-            LOG("OnImageGrabbed started");
-            IGrabResult grabResult = e.GrabResult;
-            // Image grabbed successfully?
-            if (grabResult.GrabSucceeded)
-            {
-                //lock (executedShots_locker)
-                //{
-                //    if (executedShots > 0)
-                //    {
-                        //executedShots--;
-                        //LOG("gotLastShot ! executedShots = "+executedShots.ToString());
-                        // Access the image data.
-                        LOG(string.Format("GrabbedImage XY={0}|{1} ", grabResult.Width, grabResult.Height));
-
-                        lock (storedGrabResult_locker)
-                        {
-                            LOG("Started to store grabbed result copy!");
-
-                                //storedGrabResult = grabResult.Clone();
-
-                            var bg = new BackgroundWorker { WorkerSupportsCancellation = true };
-                            bg.DoWork += StoreGrabResult;
-
-                            //const int Timeout = 20;
-                            //Action a = () =>
-                            //{
-                            //    Thread.Sleep(Timeout);
-                            //    //bg.CancelAsync();
-                            //    bg.Dispose();
-                            //};
-                            //a.BeginInvoke(delegate { }, null);
-
-                            bg.RunWorkerAsync(grabResult);
-
-                            Thread.Sleep(20);
-                            bg.Dispose();
-
-                            //LOG("Stored grabbed result copy!");
-                            //lock (initialize_locker)
-                            //{
-                            //    if (initialized == false)
-                            //    {
-                            //        //destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
-                            //        destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
-                            //        initialized = true;
-                            //        LOG("destinationBufferSize initialized!");
-                            //    }
-                            //}
-
-                            //grabResult.Dispose();
-                        }
-                //    }
-                //    else
-                //    {
-                //        LOG("Got some shot, but gotLastShot was already true!");
-                //    }
-                //}
-            }
-            else
-            {
-                LOG_err(string.Format("Unsuccessfull grab - Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription));
-
-            } 
-        }
-
-        void StoreGrabResult(object sender, DoWorkEventArgs e)
-        {
-            IGrabResult grabResult = (IGrabResult)e.Argument;
-            try
-            {
-                storedGrabResult = grabResult.Clone();
-            }
-            catch (Exception ex)
-            {
-                LOG_err("exception");
-            }
-            
-        }
-
-
-
-        public bool StartCapturingLoop()
-        {
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += CaptureImageLoop_DoWork;
-            bw.RunWorkerAsync();
-            return true;
-        }
-
-
-
-        public bool StartGrabbing()
-        {
-            if (camera.StreamGrabber.IsGrabbing == false)
-            {
-                camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
-                //camera.StreamGrabber.Start();
-                //streamController.StartStreaming();
-                //StartShooterTimer();
-                LOG("grabbing started");
-                return true;
-            }
-            return false;
-        }
-
-        public bool StopGrabbing()
-        {
-            if (camera.StreamGrabber.IsGrabbing)
-            {
-                //streamController.StopStreaming();
-                camera.StreamGrabber.Stop();
-                LOG("grabbing stopped");
-                return true;
-            }
-            return false;
         }
 
         public bool OpenCamera()
         {
             if (camera.IsOpen == false)
             {
-                // Set the acquisition mode to software triggered continuous acquisition when the camera is opened.
                 //camera.CameraOpened += Configuration.SoftwareTrigger;
                 camera.CameraOpened += Configuration.AcquireContinuous;
+                //camera.CameraOpened += Configuration.;
 
                 camera.Open();
                 LOG("camera opened");
                 camera.Parameters[PLCamera.ExposureMode].SetValue(PLCamera.ExposureMode.Timed);
-                camera.Parameters[PLCamera.ExposureTime].SetValue(100000); // in [us]
+                camera.Parameters[PLCamera.ExposureTime].SetValue(10000); // in [us]
+                camera.Parameters[PLCameraInstance.MaxNumBuffer].SetValue(50);
+
                 //camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
 
-
-                //bandwidth is insufficient
-
-                //camera.StreamGrabber.MaxNumBuffer =
-
                 //streamController.Camera = camera;
-
                 //streamController.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
                 //streamController.Camera.StreamGrabber.Stop();
 
-                //camera.Parameters[PLCamera.
                 lock (initialize_locker)
                 {
                     initialized = false;
@@ -356,6 +112,131 @@ namespace EyeOut
             }
             return false;
         }
+
+        public bool StartGrabbing()
+        {
+            if (camera.StreamGrabber.IsGrabbing == false)
+            {
+                camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                //camera.StreamGrabber.Start();
+                //streamController.StartStreaming();
+                LOG("grabbing started");
+                return true;
+            }
+            return false;
+        }
+
+        public bool StopGrabbing()
+        {
+            if (camera.StreamGrabber.IsGrabbing)
+            {
+                //streamController.StopStreaming();
+                camera.StreamGrabber.Stop();
+                LOG("grabbing stopped");
+                return true;
+            }
+            return false;
+        }
+        // Example of an image event handler.
+        void OnImageGrabbed(Object sender, ImageGrabbedEventArgs e)
+        {
+            LOG("OnImageGrabbed started");
+            IGrabResult grabResult = e.GrabResult;
+            if (grabResult.GrabSucceeded) // Image grabbed successfully?
+            {
+                LOG(string.Format("GrabbedImage XY={0}|{1} ", grabResult.Width, grabResult.Height));
+
+                lock (storedGrabResult_locker)
+                {
+                    lock (initialize_locker)
+                    {
+                        if (initialized == false)
+                        {
+                            destinationBufferSize = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
+                            initialized = true;
+                            LOG("destinationBufferSize initialized!");
+                        }
+                    }
+
+                    storedGrabResult = grabResult.Clone();
+                    storedNewGrabResult = true;
+                    //LOG("Started to convert grabbed result!");
+                    //byte[] rgb = ConvertGrabResultToByteArray(grabResult);
+                    //LOG("Grabbed result converted to byte array!");
+
+                }
+
+            }
+            else
+            {
+                LOG_err(string.Format("Unsuccessfull grab - Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription));
+
+            } 
+        }
+
+        public byte[] ConvertGrabResultToByteArray(IGrabResult grabResult)
+        {
+            byte[] destinationBuffer = new byte[destinationBufferSize];
+            converter.Convert<byte, byte>(destinationBuffer, (byte[])grabResult.PixelData,
+                sourcePixelType, grabResult.Width, grabResult.Height,
+                grabResult.PaddingX, grabResult.Orientation);
+            initialized = true;
+            return destinationBuffer;
+        }
+
+
+        public bool StartCapturingLoop()
+        {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += CaptureImageLoop_DoWork;
+            bw.RunWorkerAsync();
+            return true;
+        }
+
+        public void CaptureImage()
+        {
+            byte[] destinationBuffer = ConvertGrabResultToByteArray(storedGrabResult);
+            LOG(string.Format("RGB of first pixel: {0}|{1}|{2}", destinationBuffer[0], destinationBuffer[1], destinationBuffer[2]));
+        }
+
+        public void CaptureImageLoop_DoWork(object sender, DoWorkEventArgs e)
+        {
+            bool CaptureImages = true;
+            while (CaptureImages)
+            {
+                CaptureImage();
+                Thread.Sleep(1);
+            }
+        }
+        
+        
+        public byte[] ConvertStoredGrabResultToByteArray(out int GrabResultWidth, out int GrabResultHeight)
+        {
+            lock (storedGrabResult_locker)
+            {
+                if (storedGrabResult != null)
+                {
+                    GrabResultWidth = storedGrabResult.Width;
+                    GrabResultHeight = storedGrabResult.Height;
+                    return ConvertGrabResultToByteArray(storedGrabResult);
+                }
+            }
+            GrabResultHeight = GrabResultWidth = 0;
+            return null;
+        }
+
+        public byte[] ConvertStoredGrabResultToByteArray()
+        {
+            lock (storedGrabResult_locker)
+            {
+                if (storedGrabResult != null)
+                {
+                    return ConvertGrabResultToByteArray(storedGrabResult);
+                }
+            }
+            return null;
+        }
+
 
 
         public static void LOG(string _msg)
