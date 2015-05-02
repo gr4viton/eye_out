@@ -160,23 +160,38 @@ namespace EyeOut_Telepresence
 
                 LOG("started recounting texture" + DateTime.UtcNow.ToString());
 
+                Stopwatch stopwatch = Stopwatch.StartNew();
                 // 30ms - safe version
                 int num = destinationBuffer.Length / 3;
                 int i;
+                int i_t=0; // target index
+                int i_s=0; // source index
                 for (i = 0; i < num; i++)
                 {
-                    textureSizeBuffer[4 * i] = destinationBuffer[3 * i];
-                    textureSizeBuffer[4 * i + 1] = destinationBuffer[3 * i + 1];
-                    textureSizeBuffer[4 * i + 2] = destinationBuffer[3 * i + 2];
-                    textureSizeBuffer[4 * i + 3] = 255;
+                    textureSizeBuffer[i_t++] = destinationBuffer[i_s++];
+                    textureSizeBuffer[i_t++] = destinationBuffer[i_s++];
+                    textureSizeBuffer[i_t++] = destinationBuffer[i_s++];
+                    textureSizeBuffer[i_t++] = 255;
                 }
+
+                stopwatch.Stop();
+
+                LOG(string.Format("Recounting texture safe [i_t++] took [{0}] ms", stopwatch.Elapsed));
+
 
                 //textureSizeBuffer
                 LOG("ended recounting texture");
                 LOG("cameraTexture.SetData<byte>(textureSizeBuffer);");
                 lock (cameraTexture_locker)
                 {
-                    cameraTexture.SetData<byte>(textureSizeBuffer);
+                    try
+                    {
+                        cameraTexture.SetData<byte>(textureSizeBuffer);
+                    }
+                    catch (Exception ex)
+                    {
+                        LOG("Error while setting camera texture data : " + ex.Message);
+                    }
                 }
                 LOG("ended" + DateTime.UtcNow.ToString());
             }
@@ -245,7 +260,7 @@ namespace EyeOut_Telepresence
 
                 stopwatch.Stop();
 
-                LOG(string.Format("Recounting texture unsafe [for(pt++)] took [{0}] ms", stopwatch.ElapsedMilliseconds));
+                LOG(string.Format("Recounting texture unsafe [for(pt++)] took [{0}] ms", stopwatch.Elapsed));
 
 
 
@@ -273,14 +288,21 @@ namespace EyeOut_Telepresence
                 }
                 stopwatch.Stop();
 
-                LOG(string.Format("Recounting texture unsafe [pt+4] took [{0}] ms",stopwatch.ElapsedMilliseconds));
+                LOG(string.Format("Recounting texture unsafe [pt+4] took [{0}] ms", stopwatch.Elapsed));
 
                 //textureSizeBuffer
                 LOG("ended recounting texture");
                 LOG("cameraTexture.SetData<byte>(textureSizeBuffer);");
                 lock (cameraTexture_locker)
                 {
-                    cameraTexture.SetData<byte>(textureSizeBuffer);
+                    try
+                    {
+                        cameraTexture.SetData<byte>(textureSizeBuffer);
+                    }
+                    catch(Exception ex)
+                    {
+                        LOG("Error while setting camera texture data : " + ex.Message);
+                    }
                 }
                 LOG("ended" + DateTime.UtcNow.ToString());
             }
