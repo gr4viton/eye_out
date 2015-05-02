@@ -46,6 +46,12 @@ namespace EyeOut_Telepresence
 
     //}
 
+    public enum e_textureConversionAlgorithm
+    {
+        safeConversion_forLoop = 0, // about 33 ms
+        unsafeConversion_pointerForLoop = 1 // about 17 ms
+    }
+
     /// <summary>
     /// Basler camera part
     /// </summary>
@@ -57,7 +63,9 @@ namespace EyeOut_Telepresence
         //private PixelFormat cameraTexturePixelFormat = PixelFormat.R8G8B8A8.UNorm;
         private PixelFormat cameraTexturePixelFormat = PixelFormat.B8G8R8X8.UNorm;
         private BasicEffect cameraBasicEffect;
-        
+
+        public e_textureConversionAlgorithm textureConversionAlgorithm;
+
         BackgroundWorker UpdateTexture_worker;
 
         private long cameraTextureByteCount;
@@ -161,7 +169,7 @@ namespace EyeOut_Telepresence
                 LOG("started recounting texture" + DateTime.UtcNow.ToString());
 
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                // 30ms - safe version
+
                 int num = destinationBuffer.Length / 3;
                 int i;
                 int i_t=0; // target index
@@ -175,8 +183,28 @@ namespace EyeOut_Telepresence
                 }
 
                 stopwatch.Stop();
-
                 LOG(string.Format("Recounting texture safe [i_t++] took [{0}] ms", stopwatch.Elapsed));
+
+                stopwatch = Stopwatch.StartNew();
+
+                num = destinationBuffer.Length / 3;
+                
+                i_t = 0; // target index
+                i_s = 0; // source index
+                for (i = 0; i < num; i++)
+                {
+                    textureSizeBuffer[i_t] = destinationBuffer[i_s];
+                    textureSizeBuffer[i_t+1] = destinationBuffer[i_s+1];
+                    textureSizeBuffer[i_t+2] = destinationBuffer[i_s+2];
+                    textureSizeBuffer[i_t+3] = 255;
+                    i_s += 3;
+                    i_t += 4;
+                }
+
+                stopwatch.Stop();
+
+
+                LOG(string.Format("Recounting texture safe [i_t+=4] took [{0}] ms", stopwatch.Elapsed));
 
 
                 //textureSizeBuffer
@@ -205,90 +233,70 @@ namespace EyeOut_Telepresence
         }
 
 
-        public unsafe void UpdateTexture_DoWork_Unsafe(object sender, DoWorkEventArgs e)
+        public unsafe void RGBtoRGBA_Unsafe(ref byte[] Source, ref byte[] Target)
+        {
+            int num = Source.Length / 3;
+
+            fixed (byte* pSource = Source, pTarget = Target)
+            {
+                // Set the starting points in source and target for the copying. 
+                byte* ps = pSource + 0;
+                byte* pt = pTarget + 0;
+
+                // Copy the specified number of bytes from source to target. 
+                for (int i = 0; i < num; i++)
+                {
+                    *(pt) = *(ps);
+                    *(pt + 1) = *(ps + 1);
+                    *(pt + 2) = *(ps + 2);
+                    *(pt + 3) = 255;
+                    pt += 4;
+                    ps += 3;
+                }
+            }
+        }
+
+
+
+        public void UpdateTexture_DoWork_Unsafe(object sender, DoWorkEventArgs e)
         {
             if (config.camera.StoredNewGrabResult == false)
             {
                 return;
             }
-            byte[] destinationBuffer = config.camera.ConvertStoredGrabResultToByteArray();
+            byte[] grabResultBuffer_RGB = config.camera.ConvertStoredGrabResultToByteArray();
 
             //queuePixelData.Enqueue(destinationBuffer);
             //if (queuePixelData.Count == config.cameraFrameQueueLength)
             //{
             //    cameraTexture.SetData<byte>(queuePixelData.Dequeue());
             //}
-            if (cameraTextureByteCount != destinationBuffer.Length)
+            if (cameraTextureByteCount != grabResultBuffer_RGB.Length)
             {
                 LOG("byte[] textureSizeBuffer = new byte[cameraTextureByteCount];");
-                byte[] textureSizeBuffer = new byte[cameraTextureByteCount];
+                byte[] textureSizedBuffer = new byte[cameraTextureByteCount];
                 //destinationBuffer.CopyTo(textureSizeBuffer, 0);
 
-                LOG("started recounting texture" + DateTime.UtcNow.ToString());
+                LOG("started recounting texture");
 
-                Stopwatch stopwatch;
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                string type = "undefined";
 
-                stopwatch = Stopwatch.StartNew();
-
-                int num = destinationBuffer.Length / 3;
-
-                // The following fixed statement pins the location of the source and 
-                // target objects in memory so that they will not be moved by garbage 
-                // collection. 
-
-                // 44 ms
-                int a = 0;
-                fixed (byte* pSource = destinationBuffer, pTarget = textureSizeBuffer)
+                if (textureConversionAlgorithm == e_textureConversionAlgorithm.unsafeConversion_pointerForLoop)
                 {
-                    // Set the starting points in source and target for the copying. 
-                    byte* ps = pSource + 0;
-                    byte* pt = pTarget + 0;
-
-                    // Copy the specified number of bytes from source to target. 
-                    for (int i = 0; i < num; i++)
-                    {
-                        for (a = 0; a < 3; a++)
-                        {
-                            *pt = *ps;
-                            pt++;
-                            ps++;
-                        }
-                        *pt = 255;
-                        pt++;
-                    }
+                    RGBtoRGBA_Unsafe(ref grabResultBuffer_RGB, ref textureSizedBuffer);
+                    type = "unsafe [pt+=4]";
                 }
-
-                stopwatch.Stop();
-
-                LOG(string.Format("Recounting texture unsafe [for(pt++)] took [{0}] ms", stopwatch.Elapsed));
-
-
-
-                stopwatch = Stopwatch.StartNew();
-
-                // The following fixed statement pins the location of the source and 
-                // target objects in memory so that they will not be moved by garbage 
-                // collection. 
-                fixed (byte* pSource = destinationBuffer, pTarget = textureSizeBuffer)
+                else if (textureConversionAlgorithm == e_textureConversionAlgorithm.safeConversion_forLoop)
                 {
-                    // Set the starting points in source and target for the copying. 
-                    byte* ps = pSource + 0;
-                    byte* pt = pTarget + 0;
+                    RGBtoRGBA_Unsafe(ref grabResultBuffer_RGB, ref textureSizedBuffer);
+                    type = "safe [i_t+=4]";
 
-                    // Copy the specified number of bytes from source to target. 
-                    for (int i = 0; i < num; i++)
-                    {
-                        *(pt) = *(ps);
-                        *(pt + 1) = *(ps + 1);
-                        *(pt + 2) = *(ps + 2);
-                        *(pt + 3) = 255;
-                        pt += 4;
-                        ps += 3;
-                    }
                 }
                 stopwatch.Stop();
+                LOG(string.Format("Recounting texture {1} took [{0}] ms", stopwatch.Elapsed, type));
 
-                LOG(string.Format("Recounting texture unsafe [pt+4] took [{0}] ms", stopwatch.Elapsed));
+
 
                 //textureSizeBuffer
                 LOG("ended recounting texture");
@@ -297,7 +305,7 @@ namespace EyeOut_Telepresence
                 {
                     try
                     {
-                        cameraTexture.SetData<byte>(textureSizeBuffer);
+                        cameraTexture.SetData<byte>(textureSizedBuffer);
                     }
                     catch(Exception ex)
                     {
@@ -310,7 +318,7 @@ namespace EyeOut_Telepresence
             {
                 lock (cameraTexture_locker)
                 {
-                    cameraTexture.SetData<byte>(destinationBuffer);
+                    cameraTexture.SetData<byte>(grabResultBuffer_RGB);
                 }
             }
         }
@@ -357,8 +365,8 @@ namespace EyeOut_Telepresence
         public void Constructor_BaslerCamera()
         {
             UpdateTexture_worker = new BackgroundWorker();
-            //UpdateTexture_worker.DoWork += UpdateTexture_DoWork;
-            UpdateTexture_worker.DoWork += UpdateTexture_DoWork_Unsafe;
+            UpdateTexture_worker.DoWork += UpdateTexture_DoWork;
+            //UpdateTexture_worker.DoWork += UpdateTexture_DoWork_Unsafe;
             if (config.ReadCameraStream == true)
             {
                 START_streaming();
@@ -390,3 +398,23 @@ namespace EyeOut_Telepresence
 
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

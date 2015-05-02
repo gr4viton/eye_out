@@ -1,0 +1,77 @@
+
+//____________________________________________________
+// safe i_t++
+Stopwatch stopwatch = Stopwatch.StartNew();
+int num = destinationBuffer.Length / 3;
+int i;
+int i_t=0; // target index
+int i_s=0; // source index
+for (i = 0; i < num; i++)
+{
+    textureSizeBuffer[i_t++] = destinationBuffer[i_s++];
+    textureSizeBuffer[i_t++] = destinationBuffer[i_s++];
+    textureSizeBuffer[i_t++] = destinationBuffer[i_s++];
+    textureSizeBuffer[i_t++] = 255;
+}
+stopwatch.Stop();
+//____________________________________________________
+// safe i_t+=4
+Stopwatch stopwatch = Stopwatch.StartNew();
+int num = destinationBuffer.Length / 3;            
+int i_t = 0; // target index
+int i_s = 0; // source index
+for (i = 0; i < num; i++)
+{
+    textureSizeBuffer[i_t] = destinationBuffer[i_s];
+    textureSizeBuffer[i_t+1] = destinationBuffer[i_s+1];
+    textureSizeBuffer[i_t+2] = destinationBuffer[i_s+2];
+    textureSizeBuffer[i_t+3] = 255;
+    i_s += 3;
+    i_t += 4;
+}
+stopwatch.Stop();
+
+//____________________________________________________
+// unsafe for(pt++)
+int a = 0;
+fixed (byte* pSource = destinationBuffer, pTarget = textureSizeBuffer)
+{
+    byte* ps = pSource + 0;
+    byte* pt = pTarget + 0;
+
+    for (int i = 0; i < num; i++)
+    {
+        for (a = 0; a < 3; a++)
+        {
+            *pt = *ps;
+            pt++;
+            ps++;
+        }
+        *pt = 255;
+        pt++;
+    }
+}
+stopwatch.Stop();
+
+//____________________________________________________
+// unsafe pt+=4
+Stopwatch stopwatch = Stopwatch.StartNew();
+fixed (byte* pSource = destinationBuffer, pTarget = textureSizeBuffer)
+{
+    // Set the starting points in source and target for the copying. 
+    byte* ps = pSource + 0;
+    byte* pt = pTarget + 0;
+
+    // Copy the specified number of bytes from source to target. 
+    for (int i = 0; i < num; i++)
+    {
+        *(pt) = *(ps);
+        *(pt + 1) = *(ps + 1);
+        *(pt + 2) = *(ps + 2);
+        *(pt + 3) = 255;
+        pt += 4;
+        ps += 3;
+    }
+}
+stopwatch.Stop();
+
