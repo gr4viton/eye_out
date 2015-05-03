@@ -325,7 +325,7 @@ namespace EyeOut_Telepresence
                 HUD.AppendLine("actual queue frame length = " + queuePixelData.Count().ToString());
                 HUD.AppendLine("setuped cameraFrameQueueLength = " + config.cameraFrameQueueLength.ToString());
 
-                HUD.AppendLine("queued Actual delay = " + qAct);
+                HUD.AppendLine(string.Format("Actual artificial delay = {0,9:F4} [ms]", qAct.TotalMilliseconds));
             }
 
             HUD.AppendLine(string.Format("Status: [Camera={0}][Motors={1}][SPI={2}]",

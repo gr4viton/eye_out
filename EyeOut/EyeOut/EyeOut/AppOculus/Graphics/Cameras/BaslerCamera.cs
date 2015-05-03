@@ -61,7 +61,7 @@ namespace EyeOut_Telepresence
         private List<byte[]> listPixelData = new List<byte[]>();
 
         private object queuePixelData_locker = new object();
-        DateTime qAct ;
+        TimeSpan qAct ;
         Queue<DateTime> que = new Queue<DateTime>();
 
         //private Basler.Pylon.IImage baslerImage;
@@ -279,7 +279,7 @@ namespace EyeOut_Telepresence
 
                                     if (queuePixelData.Count == config.cameraFrameQueueLength )
                                     {
-                                        qAct = que.Dequeue();
+                                        qAct = DateTime.Now - que.Dequeue();
                                         SetTextureData(queuePixelData.Dequeue());
                                     }
                                     else if (queuePixelData.Count > config.cameraFrameQueueLength+1)

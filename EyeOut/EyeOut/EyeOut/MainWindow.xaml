@@ -764,14 +764,14 @@
 
                             <GroupBox Header="Camera Data">
                                 <StackPanel>
-                                    <CheckBox x:Name="cbReadCameraStream" Content="Read camera stream from selected Basler camera" IsChecked="False"/>
+                                    <CheckBox x:Name="cbReadCameraStream" Content="Read camera stream from selected Basler camera" IsChecked="True"/>
                                     <CheckBox x:Name="cbStickToCameraData" Content="Stick to camera data" IsChecked="True"/>
                                 </StackPanel>
                             </GroupBox>
 
                             <GroupBox Header="Motor Control">
                                 <StackPanel>
-                                    <CheckBox x:Name="cbWriteMotorData" Content="Send accelerometer data from oculus to position motors" IsChecked="False"/>
+                                    <CheckBox x:Name="cbWriteMotorData" Content="Send accelerometer data from oculus to position motors" IsChecked="True"/>
                                     <CheckBox x:Name="cbReadMotorData" Content="Read position motor data from motors" IsChecked="False"/>
                                 </StackPanel>
                             </GroupBox>
