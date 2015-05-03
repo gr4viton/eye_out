@@ -35,6 +35,7 @@ namespace EyeOut_Telepresence
 
         public bool helpMenu = true;
         public bool toolStrip = true;
+        public bool timeStrip = false;
         public C_gazeMark gazeMark;
         public C_HUD() { }
     }
@@ -57,12 +58,13 @@ namespace EyeOut_Telepresence
         public bool ReadCameraStream = false;
 
 
-        public bool motorSpeedControl;
+        public bool motorSpeedControl = true;
         
         public Player player = new Player();
 
         public bool cameraArtificialDelay = false;
-        public int[] cameraFrameQueueLengthList = new int[] { 2, 5, 12, 20, 50 };
+        //public int[] cameraFrameQueueLengthList = new int[] { 2, 5, 12, 20, 50 };
+        public int[] cameraFrameQueueLengthList = new int[] { 2, 3, 5, 10, 15 };
         //public int[] cameraFrameQueueLengthList = new int[] { 1, 20, 50, 120, 200, 500 };
         public int cameraFrameQueueLength = 1;
 

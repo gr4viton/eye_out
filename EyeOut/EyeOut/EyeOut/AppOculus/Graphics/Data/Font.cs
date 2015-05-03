@@ -139,7 +139,25 @@ namespace EyeOut_Telepresence
 
             if (config.hud.toolStrip == true)
             {
-                fontSpriteBatch.DrawString(fontDefault, fpsText, new Vector2(x, y - 50), Color.White);
+                string toolStripText;
+                if (config.cameraArtificialDelay == true)
+                {
+                    toolStripText = string.Format("{0}|{1,9:F4} [ms] | {2}", 
+                        config.cameraFrameQueueLength, qAct.TotalMilliseconds,
+                        DateTime.Now - measurementStart
+                        );
+                }
+                else
+                {
+                    toolStripText = string.Format("0 | 0 [ms] | {0}",
+                        DateTime.Now - measurementStart
+                        );
+                }
+                fontSpriteBatch.DrawString(fontDefault, toolStripText, new Vector2(x, y - 50), Color.White);
+            }
+            if (config.hud.timeStrip == true)
+            {
+                fontSpriteBatch.DrawString(fontDefault, fpsText, new Vector2(x, y - 100), Color.White);
             }
 
             // toolstrip info - zkratky vysvětleni ikon

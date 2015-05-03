@@ -771,7 +771,7 @@
 
                             <GroupBox Header="Motor Control">
                                 <StackPanel>
-                                    <CheckBox x:Name="cbWriteMotorData" Content="Send accelerometer data from oculus to position motors" IsChecked="True"/>
+                                    <CheckBox x:Name="cbWriteMotorData" Content="Send accelerometer data from oculus to position motors" IsChecked="False"/>
                                     <CheckBox x:Name="cbReadMotorData" Content="Read position motor data from motors" IsChecked="False"/>
                                 </StackPanel>
                             </GroupBox>

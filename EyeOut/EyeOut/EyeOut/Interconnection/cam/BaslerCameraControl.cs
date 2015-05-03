@@ -81,8 +81,6 @@ namespace EyeOut
                 camera.CameraOpened += Configuration.AcquireContinuous;
                 //camera.CameraOpened += Configuration.;
 
-                
-
                 camera.Open();
                 LOG("camera opened");
                 camera.Parameters[PLCamera.ExposureMode].SetValue(PLCamera.ExposureMode.Timed);

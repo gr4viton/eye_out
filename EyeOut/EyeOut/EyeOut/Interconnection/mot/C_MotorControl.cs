@@ -182,9 +182,9 @@ namespace EyeOut
                     new C_Value(C_Value.speedFull, 0, 101, 20) // speed
                 );
 
-            Yaw.SEND_example(0);
-            Pitch.SEND_example(0);
-            Roll.SEND_example(0);
+            //Yaw.SEND_example(0);
+            //Pitch.SEND_example(0);
+            //Roll.SEND_example(0);
         }
 
 

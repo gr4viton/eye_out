@@ -149,6 +149,12 @@ namespace EyeOut_Telepresence
                 config.hud.toolStrip ^= true;
             }
 
+            if (keyboardState.IsKeyPressed(Keys.F3))
+            {
+                config.hud.timeStrip ^= true;
+            }
+
+
             if (keyboardState.IsKeyPressed(Keys.F5))
             {
                 ra.angleType = e_valueType.wantedValue;
@@ -166,6 +172,7 @@ namespace EyeOut_Telepresence
             if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Control))
             {
                 //config.READ_dataFromMotors ^= true; // toggle
+                config.player.ResetPositionAndBodyYaw();
                 config.WRITE_dataToMotors ^= true;
             }
             else if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Shift))
@@ -245,32 +252,66 @@ namespace EyeOut_Telepresence
             if (keyboardState.IsKeyPressed(Keys.D1))
             {
                 config.cameraArtificialDelay = false;
+                lock (queuePixelData_locker)
+                {
+                    que.Clear();
+                }
             }
 
             if (keyboardState.IsKeyPressed(Keys.D2))
             {
                 config.cameraArtificialDelay = true;
+                lock (queuePixelData_locker)
+                {
+                    que.Clear();
+                }
                 config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[0];
             }
 
             if (keyboardState.IsKeyPressed(Keys.D3))
             {
                 config.cameraArtificialDelay = true;
+                lock (queuePixelData_locker)
+                {
+                    que.Clear();
+                }
                 config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[1];
             }
 
             if (keyboardState.IsKeyPressed(Keys.D4))
             {
-                config.cameraArtificialDelay = true;
+                config.cameraArtificialDelay = true; lock (queuePixelData_locker)
+                {
+                    que.Clear();
+                }
                 config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[2];
             }
 
             if (keyboardState.IsKeyPressed(Keys.D5))
             {
                 config.cameraArtificialDelay = true;
+                lock (queuePixelData_locker)
+                {
+                    que.Clear();
+                }
                 config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[3];
             }
+
+            if (keyboardState.IsKeyPressed(Keys.D6))
+            {
+                config.cameraArtificialDelay = true;
+                lock (queuePixelData_locker)
+                {
+                    que.Clear();
+                }
+                config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[4];
+            }
             
+
+            if (keyboardState.IsKeyPressed(Keys.X))
+            {
+                measurementStart = DateTime.Now;
+            }
 
             HUD.AppendLine(string.Format(
                 "W{0}|A{1}|S{2}",

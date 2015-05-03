@@ -54,6 +54,7 @@ namespace EyeOut_Telepresence
         private Matrix eyeProjection;
         private Matrix eyeWorld;
 
+        private DateTime measurementStart;
 
         private Model modelAirplane;
 
@@ -310,6 +311,7 @@ namespace EyeOut_Telepresence
 
             HUD.AppendLine("[!]alt|[^]ctrl|[+]shift|[#]super");
             HUD.AppendLine(string.Format("Control: [^M]otor={0}|", config.WRITE_dataToMotors));
+            HUD.AppendLine(string.Format("MotorSpeedControl: [M]{0}", config.motorSpeedControl)); 
             HUD.AppendLine(string.Format("Read: [+M]otor={0}|[+C]amera={1}", config.READ_dataFromMotors, config.ReadCameraStream));
             HUD.AppendLine(string.Format("PositionLock: [Tab]={0}|[numbers]={1}:{2}",
                 config.player.PositionLockActive,
@@ -327,13 +329,13 @@ namespace EyeOut_Telepresence
 
                 HUD.AppendLine(string.Format("Actual artificial delay = {0,9:F4} [ms]", qAct.TotalMilliseconds));
             }
+            
 
             HUD.AppendLine(string.Format("Status: [Camera={0}][Motors={1}][SPI={2}]",
                 C_State.baslerCam,
                 C_State.mot,
                 C_State.Spi
                 ));
-            HUD.AppendLine(string.Format("MotorSpeedControl: [M]{0}", config.motorSpeedControl)); 
             
 
             // may be in config constructor
