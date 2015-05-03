@@ -108,8 +108,8 @@ namespace EyeOut_Telepresence
         {
             // Clear the screen
             //GraphicsDevice.Clear(Color.CornflowerBlue);
-            //GraphicsDevice.Clear(new Color(41,51,86));
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(new Color(41,51,86));
+            //GraphicsDevice.Clear(Color.White);
 
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {

@@ -118,7 +118,8 @@ namespace EyeOut
         {
             if (camera.StreamGrabber.IsGrabbing == false)
             {
-                camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                //camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                camera.StreamGrabber.Start(GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
                 //camera.StreamGrabber.Start();
                 //streamController.StartStreaming();
                 LOG("grabbing started");
@@ -227,58 +228,6 @@ namespace EyeOut
 
 
         
-        public void InitCameraDestinationBuffer_dontUse()
-        {
-            // Start grabbing.
-            StartGrabbing();
-
-            // Grab a number of images.
-            //for (int i = 0; i < 2; ++i)
-            while(initialized == false)
-            {
-                // Wait for an image and then retrieve it. A timeout of 5000 ms is used.
-                IGrabResult grabResult;
-                try
-                {
-
-                    if (camera.WaitForFrameTriggerReady(200, TimeoutHandling.Return) == true)
-                    {
-                        camera.ExecuteSoftwareTrigger();
-                        Thread.Sleep(30);
-                    }
-                    else
-                    {
-                        LOG("WaitForFrameTriggerReady didn't waited enaugh");
-                    }
-                    grabResult = camera.StreamGrabber.RetrieveResult(200, TimeoutHandling.ThrowException);
-                    using (grabResult)
-                    {
-                        // Image grabbed successfully?
-                        if (grabResult.GrabSucceeded)
-                        {
-                            grabResultBufferRGB_size = converter.GetBufferSizeForConversion(sourcePixelType, grabResult.Width, grabResult.Height);
-
-                            lock (storedGrabResult_locker)
-                            {
-                                storedGrabResult = grabResult.Clone();
-                                initialized = true;
-                            }
-                        }
-                        else
-                        {
-                            LOG_err(string.Format("Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription));
-                        }
-                    }
-                }
-                catch(Exception ex)
-                {
-                    LOG_err(string.Format("Exception: {0}", ex.Message));
-                }
-            }
-
-            // Stop grabbing.
-            StopGrabbing();
-        }
     }
 }
 

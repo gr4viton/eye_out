@@ -59,6 +59,8 @@ namespace EyeOut_Telepresence
     {
         private Queue<byte[]> queuePixelData = new Queue<byte[]>();
         private object queuePixelData_locker = new object();
+        DateTime qAct ;
+        Queue<DateTime> que = new Queue<DateTime>();
 
         //private Basler.Pylon.IImage baslerImage;
         //private PixelFormat cameraTexturePixelFormat = PixelFormat.R8G8B8A8.UNorm;
@@ -257,6 +259,13 @@ namespace EyeOut_Telepresence
                                 LOG("SetTextureData(textureSizedBuffer);");
                                 SetTextureData(textureSizedBuffer);
                                 LOG("SetTextureData(textureSizedBuffer); ended");
+                                lock (queuePixelData_locker)
+                                {
+                                    if (queuePixelData.Count > 1)
+                                    {
+                                        queuePixelData.Clear();
+                                    }
+                                }
                             }
                             else
                             {
@@ -264,12 +273,14 @@ namespace EyeOut_Telepresence
                                 {
                                     LOG("SetTextureData(queued texture)");
                                     queuePixelData.Enqueue(textureSizedBuffer);
-                                    int queuePixelDataCount = queuePixelData.Count;
-                                    if (queuePixelDataCount == config.cameraFrameQueueLength)
+                                    que.Enqueue(DateTime.Now);
+
+                                    if (queuePixelData.Count == config.cameraFrameQueueLength)
                                     {
+                                        qAct = que.Dequeue();
                                         SetTextureData(queuePixelData.Dequeue());
                                     }
-                                    else if (queuePixelDataCount > config.cameraFrameQueueLength)
+                                    else if (queuePixelData.Count > config.cameraFrameQueueLength)
                                     {
                                         // when cameraFrameQueueLength changed to smaller number
                                         while (queuePixelData.Count > config.cameraFrameQueueLength)
@@ -291,13 +302,13 @@ namespace EyeOut_Telepresence
             }
         }
 
-        private void SetTextureData(byte[] textureSizedBuffer)
+        private void SetTextureData(byte[] _textureSizedBuffer)
         {
             lock (cameraTexture_locker)
             {
                 try
                 {
-                    cameraTexture.SetData<byte>(textureSizedBuffer);
+                    cameraTexture.SetData<byte>(_textureSizedBuffer);
                 }
                 catch (Exception ex)
                 {
