@@ -109,6 +109,7 @@ namespace EyeOut_Telepresence
         void Update_Input()
         {
             keyboardState = keyboardManager.GetState();
+            
 
             // if Esc is pressed - quit program
             if (keyboardState.IsKeyPressed(Keys.Escape))
@@ -140,6 +141,8 @@ namespace EyeOut_Telepresence
             if (keyboardState.IsKeyPressed(Keys.F1))
             {
                 config.hud.helpMenu ^= true;
+                hmd.EnableHSWDisplaySDKRender(true);
+                hmd.DismissHSWDisplay(); // not functional
             }
             if (keyboardState.IsKeyPressed(Keys.F2))
             {

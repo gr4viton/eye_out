@@ -58,6 +58,8 @@ namespace EyeOut_Telepresence
     public partial class TelepresenceSystem : Game
     {
         private Queue<byte[]> queuePixelData = new Queue<byte[]>();
+        private List<byte[]> listPixelData = new List<byte[]>();
+
         private object queuePixelData_locker = new object();
         DateTime qAct ;
         Queue<DateTime> que = new Queue<DateTime>();
@@ -273,10 +275,28 @@ namespace EyeOut_Telepresence
                                 {
                                     LOG("SetTextureData(queued texture)");
                                     queuePixelData.Enqueue(textureSizedBuffer);
+                                    //listPixelData.Add(textureSizedBuffer);
+                                    //listPixelData.Insert(0,textureSizedBuffer);
                                     que.Enqueue(DateTime.Now);
 
-                                    if (queuePixelData.Count == config.cameraFrameQueueLength)
+                                    //if (listPixelData.Count == config.cameraFrameQueueLength)
+                                    //{
+                                    //    qAct = que.Dequeue();
+                                    //    SetTextureData(listPixelData[0]);
+                                    //    listPixelData.RemoveAt(0);
+                                    //}
+                                    //else if (listPixelData.Count > config.cameraFrameQueueLength)
+                                    //{
+                                    //    // when cameraFrameQueueLength changed to smaller number
+                                    //    int num = listPixelData.Count - config.cameraFrameQueueLength;
+                                    //    while (num--!=0)
+                                    //    {
+                                    //        listPixelData.RemoveAt(0);
+                                    //    }
+                                    //}
+                                    if (queuePixelData.Count == config.cameraFrameQueueLength )
                                     {
+                                        LOG("dequeued one");
                                         qAct = que.Dequeue();
                                         SetTextureData(queuePixelData.Dequeue());
                                     }

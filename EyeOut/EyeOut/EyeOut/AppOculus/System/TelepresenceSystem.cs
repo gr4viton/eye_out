@@ -320,8 +320,11 @@ namespace EyeOut_Telepresence
                 ));
             HUD.AppendLine("");
             HUD.AppendLine("actual queue frame length = " + queuePixelData.Count().ToString());
+            HUD.AppendLine("actual list frame length = " + listPixelData.Count().ToString());
             HUD.AppendLine("setuped cameraFrameQueueLength = " + config.cameraFrameQueueLength.ToString());
+
             HUD.AppendLine("queued Actual = " + (qAct.ToLocalTime() - DateTime.Now));
+
             HUD.AppendLine(string.Format("Status: [Camera={0}][Motors={1}][SPI={2}]",
                 C_State.baslerCam,
                 C_State.mot,
