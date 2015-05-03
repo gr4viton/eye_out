@@ -319,11 +319,14 @@ namespace EyeOut_Telepresence
                 ra.angleType
                 ));
             HUD.AppendLine("");
-            HUD.AppendLine("actual queue frame length = " + queuePixelData.Count().ToString());
-            HUD.AppendLine("actual list frame length = " + listPixelData.Count().ToString());
-            HUD.AppendLine("setuped cameraFrameQueueLength = " + config.cameraFrameQueueLength.ToString());
+            HUD.AppendLine("CameraArtificialDelay = " + config.cameraArtificialDelay.ToString());
+            if (config.cameraArtificialDelay == true)
+            {
+                HUD.AppendLine("actual queue frame length = " + queuePixelData.Count().ToString());
+                HUD.AppendLine("setuped cameraFrameQueueLength = " + config.cameraFrameQueueLength.ToString());
 
-            HUD.AppendLine("queued Actual = " + (qAct.ToLocalTime() - DateTime.Now));
+                HUD.AppendLine("queued Actual delay = " + qAct);
+            }
 
             HUD.AppendLine(string.Format("Status: [Camera={0}][Motors={1}][SPI={2}]",
                 C_State.baslerCam,

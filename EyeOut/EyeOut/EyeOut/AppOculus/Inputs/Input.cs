@@ -224,16 +224,16 @@ namespace EyeOut_Telepresence
             }
 
 
-            if (keyboardState.IsKeyPressed(Keys.D1))
+            if (keyboardState.IsKeyPressed(Keys.D1) && keyboardState.IsKeyDown(Keys.Shift))
             {
                 config.player.PositionLock = e_positionLock.cameraSensor;
             }
 
-            if (keyboardState.IsKeyPressed(Keys.D2))
+            if (keyboardState.IsKeyPressed(Keys.D2) && keyboardState.IsKeyDown(Keys.Shift))
             {
                 config.player.PositionLock = e_positionLock.desk;
             }
-            if (keyboardState.IsKeyPressed(Keys.D3))
+            if (keyboardState.IsKeyPressed(Keys.D3) && keyboardState.IsKeyDown(Keys.Shift))
             {
                 config.player.PositionLock = e_positionLock.overDesk;
             }
@@ -242,29 +242,33 @@ namespace EyeOut_Telepresence
                 config.player.PositionLockActive ^= true;
             }
 
-            if (keyboardState.IsKeyPressed(Keys.F8))
+            if (keyboardState.IsKeyPressed(Keys.D1))
             {
+                config.cameraArtificialDelay = false;
+            }
+
+            if (keyboardState.IsKeyPressed(Keys.D2))
+            {
+                config.cameraArtificialDelay = true;
                 config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[0];
             }
 
-            if (keyboardState.IsKeyPressed(Keys.F9))
+            if (keyboardState.IsKeyPressed(Keys.D3))
             {
+                config.cameraArtificialDelay = true;
                 config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[1];
             }
 
-            if (keyboardState.IsKeyPressed(Keys.F10))
+            if (keyboardState.IsKeyPressed(Keys.D4))
             {
+                config.cameraArtificialDelay = true;
                 config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[2];
             }
 
-            if (keyboardState.IsKeyPressed(Keys.F11))
+            if (keyboardState.IsKeyPressed(Keys.D5))
             {
+                config.cameraArtificialDelay = true;
                 config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[3];
-            }
-
-            if (keyboardState.IsKeyPressed(Keys.F12))
-            {
-                config.cameraFrameQueueLength = config.cameraFrameQueueLengthList[4];
             }
             
 

@@ -61,8 +61,9 @@ namespace EyeOut_Telepresence
         
         public Player player = new Player();
 
-        //public int[] cameraFrameQueueLengthList = new int[] { 1, 2, 5, 12, 20, 50 };
-        public int[] cameraFrameQueueLengthList = new int[] { 1, 20, 50, 120, 200, 500 };
+        public bool cameraArtificialDelay = false;
+        public int[] cameraFrameQueueLengthList = new int[] { 2, 5, 12, 20, 50 };
+        //public int[] cameraFrameQueueLengthList = new int[] { 1, 20, 50, 120, 200, 500 };
         public int cameraFrameQueueLength = 1;
 
         public BaslerCameraControl cameraControl;

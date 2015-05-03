@@ -256,7 +256,7 @@ namespace EyeOut_Telepresence
                             LOG(string.Format("RGB to RGBA texture conversion {1} took [{0}]", stopwatch.Elapsed, type));
 
 
-                            if (config.cameraFrameQueueLength == config.cameraFrameQueueLengthList[0])
+                            if (config.cameraArtificialDelay == false)
                             {
                                 LOG("SetTextureData(textureSizedBuffer);");
                                 SetTextureData(textureSizedBuffer);
@@ -274,39 +274,24 @@ namespace EyeOut_Telepresence
                                 lock (queuePixelData_locker)
                                 {
                                     LOG("SetTextureData(queued texture)");
-                                    queuePixelData.Enqueue(textureSizedBuffer);
-                                    //listPixelData.Add(textureSizedBuffer);
-                                    //listPixelData.Insert(0,textureSizedBuffer);
+                                    queuePixelData.Enqueue((byte[])textureSizedBuffer.Clone());
                                     que.Enqueue(DateTime.Now);
 
-                                    //if (listPixelData.Count == config.cameraFrameQueueLength)
-                                    //{
-                                    //    qAct = que.Dequeue();
-                                    //    SetTextureData(listPixelData[0]);
-                                    //    listPixelData.RemoveAt(0);
-                                    //}
-                                    //else if (listPixelData.Count > config.cameraFrameQueueLength)
-                                    //{
-                                    //    // when cameraFrameQueueLength changed to smaller number
-                                    //    int num = listPixelData.Count - config.cameraFrameQueueLength;
-                                    //    while (num--!=0)
-                                    //    {
-                                    //        listPixelData.RemoveAt(0);
-                                    //    }
-                                    //}
                                     if (queuePixelData.Count == config.cameraFrameQueueLength )
                                     {
-                                        LOG("dequeued one");
                                         qAct = que.Dequeue();
                                         SetTextureData(queuePixelData.Dequeue());
                                     }
-                                    else if (queuePixelData.Count > config.cameraFrameQueueLength)
+                                    else if (queuePixelData.Count > config.cameraFrameQueueLength+1)
                                     {
                                         // when cameraFrameQueueLength changed to smaller number
-                                        while (queuePixelData.Count > config.cameraFrameQueueLength)
-                                        {
-                                            queuePixelData.Dequeue(); // skip them
-                                        }
+                                        //while (queuePixelData.Count > config.cameraFrameQueueLength)
+                                        //{
+                                        //    queuePixelData.Dequeue(); // skip them
+                                        //    que.Dequeue();
+                                        //}
+                                        que.Clear();
+                                        queuePixelData.Clear();
                                     }
                                     LOG("SetTextureData(queued texture) end");
                                 }
