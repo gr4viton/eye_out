@@ -33,7 +33,7 @@ namespace EyeOut
         private static object storedGrabResult_locker = new object();
 
 
-        private int expositionTime = 10000; // in [us]
+        private int expositionTime = 5000; // in [us]
         private int maxNumBuffer = 100; //50
 
 

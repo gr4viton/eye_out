@@ -43,7 +43,7 @@ namespace EyeOut_Telepresence
 
             if (config.draw.SkySurface == true)
             {
-                var world = Matrix.Scaling(3000f)
+                var world = Matrix.Scaling(4000f)
                             * Matrix.RotationY(0)
                             * Matrix.Translation(config.player.Position)
                             ;
