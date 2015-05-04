@@ -49,9 +49,9 @@ namespace EyeOut_Telepresence
             }
         }
 
-        private int exposureTime = 5000; // in [us]
+        private int exposureTime = 10000; // in [us]
         private const int maxExposureTime = 10000000; // in [us] = 10s
-        private int maxNumBuffer = 200; //50
+        private int maxNumBuffer = 300; //50
 
         public int ExposureTime
         {

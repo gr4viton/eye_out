@@ -26,7 +26,11 @@ namespace EyeOut
     {
         private static object spiSent_locker = new object();
         private static object queueToSent_locker = new object();
-        
+
+        static BackgroundWorker MotorWritingLoop;
+        static object MotorWritingLoop_locker = new object();
+
+
         public static SerialPort spi;
         private static Queue<C_Packet> queueToSent; // packets which are going to be sent
 
@@ -208,11 +212,31 @@ namespace EyeOut
         {
             QUEUE_PacketToSent(instructionPacket);
 
-            BackgroundWorker worker_SEND = new BackgroundWorker();
-            worker_SEND.DoWork += workerSEND_DoWork;
-            worker_SEND.RunWorkerCompleted += workerSEND_RunWorkerCompleted;
-            //worker_SEND.RunWorkerAsync((object)echo);
-            worker_SEND.RunWorkerAsync();
+            lock(MotorWritingLoop_locker)
+            {
+                if(MotorWritingLoop == null)
+                {
+                    MotorWritingLoop = new BackgroundWorker();
+                    MotorWritingLoop.DoWork += MotorWritingLoop_DoWork;
+                }
+                if (MotorWritingLoop.IsBusy == false)
+                {
+                    MotorWritingLoop.RunWorkerAsync();
+                }
+            }
+        }
+
+        private static void MotorWritingLoop_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while(true)
+            {
+                workerSEND_DoWork();
+            }
+            //BackgroundWorker worker_SEND = new BackgroundWorker();
+            //worker_SEND.DoWork += workerSEND_DoWork;
+            //worker_SEND.RunWorkerCompleted += workerSEND_RunWorkerCompleted;
+            ////worker_SEND.RunWorkerAsync((object)echo);
+            //worker_SEND.RunWorkerAsync();
         }
 
 
@@ -221,7 +245,9 @@ namespace EyeOut
             // adds data to sending queue
             lock (queueToSent_locker)
             {
-                queueToSent.Enqueue(instructionPacket);
+                LOG("enqueue instructionPacket");
+                queueToSent.Enqueue(new C_Packet(instructionPacket));
+                LOG("enqueued instructionPacket");
             }
         }
 
@@ -232,7 +258,7 @@ namespace EyeOut
             {
                 lock (queueSent_locker)
                 {
-                    instructionPacket.sentTime = DateTime.UtcNow;
+                    instructionPacket.sentTime = DateTime.Now;
                     queueSent[rotMot].Enqueue(instructionPacket);
                     queueSent_Count[rotMot] = queueSent[rotMot].Count;
                     C_MotorControl.ACTUALIZE_queueCounts(queueSent);
@@ -240,21 +266,21 @@ namespace EyeOut
             }
         }
 
-        private static void workerSEND_DoWork(object sender, DoWorkEventArgs e)
+        //private static void workerSEND_DoWork(object sender, DoWorkEventArgs e)
+        private static void workerSEND_DoWork()
         {
             C_Packet thisInstructionPacket;
-            LOG_debug("Start to read packet");
             lock (spiSent_locker)
             {
                 if (spi.IsOpen == true)
                 {
-                    spi.DiscardInBuffer();
+                    //spi.DiscardInBuffer();
                 //    spi.DiscardOutBuffer();
                 }
                 
                 lock (queueToSent_locker)
                 {
-                    if (queueToSent.Count != 0)
+                    if (queueToSent.Count > 0)
                     {
                         thisInstructionPacket = queueToSent.Dequeue();
                         if (C_SPI.WRITE_instructionPacket(thisInstructionPacket) == false)
@@ -267,17 +293,10 @@ namespace EyeOut
                     }
                     else
                     {
-#if (!DEBUG)
-                        throw new InvalidOperationException(
-                            "An error occured when tried to send data!\nThe queue of data to send was empty!");rr
-#endif
-                        LOG_err("Packet queue is empty! Cannot send packet");
                         return;
                     }
                     spi.DiscardOutBuffer();
                 }
-
-
             }
         }
 

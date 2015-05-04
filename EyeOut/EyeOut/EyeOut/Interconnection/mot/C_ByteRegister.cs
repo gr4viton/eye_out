@@ -67,7 +67,7 @@ namespace EyeOut
                 {
                     val = value;
                     touched = true;
-                    actualized = DateTime.UtcNow;
+                    actualized = DateTime.Now;
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace EyeOut
             rwActual = _rwActual;
             touched = false;
             val = _value;
-            actualized = DateTime.UtcNow;
+            actualized = DateTime.Now;
         }
 
         public C_RegByteValue(byte _value, e_readWrite _rwActual, e_readWrite _rwShadow, bool _touched)
@@ -92,7 +92,7 @@ namespace EyeOut
             rwActual = _rwActual;
             touched = _touched;
             val = _value;
-            actualized = DateTime.UtcNow;
+            actualized = DateTime.Now;
         }
 
         public bool IS_readableActual()

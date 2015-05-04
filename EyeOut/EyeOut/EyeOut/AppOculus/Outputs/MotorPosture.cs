@@ -62,8 +62,7 @@ namespace EyeOut_Telepresence
         public void POSITION_motors()
         {
             // background worker - if it takes too long
-
-            Update_PlayerFromHmd(0);
+            //Update_PlayerFromHmd(0);
 
             if (config.WRITE_dataToMotors == true)
             {

@@ -277,7 +277,7 @@ namespace EyeOut
             try 
             {
                 C_Packet received = new C_Packet(receivedBytes); // constructor checks consistency
-                received.statusReceivedTime = DateTime.UtcNow;
+                received.statusReceivedTime = DateTime.Now;
                 return PAIR_andProcessStatusPacket(received);
             }
             catch (Exception e)

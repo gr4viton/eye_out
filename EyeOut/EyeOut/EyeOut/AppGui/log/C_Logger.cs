@@ -121,7 +121,7 @@ namespace EyeOut
             //create business data
             //var itemList = new List<StockItem>();
 
-            msgList.Add(new C_LogMsg { time = DateTime.UtcNow, src = e_LogMsgSource.log, 
+            msgList.Add(new C_LogMsg { time = DateTime.Now, src = e_LogMsgSource.log, 
                 msg = "Logging system initialized! Time is [Ascending] == new messages on first row == ^^^^^^" });
             //...
 

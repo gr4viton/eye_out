@@ -159,7 +159,6 @@ namespace EyeOut_Telepresence
                     {
                         if (UpdateTextureWorker.IsBusy == false)
                         {
-                            Thread.Sleep(1);
                             UpdateTextureWorker.RunWorkerAsync((object)config.player.hmd);
                         }
                     }
@@ -353,7 +352,7 @@ namespace EyeOut_Telepresence
         {
             if (config.cameraControl.StartGrabbing())
             {
-                timeStartedStreaming = DateTime.UtcNow.ToLocalTime();
+                timeStartedStreaming = DateTime.Now.ToLocalTime();
                 if (C_State.FURTHER(e_stateBaslerCam.initialized))
                 {
                     C_State.SET_state(e_stateBaslerCam.streaming);

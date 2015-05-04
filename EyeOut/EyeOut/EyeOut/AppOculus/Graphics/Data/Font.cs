@@ -142,7 +142,7 @@ namespace EyeOut_Telepresence
 
 
             TimeSpan timeInterval = DateTime.Now.Subtract( timeStartedStreaming );
-                //DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+                //DateTime.Now.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
             fpsText = string.Format("[DirectX|camGrabbed|camTexture]:[{0:F1}||{1:F1}|{2:F1}] Hz\nCaptureTime[{3}]|LocalTime[{4}]",
                     fpsDirectX, fpsBaslerCameraGrabbed, 
                     fpsBaslerCameraTexture, 
