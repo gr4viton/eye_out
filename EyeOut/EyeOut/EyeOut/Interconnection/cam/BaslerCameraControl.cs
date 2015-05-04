@@ -37,6 +37,8 @@ namespace EyeOut_Telepresence
         private static object storedGrabResult_locker = new object();
 
         public float frameCountCameraTexture;
+        public object frameCountCameraTexture_locker = new object();
+
         public float frameCountCameraGrabbed;
         public object frameCountCameraGrabbed_locker = new object();
 
@@ -53,6 +55,13 @@ namespace EyeOut_Telepresence
         private const int maxExposureTime = 10000000; // in [us] = 10s
         private int maxNumBuffer = 300; //50
 
+        public void NextFrameCountCameraTexture()
+        {
+            lock (frameCountCameraTexture_locker)
+            {
+                frameCountCameraTexture++;
+            }
+        }
         public int ExposureTime
         {
             get { return exposureTime; }

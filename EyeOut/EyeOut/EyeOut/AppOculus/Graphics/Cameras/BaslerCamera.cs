@@ -225,7 +225,7 @@ namespace EyeOut_Telepresence
                 {
                     //Stopwatch stopwatch = Stopwatch.StartNew();
                     config.cameraControl.StoreYawPitchRollOnCapture(ra.angleType);
-                    config.cameraControl.frameCountCameraTexture++;
+                    config.cameraControl.NextFrameCountCameraTexture();
 
                     config.cameraControl.ConvertStoredGrabResultToByteArray(ref grabResultBufferRGB);
                     //stopwatch.Stop();

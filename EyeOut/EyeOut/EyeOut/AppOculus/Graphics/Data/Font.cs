@@ -129,9 +129,11 @@ namespace EyeOut_Telepresence
                 fpsDirectX = (float)frameCountDirectX * 1000 / fpsClock.ElapsedMilliseconds;
                 frameCountDirectX = 0;
 
-                fpsBaslerCameraTexture = (float)config.cameraControl.frameCountCameraTexture * 1000 / fpsClock.ElapsedMilliseconds;
-                config.cameraControl.frameCountCameraTexture = 0;
-
+                lock (config.cameraControl.frameCountCameraTexture_locker)
+                {
+                    fpsBaslerCameraTexture = (float)config.cameraControl.frameCountCameraTexture * 1000 / fpsClock.ElapsedMilliseconds;
+                    config.cameraControl.frameCountCameraTexture = 0;
+                }
                 lock (config.cameraControl.frameCountCameraGrabbed_locker)
                 {
                     fpsBaslerCameraGrabbed = (float)config.cameraControl.frameCountCameraGrabbed * 1000 / fpsClock.ElapsedMilliseconds;
