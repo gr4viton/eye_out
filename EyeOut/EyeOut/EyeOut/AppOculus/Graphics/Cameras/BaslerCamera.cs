@@ -224,13 +224,13 @@ namespace EyeOut_Telepresence
                                
                 lock (grabResultBufferRGB_locker)
                 {
-                    Stopwatch stopwatch = Stopwatch.StartNew();
+                    //Stopwatch stopwatch = Stopwatch.StartNew();
                     config.cameraControl.StoreYawPitchRollOnCapture(ra.angleType);
                     config.cameraControl.frameCountCameraTexture++;
 
                     config.cameraControl.ConvertStoredGrabResultToByteArray(ref grabResultBufferRGB);
-                    stopwatch.Stop();
-                    LOG(string.Format("[Bayer BG8] to [RGB] byte array took [{0}]", stopwatch.Elapsed)); // about 7 ms
+                    //stopwatch.Stop();
+                    //LOG(string.Format("[Bayer BG8] to [RGB] byte array took [{0}]", stopwatch.Elapsed)); // about 7 ms
 
                     if (cameraTextureByteCount != grabResultBufferRGB.Length)
                     {
@@ -238,7 +238,7 @@ namespace EyeOut_Telepresence
                         {
                             LOG("started recounting texture");
 
-                            stopwatch = Stopwatch.StartNew();
+                            //stopwatch = Stopwatch.StartNew();
                             string type = "undefined";
 
                             if (textureConversionAlgorithm == e_textureConversionAlgorithm.unsafeConversion_pointerForLoop)
@@ -252,17 +252,17 @@ namespace EyeOut_Telepresence
                                 type = "safe [i_t+=4]";
 
                             }
-                            stopwatch.Stop();
-                            LOG(string.Format("RGB to RGBA texture conversion {1} took [{0}]", stopwatch.Elapsed, type));
+                            //stopwatch.Stop();
+                            //LOG(string.Format("RGB to RGBA texture conversion {1} took [{0}]", stopwatch.Elapsed, type));
 
 
                             if (config.cameraArtificialDelay == false)
                             {
                                 LOG("SetTextureData(textureSizedBuffer);");
-                                stopwatch = Stopwatch.StartNew();
+                                //stopwatch = Stopwatch.StartNew();
                                 SetTextureData(textureSizedBuffer);
-                                stopwatch.Stop();
-                                LOG(string.Format("SetTextureData took [{0}]", stopwatch.Elapsed));
+                                //stopwatch.Stop();
+                                //LOG(string.Format("SetTextureData took [{0}]", stopwatch.Elapsed));
 
                                 //lock (queuePixelData_locker)
                                 //{
