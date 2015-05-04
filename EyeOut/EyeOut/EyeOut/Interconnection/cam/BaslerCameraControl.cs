@@ -28,6 +28,9 @@ namespace EyeOut_Telepresence
         public static PixelDataConverter converter;
         public long grabResultBufferRGB_size;
         public static PixelType sourcePixelType = PixelType.BayerRG8;
+        public static PixelType cameraOutputPixelFormat = PixelType.BGRA8packed;
+        //converter.OutputPixelFormat = PixelType.RGB8planar; // planar BBBBB ??
+        //converter.OutputPixelFormat = PixelType.RGB8packed; // RGB?
 
         private static IGrabResult storedGrabResult;
         private static bool storedNewGrabResult = true;
@@ -84,8 +87,7 @@ namespace EyeOut_Telepresence
             streamController = new StreamController();
 
             converter = new PixelDataConverter();
-            //converter.OutputPixelFormat = PixelType.RGB8planar; // planar BBBBB ??
-            converter.OutputPixelFormat = PixelType.RGB8packed; // RGB?
+            converter.OutputPixelFormat = cameraOutputPixelFormat;
 
             camera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
 

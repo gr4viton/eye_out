@@ -65,8 +65,8 @@ namespace EyeOut_Telepresence
         Queue<DateTime> que = new Queue<DateTime>();
 
         //private Basler.Pylon.IImage baslerImage;
-        //private PixelFormat cameraTexturePixelFormat = PixelFormat.R8G8B8A8.UNorm;
-        private PixelFormat cameraTexturePixelFormat = PixelFormat.B8G8R8X8.UNorm;
+        private PixelFormat cameraTexturePixelFormat = PixelFormat.R8G8B8A8.UNorm;
+        //private PixelFormat cameraTexturePixelFormat = PixelFormat.B8G8R8X8.UNorm;
         private BasicEffect cameraBasicEffect;
         
 
@@ -234,76 +234,80 @@ namespace EyeOut_Telepresence
 
                     if (cameraTextureByteCount != grabResultBufferRGB.Length)
                     {
-                        lock (textureSizedBuffer_locker)
-                        {
-                            LOG("started recounting texture");
+                        //lock (textureSizedBuffer_locker)
+                        //{
+                        //    LOG("started recounting texture");
 
-                            //stopwatch = Stopwatch.StartNew();
-                            string type = "undefined";
+                        //    //stopwatch = Stopwatch.StartNew();
+                        //    string type = "undefined";
 
-                            if (textureConversionAlgorithm == e_textureConversionAlgorithm.unsafeConversion_pointerForLoop)
-                            {
-                                RGBtoRGBA_Unsafe(ref grabResultBufferRGB, ref textureSizedBuffer);
-                                type = "unsafe [pt+=4]";
-                            }
-                            else if (textureConversionAlgorithm == e_textureConversionAlgorithm.safeConversion_forLoop)
-                            {
-                                RGBtoRGBA_Safe(ref grabResultBufferRGB, ref textureSizedBuffer);
-                                type = "safe [i_t+=4]";
+                        //    if (textureConversionAlgorithm == e_textureConversionAlgorithm.unsafeConversion_pointerForLoop)
+                        //    {
+                        //        RGBtoRGBA_Unsafe(ref grabResultBufferRGB, ref textureSizedBuffer);
+                        //        type = "unsafe [pt+=4]";
+                        //    }
+                        //    else if (textureConversionAlgorithm == e_textureConversionAlgorithm.safeConversion_forLoop)
+                        //    {
+                        //        RGBtoRGBA_Safe(ref grabResultBufferRGB, ref textureSizedBuffer);
+                        //        type = "safe [i_t+=4]";
 
-                            }
-                            //stopwatch.Stop();
-                            //LOG(string.Format("RGB to RGBA texture conversion {1} took [{0}]", stopwatch.Elapsed, type));
+                        //    }
+                        //    //stopwatch.Stop();
+                        //    //LOG(string.Format("RGB to RGBA texture conversion {1} took [{0}]", stopwatch.Elapsed, type));
 
 
-                            if (config.cameraArtificialDelay == false)
-                            {
-                                LOG("SetTextureData(textureSizedBuffer);");
-                                //stopwatch = Stopwatch.StartNew();
-                                SetTextureData(textureSizedBuffer);
-                                //stopwatch.Stop();
-                                //LOG(string.Format("SetTextureData took [{0}]", stopwatch.Elapsed));
+                        //    if (config.cameraArtificialDelay == false)
+                        //    {
+                        //        LOG("SetTextureData(textureSizedBuffer);");
+                        //        //stopwatch = Stopwatch.StartNew();
+                        //        SetTextureData(textureSizedBuffer);
+                        //        //stopwatch.Stop();
+                        //        //LOG(string.Format("SetTextureData took [{0}]", stopwatch.Elapsed));
 
-                                //lock (queuePixelData_locker)
-                                //{
-                                //    if (queuePixelData.Count > 1)
-                                //    {
-                                //        queuePixelData.Clear();
-                                //    }
-                                //}
-                            }
-                            else
-                            {
-                                lock (queuePixelData_locker)
-                                {
-                                    LOG("SetTextureData(queued texture)");
-                                    queuePixelData.Enqueue((byte[])textureSizedBuffer.Clone());
-                                    que.Enqueue(DateTime.Now);
+                        //        //lock (queuePixelData_locker)
+                        //        //{
+                        //        //    if (queuePixelData.Count > 1)
+                        //        //    {
+                        //        //        queuePixelData.Clear();
+                        //        //    }
+                        //        //}
+                        //    }
+                        //    else
+                        //    {
+                        //        lock (queuePixelData_locker)
+                        //        {
+                        //            LOG("SetTextureData(queued texture)");
+                        //            queuePixelData.Enqueue((byte[])textureSizedBuffer.Clone());
+                        //            que.Enqueue(DateTime.Now);
 
-                                    if (queuePixelData.Count == config.cameraFrameQueueLength )
-                                    {
-                                        qAct = DateTime.Now - que.Dequeue();
-                                        SetTextureData(queuePixelData.Dequeue());
-                                    }
-                                    else if (queuePixelData.Count > config.cameraFrameQueueLength+1)
-                                    {
-                                        // when cameraFrameQueueLength changed to smaller number
-                                        //while (queuePixelData.Count > config.cameraFrameQueueLength)
-                                        //{
-                                        //    queuePixelData.Dequeue(); // skip them
-                                        //    que.Dequeue();
-                                        //}
-                                        que.Clear();
-                                        queuePixelData.Clear();
-                                    }
-                                    LOG("SetTextureData(queued texture) end");
-                                }
-                            }
-                        }
+                        //            if (queuePixelData.Count == config.cameraFrameQueueLength )
+                        //            {
+                        //                qAct = DateTime.Now - que.Dequeue();
+                        //                SetTextureData(queuePixelData.Dequeue());
+                        //            }
+                        //            else if (queuePixelData.Count > config.cameraFrameQueueLength+1)
+                        //            {
+                        //                // when cameraFrameQueueLength changed to smaller number
+                        //                //while (queuePixelData.Count > config.cameraFrameQueueLength)
+                        //                //{
+                        //                //    queuePixelData.Dequeue(); // skip them
+                        //                //    que.Dequeue();
+                        //                //}
+                        //                que.Clear();
+                        //                queuePixelData.Clear();
+                        //            }
+                        //            LOG("SetTextureData(queued texture) end");
+                        //        }
+                        //    }
+                        //}
                     }
                     else
                     {
-                        SetTextureData(grabResultBufferRGB);
+                        lock (textureSizedBuffer_locker)
+                        {
+                            grabResultBufferRGB.CopyTo(textureSizedBuffer,0);
+                            SetTextureData(textureSizedBuffer);
+                        }
                     }
                     LOG("end UpdateTexture_DoWork");
                 }
