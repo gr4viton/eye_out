@@ -21,7 +21,7 @@ namespace EyeOut_Telepresence
     {
 
 
-        private int frameCount;
+        private int frameCountDirectX;
         private string fpsText;
         private readonly Stopwatch fpsClock;
 

@@ -34,8 +34,8 @@ namespace EyeOut_Telepresence
         public bool motorPosture;
 
         public bool helpMenu = true;
-        public bool toolStrip = true;
-        public bool timeStrip = false;
+        public bool toolStrip = false;
+        public bool timeStrip = true;
         public C_gazeMark gazeMark;
         public C_HUD() { }
     }
@@ -57,7 +57,7 @@ namespace EyeOut_Telepresence
 
         public bool ReadCameraStream = false;
 
-
+        public bool roboticArmPostureOnCameraCapture = false;
         public bool motorSpeedControl = true;
         
         public Player player = new Player();

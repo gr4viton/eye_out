@@ -167,8 +167,13 @@ namespace EyeOut_Telepresence
             {
                 ra.angleType = e_valueType.seenValue;
             }
-
             
+            if (keyboardState.IsKeyPressed(Keys.F8))
+            {
+                config.roboticArmPostureOnCameraCapture ^= true;
+            }
+            
+
             if (keyboardState.IsKeyPressed(Keys.M) && keyboardState.IsKeyDown(Keys.Control))
             {
                 //config.READ_dataFromMotors ^= true; // toggle

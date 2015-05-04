@@ -116,11 +116,11 @@ namespace EyeOut
             {
                 guiCameraLister.Camera.Close();
             }
-            if (camTry != null)
-            {
-                camTry.StopGrabbing();
-                camTry.CloseCamera();
-            }
+            //if (camTry != null)
+            //{
+            //    camTry.StopGrabbing();
+            //    camTry.CloseCamera();
+            //}
         }
         public void START_TP_withCaution()
         {

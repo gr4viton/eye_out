@@ -252,25 +252,62 @@ namespace EyeOut_Telepresence
         {
             ra.CONV_hmdRotationToPartRotation(config.player.Rotation);
         }
+
+        public static List<C_Value> GetAngleValuesFromMotors_Reference(e_valueType valueType)
+        {
+            switch (valueType)
+            {
+                case (e_valueType.wantedValue):
+                    return new List<C_Value>() { MainWindow.Ms.Yaw.angleWanted, MainWindow.Ms.Pitch.angleWanted, MainWindow.Ms.Roll.angleWanted };
+                case (e_valueType.sentValue):
+                    return new List<C_Value>() { MainWindow.Ms.Yaw.angleSent, MainWindow.Ms.Pitch.angleSent, MainWindow.Ms.Roll.angleSent };
+                case (e_valueType.seenValue):
+                    return new List<C_Value>() { MainWindow.Ms.Yaw.angleSeen, MainWindow.Ms.Pitch.angleSeen, MainWindow.Ms.Roll.angleSeen };
+                default:
+                    return null;
+            }
+        }
+
+        public static List<C_Value> GetAngleValuesFromMotors(e_valueType valueType)
+        {
+            switch (valueType)
+            {
+                case (e_valueType.wantedValue):
+                    return new List<C_Value>() { 
+                        new C_Value(MainWindow.Ms.Yaw.angleWanted), 
+                        new C_Value(MainWindow.Ms.Pitch.angleWanted), 
+                        new C_Value(MainWindow.Ms.Roll.angleWanted)
+                    };
+                case (e_valueType.sentValue):
+                    return new List<C_Value>() { 
+                        new C_Value(MainWindow.Ms.Yaw.angleSent), 
+                        new C_Value(MainWindow.Ms.Pitch.angleSent), 
+                        new C_Value(MainWindow.Ms.Roll.angleSent)
+                    };
+                case (e_valueType.seenValue):
+                    return new List<C_Value>() { 
+                        new C_Value(MainWindow.Ms.Yaw.angleSeen),
+                        new C_Value(MainWindow.Ms.Pitch.angleSeen), 
+                        new C_Value(MainWindow.Ms.Roll.angleSeen)
+                    };
+                default:
+                    return null;
+            }
+        }
+
         public void Update_RoboticArmDrawnPosture()
         {
             ra.UPDATE_matrices(eyeProjection, eyeView, eyeWorld);
 
             List<C_Value> yawPitchRoll;
 
-            switch (ra.angleType)
+            if (config.roboticArmPostureOnCameraCapture == false)
             {
-                case (e_valueType.wantedValue):
-                    yawPitchRoll = new List<C_Value>(){ MainWindow.Ms.Yaw.angleWanted, MainWindow.Ms.Pitch.angleWanted, MainWindow.Ms.Roll.angleWanted };
-                    break;
-                case (e_valueType.sentValue):
-                    yawPitchRoll = new List<C_Value>() { MainWindow.Ms.Yaw.angleSent, MainWindow.Ms.Pitch.angleSent, MainWindow.Ms.Roll.angleSent };
-                    break;
-                case(e_valueType.seenValue):
-                    yawPitchRoll = new List<C_Value>() { MainWindow.Ms.Yaw.angleSeen, MainWindow.Ms.Pitch.angleSeen, MainWindow.Ms.Roll.angleSeen };
-                    break;
-                default:
-                    return;
+                yawPitchRoll = GetAngleValuesFromMotors(ra.angleType);
+            }
+            else
+            {
+                yawPitchRoll = config.cameraControl.YawPitchRollOnCapture;
             }
 
 
@@ -288,8 +325,6 @@ namespace EyeOut_Telepresence
         }
         public void Draw_RoboticArm()
         {
-
-
             ra.Draw();
         }
 
@@ -302,7 +337,7 @@ namespace EyeOut_Telepresence
             var roboticArmPartDefaultTexture = Content.Load<Texture2D>("vut_grid");
             Color[] cols = new Color[]
             {               
-                Color.Black, Color.Blue, Color.Red, Color.Green//, Color.Yellow, Color.Magenta, Color.Cyan, Color.White, Color.Purple, Color.LimeGreen, Color.Aquamarine
+                Color.Black, Color.Blue, Color.Red, Color.Green, Color.Yellow, Color.Magenta, Color.Cyan, Color.White//, Color.Purple, Color.LimeGreen, Color.Aquamarine
             };
 
             int q = 0;

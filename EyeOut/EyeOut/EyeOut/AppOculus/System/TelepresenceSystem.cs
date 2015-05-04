@@ -54,7 +54,7 @@ namespace EyeOut_Telepresence
         private Matrix eyeProjection;
         private Matrix eyeWorld;
 
-        private DateTime measurementStart;
+        private DateTime measurementStart = DateTime.Now;
 
         private Model modelAirplane;
 
@@ -319,6 +319,9 @@ namespace EyeOut_Telepresence
                 ));
             HUD.AppendLine(string.Format("RoboticArmUpdatingFromAngle: [F5,F6,F7]={0}",
                 ra.angleType
+                ));
+            HUD.AppendLine(string.Format("roboticArmPostureOnCameraCapture: [F8]={0}",
+                config.roboticArmPostureOnCameraCapture
                 ));
             HUD.AppendLine("");
             HUD.AppendLine("CameraArtificialDelay = " + config.cameraArtificialDelay.ToString());

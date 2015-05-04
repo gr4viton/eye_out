@@ -22,10 +22,14 @@ namespace EyeOut_Telepresence
     public class PostureF
     {
         private PoseF poseF;
+//        private DateTime poseFupdated;
         public PoseF PoseF
         {
             get{return poseF;}
-            set{poseF = value;}
+            set
+            {
+                poseF = value;
+            }
         }
         public Quaternion Orientation
         {

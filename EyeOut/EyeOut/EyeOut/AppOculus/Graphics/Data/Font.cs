@@ -71,9 +71,10 @@ namespace EyeOut_Telepresence
         private SpriteFont fontDefault;
         private Texture2D colorTexture;
 
-        private DateTime timeStartedStreaming;
+        private DateTime timeStartedStreaming = DateTime.Now;
 
         float fpsDirectX = 0;
+        float fpsBaslerCamera = 0;
 
         //public string text;
 
@@ -121,20 +122,24 @@ namespace EyeOut_Telepresence
             }
 
             // Update the FPS text
-            frameCount++;
+            frameCountDirectX++;
             if (fpsClock.ElapsedMilliseconds > 1000.0f)
             {
-                fpsDirectX = (float)frameCount * 1000 / fpsClock.ElapsedMilliseconds;
+                fpsDirectX = (float)frameCountDirectX * 1000 / fpsClock.ElapsedMilliseconds;
+                fpsBaslerCamera = (float)config.cameraControl.frameCount * 1000 / fpsClock.ElapsedMilliseconds;
 
-                frameCount = 0;
+                frameCountDirectX = 0;
+                config.cameraControl.frameCount = 0;
                 fpsClock.Restart();
             }
-            TimeSpan timeInterval = DateTime.UtcNow.ToLocalTime().Subtract( timeStartedStreaming );
+
+
+            TimeSpan timeInterval = DateTime.Now.Subtract( timeStartedStreaming );
                 //DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
-            fpsText = string.Format("FPS: [DirectX:{0:F2}Hz]|[-]\t{2}|{1}",
-                    fpsDirectX,
-                    DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                    timeInterval.ToString()
+            fpsText = string.Format("FPS:[DirectX|BaslerCamera]:[{0:F1}|{1:F1}] Hz\nCaptureTime[{2}]|LocalTime[{3}]",
+                    fpsDirectX, fpsBaslerCamera,
+                    timeInterval.ToString(),
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")
                     );
 
             if (config.hud.toolStrip == true)
@@ -142,14 +147,14 @@ namespace EyeOut_Telepresence
                 string toolStripText;
                 if (config.cameraArtificialDelay == true)
                 {
-                    toolStripText = string.Format("{0}|{1,9:F4} [ms] | {2}", 
+                    toolStripText = string.Format("ArtificialDelay: Frames[{0}]={1,9:F4} [ms] | timeFromXkeyPressed[{2}]", 
                         config.cameraFrameQueueLength, qAct.TotalMilliseconds,
                         DateTime.Now - measurementStart
                         );
                 }
                 else
                 {
-                    toolStripText = string.Format("0 | 0 [ms] | {0}",
+                    toolStripText = string.Format("ArtificialDelay: None | timeFromXkeyPressed[{0}]",
                         DateTime.Now - measurementStart
                         );
                 }

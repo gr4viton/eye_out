@@ -261,14 +261,14 @@ namespace EyeOut
         public string msg { get; set; }
         public C_LogMsg()
         {
-            time = DateTime.UtcNow.ToLocalTime();
+            time = DateTime.Now;
             type = e_LogMsgType.info;
             queue = 0;
         }
         public override string ToString()
         {
             return string.Format("{0}\t|{1}\t|{2}\t|{3}\t|{4}", 
-                time.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), 
+                time.ToString("yyyy-MM-dd HH:mm:ss.fff"), 
                 queue, type, src, msg);
         }
     }

@@ -224,6 +224,9 @@ namespace EyeOut_Telepresence
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 lock (grabResultBufferRGB_locker)
                 {
+                    config.cameraControl.StoreYawPitchRollOnCapture(ra.angleType);
+                    config.cameraControl.frameCount++;
+
                     config.cameraControl.ConvertStoredGrabResultToByteArray(ref grabResultBufferRGB);
                     stopwatch.Stop();
                     LOG(string.Format("[Bayer BG8] to [RGB] byte array took [{0}]", stopwatch.Elapsed));

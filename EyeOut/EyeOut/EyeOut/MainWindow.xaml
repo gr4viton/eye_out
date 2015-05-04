@@ -550,20 +550,19 @@
                 <DockPanel x:Name="dpBaslerCamera"
                     LastChildFill="True">
                     <GroupBox Header="Basler Camera Commands">
-                        <StackPanel>
+                        <!--<StackPanel>
                             <ListBox x:Name="lsBaslerCameraCommands" MouseDoubleClick="lsBaslerCameraCommands_MouseDoubleClick">
                                 <ListBoxItem Content="Init streamGrabber"/>
                                 <ListBoxItem Content="Start streamGrabber"/>
                                 <ListBoxItem Content="Stop streamGrabber"/>
                                 <ListBoxItem Content="Take single snapshot"/>
-                                <!--<ListBoxItem Content="Capture single image"/>-->
                             </ListBox>
                             <Button Content="StartGrabberLoop" x:Name="btnStartBaslerCameraImageAcquisition" Click="btnStartBaslerCameraImageAcquisition_Click"/>
                             <Button Content="StopGrabberLoop" x:Name="btnStopBaslerCameraImageAcquisition" Click="btnStopBaslerCameraImageAcquisition_Click"/>
                             <Button Content="Capture" x:Name="btnAcquireImage" Click="btnAcquireImage_Click"/>
                             <Button Content="StartCaptureLoop" x:Name="btnStartCaptureLoop" Click="btnStartCaptureLoop_Click"/>
                             <Button Content="CloseCamera" x:Name="btnCloseCamera" Click="btnCloseCamera_Click"/>
-                        </StackPanel>
+                        </StackPanel>-->
                     </GroupBox>
                     <!--listens to cameras connected to usb-->
                     <basler:CameraLister x:Name="guiCameraLister" 

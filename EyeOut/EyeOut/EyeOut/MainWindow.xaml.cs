@@ -268,95 +268,95 @@ namespace EyeOut
         }
 
 
-        private void lsBaslerCameraCommands_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            switch (lsBaslerCameraCommands.SelectedIndex)
-            {
-                case(0): 
-                    // event EventHandler<ImageGrabbedEventArgs> ImageGrabbed // - possible continuous grabbing, and choose from grabbed list when drawing into scene
-                    if(guiStreamController.Camera.IsOpen)
-                    //if (streamController.Camera.StreamGrabber.IsGrabbing == false)
-                    {
+        //private void lsBaslerCameraCommands_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        //{
+        //    switch (lsBaslerCameraCommands.SelectedIndex)
+        //    {
+        //        case(0): 
+        //            // event EventHandler<ImageGrabbedEventArgs> ImageGrabbed // - possible continuous grabbing, and choose from grabbed list when drawing into scene
+        //            if(guiStreamController.Camera.IsOpen)
+        //            //if (streamController.Camera.StreamGrabber.IsGrabbing == false)
+        //            {
 
-                        //event EventHandler<ImageGrabbedEventArgs> ImageGrabbed
-                        guiStreamController.Camera.StreamGrabber.ImageGrabbed += GUI_StreamGrabber_ImageGrabbed;
-                        //streamController.Camera.StreamGrabber.
-                        // setup grabber
-                        // ...
-                        // start grabber
-                        guiStreamController.Camera.Open();
-                    }
-                    //streamController.Camera.Open();
-                    break;
-                case (1): 
-                    if(guiStreamController.Camera.IsOpen)
-                        //if (streamController.Camera.StreamGrabber.IsGrabbing == false)
-                        {
-                            //streamController.Camera.StreamGrabber.Start();
-                            guiStreamController.StartStreaming();
-                            LOG_gui("Started streamGrabbing");
-                        }
-                    break;
-                case (2):
-                    if (guiStreamController.Camera.IsOpen)
-                        //if (streamController.Camera.StreamGrabber.IsGrabbing == true)
-                        {
-                            //streamController.Camera.StreamGrabber.Stop();
-                            guiStreamController.StopStreaming();
-                            LOG_gui("Stopped streamGrabbing");
-                        }
+        //                //event EventHandler<ImageGrabbedEventArgs> ImageGrabbed
+        //                guiStreamController.Camera.StreamGrabber.ImageGrabbed += GUI_StreamGrabber_ImageGrabbed;
+        //                //streamController.Camera.StreamGrabber.
+        //                // setup grabber
+        //                // ...
+        //                // start grabber
+        //                guiStreamController.Camera.Open();
+        //            }
+        //            //streamController.Camera.Open();
+        //            break;
+        //        case (1): 
+        //            if(guiStreamController.Camera.IsOpen)
+        //                //if (streamController.Camera.StreamGrabber.IsGrabbing == false)
+        //                {
+        //                    //streamController.Camera.StreamGrabber.Start();
+        //                    guiStreamController.StartStreaming();
+        //                    LOG_gui("Started streamGrabbing");
+        //                }
+        //            break;
+        //        case (2):
+        //            if (guiStreamController.Camera.IsOpen)
+        //                //if (streamController.Camera.StreamGrabber.IsGrabbing == true)
+        //                {
+        //                    //streamController.Camera.StreamGrabber.Stop();
+        //                    guiStreamController.StopStreaming();
+        //                    LOG_gui("Stopped streamGrabbing");
+        //                }
 
-                    break;
-                case (3):
-                    if (guiStreamController.Camera.IsOpen)
-                    {
-                        guiStreamController.TakeSingleSnapshot();// Camera.StreamGrabber.take;
-                        LOG_gui("Took single snapshot");
-                    }
+        //            break;
+        //        case (3):
+        //            if (guiStreamController.Camera.IsOpen)
+        //            {
+        //                guiStreamController.TakeSingleSnapshot();// Camera.StreamGrabber.take;
+        //                LOG_gui("Took single snapshot");
+        //            }
 
-                    break;
+        //            break;
 
-            }
-        }
-
-
-        BaslerCameraControl camTry;
-        private void btnStartBaslerCameraImageAcquisition_Click(object sender, RoutedEventArgs e)
-        {
-            if (guiCameraLister.Camera != null)
-            {
-                guiCameraLister.Camera.Close();
-            }
-            if (camTry == null)
-                camTry = new BaslerCameraControl();//(guiStreamController, guiImageViewer, guiCameraLister);
-
-            camTry.StartGrabbing();
-        }
+        //    }
+        //}
 
 
-        private void btnAcquireImage_Click(object sender, RoutedEventArgs e)
-        {
-            //if (camTry != null)
-            //    camTry.CaptureImage();
-        }
+        //BaslerCameraControl camTry;
+        //private void btnStartBaslerCameraImageAcquisition_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (guiCameraLister.Camera != null)
+        //    {
+        //        guiCameraLister.Camera.Close();
+        //    }
+        //    if (camTry == null)
+        //        camTry = new BaslerCameraControl();//(guiStreamController, guiImageViewer, guiCameraLister);
 
-        private void btnStopBaslerCameraImageAcquisition_Click(object sender, RoutedEventArgs e)
-        {
-            if (camTry != null)
-                camTry.StopGrabbing();
-        }
+        //    camTry.StartGrabbing();
+        //}
 
-        private void btnStartCaptureLoop_Click(object sender, RoutedEventArgs e)
-        {
-            //if (camTry != null)
-            //    camTry.StartCapturingLoop();
-        }
 
-        private void btnCloseCamera_Click(object sender, RoutedEventArgs e)
-        {
-            if (camTry != null)
-                camTry.CloseCamera();
-        }
+        //private void btnAcquireImage_Click(object sender, RoutedEventArgs e)
+        //{
+        //    //if (camTry != null)
+        //    //    camTry.CaptureImage();
+        //}
+
+        //private void btnStopBaslerCameraImageAcquisition_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (camTry != null)
+        //        camTry.StopGrabbing();
+        //}
+
+        //private void btnStartCaptureLoop_Click(object sender, RoutedEventArgs e)
+        //{
+        //    //if (camTry != null)
+        //    //    camTry.StartCapturingLoop();
+        //}
+
+        //private void btnCloseCamera_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (camTry != null)
+        //        camTry.CloseCamera();
+        //}
 
         private void btnSetLogFilePath_Click(object sender, RoutedEventArgs e)
         {

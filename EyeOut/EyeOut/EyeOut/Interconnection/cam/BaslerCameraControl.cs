@@ -17,8 +17,9 @@ using System.Threading;
 using System.ComponentModel;
 
 //using System.Timers;
+using EyeOut;
 
-namespace EyeOut
+namespace EyeOut_Telepresence
 {
     public class BaslerCameraControl
     {
@@ -32,6 +33,16 @@ namespace EyeOut
         private static bool storedNewGrabResult = true;
         private static object storedGrabResult_locker = new object();
 
+        public float frameCount;
+
+        private List<C_Value> yawPitchRollOnCapture;
+        public List<C_Value> YawPitchRollOnCapture
+        {
+            get
+            {
+                return new List<C_Value>(yawPitchRollOnCapture);
+            }
+        }
 
         private int expositionTime = 5000; // in [us]
         private int maxNumBuffer = 100; //50
@@ -53,6 +64,7 @@ namespace EyeOut
 
         public BaslerCameraControl()//StreamController guiStreamController, ImageViewer guiImageViewer, CameraLister guiCameraLister)
         {
+            StoreYawPitchRollOnCapture(e_valueType.wantedValue);
             camera = new BaslerCamera(CameraSelectionStrategy.FirstFound);
             streamController = new StreamController();
 
@@ -213,6 +225,10 @@ namespace EyeOut
         }
 
 
+        public void StoreYawPitchRollOnCapture(e_valueType valueType)
+        {
+            yawPitchRollOnCapture = TelepresenceSystem.GetAngleValuesFromMotors(valueType) ;
+        }
 
         public static void LOG(string _msg)
         {
