@@ -255,5 +255,10 @@ namespace EyeOut
                 return false;
             }
         }
+
+        public static void MotorWritingLoop()
+        {
+
+        }
     }
 }

@@ -28,8 +28,9 @@ namespace EyeOut_Telepresence
         
         //public C_CounterDown readPosition = new C_CounterDown(10);
         int iReadMotor = 0;
-        public void CONTROL_motors()
+        public void DataAcquisition()
         {
+
             POSITION_motors();
 
             if (config.ReadCameraStream == true)
@@ -40,16 +41,9 @@ namespace EyeOut_Telepresence
             {
                 STOP_streaming();
             }
+
             if (config.READ_dataFromMotors == true)
             {
-
-                //MainWindow.Ms.Yaw.READ_position();
-                //readPosition(
-                //foreach (C_Motor mot in MainWindow.Ms)
-                //{
-                //    mot.READ_positionSpeed();
-                //}
-
                 if (C_State.FURTHER(e_stateProg.initialized))
                 {
                     MainWindow.Ms[iReadMotor].READ_positionSpeed();

@@ -132,7 +132,7 @@ namespace EyeOut_Telepresence
             }
             EndDraw_Font();
 
-            CONTROL_motors();
+            DataAcquisition();
 
             HUD.AppendLine(string.Format("hmd latency = {0,7:0.00000000}", hmd.GetMeasuredLatency()));
         }

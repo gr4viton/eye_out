@@ -27,7 +27,7 @@ namespace EyeOut_Telepresence
         public BaslerCamera camera;
         public static PixelDataConverter converter;
         public long grabResultBufferRGB_size;
-        public static PixelType sourcePixelType = PixelType.BayerRG8;
+        public static PixelType sourcePixelType = PixelType.BayerBG8;
         public static PixelType cameraOutputPixelFormat = PixelType.BGRA8packed;
         //converter.OutputPixelFormat = PixelType.RGB8planar; // planar BBBBB ??
         //converter.OutputPixelFormat = PixelType.RGB8packed; // RGB?
@@ -51,7 +51,7 @@ namespace EyeOut_Telepresence
 
         private int exposureTime = 5000; // in [us]
         private const int maxExposureTime = 10000000; // in [us] = 10s
-        private int maxNumBuffer = 100; //50
+        private int maxNumBuffer = 200; //50
 
         public int ExposureTime
         {

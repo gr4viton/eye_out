@@ -65,8 +65,8 @@ namespace EyeOut_Telepresence
         Queue<DateTime> que = new Queue<DateTime>();
 
         //private Basler.Pylon.IImage baslerImage;
-        private PixelFormat cameraTexturePixelFormat = PixelFormat.R8G8B8A8.UNorm;
-        //private PixelFormat cameraTexturePixelFormat = PixelFormat.B8G8R8X8.UNorm;
+        //private PixelFormat cameraTexturePixelFormat = PixelFormat.R8G8B8A8.UNorm;
+        private PixelFormat cameraTexturePixelFormat = PixelFormat.B8G8R8X8.UNorm;
         private BasicEffect cameraBasicEffect;
         
 
