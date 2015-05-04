@@ -33,7 +33,9 @@ namespace EyeOut_Telepresence
         private static bool storedNewGrabResult = true;
         private static object storedGrabResult_locker = new object();
 
-        public float frameCount;
+        public float frameCountCameraTexture;
+        public float frameCountCameraGrabbed;
+        public object frameCountCameraGrabbed_locker = new object();
 
         private List<C_Value> yawPitchRollOnCapture;
         public List<C_Value> YawPitchRollOnCapture
@@ -44,9 +46,22 @@ namespace EyeOut_Telepresence
             }
         }
 
-        private int expositionTime = 5000; // in [us]
+        private int exposureTime = 5000; // in [us]
+        private const int maxExposureTime = 10000000; // in [us] = 10s
         private int maxNumBuffer = 100; //50
 
+        public int ExposureTime
+        {
+            get { return exposureTime; }
+            set
+            {
+                if ((value > 0) && (value < maxExposureTime))
+                {
+                    exposureTime = value;
+                }
+                RefreshExposureTimeInCamera();
+            }
+        }
 
         public bool StoredNewGrabResult
         {
@@ -96,7 +111,7 @@ namespace EyeOut_Telepresence
                 camera.Open();
                 LOG("camera opened");
                 camera.Parameters[PLCamera.ExposureMode].SetValue(PLCamera.ExposureMode.Timed);
-                camera.Parameters[PLCamera.ExposureTime].SetValue(expositionTime); // in [us]
+                RefreshExposureTimeInCamera();
                 camera.Parameters[PLCameraInstance.MaxNumBuffer].SetValue(maxNumBuffer);
 
                 //camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
@@ -122,6 +137,14 @@ namespace EyeOut_Telepresence
                 return true;
             }
             return false;
+        }
+
+        public void RefreshExposureTimeInCamera()
+        {
+            if (camera.IsOpen)
+            {
+                camera.Parameters[PLCamera.ExposureTime].SetValue(exposureTime); // in [us]
+            }
         }
 
         public bool StartGrabbing()
@@ -173,6 +196,10 @@ namespace EyeOut_Telepresence
 
                     storedGrabResult = grabResult.Clone();
                     storedNewGrabResult = true;
+                    lock (frameCountCameraGrabbed_locker)
+                    {
+                        frameCountCameraGrabbed++;
+                    }
                     //LOG("Started to convert grabbed result!");
                     //byte[] rgb = ConvertGrabResultToByteArray(grabResult);
                     //LOG("Grabbed result converted to byte array!");

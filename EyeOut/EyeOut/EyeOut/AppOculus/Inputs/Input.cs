@@ -65,10 +65,8 @@ namespace EyeOut_Telepresence
         public ModifierAndKeyFunction control;
         public ModifierAndKeyFunction shift;
         
-
         public const string modifierChars = "nothing|[!]alt|[^]ctrl|[+]shift"; //|[#]super";
                 
-
         public GroupedKeyControl(Keys _key, string _name)
         {
             name = _name;
@@ -99,8 +97,12 @@ namespace EyeOut_Telepresence
 
         //private KeyboardManager keyboardManager; // we will process keyboard input here
         private readonly KeyboardManager keyboardManager; // we will process keyboard input here
+        private readonly MouseManager mouseManager;
 
         private KeyboardState keyboardState;
+        private MouseState mouseState;
+
+        private int lastWheelDelta;
         
         void Constructor_Input()
         {
@@ -109,7 +111,8 @@ namespace EyeOut_Telepresence
         void Update_Input()
         {
             keyboardState = keyboardManager.GetState();
-            
+            mouseState = mouseManager.GetState();
+
 
             // if Esc is pressed - quit program
             if (keyboardState.IsKeyPressed(Keys.Escape))
@@ -138,6 +141,23 @@ namespace EyeOut_Telepresence
                 tiles[4].StopDelegate();
             }
 
+            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            int mouseWheelOffset = mouseState.WheelDelta - lastWheelDelta;
+            if (mouseWheelOffset != 0)
+            {
+                int multiply = 10;
+                if(keyboardState.IsKeyDown(Keys.Control))
+                {
+                    multiply = 1;
+                }
+                if(keyboardState.IsKeyDown(Keys.Shift))
+                {
+                    multiply = 100;
+                }
+                config.cameraControl.ExposureTime += multiply * mouseWheelOffset;
+            }
+            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            // info tiles
             if (keyboardState.IsKeyPressed(Keys.F1))
             {
                 config.hud.helpMenu ^= true;
@@ -359,6 +379,8 @@ namespace EyeOut_Telepresence
             //        return;
             //    }
             //}
+
+            lastWheelDelta = mouseState.WheelDelta;
         }
 
 

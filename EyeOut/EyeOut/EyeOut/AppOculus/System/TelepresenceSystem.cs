@@ -23,6 +23,7 @@ using BaslerImage = Basler.Pylon.IImage;
 using ToolkitImage = SharpDX.Toolkit.Graphics.Image;
 using ToolkitTexture = SharpDX.Toolkit.Graphics.Texture2D;
 //using SharpDX.Toolkit.Graphics;
+using Basler.Pylon;
 
 namespace EyeOut_Telepresence
 {
@@ -109,6 +110,7 @@ namespace EyeOut_Telepresence
             // Input Constructor
             // all initial components should be created in game constructor
             keyboardManager = new KeyboardManager(this); // readonly
+            mouseManager = new MouseManager(this);
             Constructor_Input();
 
             Constructor_Sound();
@@ -355,7 +357,9 @@ namespace EyeOut_Telepresence
                     config.cameraControl.camera.IsOpen,
                     config.cameraControl.camera.StreamGrabber.IsGrabbing
                     ));
-                HUD.AppendLine(string.Format("[textureConversionAlgorithm={0}]", textureConversionAlgorithm));
+                HUD.AppendLine(string.Format("[U]=[textureConversionAlgorithm={0}]", textureConversionAlgorithm));
+                HUD.AppendLine(string.Format("[+][-]=[ExposureTime={0:F3}ms]", 
+                    config.cameraControl.ExposureTime / 1000));
             }
 
 

@@ -68,8 +68,7 @@ namespace EyeOut_Telepresence
         //private PixelFormat cameraTexturePixelFormat = PixelFormat.R8G8B8A8.UNorm;
         private PixelFormat cameraTexturePixelFormat = PixelFormat.B8G8R8X8.UNorm;
         private BasicEffect cameraBasicEffect;
-
-
+        
 
         public e_textureConversionAlgorithm textureConversionAlgorithm = e_textureConversionAlgorithm.unsafeConversion_pointerForLoop;
 
@@ -103,12 +102,12 @@ namespace EyeOut_Telepresence
                     TextureFlags.ShaderResource, ResourceUsage.Dynamic);
                 cameraTextureByteCount = width * height * cameraTexturePixelFormat.SizeInBytes;
             }
-
         }
 
         public object initialize_locker = new object();
         public bool initialized = false;
 
+        
         public void CAPTURE_cameraImage()
         {
             LOG("CAPTURE_cameraImage started");
@@ -225,7 +224,7 @@ namespace EyeOut_Telepresence
                 lock (grabResultBufferRGB_locker)
                 {
                     config.cameraControl.StoreYawPitchRollOnCapture(ra.angleType);
-                    config.cameraControl.frameCount++;
+                    config.cameraControl.frameCountCameraTexture++;
 
                     config.cameraControl.ConvertStoredGrabResultToByteArray(ref grabResultBufferRGB);
                     stopwatch.Stop();

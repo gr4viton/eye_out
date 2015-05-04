@@ -74,7 +74,8 @@ namespace EyeOut_Telepresence
         private DateTime timeStartedStreaming = DateTime.Now;
 
         float fpsDirectX = 0;
-        float fpsBaslerCamera = 0;
+        float fpsBaslerCameraTexture = 0;
+        float fpsBaslerCameraGrabbed = 0;
 
         //public string text;
 
@@ -126,18 +127,25 @@ namespace EyeOut_Telepresence
             if (fpsClock.ElapsedMilliseconds > 1000.0f)
             {
                 fpsDirectX = (float)frameCountDirectX * 1000 / fpsClock.ElapsedMilliseconds;
-                fpsBaslerCamera = (float)config.cameraControl.frameCount * 1000 / fpsClock.ElapsedMilliseconds;
-
                 frameCountDirectX = 0;
-                config.cameraControl.frameCount = 0;
+
+                fpsBaslerCameraTexture = (float)config.cameraControl.frameCountCameraTexture * 1000 / fpsClock.ElapsedMilliseconds;
+                config.cameraControl.frameCountCameraTexture = 0;
+
+                lock (config.cameraControl.frameCountCameraGrabbed_locker)
+                {
+                    fpsBaslerCameraGrabbed = (float)config.cameraControl.frameCountCameraGrabbed * 1000 / fpsClock.ElapsedMilliseconds;
+                    config.cameraControl.frameCountCameraGrabbed = 0;
+                }
                 fpsClock.Restart();
             }
 
 
             TimeSpan timeInterval = DateTime.Now.Subtract( timeStartedStreaming );
                 //DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
-            fpsText = string.Format("FPS:[DirectX|BaslerCamera]:[{0:F1}|{1:F1}] Hz\nCaptureTime[{2}]|LocalTime[{3}]",
-                    fpsDirectX, fpsBaslerCamera,
+            fpsText = string.Format("FPS:[DirectX|cameraGrabbed|cameraTexture]:[{0:F1}||{1:F1}|{2:F1}] Hz\nCaptureTime[{3}]|LocalTime[{4}]",
+                    fpsDirectX, fpsBaslerCameraGrabbed, 
+                    fpsBaslerCameraTexture, 
                     timeInterval.ToString(),
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")
                     );
