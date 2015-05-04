@@ -220,24 +220,22 @@ namespace EyeOut_Telepresence
                 {
                     return;
                 }
-                Stopwatch stopwatch = Stopwatch.StartNew();
+                Stopwatch stopwatchUpdateTexture = Stopwatch.StartNew();
+                               
                 lock (grabResultBufferRGB_locker)
                 {
+                    Stopwatch stopwatch = Stopwatch.StartNew();
                     config.cameraControl.StoreYawPitchRollOnCapture(ra.angleType);
                     config.cameraControl.frameCountCameraTexture++;
 
                     config.cameraControl.ConvertStoredGrabResultToByteArray(ref grabResultBufferRGB);
                     stopwatch.Stop();
-                    LOG(string.Format("[Bayer BG8] to [RGB] byte array took [{0}]", stopwatch.Elapsed));
+                    LOG(string.Format("[Bayer BG8] to [RGB] byte array took [{0}]", stopwatch.Elapsed)); // about 7 ms
 
                     if (cameraTextureByteCount != grabResultBufferRGB.Length)
                     {
                         lock (textureSizedBuffer_locker)
                         {
-                            LOG("byte[] textureSizeBuffer = new byte[cameraTextureByteCount];");
-                            //textureSizedBuffer = new byte[cameraTextureByteCount];
-                            //destinationBuffer.CopyTo(textureSizeBuffer, 0);
-
                             LOG("started recounting texture");
 
                             stopwatch = Stopwatch.StartNew();
@@ -261,15 +259,18 @@ namespace EyeOut_Telepresence
                             if (config.cameraArtificialDelay == false)
                             {
                                 LOG("SetTextureData(textureSizedBuffer);");
+                                stopwatch = Stopwatch.StartNew();
                                 SetTextureData(textureSizedBuffer);
-                                LOG("SetTextureData(textureSizedBuffer); ended");
-                                lock (queuePixelData_locker)
-                                {
-                                    if (queuePixelData.Count > 1)
-                                    {
-                                        queuePixelData.Clear();
-                                    }
-                                }
+                                stopwatch.Stop();
+                                LOG(string.Format("SetTextureData took [{0}]", stopwatch.Elapsed));
+
+                                //lock (queuePixelData_locker)
+                                //{
+                                //    if (queuePixelData.Count > 1)
+                                //    {
+                                //        queuePixelData.Clear();
+                                //    }
+                                //}
                             }
                             else
                             {
@@ -306,6 +307,8 @@ namespace EyeOut_Telepresence
                     }
                     LOG("end UpdateTexture_DoWork");
                 }
+                stopwatchUpdateTexture.Stop();
+                LOG(string.Format("Whole UpdateTexture took [{0}]", stopwatchUpdateTexture.Elapsed));
             }
         }
 
