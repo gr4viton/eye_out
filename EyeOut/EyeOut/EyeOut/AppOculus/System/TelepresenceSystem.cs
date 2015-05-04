@@ -135,6 +135,11 @@ namespace EyeOut_Telepresence
         }
 
 
+        protected override void EndRun()
+        {
+            config.cameraControl.CloseCamera();
+            base.EndRun();
+        }
         
         protected override void Initialize()
         {

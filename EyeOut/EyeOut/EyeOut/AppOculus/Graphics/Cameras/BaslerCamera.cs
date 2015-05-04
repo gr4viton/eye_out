@@ -270,6 +270,7 @@ namespace EyeOut_Telepresence
                     if (drawNewCameraTextureFrame == true)
                     {
                         UpdateTextureFromGrabResult();
+                        drawNewCameraTextureFrame = false;
                     }
                 }
                 //Thread.Sleep(100);
