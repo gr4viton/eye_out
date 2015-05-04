@@ -301,14 +301,14 @@ namespace EyeOut_Telepresence
 
             List<C_Value> yawPitchRoll;
 
-            if (config.roboticArmPostureOnCameraCapture == false)
-            {
-                yawPitchRoll = GetAngleValuesFromMotors(ra.angleType);
-            }
-            else
-            {
-                yawPitchRoll = config.cameraControl.YawPitchRollOnCapture;
-            }
+            //if (config.roboticArmPostureOnCameraCapture == false)
+            //{
+                yawPitchRoll = GetAngleValuesFromMotors_Reference(ra.angleType);
+            //}
+            //else
+            //{
+            //    yawPitchRoll = config.cameraControl.YawPitchRollOnCapture;
+            //}
 
 
             ra.UPDATE_PartRotationAndWorldMatrix(

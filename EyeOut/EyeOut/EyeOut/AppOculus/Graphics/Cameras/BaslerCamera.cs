@@ -76,23 +76,27 @@ namespace EyeOut_Telepresence
         private object UpdateTextureWorker_locker = new object();
 
         private long cameraTextureByteCount;
-        private object cameraTexture_locker = new object();
+        private object cameraTextureList_locker = new object();
 
         private byte[] grabResultBufferRGB;
         private object grabResultBufferRGB_locker = new object();
 
-
         private byte[] textureSizedBuffer;
-        private object textureSizedBuffer_locker = new object(); 
+        private object textureSizedBuffer_locker = new object();
 
         private GeometricPrimitive cameraSurface;
+        
         private Texture2D cameraTexture;
+
+        //private Texture2D cameraDefaultTexture;
+        //private int cameraTextureListCount = 10;
+        //private List<Texture2D> cameraTextureList;
 
         private object locker_pixelData = new object();
 
         public void RealocateTexture(int width, int height, byte[] destinationBuffer)
         {
-            lock (cameraTexture_locker)
+            lock (cameraTextureList_locker)
             {
                 if (cameraTexture != null)
                 {
@@ -143,7 +147,7 @@ namespace EyeOut_Telepresence
                                 }
                                 else
                                 {
-                                    lock (cameraTexture_locker)
+                                    lock (cameraTextureList_locker)
                                     {
                                         cameraTexture.SetData<byte>(grabResultBufferRGB);
                                     }
@@ -155,13 +159,6 @@ namespace EyeOut_Telepresence
                 }
                 else
                 {
-                    lock (UpdateTextureWorker_locker)
-                    {
-                        if (UpdateTextureWorker.IsBusy == false)
-                        {
-                            UpdateTextureWorker.RunWorkerAsync((object)config.player.hmd);
-                        }
-                    }
 
                 }
                     
@@ -170,7 +167,7 @@ namespace EyeOut_Telepresence
         }
 
 
-        public unsafe void RGBtoRGBA_Safe(ref byte[] Source, ref byte[] Target)
+        public void RGBtoRGBA_Safe(ref byte[] Source, ref byte[] Target)
         {
             int num = Source.Length / 3;
 
@@ -187,44 +184,40 @@ namespace EyeOut_Telepresence
             }
 
         }
-        public unsafe void RGBtoRGBA_Unsafe(ref byte[] Source, ref byte[] Target)
-        {
-            int num = Source.Length / 3;
 
-            fixed (byte* pSource = Source, pTarget = Target)
-            {
-                // Set the starting points in source and target for the copying. 
-                byte* ps = pSource + 0;
-                byte* pt = pTarget + 0;
+        //public unsafe void RGBtoRGBA_Unsafe(ref byte[] Source, ref byte[] Target)
+        //{
+        //    int num = Source.Length / 3;
 
-                for (int i = 0; i < num; i++)
-                {
-                    *(pt) = *(ps);
-                    *(pt + 1) = *(ps + 1);
-                    *(pt + 2) = *(ps + 2);
-                    *(pt + 3) = 255;
-                    pt += 4;
-                    ps += 3;
-                }
-            }
-        }
+        //    fixed (byte* pSource = Source, pTarget = Target)
+        //    {
+        //        // Set the starting points in source and target for the copying. 
+        //        byte* ps = pSource + 0;
+        //        byte* pt = pTarget + 0;
+
+        //        for (int i = 0; i < num; i++)
+        //        {
+        //            *(pt) = *(ps);
+        //            *(pt + 1) = *(ps + 1);
+        //            *(pt + 2) = *(ps + 2);
+        //            *(pt + 3) = 255;
+        //            pt += 4;
+        //            ps += 3;
+        //        }
+        //    }
+        //}
 
 
-
-        public void UpdateTexture_DoWork(object sender, DoWorkEventArgs e)
+        public void UpdateTextureFromGrabResult()
         {
             lock (UpdateTextureWorker_locker)
             {
-                if (config.cameraControl.StoredNewGrabResult == false)
-                {
-                    return;
-                }
                 Stopwatch stopwatchUpdateTexture = Stopwatch.StartNew();
-                               
+
                 lock (grabResultBufferRGB_locker)
                 {
                     //Stopwatch stopwatch = Stopwatch.StartNew();
-                    config.cameraControl.StoreYawPitchRollOnCapture(ra.angleType);
+                    //config.cameraControl.StoreYawPitchRollOnCapture(ra.angleType);
                     config.cameraControl.NextFrameCountCameraTexture();
 
                     config.cameraControl.ConvertStoredGrabResultToByteArray(ref grabResultBufferRGB);
@@ -233,80 +226,16 @@ namespace EyeOut_Telepresence
 
                     if (cameraTextureByteCount != grabResultBufferRGB.Length)
                     {
-                        //lock (textureSizedBuffer_locker)
-                        //{
-                        //    LOG("started recounting texture");
-
-                        //    //stopwatch = Stopwatch.StartNew();
-                        //    string type = "undefined";
-
-                        //    if (textureConversionAlgorithm == e_textureConversionAlgorithm.unsafeConversion_pointerForLoop)
-                        //    {
-                        //        RGBtoRGBA_Unsafe(ref grabResultBufferRGB, ref textureSizedBuffer);
-                        //        type = "unsafe [pt+=4]";
-                        //    }
-                        //    else if (textureConversionAlgorithm == e_textureConversionAlgorithm.safeConversion_forLoop)
-                        //    {
-                        //        RGBtoRGBA_Safe(ref grabResultBufferRGB, ref textureSizedBuffer);
-                        //        type = "safe [i_t+=4]";
-
-                        //    }
-                        //    //stopwatch.Stop();
-                        //    //LOG(string.Format("RGB to RGBA texture conversion {1} took [{0}]", stopwatch.Elapsed, type));
-
-
-                        //    if (config.cameraArtificialDelay == false)
-                        //    {
-                        //        LOG("SetTextureData(textureSizedBuffer);");
-                        //        //stopwatch = Stopwatch.StartNew();
-                        //        SetTextureData(textureSizedBuffer);
-                        //        //stopwatch.Stop();
-                        //        //LOG(string.Format("SetTextureData took [{0}]", stopwatch.Elapsed));
-
-                        //        //lock (queuePixelData_locker)
-                        //        //{
-                        //        //    if (queuePixelData.Count > 1)
-                        //        //    {
-                        //        //        queuePixelData.Clear();
-                        //        //    }
-                        //        //}
-                        //    }
-                        //    else
-                        //    {
-                        //        lock (queuePixelData_locker)
-                        //        {
-                        //            LOG("SetTextureData(queued texture)");
-                        //            queuePixelData.Enqueue((byte[])textureSizedBuffer.Clone());
-                        //            que.Enqueue(DateTime.Now);
-
-                        //            if (queuePixelData.Count == config.cameraFrameQueueLength )
-                        //            {
-                        //                qAct = DateTime.Now - que.Dequeue();
-                        //                SetTextureData(queuePixelData.Dequeue());
-                        //            }
-                        //            else if (queuePixelData.Count > config.cameraFrameQueueLength+1)
-                        //            {
-                        //                // when cameraFrameQueueLength changed to smaller number
-                        //                //while (queuePixelData.Count > config.cameraFrameQueueLength)
-                        //                //{
-                        //                //    queuePixelData.Dequeue(); // skip them
-                        //                //    que.Dequeue();
-                        //                //}
-                        //                que.Clear();
-                        //                queuePixelData.Clear();
-                        //            }
-                        //            LOG("SetTextureData(queued texture) end");
-                        //        }
-                        //    }
-                        //}
+                        LOG("should not happen (cameraTextureByteCount != grabResultBufferRGB.Length)");
                     }
                     else
                     {
-                        lock (textureSizedBuffer_locker)
-                        {
-                            grabResultBufferRGB.CopyTo(textureSizedBuffer,0);
-                            SetTextureData(textureSizedBuffer);
-                        }
+                        //lock (textureSizedBuffer_locker)
+                        //{
+                        //    //grabResultBufferRGB.CopyTo(textureSizedBuffer, 0);
+                        //    //SetTextureData(textureSizedBuffer);
+                        //}
+                        SetTextureData(grabResultBufferRGB);
                     }
                     LOG("end UpdateTexture_DoWork");
                 }
@@ -314,14 +243,54 @@ namespace EyeOut_Telepresence
                 LOG(string.Format("Whole UpdateTexture took [{0}]", stopwatchUpdateTexture.Elapsed));
             }
         }
+        public void UpdateTexture_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (Thread.CurrentThread.Name == null)
+                Thread.CurrentThread.Name = "UpdateTexture_DoWork";
+            while (true)
+            {
+                lock (initialize_locker)
+                {
+                    if (initialized != true)
+                    {
+                        continue;
+                    }
+                }
+                 
+                lock(config.cameraControl.storedNewGrabResult_locker)
+                {
+                    if (config.cameraControl.storedNewGrabResult != true)
+                    {
+                        continue;
+                    }
+                }
+
+                lock (drawNewCameraTextureFrame_locker)
+                {
+                    if (drawNewCameraTextureFrame == true)
+                    {
+                        UpdateTextureFromGrabResult();
+                    }
+                }
+                //Thread.Sleep(100);
+            }
+        }
+
+        public object drawNewCameraTextureFrame_locker = new object();
+        public bool drawNewCameraTextureFrame = false;
 
         private void SetTextureData(byte[] _textureSizedBuffer)
         {
-            lock (cameraTexture_locker)
+            lock (cameraTextureList_locker)
             {
                 try
                 {
-                    cameraTexture.SetData<byte>(_textureSizedBuffer);
+                    lock (textureSizedBuffer_locker)
+                    {
+                        _textureSizedBuffer.CopyTo(textureSizedBuffer, 0);
+//                        SetTextureData(textureSizedBuffer);
+                        cameraTexture.SetData<byte>(_textureSizedBuffer);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -331,20 +300,23 @@ namespace EyeOut_Telepresence
         }
         protected virtual void Draw_BaslerCamera(GameTime _gameTime)
         {
-            lock (cameraTexture_locker)
+            lock (cameraTextureList_locker)
             {
-                cameraBasicEffect.Texture = cameraTexture;
-                var time = (float)gameTime.TotalGameTime.TotalSeconds;
+                lock (textureSizedBuffer_locker)
+                {
+                    cameraBasicEffect.Texture = cameraTexture;
+                    var time = (float)gameTime.TotalGameTime.TotalSeconds;
 
-                cameraBasicEffect.Projection = eyeProjection;
-                cameraBasicEffect.View = eyeView;
+                    cameraBasicEffect.Projection = eyeProjection;
+                    cameraBasicEffect.View = eyeView;
 
-                cameraBasicEffect.World = ra.cameraSurfaceWorld; //* Matrix.Translation(config.player.scout.Position);
-                cameraBasicEffect.World.Invert();
-                //cameraBasicEffect.World = Matrix.Identity ;
-            
-                // Draw the primitive using BasicEffect
-                cameraSurface.Draw(cameraBasicEffect);
+                    cameraBasicEffect.World = ra.cameraSurfaceWorld; //* Matrix.Translation(config.player.scout.Position);
+                    cameraBasicEffect.World.Invert();
+                    //cameraBasicEffect.World = Matrix.Identity ;
+
+                    // Draw the primitive using BasicEffect
+                    cameraSurface.Draw(cameraBasicEffect);
+                }
             }
         }
 
@@ -380,6 +352,7 @@ namespace EyeOut_Telepresence
             {
                 START_streaming();
             }
+            UpdateTextureWorker.RunWorkerAsync((object)config.player.hmd);
         }
 
         public float LoadContent_BaslerCamera()
@@ -395,7 +368,7 @@ namespace EyeOut_Telepresence
             
             // Load the texture
             //cameraTexture = Content.Load<Texture2D>("speaker");
-            lock (cameraTexture_locker)
+            lock (cameraTextureList_locker)
             {
                 cameraTexture = Content.Load<Texture2D>("cameraDefault_2015-04-20_09-34-31");
                 //cameraTexture = Texture2D.New(GraphicsDevice, width, height, PixelFormat.B8G8R8A8.UNorm);

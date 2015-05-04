@@ -28,6 +28,11 @@ namespace EyeOut_Telepresence
 
             BeginDraw_FPS();
 
+            lock (drawNewCameraTextureFrame_locker)
+            {
+                drawNewCameraTextureFrame = true;
+            }
+
             // Set Render Target and Viewport
             GraphicsDevice.SetRenderTargets(depthStencilBuffer, renderTarget);
             GraphicsDevice.SetViewport(0f, 0f, (float)renderTarget.Width, (float)renderTarget.Height);

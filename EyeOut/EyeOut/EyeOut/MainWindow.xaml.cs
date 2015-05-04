@@ -38,6 +38,9 @@ namespace EyeOut
 
         public MainWindow()
         {
+            if (Thread.CurrentThread.Name == null)
+                Thread.CurrentThread.Name = "MainWindow GUI thread";
+
             C_State.prog = e_stateProg.initializing;
             InitializeComponent();
 

@@ -32,9 +32,11 @@ namespace EyeOut_Telepresence
         //converter.OutputPixelFormat = PixelType.RGB8planar; // planar BBBBB ??
         //converter.OutputPixelFormat = PixelType.RGB8packed; // RGB?
 
-        private static IGrabResult storedGrabResult;
-        private static bool storedNewGrabResult = true;
-        private static object storedGrabResult_locker = new object();
+        public IGrabResult storedGrabResult;
+        public object storedGrabResult_locker = new object();
+
+        public bool storedNewGrabResult = true;
+        public object storedNewGrabResult_locker = new object();
 
         public float frameCountCameraTexture;
         public object frameCountCameraTexture_locker = new object();
@@ -42,18 +44,18 @@ namespace EyeOut_Telepresence
         public float frameCountCameraGrabbed;
         public object frameCountCameraGrabbed_locker = new object();
 
-        private List<C_Value> yawPitchRollOnCapture;
-        public List<C_Value> YawPitchRollOnCapture
-        {
-            get
-            {
-                return new List<C_Value>(yawPitchRollOnCapture);
-            }
-        }
+        //private List<C_Value> yawPitchRollOnCapture;
+        //public List<C_Value> YawPitchRollOnCapture
+        //{
+        //    get
+        //    {
+        //        return new List<C_Value>(yawPitchRollOnCapture);
+        //    }
+        //}
 
         private int exposureTime = 10000; // in [us]
         private const int maxExposureTime = 10000000; // in [us] = 10s
-        private int maxNumBuffer = 300; //50
+        private int maxNumBuffer = 100; //50
 
         public void NextFrameCountCameraTexture()
         {
@@ -75,23 +77,23 @@ namespace EyeOut_Telepresence
             }
         }
 
-        public bool StoredNewGrabResult
-        {
-            get
-            {
-                lock (storedGrabResult_locker)
-                {
-                    return storedNewGrabResult;
-                }
-            }
-        }
+        //public bool StoredNewGrabResult
+        //{
+        //    get
+        //    {
+        //        lock (storedGrabResult_locker)
+        //        {
+        //            return storedNewGrabResult;
+        //        }
+        //    }
+        //}
         
         public static bool initialized = false;
         public static object initialize_locker = new object();
 
         public BaslerCameraControl()//StreamController guiStreamController, ImageViewer guiImageViewer, CameraLister guiCameraLister)
         {
-            StoreYawPitchRollOnCapture(e_valueType.wantedValue);
+            //StoreYawPitchRollOnCapture(e_valueType.wantedValue);
             camera = new BaslerCamera(CameraSelectionStrategy.FirstFound);
             streamController = new StreamController();
 
@@ -206,7 +208,10 @@ namespace EyeOut_Telepresence
                     }
 
                     storedGrabResult = grabResult.Clone();
-                    storedNewGrabResult = true;
+                    lock (storedNewGrabResult_locker)
+                    {
+                        storedNewGrabResult = true;
+                    }
                     lock (frameCountCameraGrabbed_locker)
                     {
                         frameCountCameraGrabbed++;
@@ -263,10 +268,10 @@ namespace EyeOut_Telepresence
         }
 
 
-        public void StoreYawPitchRollOnCapture(e_valueType valueType)
-        {
-            yawPitchRollOnCapture = TelepresenceSystem.GetAngleValuesFromMotors(valueType) ;
-        }
+        //public void StoreYawPitchRollOnCapture(e_valueType valueType)
+        //{
+        //    yawPitchRollOnCapture = TelepresenceSystem.GetAngleValuesFromMotors(valueType) ;
+        //}
 
         public static void LOG(string _msg)
         {

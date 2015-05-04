@@ -80,6 +80,7 @@ namespace EyeOut
                 new Queue<C_Packet>()
             };
 
+            INIT_MotorWritingLoop();
 
         }
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -212,9 +213,13 @@ namespace EyeOut
         {
             QUEUE_PacketToSent(instructionPacket);
 
-            lock(MotorWritingLoop_locker)
+        }
+
+        private static void INIT_MotorWritingLoop()
+        {
+            lock (MotorWritingLoop_locker)
             {
-                if(MotorWritingLoop == null)
+                if (MotorWritingLoop == null)
                 {
                     MotorWritingLoop = new BackgroundWorker();
                     MotorWritingLoop.DoWork += MotorWritingLoop_DoWork;
@@ -225,9 +230,11 @@ namespace EyeOut
                 }
             }
         }
-
         private static void MotorWritingLoop_DoWork(object sender, DoWorkEventArgs e)
         {
+            if (Thread.CurrentThread.Name == null)
+                Thread.CurrentThread.Name = "MotorWritingLoop_DoWork";
+            LOG("MotorWritingLoop started");
             while(true)
             {
                 workerSEND_DoWork();

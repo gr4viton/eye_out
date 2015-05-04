@@ -157,6 +157,7 @@ namespace EyeOut
         public string filePath = @"C:\log_eyeOut.txt";
         private System.IO.StreamWriter file;
         private bool fileIsOpen = false;
+
         public void OPEN_file(string filePath)
         {
             file = new System.IO.StreamWriter(filePath,true);

@@ -75,11 +75,11 @@ namespace EyeOut
             // better to create [Backgroundworker with the loop] inside C_CaptureDataHandler then in upper
             // because if I would have more cameras each would create its loop separately :)
 
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.RunWorkerCompleted += captureLoop_RunWorkerCompleted;
-            worker.DoWork += captureLoop_DoWork;
-            //worker.RunWorkerAsync((object)cmd);
-            worker.RunWorkerAsync();
+            //BackgroundWorker worker = new BackgroundWorker();
+            //worker.RunWorkerCompleted += captureLoop_RunWorkerCompleted;
+            //worker.DoWork += captureLoop_DoWork;
+            ////worker.RunWorkerAsync((object)cmd);
+            //worker.RunWorkerAsync();
         }
 
         public void stopCapture()
@@ -118,46 +118,46 @@ namespace EyeOut
         }
 
 
-        private void captureLoop_DoWork(object sender, DoWorkEventArgs e)
-        {
+        //private void captureLoop_DoWork(object sender, DoWorkEventArgs e)
+        //{
 
-            while (isStopped == false)
-            {
-                captureData = new C_WebCameraCaptureData(
-                    cam.GET_txu()
-                    //,MOT.GET_position();
-                        );
+        //    while (isStopped == false)
+        //    {
+        //        captureData = new C_WebCameraCaptureData(
+        //            cam.GET_txu()
+        //            //,MOT.GET_position();
+        //                );
 
 
-                //// capture the headpose
-                //S_CaptureData captured;
-                //double captureTime = OVR.GetTimeInSeconds() - cam.CamLatency; // subtract a camera lag from pose
+        //        //// capture the headpose
+        //        //S_CaptureData captured;
+        //        //double captureTime = OVR.GetTimeInSeconds() - cam.CamLatency; // subtract a camera lag from pose
 
-                // SDK can not predict in back time 
-                // -> so tweak the sdk 
-                // -> or make a abstract layer to store older positions
-                // looks like this SDK through SharpDX cannot predict at all
-                // so make predictions?
+        //        // SDK can not predict in back time 
+        //        // -> so tweak the sdk 
+        //        // -> or make a abstract layer to store older positions
+        //        // looks like this SDK through SharpDX cannot predict at all
+        //        // so make predictions?
 
-                //SharpOVR.TrackingState tracking = SharpOVR.TrackingCapabilities.Orientation(hmd, captureTime);
+        //        //SharpOVR.TrackingState tracking = SharpOVR.TrackingCapabilities.Orientation(hmd, captureTime);
 
-                //var pose = SharpOVR.TrackingCapabilities.Orientation;
+        //        //var pose = SharpOVR.TrackingCapabilities.Orientation;
 
-                //captured.pose = SharpOVR.TrackingCapabilities.Position;
+        //        //captured.pose = SharpOVR.TrackingCapabilities.Position;
 
-                //// capture the image
-                //if(!videoCapture.grab() || !videoCapture.retrieve(captured.image))
-                //{
-                //    //Failed video capture
-                //    LOG_err("Failed video capture");
-                //}
+        //        //// capture the image
+        //        //if(!videoCapture.grab() || !videoCapture.retrieve(captured.image))
+        //        //{
+        //        //    //Failed video capture
+        //        //    LOG_err("Failed video capture");
+        //        //}
 
-                //cv::flip(captured.image.clone(), captured.image, 0); // opencv vs opengl ? vs directX
-                //setResult(captured);
+        //        //cv::flip(captured.image.clone(), captured.image, 0); // opencv vs opengl ? vs directX
+        //        //setResult(captured);
 
-            }
-            //e.Result = C_SPI.WriteData(e.Argument as byte[]);
-        }
+        //    }
+        //    //e.Result = C_SPI.WriteData(e.Argument as byte[]);
+        //}
 
         private void captureLoop_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {

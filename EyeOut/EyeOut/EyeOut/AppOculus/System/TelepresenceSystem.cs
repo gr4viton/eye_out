@@ -25,6 +25,8 @@ using ToolkitTexture = SharpDX.Toolkit.Graphics.Texture2D;
 //using SharpDX.Toolkit.Graphics;
 using Basler.Pylon;
 
+using System.Threading;
+
 namespace EyeOut_Telepresence
 {
     // Use these namespaces here to override SharpDX.Direct3D11
@@ -76,7 +78,7 @@ namespace EyeOut_Telepresence
 
         uint frameIndex = 0;
 
-        private BasicEffect basicEffect;
+        //private BasicEffect basicEffect;
         //private Texture2D primitiveTexture;
 
         public TelepresenceSystemConfiguration config;
@@ -86,6 +88,7 @@ namespace EyeOut_Telepresence
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="TelepresenceSystem" /> class.
         /// </summary>
@@ -135,6 +138,9 @@ namespace EyeOut_Telepresence
         
         protected override void Initialize()
         {
+
+            if (Thread.CurrentThread.Name == null)
+                Thread.CurrentThread.Name = "TelepresenceSystem thread";
             //            INIT_TP_window();
             //            INIT_TP_renderTarget();
             //            INIT_TP_eyeTextureRendering();
