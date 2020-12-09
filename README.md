@@ -19,7 +19,7 @@ The main C# program for communicating with
 - the video renderer (SharpDX)
 - and the Dynamixel servo robot arm
 
-is in the `src/EyeOut` folder.
+is in the `src/eye_out` folder.
 
 ## `DYNA_BLASTER` - Dynamixel servo  communication
 Is in the `src/DYNA_BLASTER_winForm` folder.
